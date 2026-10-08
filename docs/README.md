@@ -1,0 +1,24 @@
+# Otus Meta documentation
+
+## Suite
+
+- [Product goals](suite/product-goals.md): purpose, protocol scope, and current state of both apps.
+- [Mail design foundations](suite/mail-design.md): the palette and Figma reference used by both apps.
+- [Roadmap](https://github.com/reazndev/otus-mail/issues/9): the v1 JMAP suite and v2 protocol plan.
+
+## Libraries
+
+- [Architecture](architecture.md): module ownership, planned extraction, and dependency rules.
+- [Using the libraries from an app](consuming.md): GitHub Packages, credentials, and local builds.
+- [Releasing](releasing.md): versions, changelog, and publishing.
+- [Quality gate](quality.md): commands, checks, and file-length exceptions.
+
+## Decisions
+
+- [0001: File-length exceptions](decisions/0001-file-length-exceptions.md)
+- [0002: Gradle quality commands without npm](decisions/0002-gradle-quality-entry-points.md)
+- [0003: Portable Compose imports](decisions/0003-portable-compose-imports.md)
+- [0004: Commit messages](decisions/0004-commit-messages.md)
+- [0005: Shared libraries in otus-meta](decisions/0005-shared-library-repository.md)
+
+Decisions 0001 to 0004 were made in the app repositories and apply to every Otus repository.
