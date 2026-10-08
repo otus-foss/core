@@ -17,7 +17,8 @@ dependencyResolutionManagement {
         // existing google() and mavenCentral() entries
         maven("https://maven.pkg.github.com/reazndev/otus-meta") {
             name = "otusMeta"
-            credentials(PasswordCredentials::class)
+            // Gradle checks credentials before every build; without a token only -Potus.meta.path works.
+            if (providers.gradleProperty("otusMetaPassword").isPresent) credentials(PasswordCredentials::class)
             mavenContent { includeGroup("com.otus") }
         }
     }
@@ -40,7 +41,10 @@ Then depend on it from the app's `shared` module, for example `api(libs.otus.jma
 
 GitHub Packages requires a token to download Maven packages, even for read access.
 `credentials(PasswordCredentials::class)` with the name `otusMeta` reads the Gradle properties
-`otusMetaUsername` and `otusMetaPassword`.
+`otusMetaUsername` and `otusMetaPassword`. With the configuration cache, Gradle fails every build
+when a declared credential property is missing, even tasks that download nothing. The snippet
+therefore declares credentials only when the token is present. Without it, `com.otus` downloads
+fail and only the local composite build below can supply the libraries.
 
 On a development machine, add them to `~/.gradle/gradle.properties`, never to the repository:
 
