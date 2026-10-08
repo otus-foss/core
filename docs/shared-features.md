@@ -1,6 +1,6 @@
 # Shared settings and accounts
 
-The unreleased 0.3.0 extraction adds two Kotlin Multiplatform libraries used by Mail. Calendar
+Version 0.3.0 adds two Kotlin Multiplatform libraries used by Mail. Calendar
 is unchanged. Both target Android and iOS; screens compose the common design system.
 
 ## Settings

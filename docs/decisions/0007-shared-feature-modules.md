@@ -1,6 +1,6 @@
 # 0007: Shared feature modules
 
-Status: implemented for the requested Mail extraction on 2026-10-08. Release pending.
+Status: implemented for the requested Mail extraction in version 0.3.0.
 
 ## Decision
 
@@ -40,6 +40,7 @@ semantics and sender-to-avatar mapping stay in Mail. Calendar's checkout is unch
 
 ## Release
 
-The extraction is prepared as unreleased 0.3.0 and checked through the optional local composite
-build. Publish the new libraries before merging Mail's version bump to main. Both repositories
-remain independent and fresh clones consume released artifacts.
+The extraction is included in 0.3.0 and checked through both a local composite build and
+Maven publications from a clean checkout. Publish the new libraries before merging Mail's
+version bump to main. Both repositories remain independent and fresh clones consume released
+artifacts.

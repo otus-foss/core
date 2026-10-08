@@ -40,8 +40,8 @@ library reuse alone does not provide them. See decision 0005.
 
 Both repositories contain Android/iOS scaffolding. Mail now starts with an empty Inbox screen, using the reusable context panel and local search/filter logic over supplied messages. A reusable sidebar navigates between Inbox and Settings. Settings has subpages for JMAP email accounts and appearance & behavior (date format). The sidebar, context panel, pills, and other reusable controls come from otus-meta's
 design system. JMAP transport/login storage, dates, and avatars also come from shared libraries.
-The unreleased 0.3.0 extraction adds shared settings/account setup and date-range selection,
-consumed locally by Mail. Mail still owns its destinations, filter semantics, and inbox/folder
+Version 0.3.0 adds shared settings/account setup and date-range selection,
+used by Mail's consuming PR. Mail still owns its destinations, filter semantics, and inbox/folder
 flows; Calendar's adoption is deferred. Meta also owns all Mail visual tokens and symbols,
 plus value-driven message/detail rows and empty-state rendering. New branded elements and
 reusable visual compositions are developed in Meta. Mail connects JMAP accounts over HTTP Basic auth, stores credentials in platform-protected storage, and loads each account's inbox. Folders (JMAP mailboxes) appear in the sidebar, open as pages, and can

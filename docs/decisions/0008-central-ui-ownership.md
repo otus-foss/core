@@ -11,7 +11,7 @@ Calendar adoption remains deferred.
 
 ## Implementation
 
-The unreleased 0.3.0 working tree adds `ContentRow`, `DetailRow`, and `EmptyState`, moves
+Version 0.3.0 adds `ContentRow`, `DetailRow`, and `EmptyState`, moves
 `InboxTokens` into Meta, and exports one public design-system `Res` bundle. Message rows,
 folder rows, rule rows, and inbox empty states in Mail now map feature data into these shared
 renderers. All Mail symbols and duplicate settings/account symbols use the central bundle.
@@ -22,7 +22,7 @@ local drawable resources. Regression tests cover rejection and allowed feature a
 Meta's checker also rejects drawable bundles outside design-system modules and still prevents
 app dependencies and services in visual components. Regression tests cover central resources.
 This strengthens ownership without changing the elements → components → screens hierarchy.
-The library extraction is local and not yet published.
+The library extraction is included in version 0.3.0.
 
 ## Consequences
 
