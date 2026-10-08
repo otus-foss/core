@@ -2,6 +2,8 @@
 
 ## Suite
 
+- [Hosting and CI](hosting.md): Forgejo primary repositories, GitHub fallback, and migration status.
+
 - [Product goals](suite/product-goals.md): purpose, protocol scope, and current state of both apps.
 - [Mail design foundations](suite/mail-design.md): the palette and Figma reference used by both apps.
 - [Roadmap](https://github.com/reazndev/otus-mail/issues/9): the v1 JMAP suite and v2 protocol plan.
@@ -29,5 +31,6 @@
 
 - [0007: Shared feature modules](decisions/0007-shared-feature-modules.md)
 - [0008: Central UI ownership](decisions/0008-central-ui-ownership.md)
+- [0009: Forgejo primary Git host](decisions/0009-forgejo-primary.md)
 
 Decisions 0001 to 0004 were made in the app repositories and apply to every Otus repository.

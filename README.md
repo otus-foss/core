@@ -1,11 +1,15 @@
 # Otus Meta
 
+Development, pull requests, and new issues use
+[otus-meta on Forgejo](https://git.hilfikers.com/florian.ruby/otus-meta).
+GitHub is a secondary copy. See [hosting and CI](docs/hosting.md) for the cutover status.
+
 Shared Kotlin Multiplatform libraries, suite documentation, and engineering policy for the Otus
 JMAP suite. The two apps live in their own repositories and consume released versions of these
 libraries:
 
-- [Otus Mail](https://github.com/reazndev/otus-mail)
-- [Otus Calendar](https://github.com/reazndev/otus-calendar)
+- [Otus Mail](https://git.hilfikers.com/florian.ruby/otus-mail)
+- [Otus Calendar](https://git.hilfikers.com/florian.ruby/otus-calendar)
 
 This repository holds code that both apps need: the JMAP client, the design system, and portable
 suite services such as date formatting and avatars. It also holds suite-wide product and design

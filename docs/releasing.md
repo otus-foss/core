@@ -17,6 +17,13 @@ migration each app needs. A release renames `Unreleased` to the version and date
 
 ## Publishing
 
+Forgejo is the primary Git host. GitHub Packages remains the working release registry during
+the cutover; push an accepted release commit and its version tag to GitHub to run that publisher.
+Do not push release tags solely to Forgejo until its Mac runner and package secret are ready.
+The prepared Forgejo workflow publishes to Forgejo's Maven registry with
+`publishAllPublicationsToForgejoPackagesRepository`. See [hosting and CI](hosting.md) for
+credentials, runner requirements, and the unverified server settings.
+
 Publishing works like this:
 
 1. Merge the changelog entry and version bump in `gradle.properties` to `main`.

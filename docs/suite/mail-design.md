@@ -47,7 +47,7 @@ interactive targets, which adds vertical space relative to the supplied design.
 
 The inbox fade in Figma contains `#353637`, outside the supplied palette. Implementation uses a
 transparent alpha fade instead. The palette above remains unchanged. See
-[Mail context-panel documentation](https://github.com/reazndev/otus-mail/blob/main/docs/context-panel.md) for API and validation details.
+[Mail context-panel documentation](https://git.hilfikers.com/florian.ruby/otus-mail/src/branch/main/docs/context-panel.md) for API and validation details.
 
 ## Inbox page
 
@@ -57,7 +57,7 @@ The message-row avatar's black fill and label border `#2A5E96` are outside the a
 Generated avatars now choose `accentDark`, `bgLight`, or `bgDark` by email address, with `text1`
 initials. Contact photos fill the same circle. These avatar variants are app decisions, not newly
 verified Figma values. Metadata continues to use named text tokens. No palette values change.
-See [Mail inbox documentation](https://github.com/reazndev/otus-mail/blob/main/docs/inbox.md) for implemented behavior and deferred work.
+See [Mail inbox documentation](https://git.hilfikers.com/florian.ruby/otus-mail/src/branch/main/docs/inbox.md) for implemented behavior and deferred work.
 
 ## Reusable pill sizing
 
@@ -96,7 +96,7 @@ surface `24:655` informs the styling; it does not provide complete picker layout
 content and date calendar originated in the app and were subsequently recreated as editable
 Figma components (review `39:2`). The approved joined month navigation (`40:14`) is now
 implemented in Mail: one outlined capsule, a center month/year pill, and separate arrow targets. See
-[Mail selection sheets](https://github.com/reazndev/otus-mail/blob/main/docs/selection-sheets.md) for behavior and validation.
+[Mail selection sheets](https://git.hilfikers.com/florian.ruby/otus-mail/src/branch/main/docs/selection-sheets.md) for behavior and validation.
 
 ## Motion
 
@@ -107,4 +107,4 @@ decisions, not verified Figma motion values. Keep the independent implementation
 The reusable `AnimatedText` element slides and fades between labels. Mail uses it for the
 date-picker month/year capsule: later months move up, earlier months move down, and year text
 changes only across years. Incoming text takes 260 ms; outgoing text takes 180 ms.
-See [Mail motion](https://github.com/reazndev/otus-mail/blob/main/docs/motion.md) and [Calendar motion](https://github.com/reazndev/otus-calendar/blob/main/docs/motion.md).
+See [Mail motion](https://git.hilfikers.com/florian.ruby/otus-mail/src/branch/main/docs/motion.md) and [Calendar motion](https://git.hilfikers.com/florian.ruby/otus-calendar/src/branch/main/docs/motion.md).

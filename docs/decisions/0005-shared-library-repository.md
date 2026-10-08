@@ -2,6 +2,9 @@
 
 Status: accepted by the user on 2026-10-08.
 
+Hosting is amended by [decision 0009](0009-forgejo-primary.md). Forgejo is the primary Git
+host; GitHub Packages remains the working registry until package migration is verified.
+
 ## Decision
 
 Shared code for Otus Mail and Otus Calendar lives in a third repository, `reazndev/otus-meta`.

@@ -35,11 +35,11 @@ them to `Symbol` as `DrawableResource` values.
 ## Behavior guides
 
 These guides still live in Mail, which was the first app to use the components:
-[context panel](https://github.com/reazndev/otus-mail/blob/main/docs/context-panel.md),
-[selection sheets](https://github.com/reazndev/otus-mail/blob/main/docs/selection-sheets.md),
-[sidebar](https://github.com/reazndev/otus-mail/blob/main/docs/sidebar.md),
-[motion](https://github.com/reazndev/otus-mail/blob/main/docs/motion.md), and
-[color theme](https://github.com/reazndev/otus-mail/blob/main/docs/design.md).
+[context panel](https://git.hilfikers.com/florian.ruby/otus-mail/src/branch/main/docs/context-panel.md),
+[selection sheets](https://git.hilfikers.com/florian.ruby/otus-mail/src/branch/main/docs/selection-sheets.md),
+[sidebar](https://git.hilfikers.com/florian.ruby/otus-mail/src/branch/main/docs/sidebar.md),
+[motion](https://git.hilfikers.com/florian.ruby/otus-mail/src/branch/main/docs/motion.md), and
+[color theme](https://git.hilfikers.com/florian.ruby/otus-mail/src/branch/main/docs/design.md).
 
 ## Tests
 

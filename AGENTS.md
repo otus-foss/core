@@ -1,5 +1,11 @@
 # Otus Meta engineering rules
 
+## Hosting
+
+Forgejo is the primary Git host. Use `origin` for Forgejo and `github` for the secondary GitHub
+copy. Development, pull requests, and new issues use Forgejo. GitHub CI and released packages
+remain available during migration; see [hosting and CI](docs/hosting.md).
+
 ## Required reading and commands
 
 Read `docs/architecture.md`, `docs/quality.md`, and `docs/releasing.md` before changing code. Install

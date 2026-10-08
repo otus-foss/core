@@ -47,7 +47,7 @@ plus value-driven message/detail rows and empty-state rendering. New branded ele
 reusable visual compositions are developed in Meta. Mail connects JMAP accounts over HTTP Basic auth, stores credentials in platform-protected storage, and loads each account's inbox. Folders (JMAP mailboxes) appear in the sidebar, open as pages, and can
 be created, renamed, nested, and deleted; messages can be moved between them. Rules that file
 arriving mail into folders run on the server as one Sieve script (RFC 9661) where the server
-supports it; see the [Mail folders guide](https://github.com/reazndev/otus-mail/blob/main/docs/folders.md). Sync and sending are not
+supports it; see the [Mail folders guide](https://git.hilfikers.com/florian.ruby/otus-mail/src/branch/main/docs/folders.md). Sync and sending are not
 implemented yet. No sample mail is shipped; populated-list validation uses test-only fixtures. Calendar retains its welcome screen. Full synchronization, calendar workflows, and contact management remain goals. Mail can now look up
 JMAP contact photos for inbox senders; this is a limited read-only lookup, not contact synchronization.
 Both apps expose the same portable avatar service for senders and future attendees. Domain icons
@@ -59,8 +59,8 @@ Mail colors are supplied in [mail design foundations](mail-design.md). Both apps
 Both apps include reusable date-format choices, locale-aware formatting, and app-private preference
 adapters. Mail uses them for displayed inbox dates and date-filter summaries. Its Settings and
 Appearance & behavior pages let users choose the saved date format. Calendar settings remain
-unimplemented. See the repository-local [Mail guide](https://github.com/reazndev/otus-mail/blob/main/docs/date-formatting.md) and
-[Calendar guide](https://github.com/reazndev/otus-calendar/blob/main/docs/date-formatting.md).
+unimplemented. See the repository-local [Mail guide](https://git.hilfikers.com/florian.ruby/otus-mail/src/branch/main/docs/date-formatting.md) and
+[Calendar guide](https://git.hilfikers.com/florian.ruby/otus-calendar/src/branch/main/docs/date-formatting.md).
 
 ## Decisions to resolve as implementation starts
 
