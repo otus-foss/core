@@ -17,14 +17,20 @@ compiling for iOS. Read [the suite product goals](docs/suite/product-goals.md) a
 
 - One module per top-level directory. Its package is `com.otus.<module>`, with `-` in the
   directory name becoming `.` in the package. Its artifact is `com.otus:<module>`.
-- No module references Mail or Calendar code. App screens, feature wiring, navigation, database
+- No module references Mail or Calendar code. App-specific screens, feature wiring, navigation, database
   instances, notifications, and credentials stay in the apps.
-- Move code here only when both apps need it. Do not add speculative modules or placeholder files.
+- All branded visual elements, reusable components, tokens, and symbols belong here, including
+  those currently used only by Mail. Feature adapters and app-specific screens stay in the apps.
+  See decision 0008.
+- Move existing code here when both apps need it or the user explicitly requests a suite
+  extraction. Do not add speculative modules or placeholder files.
 - Enable explicit API mode and warnings as errors in every module. Public declarations are a
   contract with both apps; change them only with a changelog entry and the right version bump.
-- Only `designsystem` modules may use Compose. They follow **elements → components**, with tokens
-  in `theme`, and take values and callbacks. Use the palette through named tokens; dark mode is
-  the only color mode.
+- `designsystem` modules follow **elements → components**, with tokens in `theme` and values
+  and callbacks at their public boundary. The shared `accounts` and `settings` feature modules
+  may use Compose only in `presentation`, with composables in `components` or `screens`. Keep
+  their domain, data, and presentation layers separate; design-system code cannot depend on
+  features. See decision 0007. Use named palette tokens; dark mode is the only color mode.
 - `commonMain` uses no platform APIs. Platform code goes in matching platform source sets.
   Domain code uses no UI, platform, networking, or database APIs.
 - Keep JMAP wire types separate from portable domain models. Check the JMAP specifications and

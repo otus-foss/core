@@ -31,11 +31,20 @@ Discover and respect the capabilities each account and server provides. Missing 
 
 Aim to reuse account handling, JMAP transport, contact models, and appropriate UI components while preserving independent app repositories and releases. Mail-specific workflows belong in Mail; calendar-specific workflows belong in Calendar.
 
-The mechanism for distributing shared code is undecided. Shared runtime account data and credentials also require an explicit platform design; library reuse alone does not provide them.
+Shared libraries live in otus-meta and are published as versioned `com.otus:<module>` artifacts
+to GitHub Packages. Apps pin releases and may opt into a local composite build for development.
+Shared runtime account data and credentials still require an explicit platform design;
+library reuse alone does not provide them. See decision 0005.
 
 ## Current state
 
-Both repositories contain Android/iOS scaffolding. Mail now starts with an empty Inbox screen, using the reusable context panel and local search/filter logic over supplied messages. A reusable sidebar navigates between Inbox and Settings. Settings has subpages for JMAP email accounts and appearance & behavior (date format). The sidebar lives in the Mail repository, and the JMAP client and login storage in its `:jmap` module, until they move to the shared libraries in otus-meta. Mail connects JMAP accounts over HTTP Basic auth, stores credentials in platform-protected storage, and loads each account's inbox. Folders (JMAP mailboxes) appear in the sidebar, open as pages, and can
+Both repositories contain Android/iOS scaffolding. Mail now starts with an empty Inbox screen, using the reusable context panel and local search/filter logic over supplied messages. A reusable sidebar navigates between Inbox and Settings. Settings has subpages for JMAP email accounts and appearance & behavior (date format). The sidebar, context panel, pills, and other reusable controls come from otus-meta's
+design system. JMAP transport/login storage, dates, and avatars also come from shared libraries.
+Version 0.3.0 adds shared settings/account setup and date-range selection,
+used by Mail's consuming PR. Mail still owns its destinations, filter semantics, and inbox/folder
+flows; Calendar's adoption is deferred. Meta also owns all Mail visual tokens and symbols,
+plus value-driven message/detail rows and empty-state rendering. New branded elements and
+reusable visual compositions are developed in Meta. Mail connects JMAP accounts over HTTP Basic auth, stores credentials in platform-protected storage, and loads each account's inbox. Folders (JMAP mailboxes) appear in the sidebar, open as pages, and can
 be created, renamed, nested, and deleted; messages can be moved between them. Rules that file
 arriving mail into folders run on the server as one Sieve script (RFC 9661) where the server
 supports it; see the [Mail folders guide](https://github.com/reazndev/otus-mail/blob/main/docs/folders.md). Sync and sending are not
@@ -48,7 +57,8 @@ generated initials always available.
 Mail colors are supplied in [mail design foundations](mail-design.md). Both apps use that palette in dark mode only, with text-1 as the default text color. Detailed interaction designs remain open.
 
 Both apps include reusable date-format choices, locale-aware formatting, and app-private preference
-adapters. Mail uses them for displayed inbox dates and date-filter summaries. Settings screens remain
+adapters. Mail uses them for displayed inbox dates and date-filter summaries. Its Settings and
+Appearance & behavior pages let users choose the saved date format. Calendar settings remain
 unimplemented. See the repository-local [Mail guide](https://github.com/reazndev/otus-mail/blob/main/docs/date-formatting.md) and
 [Calendar guide](https://github.com/reazndev/otus-calendar/blob/main/docs/date-formatting.md).
 

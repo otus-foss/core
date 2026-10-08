@@ -17,16 +17,20 @@ Dark mode is the only color mode. The palette is recorded in
 - `components`: `ActionDialog`, `ChoiceDialog`, `InputDialog`, `ContextPanel`, `DatePickerDialog`,
   `MonthNavigation`, `MonthYearPicker`, `PageScaffold`, `Subpage`, `PageSection`, `PanelSurface`,
   `PickerSearch`, `PullToRefresh`, `SelectionSheet`, `Sidebar`, and `SidebarSwipeArea`.
+- Version 0.3.0 adds `DateRangePicker` for dates up to today, its continuous week calendar,
+  and `AvatarStackChip` with `ChipAvatar` values. The app maps its senders or attendees into
+  these values; the component has no contact lookup or feature dependencies.
 
-Tokens that only one app's features use stay in that app, such as Mail's `InboxTokens`. Add a new
-token, element, or component here only when it has no app knowledge.
+All visual tokens live here, including `InboxTokens`. New elements and reusable components
+belong here even when only Mail currently uses them. Their APIs use values and callbacks,
+without app dependencies.
 
 ## Resources
 
-The module bundles Figtree Regular with its SIL Open Font License, and the Material Symbols
-`close`, `chevron_left`, and `search` icons with their Apache 2.0 license. The generated `Res`
-class is internal (`com.otus.designsystem.resources`). Apps bundle their own icons and pass them to
-`Symbol` as `DrawableResource` values.
+The module bundles Figtree Regular with its SIL Open Font License and all Material Symbols
+used by Mail, accounts, and settings with their Apache 2.0 license. The generated public `Res`
+class lives in `com.otus.designsystem.resources`. Apps select icons from this bundle and pass
+them to `Symbol` as `DrawableResource` values.
 
 ## Behavior guides
 
@@ -39,7 +43,21 @@ These guides still live in Mail, which was the first app to use the components:
 
 ## Tests
 
-Common tests cover the decoded-avatar cache, and an Android host test covers image decoding. The
+Common tests cover the continuous calendar week model and decoded-avatar cache, and an Android host test covers image decoding. The
 Compose UI tests for panels, pickers, motion, and press feedback still run in Mail's `androidApp`,
 because they need an Android activity. Moving them here needs a host-test setup with an activity
 and is open work.
+
+## Central UI ownership
+
+Meta owns every branded element, reusable component, visual token, and symbol resource.
+`ContentRow` renders `ContentRowText`, containing the title, subtitle, trailing text, and
+metadata, with caller-supplied accessibility state and a
+leading slot. `DetailRow` renders caller-supplied details with optional tree indentation.
+`EmptyState` renders caller-supplied text and icon with an optional action. These APIs take
+values and callbacks; Mail domain models and workflow decisions stay in Mail adapters.
+`InboxTokens` preserves the existing message-list and empty-state sizes.
+
+Import symbols through the public `com.otus.designsystem.resources.Res` bundle. Mail, settings,
+and accounts use the same symbol files. The palette and existing visual sizes are unchanged.
+See [decision 0008](decisions/0008-central-ui-ownership.md).
