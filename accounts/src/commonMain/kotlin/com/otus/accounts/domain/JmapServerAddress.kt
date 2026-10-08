@@ -1,0 +1,51 @@
+package com.otus.accounts.domain
+
+/** What the user typed as their server, resolved to a JMAP session URL when possible. */
+public sealed interface JmapServerAddress {
+    public data object Empty : JmapServerAddress
+
+    /** JMAP requires TLS; plain HTTP is refused rather than silently upgraded. */
+    public data object Insecure : JmapServerAddress
+
+    public data object Invalid : JmapServerAddress
+
+    public data class Valid(
+        val sessionUrl: String,
+    ) : JmapServerAddress
+}
+
+private val hostPattern =
+    Regex("^[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?(\\.[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?)*(:[0-9]{1,5})?$")
+
+/**
+ * A bare host such as `mail.example.com` uses the standard discovery path, `/.well-known/jmap`
+ * (RFC 8620, section 2.2). A full `https://` URL with a path is used as the session URL itself.
+ */
+public fun parseJmapServer(input: String): JmapServerAddress {
+    val text = input.trim()
+    val scheme = text.substringBefore("://", missingDelimiterValue = "").lowercase()
+    val rest = if (scheme.isEmpty()) text else text.substringAfter("://")
+    val authority = rest.substringBefore('/')
+    val path = rest.removePrefix(authority).trimEnd('/')
+    return when {
+        text.isEmpty() -> JmapServerAddress.Empty
+        scheme == "http" -> JmapServerAddress.Insecure
+        scheme !in setOf("", "https") || !hostPattern.matches(authority) -> JmapServerAddress.Invalid
+        else -> JmapServerAddress.Valid("https://${authority.lowercase()}${path.ifEmpty { "/.well-known/jmap" }}")
+    }
+}
+
+/** Details for connecting one account. The password is passed on, never stored by this model. */
+public data class JmapAccountDraft(
+    val sessionUrl: String,
+    val username: String,
+    val password: String,
+    /** Other origins the user approved to receive these credentials. */
+    val trustedOrigins: Set<String> = emptySet(),
+) {
+    override fun toString(): String =
+        "JmapAccountDraft(sessionUrl=$sessionUrl, username=$username, password=***, trustedOrigins=$trustedOrigins)"
+}
+
+/** HTTP Basic usernames cannot contain a colon (RFC 7617, section 2). */
+public fun isValidUsername(username: String): Boolean = username.isNotBlank() && ':' !in username
