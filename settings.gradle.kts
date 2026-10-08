@@ -32,4 +32,5 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
-// Library modules are added here as code moves out of the apps; see docs/architecture.md.
+// Library modules; see docs/architecture.md.
+include(":jmap")
