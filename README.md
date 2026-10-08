@@ -17,6 +17,9 @@ wiring, navigation, databases, and credentials stay in each app.
 | Module | Artifact | Contents |
 | --- | --- | --- |
 | [`jmap`](docs/jmap.md) | `com.otus:jmap` | JMAP client (RFC 8620) and protected login storage |
+| [`dateformat`](docs/dateformat.md) | `com.otus:dateformat` | Date display and the date-format preference |
+| [`avatar`](docs/avatar.md) | `com.otus:avatar` | Contact photos, website icons, and generated initials |
+| [`designsystem`](docs/designsystem.md) | `com.otus:designsystem` | Theme, elements, and components |
 
 More modules follow as code moves out of the apps. See
 [the architecture guide](docs/architecture.md) for the planned modules and extraction order.

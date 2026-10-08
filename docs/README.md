@@ -10,6 +10,9 @@
 
 - [Architecture](architecture.md): module ownership, planned extraction, and dependency rules.
 - [JMAP](jmap.md): the `jmap` module's API, security rules, protocol coverage, and checks.
+- [Date formatting](dateformat.md): the `dateformat` module's choices, API, and storage.
+- [Avatars](avatar.md): the `avatar` module's lookup order, caching, and privacy limits.
+- [Design system](designsystem.md): the `designsystem` module's contents, resources, and tests.
 - [Using the libraries from an app](consuming.md): GitHub Packages, credentials, and local builds.
 - [Releasing](releasing.md): versions, changelog, and publishing.
 - [Quality gate](quality.md): commands, checks, and file-length exceptions.

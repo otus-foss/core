@@ -34,3 +34,6 @@ plugins {
 
 // Library modules; see docs/architecture.md.
 include(":jmap")
+include(":dateformat")
+include(":avatar")
+include(":designsystem")
