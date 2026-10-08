@@ -65,3 +65,9 @@ The versioned `commit-msg` hook rejects invalid titles, missing separators, and 
 The checkers in `tools/` are the reference copies for all Otus repositories. Each app keeps its
 own copy so that a clone builds alone. Change and test the reference copy here first, then update
 the apps in the same way.
+
+## Forgejo cutover
+
+Forgejo workflows live in `.forgejo/workflows`; GitHub workflows remain in `.github/workflows`.
+Both retain the required checks. Forgejo runners and repository settings still need verification.
+See [hosting and CI](hosting.md).

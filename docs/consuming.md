@@ -5,6 +5,22 @@ GitHub Packages. Local development can build against a sibling checkout instead,
 change can be tried in an app before it is released. Nothing in an app's build requires the
 sibling checkout.
 
+Forgejo is now the primary Git host. Released packages remain on GitHub during the cutover;
+see [hosting and CI](hosting.md). Git repository migration does not transfer Maven artifacts.
+
+Mail supports `otusMetaRegistry` in private Gradle properties to select another authenticated
+release registry. After complete artifacts are available on Forgejo, use:
+
+```properties
+otusMetaRegistry=https://git.hilfikers.com/api/packages/florian.ruby/maven
+otusMetaUsername=florian.ruby
+otusMetaPassword=<Forgejo package-read token>
+```
+
+Do not set this before the pinned version and all its platform variants have been verified.
+Forgejo Actions can select the registry through `OTUS_META_REGISTRY_URL`; its package username
+and token must belong to the selected host. Calendar has not adopted Meta packages yet.
+
 ## Released versions
 
 Each module is a Maven artifact `com.otus:<module>` in the GitHub Packages registry of this

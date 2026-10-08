@@ -119,6 +119,6 @@ provider icons, icon-cache options and domain-only requests, cache expiry/evicti
 cancellation, credential isolation, redirects, and response-size limits. Persistent-cache tests cover
 process recreation, bounded disk usage, corrupt records and account removal.
 Mail's inbox tests cover restoring avatars before network work; see
-[Mail's avatar guide](https://github.com/reazndev/otus-mail/blob/main/docs/avatars.md).
+[Mail's avatar guide](https://git.hilfikers.com/florian.ruby/otus-mail/src/branch/main/docs/avatars.md).
 `RememberAvatarImageTest` and `DecodedAvatarCacheTest` in the design system cover decoding.
 iOS runtime validation requires macOS/Xcode.
