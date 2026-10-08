@@ -14,8 +14,11 @@ wiring, navigation, databases, and credentials stay in each app.
 
 ## Status
 
-No library module has moved here yet. The build, quality gate, and CI are in place so the first
-extraction (`jmap`) can land with the same checks the apps use. See
+| Module | Artifact | Contents |
+| --- | --- | --- |
+| [`jmap`](docs/jmap.md) | `com.otus:jmap` | JMAP client (RFC 8620) and protected login storage |
+
+More modules follow as code moves out of the apps. See
 [the architecture guide](docs/architecture.md) for the planned modules and extraction order.
 
 ## Contents

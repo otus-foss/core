@@ -9,6 +9,7 @@
 ## Libraries
 
 - [Architecture](architecture.md): module ownership, planned extraction, and dependency rules.
+- [JMAP](jmap.md): the `jmap` module's API, security rules, protocol coverage, and checks.
 - [Using the libraries from an app](consuming.md): GitHub Packages, credentials, and local builds.
 - [Releasing](releasing.md): versions, changelog, and publishing.
 - [Quality gate](quality.md): commands, checks, and file-length exceptions.

@@ -28,11 +28,12 @@ named `jmap-mail` uses the package `com.otus.jmap.mail` and publishes the Maven 
 
 ### Planned extraction
 
-The first modules move existing code. The apps currently carry copies of most of it.
+The first modules move existing code. The apps currently carry copies of most of it. `jmap` moved
+in version 0.1.0.
 
 | Order | Module | Source | Notes |
 | --- | --- | --- | --- |
-| 1 | `jmap` | `otus-mail/jmap` | Already UI-free with explicit API. Mail has uncommitted changes here; commit them first. |
+| 1 | `jmap` | `otus-mail/jmap` | Moved in 0.1.0. See [JMAP](jmap.md). |
 | 2 | `designsystem` | `designsystem/` in both apps | `OtusColors`, `OtusTheme`, and `MotionTokens` are identical. Mail has the full element and component set, Figtree, and Material Symbols. |
 | 3 | `dateformat` | `core/dateformat` in both apps | Identical apart from a small difference in `LocalizedDateFormatter.ios.kt`. |
 | 4 | `avatar` | `core/avatar` in both apps | Mail's copy is a superset. Reconcile the `AvatarService` differences before moving. |
