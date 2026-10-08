@@ -3,12 +3,15 @@
 ## Ownership
 
 This repository owns code that Otus Mail and Otus Calendar both use and that has no reason to
-differ between them. Each app keeps its own features, screens, app wiring, navigation graph,
+differ between them. Each app keeps its own app-specific features and screens, app wiring, navigation graph,
 database instance, credentials, notifications, and release. Shared code does not give one app
 access to the other app's accounts or storage.
 
-Move code here when the second app needs it, not in anticipation. Code that only one app uses
-stays in that app, even if it might be reused later.
+Move code here when the second app needs it or the user explicitly requests a suite extraction
+of existing behavior. The settings/account extraction follows that request and leaves Calendar
+adoption for later. App-specific workflows and speculative modules stay out of this repository. All branded visual
+elements, reusable components, visual tokens, and symbols live here, including those currently
+used only by Mail. See [decision 0008](decisions/0008-central-ui-ownership.md).
 
 ## Modules
 
@@ -30,7 +33,9 @@ named `jmap-mail` uses the package `com.otus.jmap.mail` and publishes the Maven 
 
 The first modules move existing code. `jmap` moved in version 0.1.0; `designsystem`, `dateformat`,
 and `avatar` moved from Mail in 0.2.0. Calendar still carries older copies of the last three until
-it adopts the modules.
+it adopts the modules. Version 0.3.0 adds `accounts` and `settings`,
+plus the historical date-range picker and avatar-stack pill in `designsystem`. Mail consumes
+these through pinned libraries or an opt-in composite build; Calendar is unchanged.
 
 | Order | Module | Source | Notes |
 | --- | --- | --- | --- |
@@ -52,10 +57,16 @@ The checker in `tools/check_architecture.py` enforces these rules at source leve
 - No module references `com.otus.mail` or `com.otus.calendar`, including in tests.
 - Packages match the source path and start with the module namespace.
 - `commonMain` uses no Android, JVM, or Apple platform APIs.
-- Only `designsystem` modules use Compose or lifecycle APIs. Their code lives in `elements`,
-  `components`, or `theme`. Elements do not use components. Literal colors stay in `theme`.
-- Design-system code takes values and callbacks. It does not use protocol, data, networking, or
-  database modules, ViewModels, repositories, or navigation controllers.
+- `designsystem` modules use Compose in `elements`, `components`, and `theme`. Elements do not
+  use components. They may format dates through `dateformat`, but cannot depend on account or
+  settings features, protocol clients, networking, or storage.
+- The shared `accounts` and `settings` features may use Compose in `presentation` only.
+  Composables live in `presentation/components` or `presentation/screens`, with screen files
+  named `*Screen.kt`. Domain cannot depend on data, presentation, or the design system.
+  Presentation uses domain contracts, never data implementations or protocol clients.
+- Every element and component takes values and callbacks. ViewModels, repositories, networking,
+  storage, and navigation controllers stay outside them. Shared features do not import one
+  another; app wiring composes them. Literal colors stay in design-system `theme`.
 - `domain` packages use no UI, platform, networking, or database APIs.
 - No catch-all `utils`, `helpers`, or `manager` packages, wildcard imports, or inline
   suppressions.
@@ -75,3 +86,24 @@ must compile with a Kotlin version at least as new as the one used to publish th
   Gradle-entry-point, portable-import, and commit-message rules that both apps already follow.
 - `tools/` is the reference copy of the quality checkers. The apps keep their own copies so that
   each clone builds alone. Change the reference copy first, then update the apps.
+
+## Shared feature modules
+
+`accounts` owns JMAP account contracts, the verifying repository, screen state, connected-account
+rows, and the setup screen. The app supplies a login store, transport, coroutine scope, refresh
+callbacks, and the required `AccountService`. Mail chooses the RFC 8621 mail capability and
+`Mailbox/get`; the library does not assume that another service is advertised.
+
+`settings` owns the settings list, Appearance & behavior screen, date-format state, and examples.
+The app supplies `SettingsEntry` values and callbacks, the date-format preference store, and
+navigation. Shared settings do not embed Mail folder or rule destinations.
+
+Both modules retain `domain`, `data`, and `presentation` boundaries where used. Their screens
+compose shared design-system components. App-specific navigation and installed-app credentials
+remain independent. See [decision 0007](decisions/0007-shared-feature-modules.md).
+
+## Central visual library
+
+`designsystem` also owns `ContentRow`, `DetailRow`, `EmptyState`, `InboxTokens`, and the public
+`com.otus.designsystem.resources.Res` symbol bundle. Mail supplies display values and actions
+through feature adapters. No Mail domain model enters these component APIs.

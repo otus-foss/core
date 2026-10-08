@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from check_architecture import violations
+from check_architecture import violations, visual_resource_violations
 
 
 def check(module, package, body, source_set="commonMain"):
@@ -22,9 +22,10 @@ class ProtocolModuleTests(unittest.TestCase):
     def test_hyphenated_module_maps_to_dotted_namespace(self):
         self.assertEqual(check("jmap-mail", "query", "import io.ktor.client.HttpClient"), [])
 
-    def test_compose_is_rejected(self):
+    def test_compose_is_rejected_outside_presentation(self):
         self.assertTrue(check("jmap", "", "import androidx.compose.runtime.Composable"))
         self.assertTrue(check("contacts", "domain", "@Composable fun Card() {}"))
+        self.assertTrue(check("accounts", "data", "import androidx.compose.runtime.Composable"))
 
     def test_app_code_is_rejected_in_every_source_set(self):
         self.assertTrue(check("jmap", "login", "import com.otus.mail.app.App"))
@@ -70,9 +71,16 @@ class DesignSystemTests(unittest.TestCase):
         self.assertTrue(check("designsystem", "elements", body))
         self.assertEqual(check("designsystem", "components", body), [])
 
-    def test_cannot_depend_on_protocol_or_data_modules(self):
+    def test_cannot_depend_on_protocol_or_feature_modules(self):
         self.assertTrue(check("designsystem", "elements", "import com.otus.jmap.JmapClient"))
         self.assertTrue(check("designsystem", "components", "import io.ktor.client.HttpClient"))
+        body = "import com.otus.accounts.domain.ConnectedAccount"
+        self.assertTrue(check("designsystem", "components", body))
+
+    def test_may_format_dates(self):
+        body = "import com.otus.dateformat.DateFormatter"
+        self.assertEqual(check("designsystem", "components", body), [])
+        self.assertTrue(check("designsystem", "components", "import com.otus.dateformatting.Store"))
 
     def test_components_take_values_not_services(self):
         self.assertTrue(check("designsystem", "components", "fun row(vm: InboxViewModel) {}"))
@@ -84,6 +92,69 @@ class DesignSystemTests(unittest.TestCase):
     def test_portable_compose_platform_package_is_allowed(self):
         body = "import androidx.compose.ui.platform.LocalDensity"
         self.assertEqual(check("designsystem", "elements", body), [])
+
+
+class FeatureModuleTests(unittest.TestCase):
+    compose = "import androidx.compose.runtime.Composable\n@Composable fun Thing() {}"
+
+    def test_presentation_may_use_compose(self):
+        self.assertEqual(check("accounts", "presentation.components", self.compose), [])
+        body = "import androidx.compose.runtime.mutableStateOf"
+        self.assertEqual(check("accounts", "presentation", body), [])
+
+    def test_protocol_and_service_modules_cannot_add_compose_presentation(self):
+        self.assertTrue(check("jmap", "presentation.components", self.compose))
+        self.assertTrue(check("avatar", "presentation.components", self.compose))
+        self.assertTrue(check("jmap", "presentation.components", "@Composable fun Card() {}"))
+
+    def test_feature_code_lives_in_its_layers(self):
+        self.assertTrue(check("accounts", "", "class Account"))
+        self.assertTrue(check("settings", "widgets", "class Entry"))
+
+    def test_shared_feature_boundaries(self):
+        body = "import com.otus.designsystem.theme.OtusColors"
+        self.assertTrue(check("accounts", "domain", body))
+        self.assertTrue(check("accounts", "presentation", "import com.otus.jmap.JmapClient"))
+        body = "import com.otus.settings.presentation.SettingsEntry"
+        self.assertTrue(check("accounts", "presentation", body))
+
+    def test_composables_live_in_components_or_screens(self):
+        self.assertTrue(check("accounts", "presentation", self.compose))
+
+    def test_screen_files_end_in_screen(self):
+        path = Path("settings/src/commonMain/kotlin/com/otus/settings/presentation/screens/Page.kt")
+        text = "package com.otus.settings.presentation.screens\n" + self.compose
+        self.assertTrue(violations(path, text))
+
+    def test_layer_directions(self):
+        self.assertTrue(check("accounts", "presentation", "import com.otus.accounts.data.Repo"))
+        self.assertTrue(check("accounts", "domain", "import com.otus.accounts.data.Repo"))
+        self.assertTrue(check("accounts", "data", "import com.otus.accounts.presentation.State"))
+        self.assertEqual(check("accounts", "data", "import com.otus.accounts.domain.Account"), [])
+
+    def test_components_take_values_not_services(self):
+        body = "fun row(repository: AccountRepository) {}"
+        self.assertTrue(check("accounts", "presentation.components", body))
+
+    def test_presentation_cannot_access_network(self):
+        self.assertTrue(check("accounts", "presentation", "import io.ktor.client.HttpClient"))
+
+    def test_literal_colors_belong_in_theme(self):
+        self.assertTrue(check("settings", "presentation.screens", "val c = Color(0xFF000000)"))
+
+
+class VisualResourceTests(unittest.TestCase):
+    def test_feature_drawables_must_use_the_central_bundle(self):
+        for module in ("accounts", "settings"):
+            path = Path(module) / "src/commonMain/composeResources/drawable/icon.xml"
+            self.assertTrue(visual_resource_violations(path))
+
+    def test_design_system_drawables_and_data_files_are_allowed(self):
+        for path in (
+            "designsystem/src/commonMain/composeResources/drawable/icon.xml",
+            "avatar/src/commonMain/composeResources/files/public_suffix_list.dat",
+        ):
+            self.assertFalse(visual_resource_violations(Path(path)))
 
 
 if __name__ == "__main__":

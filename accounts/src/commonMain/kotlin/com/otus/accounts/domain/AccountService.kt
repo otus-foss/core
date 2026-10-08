@@ -1,0 +1,17 @@
+package com.otus.accounts.domain
+
+/**
+ * The JMAP service an app needs from an account. Connecting checks that the session offers
+ * [capability] and that a `[probeType]/get` call succeeds before anything is saved.
+ */
+public data class AccountService(
+    /** Lowercase noun used in messages, such as "mail". */
+    val name: String,
+    val capability: String,
+    val probeType: String,
+) {
+    public companion object {
+        /** JMAP Mail (RFC 8621), checked with `Mailbox/get`. */
+        public val Mail: AccountService = AccountService("mail", "urn:ietf:params:jmap:mail", "Mailbox")
+    }
+}

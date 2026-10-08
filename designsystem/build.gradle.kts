@@ -36,6 +36,7 @@ kotlin {
             api(libs.compose.material)
             api(libs.compose.ui)
             api(libs.compose.resources)
+            api(projects.dateformat)
             api(libs.kotlinx.datetime)
             implementation(libs.navigation.event.compose)
             implementation(libs.kotlinx.coroutines.core)
@@ -48,7 +49,10 @@ kotlin {
     }
 }
 
-compose.resources { packageOfResClass = "com.otus.designsystem.resources" }
+compose.resources {
+    publicResClass = true
+    packageOfResClass = "com.otus.designsystem.resources"
+}
 
 // The published iOS metadata sees JetBrains' and Google's Compose klibs together and warns about
 // duplicate unique names. Every iOS target still compiles these sources with warnings as errors.
