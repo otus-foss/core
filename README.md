@@ -9,8 +9,9 @@ libraries:
 
 This repository holds code that both apps need: the JMAP client, the design system, and portable
 suite services such as date formatting and avatars. It also holds suite-wide product and design
-documents and the architecture decisions that apply to every repository. App screens, feature
-wiring, navigation, databases, and credentials stay in each app.
+documents and the architecture decisions that apply to every repository. App-specific screens, feature
+wiring, navigation, databases, and credentials stay in each app. Shared settings and account
+setup screens receive app-owned state and callbacks.
 
 ## Status
 
@@ -20,6 +21,8 @@ wiring, navigation, databases, and credentials stay in each app.
 | [`dateformat`](docs/dateformat.md) | `com.otus:dateformat` | Date display and the date-format preference |
 | [`avatar`](docs/avatar.md) | `com.otus:avatar` | Contact photos, website icons, and generated initials |
 | [`designsystem`](docs/designsystem.md) | `com.otus:designsystem` | Theme, elements, and components |
+| [`settings`](docs/shared-features.md) | `com.otus:settings` | Settings and appearance pages, unreleased 0.3.0 |
+| [`accounts`](docs/shared-features.md) | `com.otus:accounts` | JMAP account setup, unreleased 0.3.0 |
 
 More modules follow as code moves out of the apps. See
 [the architecture guide](docs/architecture.md) for the planned modules and extraction order.

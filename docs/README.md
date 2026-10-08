@@ -12,6 +12,7 @@
 - [JMAP](jmap.md): the `jmap` module's API, security rules, protocol coverage, and checks.
 - [Date formatting](dateformat.md): the `dateformat` module's choices, API, and storage.
 - [Avatars](avatar.md): the `avatar` module's lookup order, caching, and privacy limits.
+- [Shared features](shared-features.md): settings and JMAP account setup modules.
 - [Design system](designsystem.md): the `designsystem` module's contents, resources, and tests.
 - [Using the libraries from an app](consuming.md): GitHub Packages, credentials, and local builds.
 - [Releasing](releasing.md): versions, changelog, and publishing.
@@ -25,5 +26,8 @@
 - [0004: Commit messages](decisions/0004-commit-messages.md)
 - [0005: Shared libraries in otus-meta](decisions/0005-shared-library-repository.md)
 - [0006: Warnings in the design system's iOS metadata](decisions/0006-native-metadata-warnings.md)
+
+- [0007: Shared feature modules](decisions/0007-shared-feature-modules.md)
+- [0008: Central UI ownership](decisions/0008-central-ui-ownership.md)
 
 Decisions 0001 to 0004 were made in the app repositories and apply to every Otus repository.
