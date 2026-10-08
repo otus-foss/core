@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased
+
+- Extract `SpecificDatePicker` as a reusable wheel picker with caller-supplied date bounds and
+  a `dayRequired` option. Required mode disables Go until a day is chosen; optional mode allows
+  Any. Keep `MonthYearPicker` as the optional-day calendar adapter.
+- Restyle `MonthYearPicker` as a bottom sheet with centered, snapping date wheels and a full-width
+  Go button. Its optional day starts at Any; month-only confirmation navigates without changing
+  the calendar selection.
+- Breaking API change: `MonthYearPicker.onConfirm` now receives `Int?` for the day, and
+  `initialDay` is nullable with a null default. Consumers handle null as month-only navigation,
+  or pass an explicit `initialDay` when they need a preselected date.
+
 ## 0.3.1 - 2026-10-10
 
 - Publish the unchanged 0.3.0 library sources to Forgejo Packages. Apps can move from 0.3.0
