@@ -17,7 +17,7 @@ Dark mode is the only color mode. The palette is recorded in
 - `components`: `ActionDialog`, `ChoiceDialog`, `InputDialog`, `ContextPanel`, `DatePickerDialog`,
   `MonthNavigation`, `MonthYearPicker`, `PageScaffold`, `Subpage`, `PageSection`, `PanelSurface`,
   `PickerSearch`, `PullToRefresh`, `SelectionSheet`, `Sidebar`, and `SidebarSwipeArea`.
-- Unreleased 0.3.0 adds `DateRangePicker` for dates up to today, its continuous week calendar,
+- Version 0.3.0 adds `DateRangePicker` for dates up to today, its continuous week calendar,
   and `AvatarStackChip` with `ChipAvatar` values. The app maps its senders or attendees into
   these values; the component has no contact lookup or feature dependencies.
 

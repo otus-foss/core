@@ -33,9 +33,9 @@ named `jmap-mail` uses the package `com.otus.jmap.mail` and publishes the Maven 
 
 The first modules move existing code. `jmap` moved in version 0.1.0; `designsystem`, `dateformat`,
 and `avatar` moved from Mail in 0.2.0. Calendar still carries older copies of the last three until
-it adopts the modules. The working tree for unreleased 0.3.0 adds `accounts` and `settings`,
+it adopts the modules. Version 0.3.0 adds `accounts` and `settings`,
 plus the historical date-range picker and avatar-stack pill in `designsystem`. Mail consumes
-these through an opt-in composite build until the release is published; Calendar is unchanged.
+these through pinned libraries or an opt-in composite build; Calendar is unchanged.
 
 | Order | Module | Source | Notes |
 | --- | --- | --- | --- |

@@ -1,16 +1,15 @@
 # Changelog
 
-## Unreleased
+## 0.3.0 - 2026-10-08
 
 - Centralize all Mail symbols and `InboxTokens` in `designsystem`; export its public resource
   bundle. Consumers import `com.otus.designsystem.resources` and `com.otus.designsystem.theme.InboxTokens`.
 - Add value-driven `ContentRow`, `DetailRow`, and `EmptyState`. Mail maps message, folder, rule,
   and empty-state values into these components without moving feature behavior.
 
-
 - Add `com.otus:settings` and `com.otus:accounts`, extracted from Mail. Settings takes
   app-provided entries and navigation callbacks; account setup takes the required JMAP service
-  and app-private login storage. These modules are prepared for 0.3.0 and are not published yet.
+  and app-private login storage.
 - Move Mail's historical date-range picker and its calendar helpers into `designsystem`,
   exposing `DateRangePicker`. Add `AvatarStackChip` and `ChipAvatar` for overlapping avatar pills.
 - Allow Compose in the presentation layer of shared settings and account features, with
