@@ -1,0 +1,51 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
+// The Otus design system: theme tokens, elements, and components driven by values and callbacks.
+// Published as com.otus:designsystem.
+plugins {
+    `maven-publish`
+    alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.androidMultiplatformLibrary)
+    alias(libs.plugins.composeMultiplatform)
+    alias(libs.plugins.composeCompiler)
+}
+
+kotlin {
+    explicitApi()
+    compilerOptions { allWarningsAsErrors.set(true) }
+    iosArm64()
+    iosSimulatorArm64()
+    android {
+        namespace = "com.otus.designsystem"
+        compileSdk =
+            libs.versions.android.compileSdk
+                .get()
+                .toInt()
+        minSdk =
+            libs.versions.android.minSdk
+                .get()
+                .toInt()
+        compilerOptions { jvmTarget = JvmTarget.JVM_11 }
+        androidResources { enable = true }
+        withHostTest {}
+    }
+    sourceSets {
+        commonMain.dependencies {
+            api(libs.compose.runtime)
+            api(libs.compose.foundation)
+            api(libs.compose.material)
+            api(libs.compose.ui)
+            api(libs.compose.resources)
+            api(libs.kotlinx.datetime)
+            implementation(libs.navigation.event.compose)
+            implementation(libs.kotlinx.coroutines.core)
+        }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
+        }
+        getByName("androidHostTest").dependencies { implementation(libs.robolectric) }
+    }
+}
+
+compose.resources { packageOfResClass = "com.otus.designsystem.resources" }
