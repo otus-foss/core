@@ -21,8 +21,9 @@ Publishing works like this:
 
 1. Merge the changelog entry and version bump in `gradle.properties` to `main`.
 2. Push the tag `v<version>`.
-3. The `publish` workflow runs `checkAll`, then publishes every module to GitHub Packages from a
-   macOS runner so that the Android, iOS device, and iOS simulator variants come from one build.
+3. The `publish` workflow runs `checkAll`, builds every publication locally, then uploads every
+   module to GitHub Packages from a macOS runner, so the Android, iOS device, and iOS simulator
+   variants come from one build.
 4. Open a pull request in each app that bumps `otus-meta` in its version catalog when the app
    needs the release. Apps may stay on an older version.
 

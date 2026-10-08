@@ -2,7 +2,16 @@
 
 ## Unreleased
 
+## 0.2.1 - 2026-10-08
+
+- Publish `com.otus:designsystem`, which failed in 0.2.0, together with the other modules. The
+  code is unchanged from 0.2.0. See decision 0006.
+- Build every publication before uploading any, and check publications in CI.
+
 ## 0.2.0 - 2026-10-08
+
+Incomplete release: `jmap`, `dateformat`, and `avatar` were uploaded, `designsystem` was not. Use
+0.2.1.
 
 - Add `com.otus:dateformat`, `com.otus:avatar`, and `com.otus:designsystem`, moved from otus-mail.
   Packages change from `com.otus.mail.core.dateformat`, `com.otus.mail.core.avatar`, and

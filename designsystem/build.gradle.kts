@@ -49,3 +49,15 @@ kotlin {
 }
 
 compose.resources { packageOfResClass = "com.otus.designsystem.resources" }
+
+// The published iOS metadata sees JetBrains' and Google's Compose klibs together and warns about
+// duplicate unique names. Every iOS target still compiles these sources with warnings as errors.
+// See docs/decisions/0006-native-metadata-warnings.md.
+tasks
+    .matching { it.name == "compileIosMainKotlinMetadata" }
+    .configureEach {
+        (this as org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>)
+            .compilerOptions
+            .allWarningsAsErrors
+            .set(false)
+    }

@@ -39,6 +39,8 @@ jobs:
       - run: sdkmanager 'platforms;android-37.0' 'build-tools;36.0.0'
       - run: python3 -m pip install -r requirements-quality.txt
       - run: ./gradlew checkAll iosSimulatorArm64Test --console=plain
+      # Build every publication first so a failing module cannot leave a release half uploaded.
+      - run: ./gradlew publishToMavenLocal --console=plain
       - run: ./gradlew publishAllPublicationsToGitHubPackagesRepository --console=plain
         env:
           ORG_GRADLE_PROJECT_GitHubPackagesUsername: ${{ github.actor }}
