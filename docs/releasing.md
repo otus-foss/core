@@ -17,7 +17,7 @@ migration each app needs. A release renames `Unreleased` to the version and date
 
 ## Publishing
 
-Publishing is set up together with the first module. The intended flow:
+Publishing works like this:
 
 1. Merge the changelog entry and version bump in `gradle.properties` to `main`.
 2. Push the tag `v<version>`.

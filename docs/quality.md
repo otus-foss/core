@@ -29,8 +29,9 @@ Detekt is skipped while the repository has no library module, because it has no 
 read. Kotlin/Native tests for iOS run only on macOS. On Linux, compile the iOS sources of a module
 with `./gradlew :<module>:compileKotlinIosSimulatorArm64`; this does not run them.
 
-The CI `quality` workflow runs `qualityCheck` on every pull request and push to `main`. Android and
-iOS jobs are added with the first library module. Repository administrators must require the CI
+The CI `quality` workflow runs on every pull request and push to `main`. The `portable` job runs
+`qualityCheck`, the `android` job runs `checkAll`, and the `ios` job runs every module's iOS
+simulator tests on macOS. The `publish` workflow runs on version tags; see [Releasing](releasing.md). Repository administrators must require the CI
 checks on `main` in the branch protection settings; workflow files alone do not enforce them.
 
 ## Architecture checks

@@ -108,6 +108,19 @@ tasks.register("checkAll") {
 }
 
 subprojects {
+    // Every module that applies maven-publish releases to this repository's GitHub Packages registry.
+    // Credentials come from the GitHubPackagesUsername and GitHubPackagesPassword Gradle properties.
+    plugins.withId("maven-publish") {
+        extensions.configure<PublishingExtension> {
+            repositories {
+                maven {
+                    name = "GitHubPackages"
+                    url = uri("https://maven.pkg.github.com/reazndev/otus-meta")
+                    credentials(PasswordCredentials::class)
+                }
+            }
+        }
+    }
     tasks.matching { it.name == "check" }.configureEach {
         dependsOn(rootProject.tasks.named("qualityCheck"))
     }
