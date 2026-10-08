@@ -31,7 +31,7 @@ with `./gradlew :<module>:compileKotlinIosSimulatorArm64`; this does not run the
 
 The CI `quality` workflow runs on every pull request and push to `main`. The `portable` job runs
 `qualityCheck`, the `android` job runs `checkAll`, and the `ios` job runs every module's iOS
-simulator tests on macOS. The `publish` workflow runs on version tags; see [Releasing](releasing.md). Repository administrators must require the CI
+simulator tests on macOS 26 with Xcode 26.6. The `publish` workflow runs on version tags; see [Releasing](releasing.md). Repository administrators must require the CI
 checks on `main` in the branch protection settings; workflow files alone do not enforce them.
 
 ## Architecture checks
