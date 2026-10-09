@@ -50,6 +50,9 @@ publication; the artifact check must fail rather than allow an incomplete releas
 
 ## Migrating an existing release
 
+Version 0.3.0 was not migrated. Release 0.3.1 publishes its unchanged library sources through
+the `publish` workflow instead. The steps below remain for copying another existing release.
+
 Git migration does not copy published packages. Copy the original complete artifacts to Forgejo,
 or publish from a clean checkout with the same library sources as the released tag. A changed
 library must use a new version. Do not overwrite any existing package version.
