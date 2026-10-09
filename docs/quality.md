@@ -34,6 +34,12 @@ The CI `quality` workflow runs on every pull request and push to `main`. The `po
 simulator tests on macOS 15 with Xcode 26.3. The `publish` workflow runs on version tags; see [Releasing](releasing.md). Repository administrators must require the CI
 checks on `main` in the branch protection settings; workflow files alone do not enforce them.
 
+Forgejo publishing builds Android and both iOS library variants on Linux and verifies the complete
+local Maven publication before uploading. Manual publisher runs perform validation only.
+Publication checks cannot replace iOS app linking or simulator tests. The Forgejo instance
+currently has no macOS runner, so its iOS quality job remains unavailable; GitHub retains its
+macOS checks. See [decision 0011](decisions/0011-linux-library-publication.md).
+
 ## Architecture checks
 
 `tools/check_architecture.py` applies the rules in [the architecture guide](architecture.md) to

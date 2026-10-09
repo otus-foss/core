@@ -51,15 +51,22 @@ Actions cache service. Neither iOS checks nor publishing have been verified on F
 
 Register Forgejo Runner 7 or newer and provide these labels and environments:
 
-- `otus-linux`: a Linux execution environment with Git, Bash, Node.js 20 for the pinned
+- `ubuntu-latest`: a Linux execution environment with Git, Bash, Node.js 20 for the pinned
   JavaScript actions, and the system libraries required by Temurin 21, Python 3.13, and the
   Android command-line tools. Actions install the JDK, Python, Android platform 37.0, and
   build-tools 36.0.0. Host Android tests also need the native graphics libraries used by
   Robolectric. Use a maintained runner image that provides those libraries.
 - `otus-macos`: a macOS 15 Apple Silicon host with Git, Bash, Node.js 20, Homebrew, and Xcode
   26.3 at `/Applications/Xcode_26.3.app`. It must allow `sudo xcode-select`. Actions install
-  Temurin 21, Python 3.13 for publishing, Android command-line tools for publishing, and Mint
-  for the apps' pinned Swift tools.
+  Temurin 21 and Mint for the apps' pinned Swift tools.
+
+The Linux label follows the instance maintainer's `runs-on: ubuntu-latest` guidance.
+The `portable` and `android` jobs must match a runner available to each repository.
+The `ios` quality jobs still require `otus-macos`; a Linux runner cannot run Xcode
+or iOS simulator tests. No macOS runner is currently available on this Forgejo instance,
+so these jobs cannot execute there. Keep their validation requirement visible.
+Meta's publisher uses `ubuntu-latest` to compile the complete library publication, including
+both iOS Kotlin libraries. This does not link an iOS application or run simulator tests.
 
 The labels are requirements for runner registration, not a claim that those runners exist.
 Enable Actions in each repository and require the resulting `portable`, `android`, and `ios`
@@ -68,34 +75,43 @@ required checks intact; do not bypass them to complete the migration.
 
 ## Packages
 
-Released libraries remain on GitHub Packages during the Git cutover. Mail's default registry
-and GitHub publishing are unchanged. GitHub read tokens remain necessary for those artifacts.
-No library version or application dependency is changed by the hosting migration.
+Forgejo Packages is the selected release registry at
+`https://git.hilfikers.com/api/packages/florian.ruby/maven`. Mail defaults to this registry in
+its package migration change. Calendar does not yet consume Meta libraries. Version 0.3.1, with
+the same library sources as 0.3.0, is the first release published there; 0.3.0 is not on
+Forgejo. Moving Git repositories does not transfer Maven packages.
 
-Meta adds `publishAllPublicationsToForgejoPackagesRepository` for the Maven registry at
-`https://git.hilfikers.com/api/packages/florian.ruby/maven`. Its Gradle credentials are
-`ForgejoPackagesUsername` and `ForgejoPackagesPassword`. Store a Forgejo package token as
-`FORGEJO_PACKAGES_TOKEN` in Meta's Forgejo Actions secrets. SSH keys cannot authenticate Maven
-HTTP requests. The prepared Forgejo publishing workflow requires that token and a Mac runner.
-It checks and builds every publication before uploading.
+Meta's `publishAllPublicationsToForgejoPackagesRepository` uploads every module and platform
+publication. Its Gradle credentials are `ForgejoPackagesUsername` and `ForgejoPackagesPassword`.
+Create a Forgejo token with `write:package` and store it as `OTUS_META_PUBLISH_TOKEN` in Meta's
+Forgejo Actions secrets. Forgejo rejects secret names that start with `FORGEJO_`, `GITEA_`, or
+`GITHUB_`. The `publish` workflow runs on version tags using `ubuntu-latest`.
+It runs `checkAll`, builds all publications in an isolated local Maven repository, and verifies
+the root metadata, platform binaries, and metadata checksums before uploading. A manual run
+performs the same validation without a publishing token or any upload. See
+[releasing](releasing.md) for an existing version's migration.
 
-For Mail's Forgejo CI while using GitHub Packages, configure:
+For Mail's Actions settings on either CI host, configure:
 
-- `OTUS_META_PACKAGES_TOKEN`: the existing GitHub token with `read:packages`.
-- `OTUS_META_PACKAGES_USERNAME`: an Actions variable containing the GitHub username, defaulting
-  to `reazndev`. A Forgejo username is not a GitHub package credential.
+- `OTUS_META_PACKAGES_TOKEN`: a Forgejo token with `read:package` and access to `florian.ruby`'s packages.
+- `OTUS_META_PACKAGES_USERNAME`: the token's Forgejo username, defaulting to `florian.ruby`.
+- `OTUS_META_REGISTRY_URL`: an optional registry override. Remove an old GitHub URL override.
 
-After complete artifacts for the pinned version are available and tested on Forgejo, set Mail's
-`OTUS_META_REGISTRY_URL` Actions variable to the Forgejo Maven URL and replace those credentials
-with a Forgejo username and package-read token. Local builds select that registry with
-`otusMetaRegistry` in private Gradle properties. See [consuming.md](consuming.md).
-Validate a clean Android build and iOS linking before changing the default registry. Do not
-republish a released version from changed sources or publish only its Android variants.
+Create these tokens under Forgejo user Settings → Applications. Package scopes cannot be used
+with tokens restricted to specific repositories; select access that includes the package owner.
+See [Forgejo token scopes](https://forgejo.org/docs/latest/user/authentication/token-scope/).
+SSH keys do not authenticate Maven HTTP requests. Keep tokens in Actions secrets or private
+Gradle properties. See [consuming](consuming.md) for local credentials.
+
+Before marking the migration complete, verify all six root artifacts and their Android, iOS
+device, and iOS simulator publications, then run a clean Mail Android build and iOS linking.
+Preserve the released version's library sources and artifacts. Changed library code requires a
+new version; do not upload only Android variants or overwrite an existing release.
 
 ## Unverified server settings
 
 SSH Git access was tested for all three repositories. Web and API access require sign-in,
 which was unavailable during the cutover. Runner availability, Actions enablement, secrets,
 required-check protection, package access, and automatic GitHub mirroring remain unverified.
-Workflow files alone do not configure these server settings. Future releases still need the
-working GitHub publishing path until Forgejo publishing passes.
+Workflow files alone do not configure these server settings. Forgejo package publishing and
+downloads must pass before the package migration can be marked complete.

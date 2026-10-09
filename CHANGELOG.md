@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.1 - 2026-10-10
+
+- Publish the unchanged 0.3.0 library sources to Forgejo Packages. Apps can move from 0.3.0
+  without code changes.
+
 ## 0.3.0 - 2026-10-08
 
 - Centralize all Mail symbols and `InboxTokens` in `designsystem`; export its public resource

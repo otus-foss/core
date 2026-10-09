@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   portable:
-    runs-on: otus-linux
+    runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
       - uses: https://github.com/actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -26,7 +26,7 @@ jobs:
       - run: ./gradlew qualityCheck --console=plain
 
   android:
-    runs-on: otus-linux
+    runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
       - uses: https://github.com/actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -42,7 +42,8 @@ jobs:
           packages: platform-tools
       - run: sdkmanager 'platforms;android-37.0' 'build-tools;36.0.0'
       - run: python3 -m pip install -r requirements-quality.txt
-      - run: ./gradlew checkAll publishToMavenLocal --console=plain
+      - run: ./gradlew checkAll publishToMavenLocal -Dmaven.repo.local="$PWD/build/publications-local" --console=plain
+      - run: python3 tools/check_publications.py build/publications-local "$(sed -n 's/^version=//p' gradle.properties)"
 
   ios:
     runs-on: otus-macos
