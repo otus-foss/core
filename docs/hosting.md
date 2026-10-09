@@ -73,34 +73,40 @@ required checks intact; do not bypass them to complete the migration.
 
 ## Packages
 
-Released libraries remain on GitHub Packages during the Git cutover. Mail's default registry
-and GitHub publishing are unchanged. GitHub read tokens remain necessary for those artifacts.
-No library version or application dependency is changed by the hosting migration.
+Forgejo Packages is the selected release registry at
+`https://git.hilfikers.com/api/packages/florian.ruby/maven`. Mail defaults to this registry in
+its package migration change. Calendar does not yet consume Meta libraries. Authenticated
+availability of the pinned Meta 0.3.0 artifacts is still unverified. Moving Git repositories
+does not transfer Maven packages.
 
-Meta adds `publishAllPublicationsToForgejoPackagesRepository` for the Maven registry at
-`https://git.hilfikers.com/api/packages/florian.ruby/maven`. Its Gradle credentials are
-`ForgejoPackagesUsername` and `ForgejoPackagesPassword`. Store a Forgejo package token as
-`FORGEJO_PACKAGES_TOKEN` in Meta's Forgejo Actions secrets. SSH keys cannot authenticate Maven
-HTTP requests. The prepared Forgejo publishing workflow requires that token and a Mac runner.
-It checks and builds every publication before uploading.
+Meta's `publishAllPublicationsToForgejoPackagesRepository` uploads every module and platform
+publication. Its Gradle credentials are `ForgejoPackagesUsername` and `ForgejoPackagesPassword`.
+Create a Forgejo token with `write:package` and store it as `FORGEJO_PACKAGES_TOKEN` in Meta's
+Forgejo Actions secrets. The existing `publish` workflow runs on version tags and requires an
+`otus-macos` runner. It checks and builds every publication before uploading. See
+[releasing](releasing.md) for an existing version's migration.
 
-For Mail's Forgejo CI while using GitHub Packages, configure:
+For Mail's Actions settings on either CI host, configure:
 
-- `OTUS_META_PACKAGES_TOKEN`: the existing GitHub token with `read:packages`.
-- `OTUS_META_PACKAGES_USERNAME`: an Actions variable containing the GitHub username, defaulting
-  to `reazndev`. A Forgejo username is not a GitHub package credential.
+- `OTUS_META_PACKAGES_TOKEN`: a Forgejo token with `read:package` and access to `florian.ruby`'s packages.
+- `OTUS_META_PACKAGES_USERNAME`: the token's Forgejo username, defaulting to `florian.ruby`.
+- `OTUS_META_REGISTRY_URL`: an optional registry override. Remove an old GitHub URL override.
 
-After complete artifacts for the pinned version are available and tested on Forgejo, set Mail's
-`OTUS_META_REGISTRY_URL` Actions variable to the Forgejo Maven URL and replace those credentials
-with a Forgejo username and package-read token. Local builds select that registry with
-`otusMetaRegistry` in private Gradle properties. See [consuming.md](consuming.md).
-Validate a clean Android build and iOS linking before changing the default registry. Do not
-republish a released version from changed sources or publish only its Android variants.
+Create these tokens under Forgejo user Settings → Applications. Package scopes cannot be used
+with tokens restricted to specific repositories; select access that includes the package owner.
+See [Forgejo token scopes](https://forgejo.org/docs/latest/user/authentication/token-scope/).
+SSH keys do not authenticate Maven HTTP requests. Keep tokens in Actions secrets or private
+Gradle properties. See [consuming](consuming.md) for local credentials.
+
+Before marking the migration complete, verify all six root artifacts and their Android, iOS
+device, and iOS simulator publications, then run a clean Mail Android build and iOS linking.
+Preserve the released version's library sources and artifacts. Changed library code requires a
+new version; do not upload only Android variants or overwrite an existing release.
 
 ## Unverified server settings
 
 SSH Git access was tested for all three repositories. Web and API access require sign-in,
 which was unavailable during the cutover. Runner availability, Actions enablement, secrets,
 required-check protection, package access, and automatic GitHub mirroring remain unverified.
-Workflow files alone do not configure these server settings. Future releases still need the
-working GitHub publishing path until Forgejo publishing passes.
+Workflow files alone do not configure these server settings. Forgejo package publishing and
+downloads must pass before the package migration can be marked complete.
