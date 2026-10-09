@@ -43,6 +43,16 @@ compiling for iOS. Read [the suite product goals](docs/suite/product-goals.md) a
   advertised server capabilities before implementing protocol behavior.
 - Keep `gradle/libs.versions.toml` aligned with the apps. Do not publish with a Kotlin version
   newer than the one the apps use.
+- Write fluent Kotlin when it reads better than the alternative. Express transformations as
+  collection or sequence chains, such as `filter`, `map`, `associateBy`, and `firstNotNullOfOrNull`,
+  or as builder lambdas such as `buildList`, `buildMap`, and `buildJsonObject`, instead of mutable
+  accumulators and index loops. Make composable configuration a chainable extension that returns its
+  receiver, like `fun Modifier.monthBackgrounds(...): Modifier`, so call sites read as one `Modifier`
+  chain. Change immutable values with `copy`. Keep a loop or a local `var` when early exits, retries,
+  or cycle tracking would make a chain harder to follow. Do not add Java-style setters that return
+  `this`, chain side effects through `let` or `also`, or change a public API only for style.
+  Public APIs follow the same idea: callers should configure a component through
+  `Modifier` chains, named arguments, and value types rather than mutable setup objects.
 
 Do not add blanket suppressions, formatter-off markers, lint baselines, skipped checks, or
 failure-tolerant CI to make a change pass. A rule change needs an explicit rationale in
