@@ -20,7 +20,7 @@ jobs:
       - name: Require the package publishing token
         if: forgejo.event_name == 'push'
         env:
-          PACKAGES_TOKEN: ${{ secrets.FORGEJO_PACKAGES_TOKEN }}
+          PACKAGES_TOKEN: ${{ secrets.OTUS_META_PUBLISH_TOKEN }}
         run: test -n "$PACKAGES_TOKEN"
       - uses: https://github.com/actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: Check that the tag matches the version
@@ -49,4 +49,4 @@ jobs:
         run: ./gradlew publishAllPublicationsToForgejoPackagesRepository --console=plain
         env:
           ORG_GRADLE_PROJECT_ForgejoPackagesUsername: ${{ forgejo.repository_owner }}
-          ORG_GRADLE_PROJECT_ForgejoPackagesPassword: ${{ secrets.FORGEJO_PACKAGES_TOKEN }}
+          ORG_GRADLE_PROJECT_ForgejoPackagesPassword: ${{ secrets.OTUS_META_PUBLISH_TOKEN }}

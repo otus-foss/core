@@ -19,7 +19,7 @@ migration each app needs. A release renames `Unreleased` to the version and date
 
 Forgejo is the selected Git and package host. The Forgejo `publish` workflow uploads to
 `https://git.hilfikers.com/api/packages/florian.ruby/maven` using
-`publishAllPublicationsToForgejoPackagesRepository`. Configure its `FORGEJO_PACKAGES_TOKEN`
+`publishAllPublicationsToForgejoPackagesRepository`. Configure its `OTUS_META_PUBLISH_TOKEN`
 secret with a Forgejo `write:package` token. The publisher uses the available `ubuntu-latest` runner.
 Authenticated publication and downloads remain unverified. See [hosting and CI](hosting.md).
 
