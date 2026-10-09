@@ -13,6 +13,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
+import kotlinx.datetime.yearMonth
 
 @Composable
 internal fun CalendarHeading(
@@ -23,18 +24,15 @@ internal fun CalendarHeading(
 ) {
     var choosingMonth by rememberSaveable { mutableStateOf(false) }
     if (choosingMonth) {
-        SpecificDatePicker(
-            month.year,
-            month.month.ordinal + 1,
+        MonthYearPicker(
+            month.yearMonth,
             LocalDate(CalendarTokens.MIN_YEAR, 1, 1)..maxDate,
             onDismiss = { choosingMonth = false },
-            onConfirm = { year, number, day ->
-                val date = LocalDate(year, number, day ?: 1)
-                onMonth(date)
-                if (day != null) onDate(date, false)
+            onConfirm = { chosen, date ->
+                onMonth(date ?: chosen.firstDay)
+                if (date != null) onDate(date, false)
                 choosingMonth = false
             },
-            dayRequired = false,
         )
     }
     val monthLabel =

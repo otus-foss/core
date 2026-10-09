@@ -1,26 +1,20 @@
 package com.otus.designsystem.components
 
 import androidx.compose.runtime.Composable
-import com.otus.designsystem.theme.CalendarTokens
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.YearMonth
 
-/** Calendar navigation adapter with optional day selection. */
+/**
+ * Wheel picker for a month within [allowedDates], with an optional day.
+ * [onConfirm] receives a null date when the day is left as Any.
+ */
 @Composable
 public fun MonthYearPicker(
-    initialYear: Int,
-    initialMonth: Int,
-    maxDate: LocalDate,
+    initialMonth: YearMonth,
+    allowedDates: ClosedRange<LocalDate>,
     onDismiss: () -> Unit,
-    onConfirm: (Int, Int, Int?) -> Unit,
+    onConfirm: (YearMonth, LocalDate?) -> Unit,
     initialDay: Int? = null,
 ) {
-    SpecificDatePicker(
-        initialYear,
-        initialMonth,
-        LocalDate(CalendarTokens.MIN_YEAR, 1, 1)..maxDate,
-        onDismiss,
-        onConfirm,
-        initialDay = initialDay,
-        dayRequired = false,
-    )
+    DateWheelPicker(initialMonth, initialDay, allowedDates, dayRequired = false, onDismiss, onConfirm)
 }

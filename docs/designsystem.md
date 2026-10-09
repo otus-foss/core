@@ -43,22 +43,22 @@ These guides still live in Mail, which was the first app to use the components:
 
 ## Date chooser
 
-The unreleased `SpecificDatePicker` component is a bottom sheet with centered, snapping wheels, fading adjacent
-options, a circular close control, and a full-width Go button. It uses the supplied travel-date
-screenshot for layout and the existing Otus palette. It takes initial year/month/day values,
-an inclusive `allowedDates` range, and dismiss/confirm callbacks. Future dates are allowed
-when the caller's range includes them. Mail's calendar supplies January 1970 through today.
+The unreleased `SpecificDatePicker` and `MonthYearPicker` components share one bottom sheet with
+centered, snapping wheels, fading adjacent options, a circular close control, and a full-width
+Go button. They use the supplied travel-date screenshot for layout and the existing Otus palette.
+Both take an initial `YearMonth`, an optional initial day, an inclusive `allowedDates` range, and
+dismiss/confirm callbacks. Future dates are allowed when the caller's range includes them.
+Mail's calendar supplies January 1970 through today.
 
-`dayRequired` defaults to true. Required mode starts with Pick and disables Go until the user
-chooses a day. An explicit initial day is also accepted and clamped to the bounds. Optional mode
-uses `dayRequired = false`, starts with Any, and confirms with a null day when Any is selected.
-Changing month or year preserves an unselected day. Selected days clamp to the valid month and
-both date bounds. Closing, outside-tapping, or Back discards chooser edits.
+`SpecificDatePicker` always needs a day. It starts with Pick, disables Go until the user chooses
+a day, and confirms with a `LocalDate`. An explicit initial day is also accepted and clamped to
+the bounds. `MonthYearPicker` makes the day optional. It starts with Any and confirms with the
+chosen `YearMonth` and a `LocalDate?` that is null when Any is selected. Changing month or year
+preserves an unselected day. Selected days clamp to the valid month and both date bounds.
+Closing, outside-tapping, or Back discards chooser edits.
 
-Mail's calendar uses optional mode. Confirmation without a day navigates to the month and
+Mail's calendar uses `MonthYearPicker`. Confirmation without a day navigates to the month and
 preserves its current range; an explicit day retains start/end selection behavior.
-`MonthYearPicker` is a compatibility adapter with those optional-day defaults.
-`MonthYearPicker.onConfirm` now takes a nullable day, and `initialDay` defaults to null.
 These changes require the next Meta minor release; Mail's local checks use the composite build.
 The continuous calendar layout and gestures remain unchanged.
 
