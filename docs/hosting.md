@@ -83,8 +83,9 @@ does not transfer Maven packages.
 
 Meta's `publishAllPublicationsToForgejoPackagesRepository` uploads every module and platform
 publication. Its Gradle credentials are `ForgejoPackagesUsername` and `ForgejoPackagesPassword`.
-Create a Forgejo token with `write:package` and store it as `FORGEJO_PACKAGES_TOKEN` in Meta's
-Forgejo Actions secrets. The `publish` workflow runs on version tags using `ubuntu-latest`.
+Create a Forgejo token with `write:package` and store it as `OTUS_META_PUBLISH_TOKEN` in Meta's
+Forgejo Actions secrets. Forgejo rejects secret names that start with `FORGEJO_`, `GITEA_`, or
+`GITHUB_`. The `publish` workflow runs on version tags using `ubuntu-latest`.
 It runs `checkAll`, builds all publications in an isolated local Maven repository, and verifies
 the root metadata, platform binaries, and metadata checksums before uploading. A manual run
 performs the same validation without a publishing token or any upload. See
