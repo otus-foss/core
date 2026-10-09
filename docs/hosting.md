@@ -51,7 +51,7 @@ Actions cache service. Neither iOS checks nor publishing have been verified on F
 
 Register Forgejo Runner 7 or newer and provide these labels and environments:
 
-- `otus-linux`: a Linux execution environment with Git, Bash, Node.js 20 for the pinned
+- `ubuntu-latest`: a Linux execution environment with Git, Bash, Node.js 20 for the pinned
   JavaScript actions, and the system libraries required by Temurin 21, Python 3.13, and the
   Android command-line tools. Actions install the JDK, Python, Android platform 37.0, and
   build-tools 36.0.0. Host Android tests also need the native graphics libraries used by
@@ -60,6 +60,11 @@ Register Forgejo Runner 7 or newer and provide these labels and environments:
   26.3 at `/Applications/Xcode_26.3.app`. It must allow `sudo xcode-select`. Actions install
   Temurin 21, Python 3.13 for publishing, Android command-line tools for publishing, and Mint
   for the apps' pinned Swift tools.
+
+The Linux label follows the instance maintainer's `runs-on: ubuntu-latest` guidance.
+The `portable` and `android` jobs must match a runner available to each repository.
+The `ios` and publishing jobs still require `otus-macos`; a Linux runner cannot run Xcode
+or iOS simulator tests. Check runner availability separately for those jobs.
 
 The labels are requirements for runner registration, not a claim that those runners exist.
 Enable Actions in each repository and require the resulting `portable`, `android`, and `ios`
