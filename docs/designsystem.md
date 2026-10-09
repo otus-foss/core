@@ -43,7 +43,7 @@ These guides still live in Mail, which was the first app to use the components:
 
 ## Date chooser
 
-The unreleased `SpecificDatePicker` and `MonthYearPicker` components share one bottom sheet with
+Version 0.4.0's `SpecificDatePicker` and `MonthYearPicker` components share one bottom sheet with
 centered, snapping wheels, fading adjacent options, a circular close control, and a full-width
 Go button. They use the supplied travel-date screenshot for layout and the existing Otus palette.
 Both take an initial `YearMonth`, an optional initial day, an inclusive `allowedDates` range, and
@@ -59,7 +59,6 @@ Closing, outside-tapping, or Back discards chooser edits.
 
 Mail's calendar uses `MonthYearPicker`. Confirmation without a day navigates to the month and
 preserves its current range; an explicit day retains start/end selection behavior.
-These changes require the next Meta minor release; Mail's local checks use the composite build.
 The continuous calendar layout and gestures remain unchanged.
 
 ## Tests
