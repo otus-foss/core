@@ -1,29 +1,18 @@
 # Using the libraries from an app
 
 The apps get these libraries in two ways. CI and release builds download a pinned version from
-GitHub Packages. Local development can build against a sibling checkout instead, so a library
+Forgejo Packages. Local development can build against a sibling checkout instead, so a library
 change can be tried in an app before it is released. Nothing in an app's build requires the
 sibling checkout.
 
-Forgejo is now the primary Git host. Released packages remain on GitHub during the cutover;
-see [hosting and CI](hosting.md). Git repository migration does not transfer Maven artifacts.
-
-Mail supports `otusMetaRegistry` in private Gradle properties to select another authenticated
-release registry. After complete artifacts are available on Forgejo, use:
-
-```properties
-otusMetaRegistry=https://git.hilfikers.com/api/packages/florian.ruby/maven
-otusMetaUsername=florian.ruby
-otusMetaPassword=<Forgejo package-read token>
-```
-
-Do not set this before the pinned version and all its platform variants have been verified.
-Forgejo Actions can select the registry through `OTUS_META_REGISTRY_URL`; its package username
-and token must belong to the selected host. Calendar has not adopted Meta packages yet.
+Forgejo is the selected Git and package host. Mail's package migration change sets the Forgejo
+registry as its default. Authenticated availability of the pinned release is still unverified;
+see [hosting and CI](hosting.md). Moving Git repositories does not transfer Maven artifacts.
+Calendar has not adopted Meta packages yet.
 
 ## Released versions
 
-Each module is a Maven artifact `com.otus:<module>` in the GitHub Packages registry of this
+Each module is a Maven artifact `com.otus:<module>` in the Forgejo Packages registry of this
 repository. Add the registry to the app's `settings.gradle.kts`, limited to the `com.otus` group
 so that no other dependency resolves from it:
 
@@ -31,7 +20,7 @@ so that no other dependency resolves from it:
 dependencyResolutionManagement {
     repositories {
         // existing google() and mavenCentral() entries
-        maven("https://maven.pkg.github.com/reazndev/otus-meta") {
+        maven("https://git.hilfikers.com/api/packages/florian.ruby/maven") {
             name = "otusMeta"
             // Gradle checks credentials before every build; without a token only -Potus.meta.path works.
             if (providers.gradleProperty("otusMetaPassword").isPresent) credentials(PasswordCredentials::class)
@@ -55,33 +44,38 @@ Then depend on it from the app's `shared` module, for example `api(libs.otus.jma
 
 ### Credentials
 
-GitHub Packages requires a token to download Maven packages, even for read access.
-`credentials(PasswordCredentials::class)` with the name `otusMeta` reads the Gradle properties
-`otusMetaUsername` and `otusMetaPassword`. With the configuration cache, Gradle fails every build
-when a declared credential property is missing, even tasks that download nothing. The snippet
-therefore declares credentials only when the token is present. Without it, `com.otus` downloads
-fail and only the local composite build below can supply the libraries.
+Create a Forgejo token with `read:package`, using an account that can access the packages owned
+by `florian.ruby`. Package scopes require a token with access to the package owner, rather than
+one restricted to specific repositories. See
+[Forgejo token scopes](https://forgejo.org/docs/latest/user/authentication/token-scope/).
 
-On a development machine, add them to `~/.gradle/gradle.properties`, never to the repository:
+`credentials(PasswordCredentials::class)` with the repository name `otusMeta` reads the Gradle
+properties `otusMetaUsername` and `otusMetaPassword`. Declare credentials only when the token
+property is present, so tasks that do not download packages can configure without credentials.
+
+On a development machine, add these to `~/.gradle/gradle.properties`, never to the repository:
 
 ```properties
-otusMetaUsername=<GitHub username>
-otusMetaPassword=<classic token with read:packages>
+otusMetaUsername=florian.ruby
+otusMetaPassword=<Forgejo package-read token>
 ```
 
-The Maven registry scopes package permissions to the repository that published them. A workflow
-in otus-mail cannot read otus-meta packages with its own `GITHUB_TOKEN`. Store a classic token
-with `read:packages` as the secret `OTUS_META_PACKAGES_TOKEN` in each app repository and pass it
-to Gradle:
+Mail defaults to the Forgejo URL. `otusMetaRegistry` in private Gradle properties can override it;
+clear an old GitHub override when moving to Forgejo. In each consuming app's Actions settings,
+store the Forgejo read token as `OTUS_META_PACKAGES_TOKEN` and configure
+`OTUS_META_PACKAGES_USERNAME` with the token's Forgejo username. Pass them to Gradle:
 
 ```yaml
 env:
-  ORG_GRADLE_PROJECT_otusMetaUsername: ${{ github.repository_owner }}
+  ORG_GRADLE_PROJECT_otusMetaRegistry: https://git.hilfikers.com/api/packages/florian.ruby/maven
+  ORG_GRADLE_PROJECT_otusMetaUsername: ${{ vars.OTUS_META_PACKAGES_USERNAME || 'florian.ruby' }}
   ORG_GRADLE_PROJECT_otusMetaPassword: ${{ secrets.OTUS_META_PACKAGES_TOKEN }}
 ```
 
-Verify this against the current GitHub Packages documentation when setting it up. If GitHub adds
-per-package access for the Maven registry, prefer it over a personal token.
+`OTUS_META_REGISTRY_URL` is an optional Actions variable for Mail's registry override. Clear an
+old GitHub URL. All root and platform artifacts for the pinned release must exist on Forgejo.
+A token grants access to packages; it does not publish missing artifacts. See
+[releasing](releasing.md).
 
 ## Local development against a checkout
 

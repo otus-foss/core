@@ -32,7 +32,7 @@ Discover and respect the capabilities each account and server provides. Missing 
 Aim to reuse account handling, JMAP transport, contact models, and appropriate UI components while preserving independent app repositories and releases. Mail-specific workflows belong in Mail; calendar-specific workflows belong in Calendar.
 
 Shared libraries live in otus-meta and are published as versioned `com.otus:<module>` artifacts
-to GitHub Packages. Apps pin releases and may opt into a local composite build for development.
+to Forgejo Packages, with artifact migration still awaiting authenticated verification. Apps pin releases and may opt into a local composite build for development.
 Shared runtime account data and credentials still require an explicit platform design;
 library reuse alone does not provide them. See decision 0005.
 
