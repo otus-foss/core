@@ -1,8 +1,8 @@
 package com.otus.jmap
 
 /**
- * Every failure caused by a server, the network, or stored data. Callers can rely on this: nothing a
- * server sends makes the client throw anything else. Messages never contain secrets.
+ * Failures reported by the protocol client for server, network, or stored data problems.
+ * Custom method decoders must follow [JmapMethod.decode]'s error contract.
  */
 public sealed class JmapException(
     message: String,

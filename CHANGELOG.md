@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+- Resolve JMAP redirects and endpoint URLs using RFC 3986 rules, so discovery queries and URL
+  credentials do not carry over to another host.
+- Reject `/set` responses missing `newState`, submitted object outcomes, or created object IDs,
+  and reject conflicting success/error outcomes while accepting additional server updates.
+- Refresh cached JMAP sessions after failed blob transfers without automatically replaying uploads.
+  A late failure from an older session no longer invalidates its replacement.
+- Convert custom decoder cast and missing-key failures to `JmapException.NotJmap`; preserve cancellation.
+- Breaking API change for 0.4.0: `QueryResult.position` and `QueryResult.total` use `Long` and
+  `Long?` instead of `Int` and `Int?`, with JMAP's unsigned 53-bit bounds. Consumers must rebuild,
+  use long counters, and explicitly check bounds before converting to an `Int`.
 - Add `SpecificDatePicker` as a reusable wheel picker for one date within a caller-supplied
   `allowedDates` range. Go stays disabled until a day is chosen, and `onConfirm` receives a
   `LocalDate`.
