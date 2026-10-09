@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.4.0 - 2026-10-10
 
 - Resolve JMAP redirects and endpoint URLs using RFC 3986 rules, so discovery queries and URL
   credentials do not carry over to another host.
