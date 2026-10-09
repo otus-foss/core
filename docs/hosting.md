@@ -77,9 +77,9 @@ required checks intact; do not bypass them to complete the migration.
 
 Forgejo Packages is the selected release registry at
 `https://git.hilfikers.com/api/packages/florian.ruby/maven`. Mail defaults to this registry in
-its package migration change. Calendar does not yet consume Meta libraries. Authenticated
-availability of the pinned Meta 0.3.0 artifacts is still unverified. Moving Git repositories
-does not transfer Maven packages.
+its package migration change. Calendar does not yet consume Meta libraries. Version 0.3.1, with
+the same library sources as 0.3.0, is the first release published there; 0.3.0 is not on
+Forgejo. Moving Git repositories does not transfer Maven packages.
 
 Meta's `publishAllPublicationsToForgejoPackagesRepository` uploads every module and platform
 publication. Its Gradle credentials are `ForgejoPackagesUsername` and `ForgejoPackagesPassword`.
