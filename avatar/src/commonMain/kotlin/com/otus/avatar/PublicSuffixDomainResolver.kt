@@ -25,40 +25,38 @@ public class PublicSuffixDomainResolver(
 internal class PublicSuffixRules(
     text: String,
 ) {
-    private val exact = mutableSetOf<String>()
-    private val wildcards = mutableSetOf<String>()
-    private val exceptions = mutableSetOf<String>()
-
-    init {
+    private val rules =
         text
             .lineSequence()
-            .map { it.trim().substringBefore(' ').substringBefore('\t') }
-            .filter { it.isNotEmpty() && !it.startsWith("//") }
-            .forEach { rule ->
-                when {
-                    rule.startsWith("!") -> exceptions.add(rule.drop(1).lowercase())
-                    rule.startsWith("*.") -> wildcards.add(rule.drop(2).lowercase())
-                    else -> exact.add(rule.lowercase())
-                }
-            }
-    }
+            .map {
+                it
+                    .trim()
+                    .substringBefore(' ')
+                    .substringBefore('\t')
+                    .lowercase()
+            }.filter { it.isNotEmpty() && !it.startsWith("//") }
+            .toList()
+    private val exceptions = rules.filter { it.startsWith("!") }.map { it.drop(1) }.toSet()
+    private val wildcards = rules.filter { it.startsWith("*.") }.map { it.drop(2) }.toSet()
+    private val exact = rules.filterNot { it.startsWith("!") || it.startsWith("*.") }.toSet()
 
     fun registrableDomain(host: String): String? {
         if (!isPublicAvatarHost(host)) return null
         val labels = host.lowercase().split('.')
-        var suffixLength = 1
-        var exceptionDomain: String? = null
-        for (index in labels.indices) {
-            val suffix = labels.drop(index).joinToString(".")
-            if (suffix in exceptions) {
-                exceptionDomain = suffix
-                break
-            }
-            if (suffix in exact || labels.drop(index + 1).joinToString(".") in wildcards) {
-                suffixLength = maxOf(suffixLength, labels.size - index)
-            }
-        }
-        return exceptionDomain
-            ?: labels.takeIf { it.size > suffixLength }?.takeLast(suffixLength + 1)?.joinToString(".")
+        // Each suffix of the host, longest first: "a.b.c", "b.c", "c".
+        val suffixes = labels.indices.map { labels.drop(it).joinToString(".") }
+        return suffixes.firstOrNull { it in exceptions } ?: domainAbovePublicSuffix(labels, suffixes)
+    }
+
+    /** The longest matching public suffix plus one more label, if the host has that label. */
+    private fun domainAbovePublicSuffix(
+        labels: List<String>,
+        suffixes: List<String>,
+    ): String? {
+        val suffixLength =
+            suffixes.indices
+                .filter { suffixes[it] in exact || suffixes.getOrElse(it + 1) { "" } in wildcards }
+                .maxOfOrNull { labels.size - it } ?: 1
+        return labels.takeIf { it.size > suffixLength }?.takeLast(suffixLength + 1)?.joinToString(".")
     }
 }

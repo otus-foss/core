@@ -35,7 +35,7 @@ internal fun CalendarWeek(
         onDispose { targets.rows.remove(firstDay) }
     }
     val background =
-        remember(firstDay, targets) { monthBackgrounds(firstDay, dates.filter { it in targets.allowedDates }) }
+        remember(firstDay, targets) { Modifier.monthBackgrounds(firstDay, dates.filter { it in targets.allowedDates }) }
     Row(background.fillMaxWidth().onGloballyPositioned { targets.rows[firstDay] = it }) {
         dates.forEachIndexed { weekday, date ->
             if (date in targets.allowedDates) {
@@ -47,11 +47,11 @@ internal fun CalendarWeek(
     }
 }
 
-private fun monthBackgrounds(
+private fun Modifier.monthBackgrounds(
     monday: LocalDate,
     dates: List<LocalDate>,
 ): Modifier =
-    dates.distinctBy { it.month }.fold<LocalDate, Modifier>(Modifier) { modifier, date ->
+    dates.distinctBy { it.month }.fold(this) { modifier, date ->
         val first = LocalDate(date.year, date.month, 1)
         val days = first.daysUntil(first.plus(1, DateTimeUnit.MONTH))
         val week = (first.daysUntil(monday) + first.dayOfWeek.ordinal) / CalendarTokens.DAYS_PER_WEEK
