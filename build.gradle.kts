@@ -108,7 +108,7 @@ tasks.register("checkAll") {
 }
 
 subprojects {
-    // GitHub remains the release registry until Forgejo's packages and macOS runner are ready.
+    // Forgejo is the selected registry; GitHub remains available during package migration.
     // Each repository name supplies its own Username and Password Gradle properties.
     plugins.withId("maven-publish") {
         extensions.configure<PublishingExtension> {
