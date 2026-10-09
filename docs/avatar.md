@@ -107,6 +107,14 @@ List bytes, and injects any `DomainIconSource`. `JmapContactPhotoSource` uses th
 `JmapConnections` and `LoginStore`, so contact lookups never cross apps. Calendar still carries an
 older copy of this code until it adopts the module.
 
+Contact queries filter to readable, subscribed address books and fetch up to 32 candidates per
+page. Each candidate must contain the exact normalized email address; server searches may also
+match email labels. Lookup continues across pages until it finds a usable photo or reaches an empty
+page, including when the server returns fewer candidates than requested. It retains one page at a
+time and stops if the query state changes, the server ignores the requested position, or the
+10-second search deadline expires. Cancellation from the caller propagates. These bounds can
+still leave a photo unavailable during slow or changing searches; normal avatar fallback applies.
+
 ## Protocol references and validation
 
 - [RFC 9610, contacts capability and ContactCards](https://www.rfc-editor.org/rfc/rfc9610.html).
@@ -118,6 +126,8 @@ matching, address-book permissions, blobs/data URIs/external URLs, website-domai
 provider icons, icon-cache options and domain-only requests, cache expiry/eviction/invalidation,
 cancellation, credential isolation, redirects, and response-size limits. Persistent-cache tests cover
 process recreation, bounded disk usage, corrupt records and account removal.
+Contact search tests also cover later-page exact matches, server-clamped page sizes, exhaustion,
+changing queries, stalled pagination, search deadlines, and caller cancellation.
 Mail's inbox tests cover restoring avatars before network work; see
 [Mail's avatar guide](https://git.hilfikers.com/florian.ruby/otus-mail/src/branch/main/docs/avatars.md).
 `RememberAvatarImageTest` and `DecodedAvatarCacheTest` in the design system cover decoding.
