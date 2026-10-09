@@ -33,16 +33,19 @@ public class SetMethod(
 
     override fun decode(arguments: JsonObject): SetResult {
         val dto = JmapJson.decodeFromJsonElement(SetDto.serializer(), arguments)
-        return SetResult(
-            oldState = dto.oldState,
-            newState = dto.newState,
-            created = dto.created.orEmpty(),
-            updated = dto.updated.orEmpty(),
-            destroyed = dto.destroyed.orEmpty(),
-            notCreated = dto.notCreated.orEmpty(),
-            notUpdated = dto.notUpdated.orEmpty(),
-            notDestroyed = dto.notDestroyed.orEmpty(),
-        )
+        val result =
+            SetResult(
+                oldState = dto.oldState,
+                newState = dto.newState,
+                created = dto.created.orEmpty(),
+                updated = dto.updated.orEmpty(),
+                destroyed = dto.destroyed.orEmpty(),
+                notCreated = dto.notCreated.orEmpty(),
+                notUpdated = dto.notUpdated.orEmpty(),
+                notDestroyed = dto.notDestroyed.orEmpty(),
+            )
+        result.validateOutcomes(create.keys, update.keys, destroy)
+        return result
     }
 }
 
@@ -82,7 +85,7 @@ public data class SetError(
 @Serializable
 private data class SetDto(
     val oldState: String? = null,
-    val newState: String = "",
+    val newState: String,
     val created: Map<String, JsonObject>? = null,
     val updated: Map<String, JsonObject?>? = null,
     val destroyed: List<String>? = null,
@@ -90,3 +93,29 @@ private data class SetDto(
     val notUpdated: Map<String, SetError>? = null,
     val notDestroyed: Map<String, SetError>? = null,
 )
+
+/** Extra server-side updates are permitted, but each submitted operation needs one outcome. */
+private fun SetResult.validateOutcomes(
+    creations: Set<String>,
+    updates: Set<String>,
+    destructions: List<String>,
+) {
+    checkOutcomes(creations, created.keys, notCreated.keys)
+    checkOutcomes(updates.mapNotNull(::resolveCreatedId), updated.keys, notUpdated.keys)
+    checkOutcomes(destructions.mapNotNull(::resolveCreatedId), destroyed.toSet(), notDestroyed.keys)
+    if (created.keys.any { createdId(it) == null }) throw JmapException.NotJmap("created object has no id")
+}
+
+private fun SetResult.resolveCreatedId(id: String): String? =
+    // A creation reference from an earlier method may resolve to an id unknown to this method.
+    if (id.startsWith('#')) createdId(id.drop(1)) else id
+
+private fun checkOutcomes(
+    requested: Collection<String>,
+    succeeded: Set<String>,
+    failed: Set<String>,
+) {
+    if (succeeded.any { it in failed } || requested.any { it !in succeeded && it !in failed }) {
+        throw JmapException.NotJmap("missing or conflicting set outcome")
+    }
+}

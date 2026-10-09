@@ -22,6 +22,8 @@ It moved here from otus-mail at version 0.1.0.
   session; `request { … }`, `send { … }`, and calls on a session run method calls.
 - `JmapConnection`: one signed-in server. Caches the session, refetches it when a response reports
   a different `sessionState` (RFC 8620, section 3.4), and drops it after a transport failure.
+  Upload and download failures also invalidate the session for the next attempt. Failed requests
+  are never automatically replayed, and a late failure cannot discard a newer cached session.
   `call(method)` for one call, `request { …; call(x) }` returning the last call's typed result, and
   `send { … }` for several results.
 - `JmapConnections(client, logins)`: one connection per saved login; `forget(id)` after it changes.
@@ -36,6 +38,13 @@ It moved here from otus-mail at version 0.1.0.
   type-specific arguments. `SetResult` keeps each object's outcome; `SetError` carries `type`,
   `description`, `properties`, and `existingId`. Refer to an object created earlier in the same
   request as `#creationId`. A `stateMismatch` fails the whole call as `MethodError`.
+  A response must contain `newState`, IDs for created objects, and outcomes for submitted literal
+  IDs and creation references resolved within the same method. Additional server updates are
+  allowed; conflicting success/error outcomes are rejected. References resolved in earlier
+  methods remain server-validated because the decoder does not have that creation-ID map.
+- `QueryResult.position` and `total` use `Long` and nullable `Long`, respectively, within
+  RFC 8620's range of 0 through 2^53-1. Version 0.4.0 changes these from `Int` and nullable `Int`;
+  consumers must rebuild and check bounds before converting counters to narrower types.
 - `upload(accountId, bytes, mediaType)` stores a blob through the session's `uploadUrl` (section 6.1)
   with the same https and trusted-origin checks as downloads. Redirects are not followed. A blob over
   the advertised `maxSizeUpload` throws `UploadTooLarge` before anything is sent.
@@ -53,8 +62,8 @@ It moved here from otus-mail at version 0.1.0.
 | Threat | Mitigation |
 | --- | --- |
 | Credentials sent in clear | Every URL must be https: the session URL, each redirect, and `apiUrl`. `JmapPolicy.allowInsecureHttp` exists only for local test servers. |
-| Credentials leaked by a redirect | Credentials go only to the origin the user entered and origins the user approved. A redirect elsewhere stops with `RedirectedElsewhere` before anything is sent there; Mail asks the user and stores the approval with the login. The same rule applies to `apiUrl`. |
-| Hostile or broken responses | Responses are capped at 16 MiB. Every envelope element is validated; any malformed data becomes `NotJmap`. Nothing a server sends makes the client throw anything other than `JmapException`. |
+| Credentials leaked by a redirect | Authorization headers go only to the origin the user entered and origins the user approved. Discovery can probe another origin without authorization, then raises `RedirectedElsewhere`; Mail asks the user and stores the approval. RFC 3986 resolution prevents the old query and URL credentials from being copied to the new host. The API and blob endpoints require a trusted origin before a request. |
+| Hostile or broken responses | Responses are capped at 16 MiB. Envelope invocations are checked, and decoding failures become `NotJmap`. Custom decoders must use serializers, checked JSON accessors, or `require`; serialization, argument, cast, and missing-key errors are normalized. Cancellation and other programming errors propagate. |
 | Secrets in logs or crash reports | `JmapAuth`, `LoginSecret`, and drafts print `***`. Secrets are not readable through public API; only headers are built from them. |
 | Secrets at rest (Android) | AES-256-GCM with a non-exportable Android Keystore key; fresh IV per value; one synchronous commit per change; app backup disabled. |
 | Secrets at rest (iOS) | Keychain, `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly`; replacement uses `SecItemUpdate`, and deletion errors preserve account metadata. |
@@ -67,16 +76,17 @@ only), OAuth, and sharing logins between the two installed apps.
 
 | Section | Behavior | Tests |
 | --- | --- | --- |
-| 2, 2.2 | Session resource; `/.well-known/jmap` with redirects (relative `Location` included); relative URLs resolved | `JmapDiscoveryTest` |
+| 2, 2.2 | Session resource; `/.well-known/jmap` with redirects (relative `Location` included); RFC 3986 URL resolution | `JmapDiscoveryTest`, `JmapUrlResolutionTest` |
 | 3.2–3.4 | Request envelope with `using`, invocations, `sessionState` | `JmapRequestTest`, `JmapConnectionTest` |
 | 3.6.1 | Request-level problem details become `RequestFailed(type)` | `JmapDiscoveryTest` |
 | 3.6.2 | Method-level errors become `MethodError(type)` for that call only | `JmapRequestTest` |
 | 3.7 | Result references | `JmapRequestTest` |
 | 5.1, 5.2, 5.5 | `/get`, `/changes`, `/query` | `JmapRequestTest`, Mail tests |
-| 5.3 | `/set` creations, patches, destructions, `ifInState`, creation references, per-object errors | `JmapSetTest` |
+| 5.3 | `/set` creations, patches, destructions, `ifInState`, creation references, per-object errors and outcome validation | `JmapSetTest`, `JmapSetValidationTest` |
 | 6.1 | Authenticated uploads through the advertised URI template, within `maxSizeUpload` | `JmapUploadTest` |
 | 6.2 | Bounded authenticated blob downloads through the advertised URI template, with trusted-origin checks | `JmapDownloadTest` |
 | RFC 7617 | Basic credentials; a colon in the username is rejected | `JmapLoginTest` |
+| 1.3, 5.5 | Query counters support the full unsigned 53-bit range | `JmapDecodingTest` |
 
 Not implemented yet: `/queryChanges`, `/copy`, Blob/upload (RFC 9404), push (section 7), and
 request limits such as `maxCallsInRequest`. `maxObjectsInSet` is read, and Mail batches large
@@ -98,6 +108,7 @@ connection-cache tests, and Android preference-store tests with an injected ciph
 by `checkAll` and the Android CI job. Tests cover explicit and implicit responses, method-name mismatches,
 network failures and cancellation, capability checks, changes, account replacement, storage failures,
 and corrupt-list preservation. Mail's app tests also cover storage-error recovery and same-named accounts.
+`JmapBlobRecoveryTest` covers endpoint rediscovery, cancellation, and late failures after session replacement.
 
 `./gradlew :jmap:iosSimulatorArm64Test` runs in the macOS CI job. The iOS store tests inject the native
 Keychain boundary to exercise failed updates/additions/deletions while checking preserved metadata

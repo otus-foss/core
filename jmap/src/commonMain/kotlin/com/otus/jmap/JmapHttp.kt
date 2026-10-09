@@ -23,7 +23,7 @@ internal class JmapUrls(
     fun resolve(
         base: Url,
         reference: String,
-    ): Url = checked(build(reference) { takeFrom(base).takeFrom(reference) }, reference)
+    ): Url = parse(resolveUriReference(base.toString(), reference))
 
     /** Resolves an expanded session template, refusing origins that may not receive credentials. */
     fun trustedTarget(

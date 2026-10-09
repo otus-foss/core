@@ -34,30 +34,38 @@ public class JmapConnection(
         blobId: String,
         mediaType: String,
         maxBytes: Long,
-    ): JmapBlob = client.download(session(), auth, accountId, blobId, mediaType, maxBytes)
+    ): JmapBlob = withSession { client.download(it, auth, accountId, blobId, mediaType, maxBytes) }
 
     public suspend fun upload(
         accountId: String,
         bytes: ByteArray,
         mediaType: String,
-    ): JmapUpload = client.upload(session(), auth, accountId, bytes, mediaType)
+    ): JmapUpload = withSession { client.upload(it, auth, accountId, bytes, mediaType) }
 
     /** One request; read any call's result from the response. */
     public suspend fun send(build: JmapRequestBuilder.() -> Unit): JmapResponse =
         exchange(JmapRequestBuilder().apply(build).calls)
 
-    private suspend fun exchange(calls: List<JmapCall<*>>): JmapResponse {
+    private suspend fun exchange(calls: List<JmapCall<*>>): JmapResponse =
+        withSession { session ->
+            val response = client.send(session, auth, calls)
+            if (response.isOutdated(session)) invalidate(session)
+            response
+        }
+
+    private suspend fun <T> withSession(block: suspend (JmapSession) -> T): T {
         val session = session()
-        val response =
-            try {
-                client.send(session, auth, calls)
-            } catch (error: JmapException) {
-                // Method errors surface only when a result is read, so this is a transport or session failure.
-                invalidate()
-                throw error
-            }
-        if (response.isOutdated(session)) invalidate()
-        return response
+        return try {
+            block(session)
+        } catch (error: JmapException) {
+            // Never replay a failed mutation; refresh discovery on the caller's next attempt.
+            invalidate(session)
+            throw error
+        }
+    }
+
+    private suspend fun invalidate(session: JmapSession) {
+        lock.withLock { if (cached === session) cached = null }
     }
 
     public suspend fun invalidate() {

@@ -88,9 +88,16 @@ public class QueryMethod(
 public data class QueryResult(
     val queryState: String = "",
     val ids: List<String>,
-    val position: Int = 0,
-    val total: Int? = null,
-)
+    val position: Long = 0,
+    val total: Long? = null,
+) {
+    init {
+        require(position in 0..MAX_JMAP_UNSIGNED_INT) { "Invalid query position" }
+        require(total == null || total in 0..MAX_JMAP_UNSIGNED_INT) { "Invalid query total" }
+    }
+}
+
+private const val MAX_JMAP_UNSIGNED_INT = 9_007_199_254_740_991L
 
 /** `Foo/changes` (RFC 8620, section 5.2), for incremental sync. */
 public class ChangesMethod(
