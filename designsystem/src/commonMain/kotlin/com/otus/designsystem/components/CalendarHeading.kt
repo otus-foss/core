@@ -7,13 +7,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import com.otus.designsystem.components.MonthNavigation
 import com.otus.designsystem.components.MonthNavigationLabel
-import com.otus.designsystem.components.MonthYearPicker
 import com.otus.designsystem.theme.CalendarTokens
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
+import kotlinx.datetime.yearMonth
 
 @Composable
 internal fun CalendarHeading(
@@ -25,14 +25,12 @@ internal fun CalendarHeading(
     var choosingMonth by rememberSaveable { mutableStateOf(false) }
     if (choosingMonth) {
         MonthYearPicker(
-            month.year,
-            month.month.ordinal + 1,
-            maxDate,
+            month.yearMonth,
+            LocalDate(CalendarTokens.MIN_YEAR, 1, 1)..maxDate,
             onDismiss = { choosingMonth = false },
-            onConfirm = { year, number, day ->
-                val date = LocalDate(year, number, day)
-                onMonth(date)
-                onDate(date, false)
+            onConfirm = { chosen, date ->
+                onMonth(date ?: chosen.firstDay)
+                if (date != null) onDate(date, false)
                 choosingMonth = false
             },
         )

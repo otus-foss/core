@@ -8,9 +8,11 @@ import androidx.compose.ui.unit.sp
 
 public object CalendarTokens {
     public const val MONTH_COLUMN_WEIGHT: Float = 2f
+    public const val YEAR_COLUMN_WEIGHT: Float = 1.25f
     public const val CONTROLS_HEIGHT_FRACTION: Float = 0.35f
     public const val MIN_YEAR: Int = 1970
-    public const val PICKER_HEIGHT_FRACTION: Float = 0.70f
+    public const val PICKER_HEIGHT_FRACTION: Float = 0.55f
+    public val pickerMinHeight: Dp = 440.dp
     public val dragScrollEdge: Dp = 40.dp
     public val dragScrollSpeed: Dp = 360.dp
     public const val NANOS_PER_SECOND: Float = 1_000_000_000f

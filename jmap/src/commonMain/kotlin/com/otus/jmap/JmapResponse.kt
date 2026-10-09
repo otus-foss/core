@@ -64,8 +64,8 @@ private fun invocation(item: JsonElement): Pair<String, JmapMethodResponse> {
 }
 
 /**
- * Runs [read] over server data. Malformed or unexpected values, including unparseable dates, become
- * [JmapException.NotJmap], so server data can never crash the caller.
+ * Converts serialization, argument, cast, and missing-key failures while reading server data to
+ * [JmapException.NotJmap]. Cancellation and other programming errors propagate unchanged.
  */
 public inline fun <T> jmapDecoding(read: () -> T): T =
     try {
@@ -74,6 +74,10 @@ public inline fun <T> jmapDecoding(read: () -> T): T =
         throw JmapException.NotJmap("unreadable data", error)
     } catch (error: IllegalArgumentException) {
         throw JmapException.NotJmap("unexpected value", error)
+    } catch (error: ClassCastException) {
+        throw JmapException.NotJmap("unexpected data type", error)
+    } catch (error: NoSuchElementException) {
+        throw JmapException.NotJmap("missing value", error)
     }
 
 internal fun JsonObject.string(key: String): String? = get(key)?.stringContent()

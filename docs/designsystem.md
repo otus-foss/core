@@ -16,7 +16,7 @@ Dark mode is the only color mode. The palette is recorded in
   `controlPressFeedback` modifier.
 - `components`: `ActionDialog`, `ChoiceDialog`, `InputDialog`, `ContextPanel`, `DatePickerDialog`,
   `MonthNavigation`, `MonthYearPicker`, `PageScaffold`, `Subpage`, `PageSection`, `PanelSurface`,
-  `PickerSearch`, `PullToRefresh`, `SelectionSheet`, `Sidebar`, and `SidebarSwipeArea`.
+  `PickerSearch`, `PullToRefresh`, `SelectionSheet`, `SpecificDatePicker`, `Sidebar`, and `SidebarSwipeArea`.
 - Version 0.3.0 adds `DateRangePicker` for dates up to today, its continuous week calendar,
   and `AvatarStackChip` with `ChipAvatar` values. The app maps its senders or attendees into
   these values; the component has no contact lookup or feature dependencies.
@@ -40,6 +40,26 @@ These guides still live in Mail, which was the first app to use the components:
 [sidebar](https://git.hilfikers.com/florian.ruby/otus-mail/src/branch/main/docs/sidebar.md),
 [motion](https://git.hilfikers.com/florian.ruby/otus-mail/src/branch/main/docs/motion.md), and
 [color theme](https://git.hilfikers.com/florian.ruby/otus-mail/src/branch/main/docs/design.md).
+
+## Date chooser
+
+Version 0.4.0's `SpecificDatePicker` and `MonthYearPicker` components share one bottom sheet with
+centered, snapping wheels, fading adjacent options, a circular close control, and a full-width
+Go button. They use the supplied travel-date screenshot for layout and the existing Otus palette.
+Both take an initial `YearMonth`, an optional initial day, an inclusive `allowedDates` range, and
+dismiss/confirm callbacks. Future dates are allowed when the caller's range includes them.
+Mail's calendar supplies January 1970 through today.
+
+`SpecificDatePicker` always needs a day. It starts with Pick, disables Go until the user chooses
+a day, and confirms with a `LocalDate`. An explicit initial day is also accepted and clamped to
+the bounds. `MonthYearPicker` makes the day optional. It starts with Any and confirms with the
+chosen `YearMonth` and a `LocalDate?` that is null when Any is selected. Changing month or year
+preserves an unselected day. Selected days clamp to the valid month and both date bounds.
+Closing, outside-tapping, or Back discards chooser edits.
+
+Mail's calendar uses `MonthYearPicker`. Confirmation without a day navigates to the month and
+preserves its current range; an explicit day retains start/end selection behavior.
+The continuous calendar layout and gestures remain unchanged.
 
 ## Tests
 

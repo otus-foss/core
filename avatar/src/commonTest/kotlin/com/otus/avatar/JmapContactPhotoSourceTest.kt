@@ -10,6 +10,7 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.TextContent
 import io.ktor.http.headersOf
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -135,38 +136,41 @@ private class ContactFixture(
     val apiBodies = mutableListOf<String>()
     var downloads = 0
     private val engine =
-        MockEngine { request ->
-            assertEquals(ADA_SECRET_HEADER, request.headers[HttpHeaders.Authorization])
-            val json = headersOf(HttpHeaders.ContentType, "application/json")
-            when (request.url.encodedPath) {
-                "/jmap/session" -> {
-                    respond(session, headers = json)
-                }
+        MockEngine.create {
+            dispatcher = Dispatchers.Unconfined
+            addHandler { request ->
+                assertEquals(ADA_SECRET_HEADER, request.headers[HttpHeaders.Authorization])
+                val json = headersOf(HttpHeaders.ContentType, "application/json")
+                when (request.url.encodedPath) {
+                    "/jmap/session" -> {
+                        respond(session, headers = json)
+                    }
 
-                "/jmap/" -> {
-                    val body = (request.body as TextContent).text
-                    apiBodies += body
-                    val response =
-                        if ("AddressBook/get" in body) {
-                            """{"methodResponses":[["AddressBook/get",{"list":[
+                    "/jmap/" -> {
+                        val body = (request.body as TextContent).text
+                        apiBodies += body
+                        val response =
+                            if ("AddressBook/get" in body) {
+                                """{"methodResponses":[["AddressBook/get",{"list":[
                         {"id":"visible","isSubscribed":true,"myRights":{"mayRead":true}},
                         {"id":"hidden","isSubscribed":false,"myRights":{"mayRead":true}},
                         {"id":"denied","isSubscribed":true,"myRights":{"mayRead":false}}]},"c0"]]}"""
-                        } else {
-                            """{"methodResponses":[["ContactCard/query",{"ids":["c"]},"c0"],
+                            } else {
+                                """{"methodResponses":[["ContactCard/query",{"ids":["c"]},"c0"],
                         ["ContactCard/get",{"list":[{"id":"c","addressBookIds":{"$cardBook":true},
                         "emails":{"e":{"address":"$cardEmail"}},"media":$mediaMap}]},"c1"]]}"""
-                        }
-                    respond(response, headers = json)
-                }
+                            }
+                        respond(response, headers = json)
+                    }
 
-                "/download/contacts/photo/avatar" -> {
-                    downloads++
-                    respond(byteArrayOf(1, 2, 3), downloadStatus, headersOf(HttpHeaders.ContentType, "image/png"))
-                }
+                    "/download/contacts/photo/avatar" -> {
+                        downloads++
+                        respond(byteArrayOf(1, 2, 3), downloadStatus, headersOf(HttpHeaders.ContentType, "image/png"))
+                    }
 
-                else -> {
-                    error("Unexpected request ${request.url}")
+                    else -> {
+                        error("Unexpected request ${request.url}")
+                    }
                 }
             }
         }

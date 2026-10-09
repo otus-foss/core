@@ -17,7 +17,10 @@ public abstract class JmapMethod<out T>(
 ) {
     public abstract fun arguments(): JsonObject
 
-    /** Decodes this method's response arguments. Invalid data may throw; callers convert it. */
+    /**
+     * Decodes response arguments. Use serializers, checked JSON accessors, and `require` for
+     * validation; [jmapDecoding] normalizes their failures. Other programming errors propagate.
+     */
     public abstract fun decode(arguments: JsonObject): T
 }
 

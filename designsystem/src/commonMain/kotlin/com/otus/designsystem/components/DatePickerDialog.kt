@@ -5,11 +5,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.widthIn
@@ -38,7 +39,12 @@ internal fun DatePickerDialog(
     val density = LocalDensity.current
     Dialog(onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         CompositionLocalProvider(LocalDensity provides density) {
-            Box(Modifier.fillMaxSize().safeDrawingPadding().padding(SheetTokens.inset), Alignment.Center) {
+            BoxWithConstraints(Modifier.fillMaxSize().safeDrawingPadding(), Alignment.BottomCenter) {
+                val pickerHeight =
+                    maxOf(
+                        CalendarTokens.pickerMinHeight,
+                        maxHeight * CalendarTokens.PICKER_HEIGHT_FRACTION,
+                    ).coerceAtMost(maxHeight)
                 Box(
                     Modifier.matchParentSize().clickable(
                         remember { MutableInteractionSource() },
@@ -50,8 +56,8 @@ internal fun DatePickerDialog(
                     Modifier
                         .widthIn(max = SheetTokens.maxWidth)
                         .fillMaxWidth()
-                        .fillMaxHeight(CalendarTokens.PICKER_HEIGHT_FRACTION),
-                    shape = RoundedCornerShape(SheetTokens.radius),
+                        .height(pickerHeight),
+                    shape = RoundedCornerShape(topStart = SheetTokens.radius, topEnd = SheetTokens.radius),
                     color = OtusColors.bgDark,
                     contentColor = OtusColors.text1,
                     border = BorderStroke(PanelTokens.borderWidth, OtusColors.strokeBgDark),
