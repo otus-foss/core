@@ -58,13 +58,15 @@ Register Forgejo Runner 7 or newer and provide these labels and environments:
   Robolectric. Use a maintained runner image that provides those libraries.
 - `otus-macos`: a macOS 15 Apple Silicon host with Git, Bash, Node.js 20, Homebrew, and Xcode
   26.3 at `/Applications/Xcode_26.3.app`. It must allow `sudo xcode-select`. Actions install
-  Temurin 21, Python 3.13 for publishing, Android command-line tools for publishing, and Mint
-  for the apps' pinned Swift tools.
+  Temurin 21 and Mint for the apps' pinned Swift tools.
 
 The Linux label follows the instance maintainer's `runs-on: ubuntu-latest` guidance.
 The `portable` and `android` jobs must match a runner available to each repository.
-The `ios` and publishing jobs still require `otus-macos`; a Linux runner cannot run Xcode
-or iOS simulator tests. Check runner availability separately for those jobs.
+The `ios` quality jobs still require `otus-macos`; a Linux runner cannot run Xcode
+or iOS simulator tests. No macOS runner is currently available on this Forgejo instance,
+so these jobs cannot execute there. Keep their validation requirement visible.
+Meta's publisher uses `ubuntu-latest` to compile the complete library publication, including
+both iOS Kotlin libraries. This does not link an iOS application or run simulator tests.
 
 The labels are requirements for runner registration, not a claim that those runners exist.
 Enable Actions in each repository and require the resulting `portable`, `android`, and `ios`
@@ -82,8 +84,10 @@ does not transfer Maven packages.
 Meta's `publishAllPublicationsToForgejoPackagesRepository` uploads every module and platform
 publication. Its Gradle credentials are `ForgejoPackagesUsername` and `ForgejoPackagesPassword`.
 Create a Forgejo token with `write:package` and store it as `FORGEJO_PACKAGES_TOKEN` in Meta's
-Forgejo Actions secrets. The existing `publish` workflow runs on version tags and requires an
-`otus-macos` runner. It checks and builds every publication before uploading. See
+Forgejo Actions secrets. The `publish` workflow runs on version tags using `ubuntu-latest`.
+It runs `checkAll`, builds all publications in an isolated local Maven repository, and verifies
+the root metadata, platform binaries, and metadata checksums before uploading. A manual run
+performs the same validation without a publishing token or any upload. See
 [releasing](releasing.md) for an existing version's migration.
 
 For Mail's Actions settings on either CI host, configure:

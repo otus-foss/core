@@ -20,20 +20,33 @@ migration each app needs. A release renames `Unreleased` to the version and date
 Forgejo is the selected Git and package host. The Forgejo `publish` workflow uploads to
 `https://git.hilfikers.com/api/packages/florian.ruby/maven` using
 `publishAllPublicationsToForgejoPackagesRepository`. Configure its `FORGEJO_PACKAGES_TOKEN`
-secret with a Forgejo `write:package` token and provide an `otus-macos` runner with Xcode 26.3.
+secret with a Forgejo `write:package` token. The publisher uses the available `ubuntu-latest` runner.
 Authenticated publication and downloads remain unverified. See [hosting and CI](hosting.md).
 
 Publishing works like this:
 
 1. Merge the changelog entry and version bump in `gradle.properties` to `main`.
 2. Push the tag `v<version>`.
-3. The `publish` workflow runs `checkAll`, builds every publication locally, then uploads every
-   module to Forgejo Packages from a macOS runner, so the Android, iOS device, and iOS simulator
-   variants come from one build.
+3. The `publish` workflow runs `checkAll` and builds every publication in an isolated local Maven
+   repository on Linux. `tools/check_publications.py` verifies all root, Android, iOS device, and
+   iOS simulator publications, including the files and checksums in their Gradle metadata.
+   Only then does the workflow upload every module to Forgejo Packages.
 4. Open a pull request in each app that bumps `otus-meta` in its version catalog when the app
    needs the release. Apps may stay on an older version.
 
 Published versions are immutable. Fix a bad release with a new patch version.
+
+To test the publisher without a release, select `publish` in Forgejo Actions and use **Run workflow**
+on the branch to validate. Manual runs never upload and do not require a publishing token.
+A branch push does not publish; only a new version tag starts an upload.
+
+The current modules cross-compile their iOS Kotlin libraries on Linux. Final iOS binaries and
+simulator tests require macOS and remain in the separate quality workflow. The Forgejo instance
+has no macOS runner, so those jobs cannot execute there. Linux publication does not establish
+iOS runtime validation. Keep the GitHub macOS checks available and record unrun checks when
+releasing. A future custom cinterop or CocoaPods dependency may require a Mac to build a complete
+publication; the artifact check must fail rather than allow an incomplete release. See
+[decision 0011](decisions/0011-linux-library-publication.md).
 
 ## Migrating an existing release
 
@@ -48,7 +61,7 @@ adds the Forgejo publication repository. Before publishing that version, verify 
 git diff --exit-code v0.3.0 -- accounts avatar dateformat designsystem jmap settings gradle gradle.properties settings.gradle.kts
 ```
 
-On a Mac, configure these credentials in private `~/.gradle/gradle.properties`:
+On Linux or macOS, configure these credentials in private `~/.gradle/gradle.properties`:
 
 ```properties
 ForgejoPackagesUsername=florian.ruby
@@ -58,14 +71,16 @@ ForgejoPackagesPassword=<Forgejo token with write:package>
 Verify that version 0.3.0 is absent from Forgejo, then build and publish the complete release:
 
 ```sh
-./gradlew checkAll iosSimulatorArm64Test --console=plain
-./gradlew publishToMavenLocal --console=plain
+./gradlew checkAll --console=plain
+./gradlew publishToMavenLocal -Dmaven.repo.local="$PWD/build/publications-local" --console=plain
+python3 tools/check_publications.py build/publications-local 0.3.0
 ./gradlew publishAllPublicationsToForgejoPackagesRepository --console=plain
 ```
 
 Run these from the verified clean checkout, not an in-progress library branch. The publication
 includes all six modules' root, Android, iOS device, and iOS simulator artifacts. Do not upload
 only the Android publications. Publishing to local Maven alone does not upload to Forgejo.
+Run `./gradlew iosSimulatorArm64Test --console=plain` separately on macOS when available.
 After uploading, run Mail against the remote registry and verify Android and iOS linking before
 marking migration complete. Existing tags predate the Forgejo workflow; pushing an already-present
 tag does not start a new release run.
