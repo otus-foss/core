@@ -12,6 +12,8 @@
 - Breaking API change for 0.4.0: `QueryResult.position` and `QueryResult.total` use `Long` and
   `Long?` instead of `Int` and `Int?`, with JMAP's unsigned 53-bit bounds. Consumers must rebuild,
   use long counters, and explicitly check bounds before converting to an `Int`.
+- Search contact-photo matches across pages of 32 candidates, restricted to readable subscribed
+  address books. Stop on exhausted or changed results, stalled pagination, or a 10-second deadline.
 - Add `SpecificDatePicker` as a reusable wheel picker for one date within a caller-supplied
   `allowedDates` range. Go stays disabled until a day is chosen, and `onConfirm` receives a
   `LocalDate`.
