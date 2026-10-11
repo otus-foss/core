@@ -17,7 +17,7 @@ Dark mode is the only color mode. The palette is recorded in
   `controlPressFeedback` modifier.
 - `components`: `ActionDialog`, `ChoiceDialog`, `ChoiceSheet`, `ConfirmDialog`, `InputDialog`, `ContextPanel`, `DatePickerDialog`,
   `MonthNavigation`, `MonthYearPicker`, `PageScaffold`, `Subpage`, `PageSection`, `PanelSurface`,
-  `PickerSearch`, `PullToRefresh`, `SelectionSheet`, `SettingRow`, `SettingToggleRow`,
+  `PickerSearch`, `PullToRefresh`, `SelectionSheet`, `SheetFrame`, `SettingRow`, `SettingToggleRow`,
   `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarSwipeArea`, and `SwipeActions`.
 - Settings rows follow Notion's settings pages: flat rows with a title and `text2` description
   beside the control, `bgLight` hairlines between them, and large section titles. The whole row is
