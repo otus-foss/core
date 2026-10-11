@@ -96,13 +96,13 @@ private fun Modifier.revealArea(
     }
 
 /**
- * Settles a release by distance alone: past [threshold] it commits, reporting the side through
- * [onCommit] before the row reaches its anchor; anything shorter returns to rest.
+ * Settles a release by distance alone. Past [threshold], [commit] takes over the row and moves it
+ * from where it was released; anything shorter, or a side [commit] declines, returns to rest.
  */
 internal fun thresholdFlingBehavior(
     state: AnchoredDraggableState<SwipeAnchor>,
     threshold: Float,
-    onCommit: (SwipeAnchor) -> Unit,
+    commit: (SwipeAnchor) -> Boolean,
 ): TargetedFlingBehavior =
     object : TargetedFlingBehavior {
         override suspend fun ScrollScope.performFling(
@@ -111,8 +111,8 @@ internal fun thresholdFlingBehavior(
         ): Float {
             val start = state.requireOffset()
             val target = swipeTarget(start, threshold, state.anchors)
-            if (target != SwipeAnchor.Settled) onCommit(target)
-            val end = state.anchors.positionOf(target)
+            if (target != SwipeAnchor.Settled && commit(target)) return 0f
+            val end = state.anchors.positionOf(SwipeAnchor.Settled)
             var previous = start
             onRemainingDistanceUpdated(end - start)
             animate(
