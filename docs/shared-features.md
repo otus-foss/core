@@ -32,8 +32,21 @@ its own capability and probe without introducing a provider-specific account flo
 
 HTTPS discovery, HTTP Basic authentication, explicit consent for a redirect to another host,
 credential redaction, and app-private protected storage retain the existing Mail behavior.
-The form holds its password in memory and clears it after a successful connection. Each
+The accounts page hides the form behind "Connect an account". The button opens the design system's
+`SheetFrame`, with scrolling fields above the keyboard. A successful connection closes the sheet.
+Done, the scrim, Back, and a downward swipe dismiss it and discard the draft. The form holds its
+password in memory. Dismissal cancels pending connection work and drops credentials awaiting host
+consent. Each
 installed app has its own store; sharing the library does not share credentials.
+
+Saved mail accounts discover sending addresses through `Identity/get`, following
+[RFC 8621, section 6](https://www.rfc-editor.org/rfc/rfc8621.html#section-6). Discovery checks
+submission support on both the session and the selected mail account. It never substitutes a
+different submission account or requires submission to connect for mail. Rows show distinct
+addresses below the account name, omit addresses already used as the name or sign-in, and retain
+wildcard identities such as `*@example.org`. Receiving aliases without an identity are not exposed
+by this method. Addresses refresh when accounts reload and are not persisted. A network, credential,
+or identity error falls back to the saved sign-in and server. Other services skip identity discovery.
 
 ## Boundaries and checks
 
@@ -42,5 +55,5 @@ components take values and callbacks. Neither module knows Mail navigation or fo
 See [decision 0007](decisions/0007-shared-feature-modules.md).
 
 Common tests cover address parsing, verification and storage failures, selected-service probes,
-account state, and independent date-format preferences. Mail retains Compose integration tests
+account state, identity discovery and capability checks, and independent date-format preferences. Mail retains Compose integration tests
 for settings navigation, persistence, account setup, and connection-to-inbox behavior.

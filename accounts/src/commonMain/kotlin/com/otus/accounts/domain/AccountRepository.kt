@@ -6,6 +6,8 @@ public data class ConnectedAccount(
     val name: String,
     val username: String,
     val server: String,
+    /** Sending addresses reported by JMAP identities, which may include a wildcard domain. */
+    val emailAddresses: List<String> = emptyList(),
 )
 
 public enum class ConnectFailure {

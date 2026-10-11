@@ -35,7 +35,10 @@ public class JmapAccountRepository(
     private val service: AccountService,
     private val onAccountChanged: suspend (String) -> Unit = {},
 ) : AccountRepository {
-    override suspend fun accounts(): List<ConnectedAccount> = storage { logins.logins().map { it.toConnected() } }
+    override suspend fun accounts(): List<ConnectedAccount> =
+        storage { logins.logins() }.map { login ->
+            login.toConnected().copy(emailAddresses = identityAddresses(login, service, connections))
+        }
 
     override suspend fun connect(draft: JmapAccountDraft): ConnectOutcome {
         if (!isValidUsername(draft.username)) return ConnectOutcome.Failed(ConnectFailure.InvalidUsername)
