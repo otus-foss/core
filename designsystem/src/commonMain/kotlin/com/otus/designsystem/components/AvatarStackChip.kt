@@ -15,7 +15,8 @@ import com.otus.designsystem.theme.PanelTokens
 
 /**
  * A selected pill showing up to [PanelTokens.CHIP_AVATAR_LIMIT] overlapping avatars. The caller
- * chooses the [label], such as a first name or a "+3" count, and the spoken [description].
+ * chooses the [label], such as a first name or a "+3" count, the spoken [description], and an
+ * optional [detail] shown after a divider line.
  */
 @Composable
 public fun AvatarStackChip(
@@ -24,12 +25,14 @@ public fun AvatarStackChip(
     description: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    detail: String? = null,
 ) {
     Chip(
         label,
         onClick,
         modifier.semantics { contentDescription = description },
         selected = true,
+        detail = detail,
     ) {
         Row(horizontalArrangement = Arrangement.spacedBy(-PanelTokens.chipAvatarOverlap)) {
             avatars.take(PanelTokens.CHIP_AVATAR_LIMIT).forEach { StackedAvatar(it) }

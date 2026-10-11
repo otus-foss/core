@@ -1,57 +1,26 @@
 package com.otus.designsystem.components
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ProvideTextStyle
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalViewConfiguration
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.paneTitle
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.otus.designsystem.elements.ActionButton
-import com.otus.designsystem.elements.IconButton
-import com.otus.designsystem.elements.Symbol
-import com.otus.designsystem.resources.Res
-import com.otus.designsystem.resources.symbol_close
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PanelTokens
 import com.otus.designsystem.theme.SheetTokens
-import com.otus.designsystem.theme.panelTextStyle
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.TimeMark
 import kotlin.time.TimeSource
 
 /**
- * Modal shell. The caller owns drafts; dismissing never applies them.
- * A second Clear tap within the double-tap timeout also calls [onApply], applying the cleared draft.
+ * A [SheetFrame] for picking filter values. The caller owns drafts. Done applies them through
+ * [onApply]; the scrim, Back, and swiping down discard them. Clear sits opposite Done, and a second
+ * Clear tap within the double-tap timeout also applies the cleared draft.
  */
 @Composable
 public fun SelectionSheet(
@@ -63,61 +32,21 @@ public fun SelectionSheet(
     search: (@Composable () -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    val density = LocalDensity.current
-    val clear = rememberRepeatedClear(onClear, onApply)
-    Dialog(onDismiss, properties = selectionSheetDialogProperties()) {
-        CompositionLocalProvider(LocalDensity provides density) {
-            Box(Modifier.fillMaxSize()) {
-                Box(
-                    Modifier
-                        .fillMaxSize()
-                        .background(OtusColors.bgDark.copy(alpha = SheetTokens.SCRIM_ALPHA))
-                        .semantics { contentDescription = "Dismiss selection" }
-                        .clickable(remember { MutableInteractionSource() }, indication = null, onClick = onDismiss),
-                )
-                Box(
-                    Modifier
-                        .fillMaxSize()
-                        .safeDrawingPadding()
-                        .imePadding()
-                        .padding(SheetTokens.gap),
-                    Alignment.BottomCenter,
-                ) {
-                    Surface(
-                        Modifier
-                            .widthIn(
-                                max = SheetTokens.maxWidth,
-                            ).fillMaxWidth()
-                            .fillMaxHeight(SheetTokens.HEIGHT_FRACTION)
-                            .semantics { paneTitle = title },
-                        shape = RoundedCornerShape(SheetTokens.radius),
-                        color = OtusColors.bgDark,
-                        contentColor = OtusColors.text1,
-                        border = BorderStroke(PanelTokens.borderWidth, OtusColors.strokeBgDark),
-                    ) {
-                        ProvideTextStyle(panelTextStyle()) {
-                            Column(
-                                Modifier.padding(SheetTokens.inset),
-                                verticalArrangement = Arrangement.spacedBy(SheetTokens.gap),
-                            ) {
-                                SheetHeading(title, onDismiss)
-                                search?.invoke()
-                                Column(Modifier.weight(1f), content = content)
-                                Row(horizontalArrangement = Arrangement.spacedBy(SheetTokens.gap)) {
-                                    ActionButton("Clear", clear, Modifier.weight(1f))
-                                    ActionButton(
-                                        "Apply",
-                                        onApply,
-                                        Modifier.weight(1f),
-                                        primary = true,
-                                        enabled = applyEnabled,
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+    SheetFrame(
+        title,
+        onDismiss,
+        onDone = onApply,
+        doneEnabled = applyEnabled,
+        leadingAction = { done -> SheetHeaderAction("Clear", rememberRepeatedClear(onClear, done)) },
+    ) {
+        Column(
+            Modifier
+                .weight(1f)
+                .padding(start = SheetTokens.inset, end = SheetTokens.inset, bottom = SheetTokens.inset),
+            verticalArrangement = Arrangement.spacedBy(SheetTokens.gap),
+        ) {
+            search?.invoke()
+            Column(Modifier.weight(1f), content = content)
         }
     }
 }
@@ -143,14 +72,3 @@ private fun rememberRepeatedClear(
 
 /** Android's window-inset option is absent from the iOS dialog API. */
 internal expect fun selectionSheetDialogProperties(): DialogProperties
-
-@Composable
-private fun SheetHeading(
-    title: String,
-    onDismiss: () -> Unit,
-) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(title, Modifier.weight(1f).semantics { heading() }, fontSize = SheetTokens.titleSize)
-        IconButton("Close selection", onDismiss, outlined = false) { Symbol(Res.drawable.symbol_close) }
-    }
-}

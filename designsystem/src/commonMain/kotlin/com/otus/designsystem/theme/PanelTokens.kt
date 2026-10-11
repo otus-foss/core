@@ -14,6 +14,7 @@ public object PanelTokens {
     public const val CHIP_AVATAR_LIMIT: Int = 4
     public val navigationIconSize: Dp = 32.dp
     public val chipPadding: Dp = 10.dp
+    public val chipDividerHeight: Dp = 14.dp
     public val iconGap: Dp = 4.dp
     public val chipGap: Dp = 6.dp
     public val panelInset: Dp = 8.dp

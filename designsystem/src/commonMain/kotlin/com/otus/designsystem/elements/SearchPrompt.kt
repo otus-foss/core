@@ -30,8 +30,8 @@ public fun SearchPrompt(
             .fillMaxWidth()
             .heightIn(min = PanelTokens.touchTarget)
             .semantics { contentDescription = "Search mailbox" }
-            .clickable(interactions, indication = null, role = Role.Button, onClick = onClick)
-            .controlPressFeedback(interactions),
+            // The prompt fills the header, so press feedback would tint the whole field.
+            .clickable(interactions, indication = null, role = Role.Button, onClick = onClick),
         contentAlignment = Alignment.CenterStart,
     ) {
         Text(

@@ -88,10 +88,11 @@ a panel layout decision rather than a pill token.
 
 ## Selection sheets
 
-Inbox filters use custom modal bottom sheets with 22 dp corners, bg-dark surfaces,
-stroke-bg-dark borders, Figtree text, and the shared clipped press highlight. Picker search
-reuses the SearchField element but keeps its query independent of mail search. Clear edits
-only the sheet draft; Apply commits, while dismissal discards changes.
+Inbox filters use the same bottom sheet as settings choices: it slides up from the bottom
+edge with 22 dp top corners, a bg-dark surface, a grab handle, Figtree text, and the shared
+clipped press highlight. Picker search reuses the SearchField element but keeps its query
+independent of mail search. Clear edits only the sheet draft; Done commits, while the scrim,
+Back, or a downward swipe discard changes.
 
 Figma search frame `23:563` was inspected with design context and screenshot. Its blank popup
 surface `24:655` informs the styling; it does not provide complete picker layouts. The sheet
