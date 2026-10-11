@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.6.0 - 2026-10-11
+
+- Add `symbol_bookmark` (Material Symbols Rounded, Apache 2.0).
+- Add `LabelPill`, a read-only pill with an optional icon, sized by `LabelTokens`. A highlighted
+  label has an `accentRegular` border and `accentLight` text; others have a `bgLight` border and
+  `text2` text. `ContentRowText` takes `labels: List<RowLabel>`, shown before the metadata text on
+  the row's last line, which keeps a label's height whether or not it has labels. Empty metadata
+  is left out. Existing calls compile unchanged.
+
 ## 0.5.0 - 2026-10-11
 
 - Add `SwipeActions` and `SwipeAction` for list rows. Dragging a row toward either edge uncovers
