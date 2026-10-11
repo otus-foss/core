@@ -5,16 +5,21 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import com.otus.designsystem.elements.LabelPill
 import com.otus.designsystem.theme.InboxTokens
+import com.otus.designsystem.theme.LabelTokens
 import com.otus.designsystem.theme.OtusColors
 
 /** A compact list row. The app supplies display text, accessibility state, and leading content. */
@@ -56,8 +61,24 @@ public fun ContentRow(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
+            RowDetails(text)
+        }
+    }
+}
+
+/** Labels, then the metadata text. The line keeps a label's height, so rows with and without labels line up. */
+@Composable
+private fun RowDetails(text: ContentRowText) {
+    Row(
+        Modifier.heightIn(min = LabelTokens.height).clipToBounds(),
+        horizontalArrangement = Arrangement.spacedBy(LabelTokens.spacing),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        text.labels.forEach { LabelPill(it.text, icon = it.icon, highlighted = it.highlighted) }
+        if (text.metadata.isNotEmpty()) {
             Text(
                 text.metadata,
+                Modifier.weight(1f, fill = false),
                 fontSize = InboxTokens.metadataSize,
                 color = OtusColors.text3,
                 maxLines = 1,
