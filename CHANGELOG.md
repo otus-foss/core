@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.7.0 - 2026-10-11
+
 - `AccountSetupScreen` opens its connection form from a "Connect an account" button in the
   shared `SheetFrame`, now public. The sheet scrolls above the keyboard, closes after a successful
   connection, and clears its draft when dismissed. `AccountsState.cancelConnect()` cancels a pending
@@ -11,6 +13,41 @@
   submission. Connected account rows show these beside the sign-in address and server, without
   repeating addresses. Discovery failures keep the saved account visible. Receiving aliases
   that the server does not expose as identities are not discovered.
+
+- `SelectionSheet` now uses `SheetFrame`, the bottom sheet behind `ChoiceSheet`, instead of a
+  floating popup. It slides up from the bottom edge with a grab handle and closes when swiped
+  down. Clear moves to the header's start and Done to its end; Done applies the draft once the
+  sheet has slid away, replacing the Apply button, and `applyEnabled` now enables Done. The close
+  icon is gone, and the scrim's accessible name is "Dismiss <title>". The function signature is
+  unchanged.
+- `SheetFrame` takes `onDone`, `doneEnabled`, and a `leadingAction` that can finish the sheet the
+  same way Done does. The first close action wins, so repeated taps during the exit animation
+  finish only once. Closing or dragging interrupts the entry animation. Calls that passed
+  `content` positionally must name it or use a trailing lambda.
+- `ChoiceSheet` and `SelectionSheet` now close when swiped down from any part of the sheet. Before,
+  only the header and scrolling content responded, so a swipe that started on a search field, a
+  label, or empty space below a short list did nothing.
+- `SearchPrompt` no longer shows press or focus feedback. The highlight covered the whole panel
+  header, so tapping the prompt changed the field's background. Other controls keep
+  `controlPressFeedback`.
+- `Chip` and `AvatarStackChip` take an optional `detail` text, shown after a thin divider line
+  that is shorter than the text. `PanelTokens.chipDividerHeight` sets its height. The line is
+  `accentLight` on a selected chip and `bgLight` otherwise. Mail uses it for the inboxes beside
+  the accounts. Named-argument and trailing-lambda calls compile unchanged. `Chip` calls that
+  passed `leading` as the sixth positional argument must use `leading =`.
+- A `SelectionRow` with neither subtitle nor leading content is now 48 dp tall, the touch target,
+  instead of 64 dp. Rows with a subtitle or an avatar keep the taller height.
+- Add `ReorderableColumn`, a column whose rows the user reorders by dragging a handle. Each row
+  places `ReorderableScope.DragHandle(label)`, a 48 dp target with the `text2` drag indicator. The
+  dragged row follows the finger within the column, the rows it passes step aside, and a haptic
+  marks each new place. `onMove(from, to)` reports the move once the row is dropped; the caller
+  owns the order. Each handle also offers Move up and Move down to accessibility services.
+  Keys must be unique and stable. Changes to the row order cancel an active drag.
+- Add `symbol_drag_indicator` (Material Symbols Rounded, Apache 2.0).
+- Add `ChipPlacement.None` for a `ContextPanel` without pills. The chip rail collapses, so the
+  panel is only as tall as its header, and the trailing action moves to the header's end. The rail
+  grows and shrinks over the mode transition while the action fades between its places. Code with
+  an exhaustive `when` over `ChipPlacement` needs a branch for the new value.
 
 ## 0.6.0 - 2026-10-11
 

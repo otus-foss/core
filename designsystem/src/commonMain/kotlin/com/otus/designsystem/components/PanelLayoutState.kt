@@ -87,15 +87,12 @@ internal class PanelLayoutState {
 
     private fun anchors(): PanelAnchors? {
         revision
-        val parent = panel?.takeIf { it.isAttached } ?: return null
-        val headerBounds = parent.boundsOf(header)
-        val railBounds = parent.boundsOf(rail)
-        val clip = parent.boundsOf(viewport)
-        return if (headerBounds != null && railBounds != null && clip != null) {
-            PanelAnchors(parent, headerBounds, railBounds, clip)
-        } else {
-            null
-        }
+        val parent = panel?.takeIf { it.isAttached }
+        val headerBounds = parent?.boundsOf(header)
+        if (parent == null || headerBounds == null) return null
+        // Without a chip rail, an empty rail at the header's bottom edge ends the panel there.
+        val railBounds = parent.boundsOf(rail) ?: headerBounds.copy(top = headerBounds.bottom)
+        return PanelAnchors(parent, headerBounds, railBounds, parent.boundsOf(viewport) ?: railBounds)
     }
 }
 

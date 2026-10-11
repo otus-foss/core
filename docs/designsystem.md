@@ -17,8 +17,9 @@ Dark mode is the only color mode. The palette is recorded in
   `controlPressFeedback` modifier.
 - `components`: `ActionDialog`, `ChoiceDialog`, `ChoiceSheet`, `ConfirmDialog`, `InputDialog`, `ContextPanel`, `DatePickerDialog`,
   `MonthNavigation`, `MonthYearPicker`, `PageScaffold`, `Subpage`, `PageSection`, `PanelSurface`,
-  `PickerSearch`, `PullToRefresh`, `SelectionSheet`, `SheetFrame`, `SettingRow`, `SettingToggleRow`,
-  `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarSwipeArea`, and `SwipeActions`.
+  `PickerSearch`, `PullToRefresh`, `ReorderableColumn`, `SelectionSheet`, `SheetFrame`, `SettingRow`,
+  `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarSwipeArea`, and
+  `SwipeActions`.
 - Settings rows follow Notion's settings pages: flat rows with a title and `text2` description
   beside the control, `bgLight` hairlines between them, and large section titles. The whole row is
   the control; `ToggleSwitch` and `ValueButton` only show its state. A row without a click is
@@ -41,6 +42,13 @@ Dark mode is the only color mode. The palette is recorded in
   free end. The swiped row draws above its neighbors so they do not cover the fillets. Colors use `accentRegular`, `text1`, and
   `bgRegular`. Rows that should show it against the screen edge must reach that edge. A row inside `SidebarSwipeArea` keeps its swipes, because the sidebar opens only
   from the context panel.
+- `ReorderableColumn` lets the user reorder a short list by dragging each row's handle. Only the
+  handle starts a drag, so rows keep their own taps and the list around them still scrolls. The
+  dragged row draws above the others and stays within the column; the rows it passes step aside
+  over 180 ms, and a haptic marks each new place. The caller gets one `onMove(from, to)` on drop
+  and owns the order. Each handle names its row for accessibility services and offers Move up and
+  Move down. Give every row a unique, stable key. Changing the row order cancels an active drag.
+  Every row is composed, so it suits settings lists, not message lists.
 
 All visual tokens live here, including `InboxTokens`. New elements and reusable components
 belong here even when only Mail currently uses them. Their APIs use values and callbacks,
@@ -89,7 +97,8 @@ The continuous calendar layout and gestures remain unchanged.
 
 ## Tests
 
-Common tests cover the continuous calendar week model and decoded-avatar cache, and an Android host test covers image decoding. The
+Common tests cover the continuous calendar week model, decoded-avatar cache, reorder behavior,
+and sheet animation interruption and completion. An Android host test covers image decoding. The
 Compose UI tests for panels, pickers, motion, and press feedback still run in Mail's `androidApp`,
 because they need an Android activity. Moving them here needs a host-test setup with an activity
 and is open work.
