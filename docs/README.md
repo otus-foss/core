@@ -2,7 +2,7 @@
 
 ## Suite
 
-- [Hosting and CI](hosting.md): Forgejo primary repositories, GitHub fallback, and migration status.
+- [Hosting and CI](hosting.md): GitHub repositories, runners, and packages.
 
 - [Product goals](suite/product-goals.md): purpose, protocol scope, and current state of both apps.
 - [Mail design foundations](suite/mail-design.md): the palette and Figma reference used by both apps.
@@ -31,6 +31,8 @@
 
 - [0007: Shared feature modules](decisions/0007-shared-feature-modules.md)
 - [0008: Central UI ownership](decisions/0008-central-ui-ownership.md)
-- [0009: Forgejo primary Git host](decisions/0009-forgejo-primary.md)
+- [0009: Forgejo primary Git host](decisions/0009-forgejo-primary.md), replaced by 0012
+- [0011: Complete library publication from Linux](decisions/0011-linux-library-publication.md)
+- [0012: GitHub as the primary host again](decisions/0012-github-primary.md)
 
 Decisions 0001 to 0004 were made in the app repositories and apply to every Otus repository.

@@ -108,19 +108,13 @@ tasks.register("checkAll") {
 }
 
 subprojects {
-    // Forgejo is the selected registry; GitHub remains available during package migration.
-    // Each repository name supplies its own Username and Password Gradle properties.
+    // The repository name selects the GitHubPackagesUsername and GitHubPackagesPassword properties.
     plugins.withId("maven-publish") {
         extensions.configure<PublishingExtension> {
             repositories {
                 maven {
                     name = "GitHubPackages"
                     url = uri("https://maven.pkg.github.com/reazndev/otus-meta")
-                    credentials(PasswordCredentials::class)
-                }
-                maven {
-                    name = "ForgejoPackages"
-                    url = uri("https://git.hilfikers.com/api/packages/florian.ruby/maven")
                     credentials(PasswordCredentials::class)
                 }
             }

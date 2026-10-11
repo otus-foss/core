@@ -1,6 +1,7 @@
 # 0009: Forgejo as the primary Git host
 
-Status: accepted by the user on 2026-10-08.
+Status: accepted by the user on 2026-10-08. Replaced by [decision 0012](0012-github-primary.md)
+on 2026-10-11.
 
 ## Decision
 
