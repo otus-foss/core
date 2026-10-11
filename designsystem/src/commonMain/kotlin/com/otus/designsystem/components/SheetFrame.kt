@@ -29,11 +29,14 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
@@ -56,18 +59,27 @@ import kotlin.math.roundToInt
 
 /**
  * A modal sheet that slides up from the bottom edge, titled [title] with a Done button. Done, the
- * scrim, Back, and swiping down anywhere on it all slide it away before [onDismiss] runs.
+ * scrim, Back, and swiping down anywhere on it all slide it away. Then Done runs [onDone] and the
+ * others run [onDismiss]. [leadingAction] sits opposite Done and gets the same slide-away-then-done
+ * path, so it can finish the sheet too.
  */
 @Composable
 public fun SheetFrame(
     title: String,
     onDismiss: () -> Unit,
+    onDone: () -> Unit = onDismiss,
+    doneEnabled: Boolean = true,
+    leadingAction: (@Composable (done: () -> Unit) -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val density = LocalDensity.current
     val scope = rememberCoroutineScope()
     val position = remember { SheetPosition() }
-    val close: () -> Unit = { scope.launch { position.hide(onDismiss) } }
+    // Read when the slide ends, so a draft changed during the animation is the one finished.
+    val currentOnDismiss by rememberUpdatedState(onDismiss)
+    val currentOnDone by rememberUpdatedState(onDone)
+    val close: () -> Unit = { scope.launch { position.hide { currentOnDismiss() } } }
+    val done: () -> Unit = { scope.launch { position.hide { currentOnDone() } } }
     LaunchedEffect(Unit) { position.show(MotionTokens.enter) }
     Dialog(close, properties = selectionSheetDialogProperties()) {
         CompositionLocalProvider(LocalDensity provides density) {
@@ -89,10 +101,15 @@ public fun SheetFrame(
                     ProvideTextStyle(panelTextStyle()) {
                         Column(
                             Modifier
-                                .windowInsetsPadding(WindowInsets.safeDrawing.only(BottomAndSides))
-                                .swipeToDismiss(position, close),
+                                .swipeToDismiss(position, close)
+                                .windowInsetsPadding(WindowInsets.safeDrawing.only(BottomAndSides)),
                         ) {
-                            SheetHeader(title, onDone = close, Modifier.dragSheet(position, close))
+                            SheetHeader(
+                                title,
+                                onDone = done,
+                                doneEnabled = doneEnabled && !position.closing,
+                                leadingAction = leadingAction?.let { action -> { action(done) } },
+                            )
                             content()
                         }
                     }
@@ -119,12 +136,14 @@ private fun SheetScrim(
 
 private val BottomAndSides = WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal
 
-/** The grab handle, the centered [title], and Done at the end. Drag gestures attach through [modifier]. */
+/** The grab handle, the centered [title], [leadingAction] at the start, and Done at the end. */
 @Composable
 internal fun SheetHeader(
     title: String,
     onDone: () -> Unit,
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
+    doneEnabled: Boolean = true,
+    leadingAction: (@Composable () -> Unit)? = null,
 ) {
     Box(modifier.fillMaxWidth().height(ChoiceSheetTokens.headerHeight)) {
         Box(
@@ -135,21 +154,39 @@ internal fun SheetHeader(
                 .clip(CircleShape)
                 .background(OtusColors.bgLight),
         )
+        leadingAction?.let { Box(Modifier.align(Alignment.CenterStart)) { it() } }
         Text(
             title,
             Modifier.align(Alignment.Center).semantics { heading() },
             fontSize = ChoiceSheetTokens.titleSize,
             fontWeight = FontWeight.SemiBold,
         )
-        val interactions = remember { MutableInteractionSource() }
-        Box(
-            Modifier
-                .align(Alignment.CenterEnd)
-                .heightIn(min = PanelTokens.touchTarget)
-                .clickable(interactions, indication = null, role = Role.Button, onClick = onDone)
-                .controlPressFeedback(interactions, RoundedCornerShape(SheetTokens.rowRadius))
-                .padding(horizontal = SheetTokens.inset),
-            contentAlignment = Alignment.Center,
-        ) { Text("Done", color = OtusColors.accentLight, fontWeight = FontWeight.SemiBold) }
+        SheetHeaderAction(
+            "Done",
+            onDone,
+            Modifier.align(Alignment.CenterEnd),
+            color = OtusColors.accentLight,
+            enabled = doneEnabled,
+        )
     }
+}
+
+/** A text button in the sheet header, with a full touch target and the shared press feedback. */
+@Composable
+internal fun SheetHeaderAction(
+    label: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    color: Color = OtusColors.text1,
+    enabled: Boolean = true,
+) {
+    val interactions = remember { MutableInteractionSource() }
+    Box(
+        modifier
+            .heightIn(min = PanelTokens.touchTarget)
+            .clickable(interactions, indication = null, enabled = enabled, role = Role.Button, onClick = onClick)
+            .controlPressFeedback(interactions, RoundedCornerShape(SheetTokens.rowRadius))
+            .padding(horizontal = SheetTokens.inset),
+        contentAlignment = Alignment.Center,
+    ) { Text(label, color = if (enabled) color else OtusColors.text3, fontWeight = FontWeight.SemiBold) }
 }

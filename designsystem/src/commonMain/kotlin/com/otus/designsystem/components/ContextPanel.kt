@@ -1,7 +1,12 @@
 package com.otus.designsystem.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,8 +26,12 @@ import com.otus.designsystem.theme.MotionTokens
 import com.otus.designsystem.theme.PanelTokens
 import com.otus.designsystem.theme.panelTextStyle
 
-/** Placement is independent of whether the header contains a title, input, or richer content. */
-public enum class ChipPlacement { Below, Overlapping }
+/**
+ * Placement is independent of whether the header contains a title, input, or richer content.
+ * [None] has no chip rail: the trailing action moves into the header, and the panel is only as
+ * tall as its header.
+ */
+public enum class ChipPlacement { Below, Overlapping, None }
 
 /** Feature-independent surface. Each [chips] item needs a stable key and a pill-shaped visual. */
 @Composable
@@ -37,12 +46,13 @@ public fun ContextPanel(
     val overlap =
         animateFloatAsState(
             targetValue = if (placement == ChipPlacement.Overlapping) 1f else 0f,
-            animationSpec = tween(PanelTokens.MODE_TRANSITION_MILLIS, easing = MotionTokens.standard),
+            animationSpec = modeTween(),
             label = "Panel surface expansion",
         )
     val geometry = remember { PanelLayoutState() }
     val scope = remember(geometry) { ContextPanelScope(geometry) }
     val scroll = rememberScrollState()
+    val railShown = placement != ChipPlacement.None
     Box(
         modifier
             .fillMaxWidth()
@@ -54,39 +64,45 @@ public fun ContextPanel(
             PanelHeader(
                 Modifier.onGloballyPositioned(geometry::trackHeader),
                 navigation,
+                trailingAction,
+                actionShown = !railShown,
                 content,
             )
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        top =
-                            if (placement ==
-                                ChipPlacement.Below
-                            ) {
-                                PanelTokens.detachedGap
-                            } else {
-                                0.dp
-                            },
-                    ).onGloballyPositioned(geometry::trackRail),
-                horizontalArrangement = Arrangement.spacedBy(PanelTokens.iconGap),
-                verticalAlignment = Alignment.CenterVertically,
+            AnimatedVisibility(
+                railShown,
+                enter = expandVertically(modeTween(), expandFrom = Alignment.Top) + fadeIn(modeTween()),
+                exit = shrinkVertically(modeTween(), shrinkTowards = Alignment.Top) + fadeOut(modeTween()),
+                label = "Panel chip rail",
             ) {
-                PanelChipRail(Modifier.weight(1f), geometry, scroll) { scope.chips() }
-                if (trailingAction != null) {
-                    scope.item(ActionKey) { trailingAction() }
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(top = if (placement == ChipPlacement.Overlapping) 0.dp else PanelTokens.detachedGap)
+                        .onGloballyPositioned(geometry::trackRail),
+                    horizontalArrangement = Arrangement.spacedBy(PanelTokens.iconGap),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    PanelChipRail(Modifier.weight(1f), geometry, scroll) { scope.chips() }
+                    if (trailingAction != null) {
+                        scope.item(ActionKey) { trailingAction() }
+                    }
                 }
             }
         }
     }
 }
 
+private fun <T> modeTween() = tween<T>(PanelTokens.MODE_TRANSITION_MILLIS, easing = MotionTokens.standard)
+
 internal object ActionKey
 
+/** The trailing [action] shows here while the panel has no chip rail, fading as the rail comes and goes. */
 @Composable
 private fun PanelHeader(
     modifier: Modifier,
     navigation: (@Composable () -> Unit)?,
+    action: (@Composable () -> Unit)?,
+    actionShown: Boolean,
     content: @Composable () -> Unit,
 ) {
     Row(
@@ -104,5 +120,8 @@ private fun PanelHeader(
                 ).heightIn(min = PanelTokens.touchTarget),
             contentAlignment = Alignment.CenterStart,
         ) { ProvideTextStyle(panelTextStyle()) { content() } }
+        if (action != null) {
+            AnimatedVisibility(actionShown, enter = fadeIn(modeTween()), exit = fadeOut(modeTween())) { action() }
+        }
     }
 }

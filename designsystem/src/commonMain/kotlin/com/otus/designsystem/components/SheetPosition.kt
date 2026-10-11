@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
@@ -22,23 +23,34 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Velocity
 import com.otus.designsystem.theme.ChoiceSheetTokens
 import com.otus.designsystem.theme.MotionTokens
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.job
 
 /** How far the sheet is pushed below its resting place: 1 is fully hidden, 0 fully shown. */
 internal class SheetPosition {
     var hidden by mutableFloatStateOf(1f)
         private set
     var height by mutableIntStateOf(0)
+    var closing by mutableStateOf(false)
+        private set
+    private var animation: Job? = null
 
-    suspend fun show(easing: Easing) = animateTo(0f, ChoiceSheetTokens.ENTER_MILLIS, easing)
+    suspend fun show(easing: Easing) {
+        if (!closing) animateTo(0f, ChoiceSheetTokens.ENTER_MILLIS, easing)
+    }
 
     suspend fun hide(then: () -> Unit) {
+        if (closing) return
+        closing = true
         animateTo(1f, ChoiceSheetTokens.EXIT_MILLIS, MotionTokens.exit)
         then()
     }
 
     /** Moves the sheet [delta] pixels down, or up when negative, and returns how far it moved. */
     fun dragBy(delta: Float): Float {
-        if (height <= 0) return 0f
+        if (height <= 0 || closing) return 0f
+        animation?.cancel()
         val before = hidden
         hidden = (hidden + delta / height).coerceIn(0f, 1f)
         return (hidden - before) * height
@@ -50,6 +62,7 @@ internal class SheetPosition {
         flingVelocity: Float,
         close: () -> Unit,
     ) {
+        if (closing) return
         if (velocity > flingVelocity ||
             hidden > ChoiceSheetTokens.DISMISS_FRACTION
         ) {
@@ -63,13 +76,23 @@ internal class SheetPosition {
         target: Float,
         millis: Int,
         easing: Easing,
-    ) = animate(hidden, target, animationSpec = tween(millis, easing = easing)) { value, _ -> hidden = value }
+    ) {
+        val job = currentCoroutineContext().job
+        animation?.takeIf { it != job }?.cancel()
+        animation = job
+        try {
+            animate(hidden, target, animationSpec = tween(millis, easing = easing)) { value, _ -> hidden = value }
+        } finally {
+            if (animation == job) animation = null
+        }
+    }
 }
 
 /**
- * Lets a downward swipe anywhere on the sheet close it. The header drags the sheet directly. In
- * scrolling content, a swipe moves the sheet once the content is at its top, and a swipe back up
- * returns the sheet before the content scrolls again.
+ * Lets a downward swipe anywhere on the sheet close it. Scrolling content hands the swipe to the
+ * sheet once it is at its top, and a swipe back up returns the sheet before the content scrolls
+ * again. A swipe that starts anywhere else, such as on the header, a text field, or empty space,
+ * drags the sheet directly.
  */
 @Composable
 internal fun Modifier.swipeToDismiss(
@@ -79,20 +102,11 @@ internal fun Modifier.swipeToDismiss(
     val flingVelocity = with(LocalDensity.current) { ChoiceSheetTokens.dismissVelocity.toPx() }
     val onClose by rememberUpdatedState(close)
     val connection = remember(position, flingVelocity) { SheetScrollConnection(position, flingVelocity) { onClose() } }
-    return nestedScroll(connection)
-}
-
-/** The header has no scrolling content of its own, so it drags the sheet directly. */
-@Composable
-internal fun Modifier.dragSheet(
-    position: SheetPosition,
-    close: () -> Unit,
-): Modifier {
-    val flingVelocity = with(LocalDensity.current) { ChoiceSheetTokens.dismissVelocity.toPx() }
-    return draggable(
+    return nestedScroll(connection).draggable(
         rememberDraggableState { delta -> position.dragBy(delta) },
         Orientation.Vertical,
-        onDragStopped = { velocity -> position.release(velocity, flingVelocity, close) },
+        enabled = !position.closing,
+        onDragStopped = { velocity -> position.release(velocity, flingVelocity, onClose) },
     )
 }
 

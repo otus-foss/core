@@ -40,8 +40,16 @@ public fun SelectionRow(
     Box(
         modifier
             .fillMaxWidth()
-            .heightIn(min = if (singleChoice) PanelTokens.touchTarget else SheetTokens.rowHeight)
-            .then(
+            .heightIn(
+                min =
+                    if (singleChoice ||
+                        isOneLine(subtitle, leading)
+                    ) {
+                        PanelTokens.touchTarget
+                    } else {
+                        SheetTokens.rowHeight
+                    },
+            ).then(
                 if (singleChoice) {
                     Modifier.selectable(
                         selected = selected,
@@ -77,6 +85,12 @@ public fun SelectionRow(
         }
     }
 }
+
+/** A subtitle or a leading avatar needs the taller row; a plain title fits the touch target. */
+private fun isOneLine(
+    subtitle: String?,
+    leading: (@Composable () -> Unit)?,
+): Boolean = subtitle == null && leading == null
 
 @Composable
 private fun SelectionCheckmark(selected: Boolean) {
