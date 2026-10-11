@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased
+
+- `AccountSetupScreen` opens its connection form from a "Connect an account" button in the
+  shared `SheetFrame`, now public. The sheet scrolls above the keyboard, closes after a successful
+  connection, and clears its draft when dismissed. `AccountsState.cancelConnect()` cancels a pending
+  connection and drops host-consent credentials; `loading` reports account discovery.
+- `ConnectedAccount.emailAddresses` contains the distinct sending addresses returned by
+  `Identity/get` for the selected mail account when both the server and that account advertise
+  submission. Connected account rows show these beside the sign-in address and server, without
+  repeating addresses. Discovery failures keep the saved account visible. Receiving aliases
+  that the server does not expose as identities are not discovered.
+
 ## 0.6.0 - 2026-10-11
 
 - Add `symbol_bookmark` (Material Symbols Rounded, Apache 2.0).

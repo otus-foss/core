@@ -4,6 +4,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -26,11 +29,13 @@ import com.otus.accounts.presentation.message
 import com.otus.designsystem.components.ConfirmDialog
 import com.otus.designsystem.components.PageNote
 import com.otus.designsystem.components.SettingsSection
+import com.otus.designsystem.components.SheetFrame
 import com.otus.designsystem.components.Subpage
 import com.otus.designsystem.elements.ActionButton
 import com.otus.designsystem.elements.InputField
 import com.otus.designsystem.elements.InputKind
 import com.otus.designsystem.theme.PageTokens
+import com.otus.designsystem.theme.SheetTokens
 
 /** Connected JMAP accounts, and a form that verifies a new one before saving it. */
 @Composable
@@ -40,19 +45,36 @@ public fun AccountSetupScreen(
     service: AccountService,
     onBack: () -> Unit,
 ) {
-    // The account waiting for the user to confirm its removal.
     var removing by rememberSaveable { mutableStateOf<String?>(null) }
+    var adding by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(state.status) {
+        if (state.status is ConnectStatus.Connected) adding = false
+    }
     Subpage(title, onBack) {
         state.storageError?.let {
             PageNote(it)
             ActionButton("Reload accounts", state::reload)
         }
         SettingsSection("Connected accounts") {
-            if (state.accounts.isEmpty()) PageNote("No accounts connected yet.")
+            if (state.accounts.isEmpty() && state.storageError == null) {
+                PageNote(if (state.loading) "Loading accounts…" else "No accounts connected yet.")
+            }
             state.accounts.forEach { account -> ConnectedAccountRow(account) { removing = account.id } }
         }
-        SettingsSection("Add a JMAP account") {
-            Column(verticalArrangement = Arrangement.spacedBy(PageTokens.rowGap)) { AddAccountForm(state, service) }
+        ActionButton("Connect an account", {
+            state.cancelConnect()
+            adding = true
+        }, Modifier.fillMaxWidth(), primary = true)
+    }
+    if (adding) {
+        SheetFrame("Connect an account", onDismiss = {
+            state.cancelConnect()
+            adding = false
+        }) {
+            Column(
+                Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(SheetTokens.inset),
+                verticalArrangement = Arrangement.spacedBy(PageTokens.rowGap),
+            ) { AddAccountForm(state, service) }
         }
     }
     state.accounts.firstOrNull { it.id == removing }?.let { account ->
@@ -84,7 +106,7 @@ private fun AddAccountForm(
             password = ""
         }
     }
-    PageNote("Works with any JMAP server, such as Stalwart. Use an app password if your server offers one.")
+    PageNote("Enter your JMAP server and sign-in details. Use an app password if your server offers one.")
     InputField("Server", server, {
         server = it
     }, placeholder = "${service.name}.example.com", supportingText = serverHint(address), kind = InputKind.Url)

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
@@ -58,7 +59,7 @@ import kotlin.math.roundToInt
  * scrim, Back, and swiping down anywhere on it all slide it away before [onDismiss] runs.
  */
 @Composable
-internal fun SheetFrame(
+public fun SheetFrame(
     title: String,
     onDismiss: () -> Unit,
     content: @Composable ColumnScope.() -> Unit,
@@ -70,7 +71,7 @@ internal fun SheetFrame(
     LaunchedEffect(Unit) { position.show(MotionTokens.enter) }
     Dialog(close, properties = selectionSheetDialogProperties()) {
         CompositionLocalProvider(LocalDensity provides density) {
-            Box(Modifier.fillMaxSize()) {
+            Box(Modifier.fillMaxSize().imePadding()) {
                 SheetScrim(title, visible = 1f - position.hidden, onClick = close)
                 Surface(
                     Modifier
