@@ -12,7 +12,9 @@ where they lead.
 
 The app supplies its own `DateFormatPreferenceStore`. Selection writes the store before
 updating the displayed preference; an unsuccessful write does not report a saved change.
-The appearance screen offers date formatting. Dark mode remains the only theme.
+The appearance screen offers date formatting as a flat `SettingRow` with the pattern in a
+`ValueButton`; tapping it opens a `ChoiceSheet`. Its trailing `content` slot places app-owned
+sections below it, such as Mail's swipe actions. Dark mode remains the only theme.
 
 ## Accounts
 

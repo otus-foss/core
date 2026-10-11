@@ -47,7 +47,11 @@ plus value-driven message/detail rows and empty-state rendering. New branded ele
 reusable visual compositions are developed in Meta. Mail connects JMAP accounts over HTTP Basic auth, stores credentials in platform-protected storage, and loads each account's inbox. Folders (JMAP mailboxes) appear in the sidebar, open as pages, and can
 be created, renamed, nested, and deleted; messages can be moved between them. Rules that file
 arriving mail into folders run on the server as one Sieve script (RFC 9661) where the server
-supports it; see the [Mail folders guide](https://git.hilfikers.com/florian.ruby/otus-mail/src/branch/main/docs/folders.md). Sync and sending are not
+supports it; see the [Mail folders guide](https://git.hilfikers.com/florian.ruby/otus-mail/src/branch/main/docs/folders.md).
+Messages can be marked read or unread, flagged, archived, trashed, and moved, from an open
+message or by swiping its row; Appearance & behavior chooses each swipe and whether opening a
+message marks it read. Settings pages use flat rows, choice sheets, and confirmation dialogs from
+Meta's design system. Sync and sending are not
 implemented yet. No sample mail is shipped; populated-list validation uses test-only fixtures. Calendar retains its welcome screen. Full synchronization, calendar workflows, and contact management remain goals. Mail can now look up
 JMAP contact photos for inbox senders; this is a limited read-only lookup, not contact synchronization.
 Both apps expose the same portable avatar service for senders and future attendees. Domain icons
