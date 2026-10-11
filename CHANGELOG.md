@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.7.0 - 2026-10-11
+
 - `AccountSetupScreen` opens its connection form from a "Connect an account" button in the
   shared `SheetFrame`, now public. The sheet scrolls above the keyboard, closes after a successful
   connection, and clears its draft when dismissed. `AccountsState.cancelConnect()` cancels a pending
