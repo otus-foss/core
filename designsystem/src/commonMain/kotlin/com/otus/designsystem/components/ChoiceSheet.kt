@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
@@ -46,7 +47,9 @@ public fun <T> ChoiceSheet(
         Column(
             Modifier
                 .verticalScroll(rememberScrollState())
-                .padding(start = SheetTokens.inset, end = SheetTokens.inset, bottom = SheetTokens.inset),
+                .padding(start = SheetTokens.inset, end = SheetTokens.inset, bottom = SheetTokens.inset)
+                // One radio group across the default's group and the rest.
+                .selectableGroup(),
             verticalArrangement = Arrangement.spacedBy(ChoiceSheetTokens.groupGap),
         ) {
             choices.groups.forEach { group ->
