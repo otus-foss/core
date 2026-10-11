@@ -1,6 +1,7 @@
 package com.otus.accounts.presentation.screens
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
@@ -22,8 +23,9 @@ import com.otus.accounts.presentation.ConnectStatus
 import com.otus.accounts.presentation.components.ConnectedAccountRow
 import com.otus.accounts.presentation.confirmHostMessage
 import com.otus.accounts.presentation.message
+import com.otus.designsystem.components.ConfirmDialog
 import com.otus.designsystem.components.PageNote
-import com.otus.designsystem.components.PageSection
+import com.otus.designsystem.components.SettingsSection
 import com.otus.designsystem.components.Subpage
 import com.otus.designsystem.elements.ActionButton
 import com.otus.designsystem.elements.InputField
@@ -38,19 +40,29 @@ public fun AccountSetupScreen(
     service: AccountService,
     onBack: () -> Unit,
 ) {
+    // The account waiting for the user to confirm its removal.
+    var removing by rememberSaveable { mutableStateOf<String?>(null) }
     Subpage(title, onBack) {
         state.storageError?.let {
             PageNote(it)
             ActionButton("Reload accounts", state::reload)
         }
-        if (state.accounts.isEmpty()) {
-            PageNote("No accounts connected yet.")
-        } else {
-            PageSection("Connected") {
-                state.accounts.forEach { account -> ConnectedAccountRow(account) { state.remove(account.id) } }
-            }
+        SettingsSection("Connected accounts") {
+            if (state.accounts.isEmpty()) PageNote("No accounts connected yet.")
+            state.accounts.forEach { account -> ConnectedAccountRow(account) { removing = account.id } }
         }
-        PageSection("Add a JMAP account") { AddAccountForm(state, service) }
+        SettingsSection("Add a JMAP account") {
+            Column(verticalArrangement = Arrangement.spacedBy(PageTokens.rowGap)) { AddAccountForm(state, service) }
+        }
+    }
+    state.accounts.firstOrNull { it.id == removing }?.let { account ->
+        ConfirmDialog(
+            title = "Remove ${account.name}?",
+            message = "Removes it from this app only. Your account and mail stay on your server.",
+            confirmLabel = "Remove",
+            onConfirm = { state.remove(account.id) },
+            onDismiss = { removing = null },
+        )
     }
 }
 
