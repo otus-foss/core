@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.6.0 - 2026-10-11
 
 - Add `symbol_bookmark` (Material Symbols Rounded, Apache 2.0).
 - Add `LabelPill`, a read-only pill with an optional icon, sized by `LabelTokens`. A highlighted
