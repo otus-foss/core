@@ -22,7 +22,7 @@
 - Add flat settings rows inspired by Notion: `SettingRow` (title, description, and a trailing
   slot such as a chevron or value), `SettingToggleRow`, and `SettingsSection` with a large title.
   Rows are separated by `bgLight` hairlines instead of filled cards. New elements: `ToggleSwitch`
-  and `ValueButton`, an outlined current value with a down chevron. Tokens live in `SettingTokens`.
+  and `ValueButton`, an outlined current value with a down chevron. Their sizes stay internal.
 - Add `ConfirmDialog` for destructive changes: a title, a message about what happens and what is
   kept, and Cancel beside the confirming button. `DialogFrame` takes `closeButton = false` to
   leave out its close icon when the popup has its own Cancel. Removing an account in
