@@ -45,6 +45,10 @@ Forgejo a credential for pushing to GitHub.
 GitHub workflows so mirrored commits can still use GitHub CI and publishing. Forgejo selects
 its own workflow directory instead of falling back to the GitHub files.
 
+The GitHub workflows run their Linux jobs on Ubicloud's `ubicloud-standard-2` runners.
+The GitHub `ios` quality job and the macOS GitHub Packages `publish` job are paused with
+`if: false`; delete that condition to run them again.
+
 The Forgejo workflows retain portable, Android, and iOS checks. Action URLs explicitly select
 the pinned GitHub action commits. They use the Gradle wrapper directly and do not require an
 Actions cache service. Neither iOS checks nor publishing have been verified on Forgejo yet.
