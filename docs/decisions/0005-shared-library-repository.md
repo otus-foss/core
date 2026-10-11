@@ -2,8 +2,8 @@
 
 Status: accepted by the user on 2026-10-08.
 
-Hosting is amended by [decision 0009](0009-forgejo-primary.md). Forgejo is the primary Git
-host; GitHub Packages remains the working registry until package migration is verified.
+Hosting is amended by [decision 0012](0012-github-primary.md). GitHub hosts the repositories
+and GitHub Packages is the registry. Decision 0011 replaces the macOS publishing requirement.
 
 ## Decision
 

@@ -1,6 +1,8 @@
 # 0011: Complete library publication from Linux
 
 Status: accepted following the user's Linux-only Forgejo runner configuration on 2026-10-09.
+Since [decision 0012](0012-github-primary.md), the same Linux publisher runs on GitHub and uploads
+to GitHub Packages.
 
 ## Problem
 

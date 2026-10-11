@@ -32,7 +32,7 @@ Discover and respect the capabilities each account and server provides. Missing 
 Aim to reuse account handling, JMAP transport, contact models, and appropriate UI components while preserving independent app repositories and releases. Mail-specific workflows belong in Mail; calendar-specific workflows belong in Calendar.
 
 Shared libraries live in otus-meta and are published as versioned `com.otus:<module>` artifacts
-to Forgejo Packages, with artifact migration still awaiting authenticated verification. Apps pin releases and may opt into a local composite build for development.
+to GitHub Packages. Apps pin releases and may opt into a local composite build for development.
 Shared runtime account data and credentials still require an explicit platform design;
 library reuse alone does not provide them. See decision 0005.
 
@@ -47,7 +47,7 @@ plus value-driven message/detail rows and empty-state rendering. New branded ele
 reusable visual compositions are developed in Meta. Mail connects JMAP accounts over HTTP Basic auth, stores credentials in platform-protected storage, and loads each account's inbox. Folders (JMAP mailboxes) appear in the sidebar, open as pages, and can
 be created, renamed, nested, and deleted; messages can be moved between them. Rules that file
 arriving mail into folders run on the server as one Sieve script (RFC 9661) where the server
-supports it; see the [Mail folders guide](https://git.hilfikers.com/florian.ruby/otus-mail/src/branch/main/docs/folders.md).
+supports it; see the [Mail folders guide](https://github.com/reazndev/otus-mail/blob/main/docs/folders.md).
 Messages can be marked read or unread, flagged, archived, trashed, and moved, from an open
 message or by swiping its row; Appearance & behavior chooses each swipe and whether opening a
 message marks it read. An optional Read later switch, off by default, gives each account whose
@@ -66,8 +66,8 @@ Mail colors are supplied in [mail design foundations](mail-design.md). Both apps
 Both apps include reusable date-format choices, locale-aware formatting, and app-private preference
 adapters. Mail uses them for displayed inbox dates and date-filter summaries. Its Settings and
 Appearance & behavior pages let users choose the saved date format. Calendar settings remain
-unimplemented. See the repository-local [Mail guide](https://git.hilfikers.com/florian.ruby/otus-mail/src/branch/main/docs/date-formatting.md) and
-[Calendar guide](https://git.hilfikers.com/florian.ruby/otus-calendar/src/branch/main/docs/date-formatting.md).
+unimplemented. See the repository-local [Mail guide](https://github.com/reazndev/otus-mail/blob/main/docs/date-formatting.md) and
+[Calendar guide](https://github.com/reazndev/otus-calendar/blob/main/docs/date-formatting.md).
 
 ## Decisions to resolve as implementation starts
 

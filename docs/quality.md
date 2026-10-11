@@ -34,11 +34,11 @@ The CI `quality` workflow runs on every pull request and push to `main`. The `po
 simulator tests on macOS 15 with Xcode 26.3. The `publish` workflow runs on version tags; see [Releasing](releasing.md). Repository administrators must require the CI
 checks on `main` in the branch protection settings; workflow files alone do not enforce them.
 
-Forgejo publishing builds Android and both iOS library variants on Linux and verifies the complete
+The publisher builds Android and both iOS library variants on Linux and verifies the complete
 local Maven publication before uploading. Manual publisher runs perform validation only.
-Publication checks cannot replace iOS app linking or simulator tests. The Forgejo instance
-currently has no macOS runner, so its iOS quality job remains unavailable; GitHub retains its
-macOS checks. See [decision 0011](decisions/0011-linux-library-publication.md).
+Publication checks cannot replace iOS app linking or simulator tests. The `ios` job is paused
+with `if: false`, so CI runs no simulator tests until it is enabled again. See
+[decision 0011](decisions/0011-linux-library-publication.md).
 
 ## Architecture checks
 
@@ -72,8 +72,6 @@ The checkers in `tools/` are the reference copies for all Otus repositories. Eac
 own copy so that a clone builds alone. Change and test the reference copy here first, then update
 the apps in the same way.
 
-## Forgejo cutover
+## Runners
 
-Forgejo workflows live in `.forgejo/workflows`; GitHub workflows remain in `.github/workflows`.
-Both retain the required checks. Forgejo runners and repository settings still need verification.
-See [hosting and CI](hosting.md).
+Linux jobs run on Ubicloud's `ubicloud-standard-2` runners. See [hosting and CI](hosting.md).
