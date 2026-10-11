@@ -44,6 +44,8 @@
 - Add `symbol_check`, `symbol_flag`, `symbol_expand_more`, and `symbol_mark_email_read` (Material Symbols Rounded, Apache 2.0).
 - `AppearanceSettingsScreen` takes an optional trailing `content` slot for app-owned sections
   below the shared date format. Existing calls compile unchanged.
+- Remove `dateFormatSummary`. The date format row shows the pattern and the example separately,
+  and nothing else called it.
 
 ## 0.4.0 - 2026-10-10
 
