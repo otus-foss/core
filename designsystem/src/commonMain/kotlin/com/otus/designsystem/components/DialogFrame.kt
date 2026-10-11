@@ -41,11 +41,15 @@ import com.otus.designsystem.theme.PanelTokens
 import com.otus.designsystem.theme.SheetTokens
 import com.otus.designsystem.theme.panelTextStyle
 
-/** A centered popup over a scrim, with a title and a close button. Dismissing changes nothing. */
+/**
+ * A centered popup over a scrim, with a title and a close button. Dismissing changes nothing.
+ * Without [closeButton], the popup's own buttons, such as Cancel, are the way out besides the scrim.
+ */
 @Composable
 public fun DialogFrame(
     title: String,
     onDismiss: () -> Unit,
+    closeButton: Boolean = true,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val density = LocalDensity.current
@@ -77,7 +81,7 @@ public fun DialogFrame(
                             Modifier.padding(SheetTokens.inset),
                             verticalArrangement = Arrangement.spacedBy(SheetTokens.gap),
                         ) {
-                            DialogHeading(title, onDismiss)
+                            DialogHeading(title, onDismiss.takeIf { closeButton })
                             content()
                         }
                     }
@@ -90,10 +94,10 @@ public fun DialogFrame(
 @Composable
 private fun DialogHeading(
     title: String,
-    onDismiss: () -> Unit,
+    onClose: (() -> Unit)?,
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(title, Modifier.weight(1f).semantics { heading() }, fontSize = SheetTokens.titleSize)
-        IconButton("Close", onDismiss, outlined = false) { Symbol(Res.drawable.symbol_close) }
+        onClose?.let { IconButton("Close", it, outlined = false) { Symbol(Res.drawable.symbol_close) } }
     }
 }
