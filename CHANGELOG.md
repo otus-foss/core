@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Add `symbol_bookmark` (Material Symbols Rounded, Apache 2.0).
+
 ## 0.5.0 - 2026-10-11
 
 - Add `SwipeActions` and `SwipeAction` for list rows. Dragging a row toward either edge uncovers
