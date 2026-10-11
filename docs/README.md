@@ -34,5 +34,6 @@
 - [0009: Forgejo primary Git host](decisions/0009-forgejo-primary.md), replaced by 0012
 - [0011: Complete library publication from Linux](decisions/0011-linux-library-publication.md)
 - [0012: GitHub as the primary host again](decisions/0012-github-primary.md)
+- [0013: Local hooks as the quality gate](decisions/0013-local-quality-gate.md)
 
 Decisions 0001 to 0004 were made in the app repositories and apply to every Otus repository.

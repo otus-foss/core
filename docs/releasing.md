@@ -25,8 +25,8 @@ Ubicloud's `ubicloud-standard-2` Linux runner. See [hosting and CI](hosting.md).
 Publishing works like this:
 
 1. Merge the changelog entry and version bump in `gradle.properties` to `main`.
-2. Push the tag `v<version>`.
-3. The `publish` workflow runs `checkAll` and builds every publication in an isolated local Maven
+2. Push the tag `v<version>`. The pre-push hook runs `checkAll` first.
+3. The `publish` workflow builds every publication in an isolated local Maven
    repository on Linux. `tools/check_publications.py` verifies all root, Android, iOS device, and
    iOS simulator publications, including the files and checksums in their Gradle metadata.
    Only then does the workflow upload every module to GitHub Packages.
