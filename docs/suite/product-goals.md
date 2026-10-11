@@ -50,9 +50,10 @@ arriving mail into folders run on the server as one Sieve script (RFC 9661) wher
 supports it; see the [Mail folders guide](https://git.hilfikers.com/florian.ruby/otus-mail/src/branch/main/docs/folders.md).
 Messages can be marked read or unread, flagged, archived, trashed, and moved, from an open
 message or by swiping its row; Appearance & behavior chooses each swipe and whether opening a
-message marks it read. An optional Read later switch, off by default, gives each account an
-ordinary folder named Read later, with a button and swipe that add mail to it while it stays in
-the inbox. Message rows name the other folders a message is in as label pills. Settings pages use flat rows, choice sheets, and confirmation dialogs from
+message marks it read. An optional Read later switch, off by default, gives each account whose
+server allows it an ordinary folder named Read later, with a button and swipe that add mail to it
+while it stays in the inbox. Message rows name the other folders a message is in as label pills.
+Settings pages use flat rows, choice sheets, and confirmation dialogs from
 Meta's design system. Sync and sending are not
 implemented yet. No sample mail is shipped; populated-list validation uses test-only fixtures. Calendar retains its welcome screen. Full synchronization, calendar workflows, and contact management remain goals. Mail can now look up
 JMAP contact photos for inbox senders; this is a limited read-only lookup, not contact synchronization.
