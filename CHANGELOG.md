@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.5.0 - 2026-10-11
 
 - Add `SwipeActions` and `SwipeAction` for list rows. Dragging a row toward either edge uncovers
   an `accentRegular` area that grows out of the row's edge: its body is the row's full height,
