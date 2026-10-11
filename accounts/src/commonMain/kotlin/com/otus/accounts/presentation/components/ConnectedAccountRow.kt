@@ -1,52 +1,30 @@
 package com.otus.accounts.presentation.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextOverflow
 import com.otus.accounts.domain.ConnectedAccount
-import com.otus.designsystem.elements.IconButton
-import com.otus.designsystem.elements.Symbol
+import com.otus.designsystem.components.SettingRow
+import com.otus.designsystem.elements.RowButton
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_alternate_email
-import com.otus.designsystem.resources.symbol_close
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.SheetTokens
 
+/** One connected account, with the address it signs in with and a button that removes it. */
 @Composable
 public fun ConnectedAccountRow(
     account: ConnectedAccount,
     onRemove: () -> Unit,
 ) {
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .heightIn(min = SheetTokens.rowHeight)
-            .background(OtusColors.bgDark, RoundedCornerShape(SheetTokens.rowRadius))
-            .padding(start = SheetTokens.gap),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(SheetTokens.gap),
-    ) {
-        Symbol(Res.drawable.symbol_alternate_email)
-        Column(Modifier.weight(1f)) {
-            Text(account.name, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            Text(
-                "${account.username} · ${account.server}",
-                color = OtusColors.text2,
-                fontSize = SheetTokens.detailSize,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
-        IconButton("Remove ${account.name}", onRemove, outlined = false) { Symbol(Res.drawable.symbol_close) }
-    }
+    SettingRow(
+        account.name,
+        onClick = null,
+        description = connectedAccountDetail(account),
+        icon = Res.drawable.symbol_alternate_email,
+    ) { RowButton("Remove", onRemove, accessibilityLabel = "Remove ${account.name}") }
 }
+
+/**
+ * The lines under an account's name: its username, unless the name already is the username
+ * because the server gave no display name, and then its server.
+ */
+internal fun connectedAccountDetail(account: ConnectedAccount): String =
+    listOfNotNull(account.username.takeUnless { it.equals(account.name, ignoreCase = true) }, account.server)
+        .joinToString("\n")
