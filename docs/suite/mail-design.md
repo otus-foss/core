@@ -54,6 +54,8 @@ transparent alpha fade instead. The palette above remains unchanged. See
 Figma nodes `23:488` (front page) and `10:58` (separate message row) were inspected for the inbox
 implementation. The empty state is new UI; no populated inbox was present in that front-page frame.
 The message-row avatar's black fill and label border `#2A5E96` are outside the approved palette.
+`LabelPill` draws that label with palette tokens instead: an `accent-regular` border and
+`accent-light` text when highlighted, otherwise a `bg-light` border and `text-2` text.
 Generated avatars now choose `accentDark`, `bgLight`, or `bgDark` by email address, with `text1`
 initials. Contact photos fill the same circle. These avatar variants are app decisions, not newly
 verified Figma values. Metadata continues to use named text tokens. No palette values change.

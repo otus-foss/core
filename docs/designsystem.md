@@ -11,7 +11,7 @@ Dark mode is the only color mode. The palette is recorded in
 - `theme`: `OtusColors`, `OtusTheme`, `MotionTokens`, and tokens for avatars, calendars, control
   feedback, pages, panels, refresh, sheets, and the sidebar. `panelTextStyle()` uses Figtree.
 - `elements`: `ActionButton`, `ActionRow`, `AnimatedText`, `Avatar`, `AvatarImage`, `CalendarDay`,
-  `CalendarMonthBackground`, `Chip`, `IconButton`, `InputField`, `RefreshIndicator`,
+  `CalendarMonthBackground`, `Chip`, `IconButton`, `InputField`, `LabelPill`, `RefreshIndicator`,
   `RowButton`, `SearchField`, `SearchPrompt`, `SelectionRow`, `SidebarEntry`, `Symbol`,
   `ToggleSwitch`, `ValueButton`, and the
   `controlPressFeedback` modifier.
