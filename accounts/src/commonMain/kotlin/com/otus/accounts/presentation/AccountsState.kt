@@ -10,6 +10,7 @@ import com.otus.accounts.domain.ConnectOutcome
 import com.otus.accounts.domain.ConnectedAccount
 import com.otus.accounts.domain.JmapAccountDraft
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 public sealed interface ConnectStatus {
@@ -44,9 +45,13 @@ public class AccountsState(
 
     public var storageError: String? by mutableStateOf(null)
         private set
+    public var loading: Boolean by mutableStateOf(true)
+        private set
 
     /** Held in memory only while the user decides about another host. */
     private var pending: Pair<JmapAccountDraft, String>? = null
+    private var connecting: Job? = null
+    private var loadingAccounts: Job? = null
 
     init {
         reload()
@@ -56,28 +61,29 @@ public class AccountsState(
         if (status == ConnectStatus.Connecting) return
         status = ConnectStatus.Connecting
         pending = null
-        scope.launch {
-            val outcome = repository.connect(draft)
-            status =
-                when (outcome) {
-                    is ConnectOutcome.Connected -> {
-                        ConnectStatus.Connected(outcome.account.name)
-                    }
+        connecting =
+            scope.launch {
+                val outcome = repository.connect(draft)
+                status =
+                    when (outcome) {
+                        is ConnectOutcome.Connected -> {
+                            ConnectStatus.Connected(outcome.account.name)
+                        }
 
-                    is ConnectOutcome.Failed -> {
-                        ConnectStatus.Failed(outcome.reason)
-                    }
+                        is ConnectOutcome.Failed -> {
+                            ConnectStatus.Failed(outcome.reason)
+                        }
 
-                    is ConnectOutcome.ConfirmHost -> {
-                        pending = draft to outcome.origin
-                        ConnectStatus.ConfirmHost(outcome.host)
+                        is ConnectOutcome.ConfirmHost -> {
+                            pending = draft to outcome.origin
+                            ConnectStatus.ConfirmHost(outcome.host)
+                        }
                     }
+                if (outcome is ConnectOutcome.Connected) {
+                    onChange()
+                    reload()
                 }
-            if (outcome is ConnectOutcome.Connected) {
-                onChange()
-                loadAccounts()
             }
-        }
     }
 
     /** Retries the pending sign-in, trusting only the host the user just approved. */
@@ -87,20 +93,31 @@ public class AccountsState(
     }
 
     public fun cancelHost() {
+        cancelConnect()
+    }
+
+    /** Drops pending credentials and cancels a connection when its sheet closes. */
+    public fun cancelConnect() {
+        connecting?.cancel()
+        connecting = null
         pending = null
         status = ConnectStatus.Idle
     }
 
     public fun reload() {
-        scope.launch { loadAccounts() }
+        loadingAccounts?.cancel()
+        loadingAccounts = scope.launch { loadAccounts() }
     }
 
     private suspend fun loadAccounts() {
+        loading = true
         try {
             accounts = repository.accounts()
             storageError = null
         } catch (expected: AccountStorageException) {
             storageError = "Couldn't load saved accounts. Try again."
+        } finally {
+            loading = false
         }
     }
 
@@ -109,7 +126,7 @@ public class AccountsState(
             try {
                 repository.remove(id)
                 onChange()
-                loadAccounts()
+                reload()
             } catch (expected: AccountStorageException) {
                 storageError = "Couldn't remove the account. Try removing it again."
             }
