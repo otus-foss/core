@@ -7,9 +7,11 @@
   rounded by 12 dp at its free end, and joined to the edge by concave 12 dp fillets that reach past
   the row into its neighbors. The swiped row draws above its neighbors while it moves. The action's icon grows
   and slides in beside its label, both clipped to that area. The row stops once its action is
-  fully revealed. Releasing past 96 dp, marked by a haptic, flashes and runs the action.
-  Dismissing actions leave the row for the list to remove; others return it to rest. Both actions
-  are also accessibility custom actions, and right-to-left layouts mirror the directions.
+  fully revealed. Releasing past 96 dp, marked by a haptic, flashes and runs the action once;
+  drags cannot move the row again until it is still, so a touch on a returning row never runs
+  it twice. Dismissing actions leave the row for the list to remove; others return it to rest.
+  Both actions are also accessibility custom actions, and right-to-left layouts mirror the
+  directions.
 - Fix SemiBold panel text rendering at the regular weight. The bundled variable Figtree file is
   replaced by the static Regular, SemiBold, Bold, and Black files, and `panelTextStyle()` registers
   all four. With Android's bold text setting, Normal and SemiBold resolve to Bold and Black, so

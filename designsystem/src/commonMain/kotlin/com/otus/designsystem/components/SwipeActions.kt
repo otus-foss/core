@@ -1,13 +1,15 @@
 package com.otus.designsystem.components
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.MutatePriority
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.AnchoredDragScope
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.anchoredDraggable
-import androidx.compose.foundation.gestures.animateTo
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -19,8 +21,9 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.onSizeChanged
@@ -37,7 +40,6 @@ import com.otus.designsystem.theme.MotionTokens
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.SwipeTokens
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -47,10 +49,10 @@ import kotlin.math.roundToInt
  * dragged toward the start edge. The uncovered area is an accent shape that grows out of the row's
  * edge, joined to it by concave corners and rounded at its free end. The action's icon grows in
  * beside its label until the fixed threshold, where a haptic marks that release will act.
- * Releasing past it flashes and runs the action; shorter drags spring back. The row stops once
- * its action is fully revealed. A null action leaves that
- * direction still, and a horizontal drag never reaches the row as a tap. Accessibility services
- * offer both actions as custom actions.
+ * Releasing past it flashes and runs the action once; shorter drags spring back. The row stops
+ * once its action is fully revealed, and drags cannot move it again until it is still. A null
+ * action leaves that direction still, and a horizontal drag never reaches the row as a tap.
+ * Accessibility services offer both actions as custom actions.
  */
 @Composable
 public fun SwipeActions(
@@ -62,20 +64,33 @@ public fun SwipeActions(
     val threshold = with(LocalDensity.current) { SwipeTokens.threshold.toPx() }
     var width by remember { mutableIntStateOf(0) }
     val state = rememberSwipeState(width, startToEnd != null, endToStart != null)
-    // Set the moment a release passes the threshold, so the action and its flash do not wait for the row.
-    var committed by remember { mutableStateOf<SwipeAnchor?>(null) }
-    val fling = remember(state, threshold) { thresholdFlingBehavior(state, threshold) { committed = it } }
     val flash = remember { Animatable(0f) }
-    // Keeps the committed action's backdrop while the row returns through rest.
-    var shown by remember { mutableStateOf<SwipeAnchor?>(null) }
+    // Keeps the action a release ran on the backdrop until the row is still, even if the row's actions change.
+    var running by remember { mutableStateOf<RunningSwipe?>(null) }
+    val scope = rememberCoroutineScope()
+    val currentStartToEnd by rememberUpdatedState(startToEnd)
+    val currentEndToStart by rememberUpdatedState(endToStart)
+    val fling =
+        remember(state, threshold) {
+            thresholdFlingBehavior(state, threshold) { side ->
+                val action = side.pick(currentStartToEnd, currentEndToStart)
+                action?.let {
+                    scope.launch {
+                        running = RunningSwipe(side, it)
+                        try {
+                            runSwipe(state, side, it, flash)
+                        } finally {
+                            running = null
+                        }
+                    }
+                }
+                action != null
+            }
+        }
     val revealWidths = remember { mutableStateMapOf<SwipeAnchor, Float>() }
     val actionFor = { anchor: SwipeAnchor? -> anchor.pick(startToEnd, endToStart) }
-    RunCommittedAction(state, committed, flash, actionFor) { anchor ->
-        shown = anchor
-        if (anchor == null) committed = null
-    }
     val offset = state.requireOffset()
-    val direction = shown ?: directionOf(offset)
+    val direction = running?.side ?: directionOf(offset)
     ThresholdHaptic(armed = abs(offset) >= threshold && actionFor(directionOf(offset)) != null)
     Box(
         modifier
@@ -88,7 +103,7 @@ public fun SwipeActions(
     ) {
         val revealed = revealWidths[directionOf(offset)] ?: threshold
         val rowOffset = boundedRevealOffset(offset, revealed)
-        actionFor(direction)?.let { action ->
+        (running?.action ?: actionFor(direction))?.let { action ->
             SwipeBackdrop(
                 action,
                 abs(offset),
@@ -130,40 +145,44 @@ private fun rememberSwipeState(
     return state
 }
 
+/** The action a release past the threshold is running, and the side it was revealed on. */
+private class RunningSwipe(
+    val side: SwipeAnchor,
+    val action: SwipeAction,
+)
+
 /**
- * Runs the action a release committed to, with a flash, as soon as the finger lifts past the
- * threshold. An action that keeps the row runs at once and the row returns once it has reached
- * its anchor. A dismissing action flashes first, then runs, and leaves the row for its list to
- * remove.
+ * Runs [action] after a release toward [side]. The row slides to that side's anchor while the
+ * action flashes. A dismissing action runs after its flash and leaves the row for its list to
+ * remove; any other runs at once and the row returns to rest. The slide outranks user drags, so a
+ * touch cannot stop the row halfway and release it past the threshold a second time.
  */
-@Composable
-private fun RunCommittedAction(
+private suspend fun runSwipe(
     state: AnchoredDraggableState<SwipeAnchor>,
-    committed: SwipeAnchor?,
+    side: SwipeAnchor,
+    action: SwipeAction,
     flash: Animatable<Float, *>,
-    actionFor: (SwipeAnchor?) -> SwipeAction?,
-    onShown: (SwipeAnchor?) -> Unit,
-) {
-    LaunchedEffect(committed) {
-        val direction = committed ?: return@LaunchedEffect
-        val action = actionFor(direction) ?: return@LaunchedEffect
-        onShown(direction)
+) = coroutineScope {
+    launch {
         flash.snapTo(SwipeTokens.FLASH_ALPHA)
-        val fade = tween<Float>(SwipeTokens.FLASH_MILLIS, easing = MotionTokens.standard)
-        if (action.dismisses) {
-            flash.animateTo(0f, fade)
-            action.onSwipe()
-        } else {
-            action.onSwipe()
-            coroutineScope {
-                launch { flash.animateTo(0f, fade) }
-                launch {
-                    snapshotFlow { state.settledValue }.first { it == direction }
-                    state.animateTo(SwipeAnchor.Settled)
-                }
-            }
-        }
-        onShown(null)
+        if (!action.dismisses) action.onSwipe()
+        flash.animateTo(0f, tween(SwipeTokens.FLASH_MILLIS, easing = MotionTokens.standard))
+        // Running a dismissing action removes the row, so it waits until the flash has faded.
+        if (action.dismisses) action.onSwipe()
+    }
+    state.anchoredDrag(MutatePriority.PreventUserInput) { anchors ->
+        slideTo(state.requireOffset(), anchors.positionOf(side))
+        if (!action.dismisses) slideTo(state.requireOffset(), anchors.positionOf(SwipeAnchor.Settled))
+    }
+}
+
+private suspend fun AnchoredDragScope.slideTo(
+    from: Float,
+    to: Float,
+) {
+    if (to.isNaN()) return
+    animate(from, to, animationSpec = tween(SwipeTokens.SETTLE_MILLIS, easing = MotionTokens.standard)) { value, _ ->
+        dragTo(value)
     }
 }
 
