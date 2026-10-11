@@ -1,8 +1,10 @@
 package com.otus.settings.presentation.screens
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import com.otus.designsystem.components.PageScaffold
-import com.otus.designsystem.elements.ActionRow
+import com.otus.designsystem.components.SettingRow
+import com.otus.designsystem.elements.Symbol
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_chevron_right
 import com.otus.settings.presentation.SettingsEntry
@@ -14,15 +16,12 @@ public fun SettingsScreen(
     onOpenNavigation: () -> Unit,
 ) {
     PageScaffold("Settings", navigationLabel = "Open navigation", onNavigation = onOpenNavigation) {
-        entries.forEach { entry ->
-            ActionRow(
-                entry.title,
-                entry.onOpen,
-                Res.drawable.symbol_chevron_right,
-                summary = entry.summary,
-                icon = entry.icon,
-                mirrorTrailingInRtl = true,
-            )
+        Column {
+            entries.forEach { entry ->
+                SettingRow(entry.title, entry.onOpen, description = entry.summary, icon = entry.icon) {
+                    Symbol(Res.drawable.symbol_chevron_right, mirrorInRtl = true)
+                }
+            }
         }
     }
 }

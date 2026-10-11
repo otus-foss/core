@@ -1,5 +1,52 @@
 # Changelog
 
+## 0.5.0 - 2026-10-11
+
+- Add `SwipeActions` and `SwipeAction` for list rows. Dragging a row toward either edge uncovers
+  an `accentRegular` area that grows out of the row's edge: its body is the row's full height,
+  rounded by 12 dp at its free end, and joined to the edge by concave 12 dp fillets that reach past
+  the row into its neighbors. The swiped row draws above its neighbors while it moves. The action's icon grows
+  and slides in beside its label, both clipped to that area. The row stops once its action is
+  fully revealed. Releasing past 96 dp, marked by a haptic, flashes and runs the action once;
+  drags cannot move the row again until it is still, so a touch on a returning row never runs
+  it twice. Dismissing actions leave the row for the list to remove; others return it to rest.
+  Both actions are also accessibility custom actions, and right-to-left layouts mirror the
+  directions.
+- Fix SemiBold panel text rendering at the regular weight. The bundled variable Figtree file is
+  replaced by the static Regular, SemiBold, Bold, and Black files, and `panelTextStyle()` registers
+  all four. With Android's bold text setting, Normal and SemiBold resolve to Bold and Black, so
+  emphasized text still differs; before, both fell back to the same file. Unread
+  `ContentRow` titles and the selected date wheel value now draw from the SemiBold file. Regular
+  text is static Figtree Regular 400; measured on a Pixel 9a, it is lighter than the previous
+  build, whose rendered weight did not match its declared one.
+- Add flat settings rows inspired by Notion: `SettingRow` (title, description, and a trailing
+  slot such as a chevron or value), `SettingToggleRow`, and `SettingsSection` with a large title.
+  Rows are separated by `bgLight` hairlines instead of filled cards. New elements: `ToggleSwitch`
+  and `ValueButton`, an outlined current value with a down chevron. Their sizes stay internal.
+- Add `ConfirmDialog` for destructive changes: a title, a message about what happens and what is
+  kept, and Cancel beside the confirming button. `DialogFrame` takes `closeButton = false` to
+  leave out its close icon when the popup has its own Cancel. Removing an account in
+  `AccountSetupScreen` now asks first.
+- Add `ChoiceSheet`, a bottom sheet with a grab handle, centered title, and Done, with options in
+  rounded groups and a check beside the selected one. It takes `ChoiceOptions(options, selected,
+  default)`; a `default`, such as the device date format, is listed first in a group of its own.
+  Choosing applies at once and keeps the sheet open. Done, the scrim, Back, or swiping down
+  anywhere on the sheet slides it away; in the option list, the swipe takes over once the list is
+  at its top. `AppearanceSettingsScreen` uses it for the date format.
+- `SettingRow` takes a nullable `onClick`; without it the row is static and only its trailing
+  controls act. New element: `RowButton`, a small outlined button for row actions such as Remove.
+- `AccountSetupScreen` uses large section titles, and `ConnectedAccountRow` is a flat row with
+  an outlined Remove button. Below the name it shows the username, unless the name already is
+  the username because the server gave no display name, and then the server. Its accessible
+  name stays "Remove <account>".
+- `SettingsScreen` and `AppearanceSettingsScreen` use the new rows. The date format shows its
+  pattern in a `ValueButton`, with "Device" for the device setting, and an example below its title.
+- Add `symbol_check`, `symbol_flag`, `symbol_expand_more`, and `symbol_mark_email_read` (Material Symbols Rounded, Apache 2.0).
+- `AppearanceSettingsScreen` takes an optional trailing `content` slot for app-owned sections
+  below the shared date format. Existing calls compile unchanged.
+- Remove `dateFormatSummary`. The date format row shows the pattern and the example separately,
+  and nothing else called it.
+
 ## 0.4.0 - 2026-10-10
 
 - Resolve JMAP redirects and endpoint URLs using RFC 3986 rules, so discovery queries and URL

@@ -12,14 +12,35 @@ Dark mode is the only color mode. The palette is recorded in
   feedback, pages, panels, refresh, sheets, and the sidebar. `panelTextStyle()` uses Figtree.
 - `elements`: `ActionButton`, `ActionRow`, `AnimatedText`, `Avatar`, `AvatarImage`, `CalendarDay`,
   `CalendarMonthBackground`, `Chip`, `IconButton`, `InputField`, `RefreshIndicator`,
-  `SearchField`, `SearchPrompt`, `SelectionRow`, `SidebarEntry`, `Symbol`, and the
+  `RowButton`, `SearchField`, `SearchPrompt`, `SelectionRow`, `SidebarEntry`, `Symbol`,
+  `ToggleSwitch`, `ValueButton`, and the
   `controlPressFeedback` modifier.
-- `components`: `ActionDialog`, `ChoiceDialog`, `InputDialog`, `ContextPanel`, `DatePickerDialog`,
+- `components`: `ActionDialog`, `ChoiceDialog`, `ChoiceSheet`, `ConfirmDialog`, `InputDialog`, `ContextPanel`, `DatePickerDialog`,
   `MonthNavigation`, `MonthYearPicker`, `PageScaffold`, `Subpage`, `PageSection`, `PanelSurface`,
-  `PickerSearch`, `PullToRefresh`, `SelectionSheet`, `SpecificDatePicker`, `Sidebar`, and `SidebarSwipeArea`.
+  `PickerSearch`, `PullToRefresh`, `SelectionSheet`, `SettingRow`, `SettingToggleRow`,
+  `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarSwipeArea`, and `SwipeActions`.
+- Settings rows follow Notion's settings pages: flat rows with a title and `text2` description
+  beside the control, `bgLight` hairlines between them, and large section titles. The whole row is
+  the control; `ToggleSwitch` and `ValueButton` only show its state. A row without a click is
+  static, and a `RowButton` at its end acts on its own. Settings choices open a `ChoiceSheet`,
+  which lists a `ChoiceOptions` default in its own group first, applies a choice at once, and
+  closes with Done. Destructive settings actions ask with `ConfirmDialog` first; its confirming
+  button uses the primary style because the palette has no warning color, which is an open design
+  decision. `ChoiceDialog` and `ActionDialog` remain for one-shot picks,
+  such as moving a message, and menus. Mail's rules pages still use `PageSection`
+  and `ActionRow`.
 - Version 0.3.0 adds `DateRangePicker` for dates up to today, its continuous week calendar,
   and `AvatarStackChip` with `ChipAvatar` values. The app maps its senders or attendees into
   these values; the component has no contact lookup or feature dependencies.
+- `SwipeActions` hosts one list row with an optional `SwipeAction` for each direction. The app
+  decides which actions a row offers and what they do; the component only reveals, confirms, and
+  reports them. Its motion follows the Snepilatch track rows: a clipped icon and label that grow in
+  until the threshold, a row that stops at the revealed width, and a short flash on commit. The
+  uncovered area is an accent shape the row's full height, attached to the row's edge with
+  inverted corners: concave fillets that reach past the row into its neighbors, and a rounded
+  free end. The swiped row draws above its neighbors so they do not cover the fillets. Colors use `accentRegular`, `text1`, and
+  `bgRegular`. Rows that should show it against the screen edge must reach that edge. A row inside `SidebarSwipeArea` keeps its swipes, because the sidebar opens only
+  from the context panel.
 
 All visual tokens live here, including `InboxTokens`. New elements and reusable components
 belong here even when only Mail currently uses them. Their APIs use values and callbacks,
@@ -27,7 +48,12 @@ without app dependencies.
 
 ## Resources
 
-The module bundles Figtree Regular with its SIL Open Font License and all Material Symbols
+The module bundles the static Figtree Regular, SemiBold, Bold, and Black files from the upstream
+Figtree project with their SIL Open Font License. `panelTextStyle()` registers all four, so each
+weight draws from its own file. Bold and Black cover Android's bold text setting, which adds 300 to
+every requested weight: Normal and SemiBold become Bold and Black, and unread text stays heavier. A single variable file cannot serve both
+weights on Android: Compose caches asset fonts by path, so every weight would draw from whichever
+variation loaded first. The variable file it replaces defaulted to Light 300. It also bundles all Material Symbols
 used by Mail, accounts, and settings with their Apache 2.0 license. The generated public `Res`
 class lives in `com.otus.designsystem.resources`. Apps select icons from this bundle and pass
 them to `Symbol` as `DrawableResource` values.
