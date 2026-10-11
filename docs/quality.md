@@ -29,13 +29,18 @@ Detekt is skipped while the repository has no library module, because it has no 
 read. Kotlin/Native tests for iOS run only on macOS. On Linux, compile the iOS sources of a module
 with `./gradlew :<module>:compileKotlinIosSimulatorArm64`; this does not run them.
 
-The CI `quality` workflow runs on every pull request and push to `main`. The `portable` job runs
-`qualityCheck`, the `android` job runs `checkAll`, and the `ios` job runs every module's iOS
-simulator tests on macOS 15 with Xcode 26.3. The `publish` workflow runs on version tags; see [Releasing](releasing.md). Repository administrators must require the CI
-checks on `main` in the branch protection settings; workflow files alone do not enforce them.
+The versioned Git hooks are the main gate. `pre-commit` runs the Spotless and Ruff checks, and
+`pre-push` runs `checkAll` before every push that sends commits, including tags. Both check the
+working tree, so stash unrelated changes first. Do not skip them with `--no-verify`.
+
+The CI `quality` workflow runs only on pull requests that change more than Markdown. The `check`
+job runs `checkAll`, and the `ios` job runs every module's iOS simulator tests on macOS 15 with
+Xcode 26.3. The repositories cannot require checks on their GitHub plan, so CI reports results
+but cannot block a merge. The `publish` workflow runs on version tags; see [Releasing](releasing.md)
+and [decision 0013](decisions/0013-local-quality-gate.md).
 
 The publisher builds Android and both iOS library variants on Linux and verifies the complete
-local Maven publication before uploading. Manual publisher runs perform validation only.
+local Maven publication before uploading. Pull request CI does not build publications. Manual publisher runs perform validation only.
 Publication checks cannot replace iOS app linking or simulator tests. The `ios` job is paused
 with `if: false`, so CI runs no simulator tests until it is enabled again. See
 [decision 0011](decisions/0011-linux-library-publication.md).
