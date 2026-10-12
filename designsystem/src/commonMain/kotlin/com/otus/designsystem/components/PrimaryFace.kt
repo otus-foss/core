@@ -17,6 +17,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.otus.designsystem.theme.MotionCurve
@@ -31,25 +32,45 @@ internal data class PrimaryFace(
     val label: String,
 )
 
+/** What the frontmost bar shows: its primary's [face], which swaps as it changes, and its [context]. */
+internal class FrontBar(
+    val face: Transition<PrimaryFace>,
+    val context: BarContext?,
+)
+
 /**
- * The face of the frontmost bar's primary, which is [primary]'s while this bar is in front. A new
- * bar starts from the face in front, so its primary swaps in from the bar it covers or replaces.
- * The face changes when a page opens over another, closes back to the one beneath, a selection's
- * bar replaces a list's, or a primary changes in place.
+ * The frontmost bar's primary face and context, which are [primary]'s and [context] while this bar
+ * is in front. A new bar starts from what is in front, so it changes from the bar it covers or
+ * replaces. That happens when a page opens over another, closes back to the one beneath, a
+ * selection's bar replaces a list's, or a primary changes in place. Only bars in an
+ * [ActionBarHost] take part; any other bar, such as a settings preview, shows its own.
  */
 @Composable
-internal fun rememberPrimaryFace(primary: BarAction): Transition<PrimaryFace> {
+internal fun rememberFrontBar(
+    primary: BarAction,
+    context: BarContext?,
+): FrontBar {
     val own = PrimaryFace(primary.symbol, primary.mirrorInRtl, primary.label)
-    val slot = remember { FrontBars.Slot(own) }
-    val state = remember { MutableTransitionState(FrontBars.shown ?: own) }
-    SideEffect { slot.face = own }
-    DisposableEffect(slot) {
-        FrontBars.slots += slot
+    val hosted = LocalHostedBar.current
+    val slot = remember { FrontBars.Slot(own, context) }
+    // This bar's own values while it is in front, since its slot catches up only after composing.
+    val front = FrontBars.slots.lastOrNull().takeIf { hosted && it !== slot }
+    val face = front?.face ?: own
+    val state = remember { MutableTransitionState(face) }
+    SideEffect {
+        slot.face = own
+        slot.context = context
+    }
+    DisposableEffect(slot, hosted) {
+        if (hosted) FrontBars.slots += slot
         onDispose { FrontBars.slots -= slot }
     }
-    state.targetState = FrontBars.shown ?: own
-    return rememberTransition(state, label = "Primary face")
+    state.targetState = face
+    return FrontBar(rememberTransition(state, label = "Primary face"), if (front != null) front.context else context)
 }
+
+/** Whether a bar sits in an [ActionBarHost], so it takes part in [FrontBars]. */
+internal val LocalHostedBar = staticCompositionLocalOf { false }
 
 /**
  * Draws [content] for the current face. When the face changes, the old content fades and scales
@@ -77,12 +98,11 @@ internal fun Transition<PrimaryFace>.Swapping(
 private object FrontBars {
     val slots = mutableStateListOf<Slot>()
 
-    val shown: PrimaryFace?
-        get() = slots.lastOrNull()?.face
-
     class Slot(
         face: PrimaryFace,
+        context: BarContext?,
     ) {
         var face by mutableStateOf(face)
+        var context by mutableStateOf(context)
     }
 }

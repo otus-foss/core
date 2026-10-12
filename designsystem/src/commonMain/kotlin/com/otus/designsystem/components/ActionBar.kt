@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ProvideTextStyle
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -114,7 +115,7 @@ public fun ActionBarHost(
                     .onSizeChanged { barHeight = it.height }
                     .windowInsetsPadding(WindowInsets.navigationBars.union(WindowInsets.ime))
                     .padding(ActionBarTokens.barInset),
-            ) { it() }
+            ) { CompositionLocalProvider(LocalHostedBar provides true) { it() } }
         }
     }
 }

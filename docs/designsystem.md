@@ -23,7 +23,7 @@ Dark mode is the only color mode. The palette is recorded in
   `controlPressFeedback` modifier.
 - `components`: `ActionBar`, `ActionBarHost`, `BarAction`, `BarContext`, `BarToken`, `ActionDialog`, `ChoiceDialog`, `ChoiceSheet`, `ConfirmDialog`, `InputDialog`, `ContextPanel`, `DatePickerDialog`,
   `MonthNavigation`, `MonthYearPicker`, `PageScaffold`, `Subpage`, `PageSection`, `PanelSurface`,
-  `DividerLabel`, `PickerSearch`, `PreviewCard`, `PullToRefresh`, `ReorderableColumn`, `SelectionSheet`, `SheetFrame`, `SettingRow`,
+  `PickerSearch`, `PreviewCard`, `PullToRefresh`, `ReorderableColumn`, `SelectionSheet`, `SheetFrame`, `SettingRow`,
   `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarRail`, `SummaryCard` (with `NamedAvatar`), `Collapsible`,
   `SidebarSwipeArea`, and
   `SwipeActions`.
@@ -71,7 +71,11 @@ Dark mode is the only color mode. The palette is recorded in
   another or closes back to it, its icon and label fade and scale out while the new ones fade and
   scale in, 120 ms on the exit and enter curves; the shell stays. With `minimized`, the bar shows only the primary's icon in a
   62 dp circle at its end, as far from the screen's end edge as from its bottom edge (the
-  navigation bar counts toward both), filled like the full primary. It stays in place while the
+  navigation bar counts toward both), filled like the full primary. Its ring is `accentLight`. With a `BarContext`, a fully rounded
+  `bgDark` shell with a `strokeBgDark` outline grows out from behind the circle toward the start,
+  240 ms on the enter curve, and shrinks back behind it on the exit curve. The context follows the
+  frontmost bar like the icon, so it grows when a selection starts and shrinks when it ends. The
+  whole button runs the primary. It stays in place while the
   keyboard moves. With `hidden`, or when the keyboard starts opening, it fades and scales out like
   `PickerSearch`'s clear button, 120 ms on the exit curve. It fades and scales back in on the
   enter curve once the closing keyboard drops below it. Pass `hidden` as soon as a field will take

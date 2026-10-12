@@ -2,10 +2,13 @@
 
 ## Unreleased
 
+- `PreviewCard` hides its preview from screen readers only when the card is a button, so a
+  preview without `onClick` keeps its controls reachable.
+- A minimized `ActionBar` with a `BarContext` shows it in a fully rounded shell that grows out
+  from behind the round button toward the start and shrinks back on the bezier curves; the whole
+  button runs the primary. The round button's ring is `accentLight`.
 - The full `ActionBar`'s primary swaps its icon and label the same way when it changes, including
   across pages; the shell stays.
-- Add `DividerLabel`, a `text2` heading followed by a `bgLight` line, for splitting one list into
-  groups.
 - The minimized `ActionBar` button sits as far from the screen's end edge as from its bottom edge.
   It stays in place while the keyboard moves, and fades and scales out like `PickerSearch`'s clear
   button with the new `hidden` parameter or as the keyboard opens. It returns once the closing

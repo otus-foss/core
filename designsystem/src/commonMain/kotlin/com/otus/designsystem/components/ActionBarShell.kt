@@ -53,7 +53,7 @@ import kotlin.math.roundToInt
  * The primary action in its shell. The shell is one button in both states, so its description
  * names the context too. The action's end edge and icon stay put while its width animates. A bar
  * that appears with a context starts full and collapses into it, like one whose context arrives later.
- * When the primary changes, its icon and label swap inside the shell; see [rememberPrimaryFace].
+ * When the primary changes, its icon and label swap inside the shell; see [rememberFrontBar].
  */
 @Composable
 internal fun PrimaryShell(
@@ -73,7 +73,7 @@ internal fun PrimaryShell(
     val progress = animation.value
     val fadeStart = ActionBarTokens.CONTEXT_FADE_START
     val textColor = if (primary.enabled) OtusColors.text1 else OtusColors.text3
-    val face = rememberPrimaryFace(primary)
+    val face = rememberFrontBar(primary, context).face
     Box(
         modifier
             .heightIn(min = ActionBarTokens.height)
@@ -90,9 +90,13 @@ internal fun PrimaryShell(
                     primary.label,
                     it,
                     if (primary.enabled) OtusColors.text2 else OtusColors.text3,
-                    Modifier.align(Alignment.CenterStart).graphicsLayer {
-                        alpha = ((progress - fadeStart) / (1f - fadeStart)).coerceIn(0f, 1f)
-                    },
+                    Modifier
+                        .align(Alignment.CenterStart)
+                        .graphicsLayer { alpha = ((progress - fadeStart) / (1f - fadeStart)).coerceIn(0f, 1f) }
+                        .padding(
+                            start = ActionBarTokens.contextInset,
+                            end = ActionBarTokens.collapsedActionWidth + ActionBarTokens.tokenGap,
+                        ),
                 )
             }
             Action(primary, face, shape, Modifier.matchParentSize()) { progress }
@@ -159,18 +163,14 @@ private fun Modifier.collapsingWidth(progress: () -> Float): Modifier =
     }
 
 @Composable
-private fun ContextContent(
+internal fun ContextContent(
     title: String,
     context: BarContext,
     subtitleColor: Color,
     modifier: Modifier,
 ) {
     Row(
-        modifier
-            .padding(
-                start = ActionBarTokens.contextInset,
-                end = ActionBarTokens.collapsedActionWidth + ActionBarTokens.tokenGap,
-            ).clearAndSetSemantics {},
+        modifier.clearAndSetSemantics {},
         horizontalArrangement = Arrangement.spacedBy(ActionBarTokens.tokenGap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -208,6 +208,6 @@ private fun crossfade(motionScale: Float) =
  * The last context shown, kept while the context fades out. It is not state, because it changes
  * only during a recomposition.
  */
-private class LastContext {
+internal class LastContext {
     var value: BarContext? = null
 }

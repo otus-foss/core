@@ -26,7 +26,6 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
-import com.otus.designsystem.elements.Symbol
 import com.otus.designsystem.theme.ActionBarTokens
 import com.otus.designsystem.theme.MotionCurve
 import com.otus.designsystem.theme.MotionSpeed
@@ -36,7 +35,7 @@ import com.otus.designsystem.theme.motionTween
  * A minimized [ActionBar]: [RoundPrimary] at the bar's end, as far from the screen's end edge as
  * from its bottom edge. It stays in place while the keyboard moves. It fades and scales out like
  * [PickerSearch]'s clear button once [hidden] or when the keyboard starts opening, and back in once
- * the closing keyboard drops below it. A new primary's icon swaps in place; see [rememberPrimaryFace].
+ * the closing keyboard drops below it. A new primary's icon swaps in place; see [rememberFrontBar].
  */
 @Composable
 internal fun MinimizedBar(
@@ -72,9 +71,7 @@ internal fun MinimizedBar(
             enter = fadeIn(arrive) + scaleIn(arrive),
             exit = fadeOut(leave) + scaleOut(leave),
         ) {
-            RoundPrimary(primary, context) {
-                rememberPrimaryFace(primary).Swapping { Symbol(it.symbol, it.mirrorInRtl, ActionBarTokens.symbolSize) }
-            }
+            RoundPrimary(primary, context)
         }
     }
 }

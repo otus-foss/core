@@ -34,9 +34,10 @@ import com.otus.designsystem.theme.SheetTokens
 
 /**
  * A raised `bgRegular` card that previews part of a page, such as its action bar: a sketch of the
- * page starting with [marker], then [preview]. The preview only shows, so screen readers skip it.
- * With a [title], a header names the page over a `text2` [description]; with [onClick], the whole
- * card is one button and the header ends in a chevron, since it opens an editor.
+ * page starting with [marker], then [preview]. With a [title], a header names the page over a
+ * `text2` [description]. With [onClick], the whole card is one button whose header ends in a
+ * chevron, since it opens an editor, and screen readers skip the preview inside it. Without one,
+ * the preview's own controls stay reachable, so an editor can make its buttons the controls.
  */
 @Composable
 public fun PreviewCard(
@@ -65,7 +66,7 @@ public fun PreviewCard(
     ) {
         title?.let { PreviewHeader(it, description, chevron = onClick != null) }
         PageSketch(marker)
-        Box(Modifier.clearAndSetSemantics {}) { preview() }
+        Box(if (onClick != null) Modifier.clearAndSetSemantics {} else Modifier) { preview() }
     }
 }
 
