@@ -1,8 +1,6 @@
 package com.otus.designsystem.components
 
-import androidx.compose.animation.core.Easing
 import androidx.compose.animation.core.animate
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
@@ -22,13 +20,20 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Velocity
 import com.otus.designsystem.theme.ChoiceSheetTokens
-import com.otus.designsystem.theme.MotionTokens
+import com.otus.designsystem.theme.Motion
+import com.otus.designsystem.theme.MotionCurve
+import com.otus.designsystem.theme.MotionSpeed
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.job
 
-/** How far the sheet is pushed below its resting place: 1 is fully hidden, 0 fully shown. */
-internal class SheetPosition {
+/**
+ * How far the sheet is pushed below its resting place: 1 is fully hidden, 0 fully shown.
+ * [motionScale] is the [com.otus.designsystem.theme.LocalMotionScale] of the sheet that owns it.
+ */
+internal class SheetPosition(
+    private val motionScale: Float = 1f,
+) {
     var hidden by mutableFloatStateOf(1f)
         private set
     var height by mutableIntStateOf(0)
@@ -36,14 +41,14 @@ internal class SheetPosition {
         private set
     private var animation: Job? = null
 
-    suspend fun show(easing: Easing) {
-        if (!closing) animateTo(0f, ChoiceSheetTokens.ENTER_MILLIS, easing)
+    suspend fun show(curve: MotionCurve) {
+        if (!closing) animateTo(0f, curve)
     }
 
     suspend fun hide(then: () -> Unit) {
         if (closing) return
         closing = true
-        animateTo(1f, ChoiceSheetTokens.EXIT_MILLIS, MotionTokens.exit)
+        animateTo(1f, MotionCurve.Exit)
         then()
     }
 
@@ -68,20 +73,22 @@ internal class SheetPosition {
         ) {
             close()
         } else {
-            show(MotionTokens.standard)
+            show(MotionCurve.Standard)
         }
     }
 
     private suspend fun animateTo(
         target: Float,
-        millis: Int,
-        easing: Easing,
+        curve: MotionCurve,
     ) {
         val job = currentCoroutineContext().job
         animation?.takeIf { it != job }?.cancel()
         animation = job
         try {
-            animate(hidden, target, animationSpec = tween(millis, easing = easing)) { value, _ -> hidden = value }
+            animate(hidden, target, animationSpec = Motion.tween(MotionSpeed.Normal, curve, motionScale)) { value, _ ->
+                hidden =
+                    value
+            }
         } finally {
             if (animation == job) animation = null
         }

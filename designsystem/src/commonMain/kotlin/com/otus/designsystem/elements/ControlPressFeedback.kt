@@ -1,7 +1,6 @@
 package com.otus.designsystem.elements
 
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -13,8 +12,9 @@ import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.drawOutline
 import com.otus.designsystem.theme.ControlFeedbackTokens
-import com.otus.designsystem.theme.MotionTokens
+import com.otus.designsystem.theme.MotionSpeed
 import com.otus.designsystem.theme.OtusColors
+import com.otus.designsystem.theme.motionTween
 
 /** Share the touch target's interactions, but paint feedback only on the visible control. */
 @Composable
@@ -27,7 +27,7 @@ public fun Modifier.controlPressFeedback(
     val opacity =
         animateFloatAsState(
             targetValue = if (pressed || focused) ControlFeedbackTokens.OPACITY else 0f,
-            animationSpec = tween(ControlFeedbackTokens.DURATION_MILLIS, easing = MotionTokens.standard),
+            animationSpec = motionTween(MotionSpeed.Quick),
             label = "Control press feedback",
         )
     return drawWithCache {

@@ -2,7 +2,6 @@ package com.otus.designsystem.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -22,8 +21,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.dp
-import com.otus.designsystem.theme.MotionTokens
 import com.otus.designsystem.theme.PanelTokens
+import com.otus.designsystem.theme.motionTween
 import com.otus.designsystem.theme.panelTextStyle
 
 /**
@@ -46,7 +45,7 @@ public fun ContextPanel(
     val overlap =
         animateFloatAsState(
             targetValue = if (placement == ChipPlacement.Overlapping) 1f else 0f,
-            animationSpec = modeTween(),
+            animationSpec = motionTween(),
             label = "Panel surface expansion",
         )
     val geometry = remember { PanelLayoutState() }
@@ -70,8 +69,8 @@ public fun ContextPanel(
             )
             AnimatedVisibility(
                 railShown,
-                enter = expandVertically(modeTween(), expandFrom = Alignment.Top) + fadeIn(modeTween()),
-                exit = shrinkVertically(modeTween(), shrinkTowards = Alignment.Top) + fadeOut(modeTween()),
+                enter = expandVertically(motionTween(), expandFrom = Alignment.Top) + fadeIn(motionTween()),
+                exit = shrinkVertically(motionTween(), shrinkTowards = Alignment.Top) + fadeOut(motionTween()),
                 label = "Panel chip rail",
             ) {
                 Row(
@@ -91,8 +90,6 @@ public fun ContextPanel(
         }
     }
 }
-
-private fun <T> modeTween() = tween<T>(PanelTokens.MODE_TRANSITION_MILLIS, easing = MotionTokens.standard)
 
 internal object ActionKey
 
@@ -121,7 +118,7 @@ private fun PanelHeader(
             contentAlignment = Alignment.CenterStart,
         ) { ProvideTextStyle(panelTextStyle()) { content() } }
         if (action != null) {
-            AnimatedVisibility(actionShown, enter = fadeIn(modeTween()), exit = fadeOut(modeTween())) { action() }
+            AnimatedVisibility(actionShown, enter = fadeIn(motionTween()), exit = fadeOut(motionTween())) { action() }
         }
     }
 }

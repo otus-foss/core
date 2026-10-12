@@ -36,6 +36,15 @@ compiling for iOS. Read [the suite product goals](docs/suite/product-goals.md) a
   may use Compose only in `presentation`, with composables in `components` or `screens`. Keep
   their domain, data, and presentation layers separate; design-system code cannot depend on
   features. See decision 0007. Use named palette tokens; dark mode is the only color mode.
+- Animate only through `Motion`. Use `motionTween(speed, curve)` in composables,
+  `Motion.tween(speed, curve, scale)` outside composition, or `Motion.millis(speed, scale)` for a
+  spec that is not a tween, and respect `LocalMotionScale` everywhere. Never add a raw duration
+  constant, a `tween` with a literal, a new `CubicBezierEasing`, or an animation with a Compose
+  default spec. Pick the speed by what moves: `Quick` for touch feedback, `Fast` for small
+  in-place changes, `Normal` for panels, sheets, and text, `Relaxed` for large surfaces such as
+  the sidebar or a settling row. Pick the curve by direction: `Standard` by default, `Enter` for
+  things arriving, `Exit` for things leaving. Change `LocalMotionScale` to speed everything up or
+  down; do not edit the speeds. See [the design system guide](docs/designsystem.md#motion).
 - `commonMain` uses no platform APIs. Platform code goes in matching platform source sets.
   Domain code uses no UI, platform, networking, or database APIs.
 - Keep JMAP wire types separate from portable domain models. Check the JMAP specifications and

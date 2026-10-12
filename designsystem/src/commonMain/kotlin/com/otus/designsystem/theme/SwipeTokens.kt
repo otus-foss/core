@@ -24,6 +24,4 @@ internal object SwipeTokens {
 
     /** Opacity of the text-colored flash over the accent when a release commits. */
     const val FLASH_ALPHA = 0.24f
-    const val FLASH_MILLIS = 200
-    const val SETTLE_MILLIS = 300
 }

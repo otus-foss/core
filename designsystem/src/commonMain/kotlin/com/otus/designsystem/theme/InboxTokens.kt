@@ -18,4 +18,7 @@ public object InboxTokens {
     public val metadataSize: TextUnit = 12.sp
     public val subjectLineHeight: TextUnit = 24.sp
     public val avatarRadius: Dp = 24.dp
+
+    /** Rounding of a selected row's tint, matching the panels. */
+    public val selectionRadius: Dp = PanelTokens.panelRadius
 }

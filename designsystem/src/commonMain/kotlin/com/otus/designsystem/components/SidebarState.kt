@@ -1,7 +1,7 @@
 package com.otus.designsystem.components
 
+import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.core.animate
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.MutatePriority
 import androidx.compose.foundation.MutatorMutex
 import androidx.compose.runtime.Composable
@@ -12,9 +12,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import com.otus.designsystem.theme.MotionTokens
-import com.otus.designsystem.theme.SidebarTokens
+import com.otus.designsystem.theme.Motion
+import com.otus.designsystem.theme.MotionCurve
+import com.otus.designsystem.theme.MotionSpeed
 import kotlin.math.abs
+import kotlin.math.roundToInt
 
 /**
  * Whether the [Sidebar] is open, and how far it currently shows. Buttons call [open] and [close];
@@ -34,6 +36,9 @@ public class SidebarState(
 
     /** Panel width in pixels, which converts a swipe distance into progress. */
     internal var widthPx by mutableFloatStateOf(0f)
+
+    /** The [com.otus.designsystem.theme.LocalMotionScale] of the [Sidebar] that shows this state. */
+    internal var motionScale = 1f
 
     private val mutex = MutatorMutex()
 
@@ -69,9 +74,9 @@ public class SidebarState(
             val target = if (open) 1f else 0f
             // A sidebar released part-way only travels the remaining distance, at the same pace.
             val remaining = abs(target - progress)
-            val millis = if (open) SidebarTokens.OPEN_MILLIS else SidebarTokens.CLOSE_MILLIS
-            val easing = if (open) MotionTokens.enter else MotionTokens.exit
-            val spec = tween<Float>((millis * remaining).toInt(), easing = easing)
+            val millis = Motion.millis(if (open) MotionSpeed.Relaxed else MotionSpeed.Normal, motionScale)
+            val curve = if (open) MotionCurve.Enter else MotionCurve.Exit
+            val spec = TweenSpec<Float>((millis * remaining).roundToInt(), easing = curve.easing)
             animate(progress, target, animationSpec = spec) { value, _ -> progress = value }
         }
 
