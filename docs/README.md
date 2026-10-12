@@ -6,6 +6,8 @@
 
 - [Product goals](suite/product-goals.md): purpose, protocol scope, and current state of both apps.
 - [Mail design foundations](suite/mail-design.md): the palette and Figma reference used by both apps.
+- [JMAP features in Otus](suite/jmap-features.md): which capabilities and methods the apps use,
+  build, plan, or leave out. Read it before designing a screen or setting.
 - [Roadmap](https://github.com/reazndev/otus-mail/issues/9): the v1 JMAP suite and v2 protocol plan.
 
 ## Libraries
