@@ -116,6 +116,20 @@
   `${...}` string templates, finds literal colors passed to an aliased `Color` import or given as
   decimal numbers, and checks qualified drawable directories such as `drawable-night` and Android
   `res` drawables. Update the apps' copies of the checker to match.
+- Add `SummaryCard`, a raised `bgRegular` card with a leading slot beside a one-line title and a
+  one-line `text2` subtitle, such as the message a sheet moves.
+- `ChoiceSheet` takes an optional `footnote`, shown in `text2` below its options.
+- A `SummaryCard` overload takes `people`, a list of the new `NamedAvatar`, and names up to three
+  of them on its second line, each after a 20 dp avatar, with "+N" for the rest.
+- `PickerSearch` fades and scales its clear button in when text appears and out when it is
+  cleared, over 120 ms with the enter and exit curves. It takes a `modifier`, such as one that
+  watches its focus.
+- `SettingRow` takes a `density`. `RowDensity.Compact` drops the hairline and uses 10 dp vertical
+  padding with a 44 dp minimum height and a one-line title. A 48 dp trailing control, such as
+  `SidebarExpandButton`, overlaps the row's edges instead of making it taller. Other rows keep
+  `RowDensity.Regular` and look as before.
+- Add `Collapsible`, which unfolds its content downward with a fade while expanded and folds it
+  back up, at the default motion speed, for rows nested under a collapsible row.
 
 ## 0.7.0 - 2026-10-11
 

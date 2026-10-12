@@ -18,6 +18,10 @@ internal object SettingTokens {
     val sectionGap: Dp = 24.dp
     val sectionTitleGap: Dp = 8.dp
     val rowPadding: Dp = 16.dp
+
+    /** A compact row: one 22 sp line between these paddings comes to about 44 dp. */
+    val compactRowPadding: Dp = 10.dp
+    val compactRowHeight: Dp = 44.dp
     val rowGap: Dp = 16.dp
     val textGap: Dp = 4.dp
     val dividerWidth: Dp = 1.dp
