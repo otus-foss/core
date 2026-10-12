@@ -9,7 +9,10 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 
-/** `Foo/get` (RFC 8620, section 5.1). [extra] carries type-specific arguments. */
+/**
+ * `Foo/get` (RFC 8620, section 5.1). [extra] carries type-specific arguments and must not name
+ * `accountId`, `ids`, or `properties`.
+ */
 public class GetMethod<T>(
     private val type: JmapType<T>,
     accountId: String,
@@ -17,6 +20,10 @@ public class GetMethod<T>(
     private val properties: List<String>? = null,
     private val extra: Map<String, JsonElement> = emptyMap(),
 ) : JmapMethod<GetResult<T>>("${type.name}/get", type.capability, accountId) {
+    init {
+        requireExtraArguments(extra, setOf("accountId", "ids", "properties"))
+    }
+
     override fun arguments(): JsonObject =
         buildJsonObject {
             put("accountId", JsonPrimitive(accountId))
@@ -50,7 +57,10 @@ public data class JmapSort(
     val isAscending: Boolean = true,
 )
 
-/** `Foo/query` (RFC 8620, section 5.5). [filter] is type-specific. */
+/**
+ * `Foo/query` (RFC 8620, section 5.5). [filter] is type-specific. [extra] carries other arguments,
+ * such as `position`, and must not name `accountId`, `filter`, `sort`, or `limit`.
+ */
 public class QueryMethod(
     type: JmapType<*>,
     accountId: String,
@@ -59,6 +69,10 @@ public class QueryMethod(
     private val limit: Int? = null,
     private val extra: Map<String, JsonElement> = emptyMap(),
 ) : JmapMethod<QueryResult>("${type.name}/query", type.capability, accountId) {
+    init {
+        requireExtraArguments(extra, setOf("accountId", "filter", "sort", "limit"))
+    }
+
     override fun arguments(): JsonObject =
         buildJsonObject {
             put("accountId", JsonPrimitive(accountId))

@@ -104,6 +104,10 @@
   like other Keystore errors. `secret` returns `LoginSecret.Unreadable` and `save` throws
   `LoginStoreException`, where both used to throw the raw exception. Concurrent first uses no
   longer race to generate the Keystore key.
+- `GetMethod`, `QueryMethod`, and `SetMethod` throw `IllegalArgumentException` when `extra`
+  names an argument the method writes itself, such as `accountId`, or its `#` result reference.
+  Before, `extra` replaced it, so a call could target an account other than the one checked
+  against the session. Type-specific arguments such as `position` still work.
 
 ## 0.7.0 - 2026-10-11
 
