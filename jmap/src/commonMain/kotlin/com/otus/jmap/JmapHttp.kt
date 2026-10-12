@@ -102,7 +102,8 @@ internal fun expandUriTemplate(
     values: Map<String, String>,
 ): String {
     val expanded =
-        Regex("\\{([^{}]+)}").replace(template) { match ->
+        // Android's ICU regex engine rejects an unescaped "}", which the JVM accepts.
+        Regex("\\{([^{}]+)\\}").replace(template) { match ->
             values[match.groupValues[1]]?.encodeURLParameter()
                 ?: throw JmapException.NotJmap("unknown URI template variable")
         }
