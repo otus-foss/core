@@ -25,15 +25,29 @@ Ubicloud's `ubicloud-standard-2` Linux runner. See [hosting and CI](hosting.md).
 Publishing works like this:
 
 1. Merge the changelog entry and version bump in `gradle.properties` to `main`.
-2. Push the tag `v<version>`. The pre-push hook runs `checkAll` first.
-3. The `publish` workflow builds every publication in an isolated local Maven
-   repository on Linux. `tools/check_publications.py` verifies all root, Android, iOS device, and
-   iOS simulator publications, including the files and checksums in their Gradle metadata.
-   Only then does the workflow upload every module to GitHub Packages.
-4. Open a pull request in each app that bumps `otus-meta` in its version catalog when the app
+2. Push the tag `v<version>` on a commit that is already on `main`. The pre-push hook runs
+   `checkAll` first.
+3. The `publish` workflow's `build` job checks that the tag matches `gradle.properties` and that
+   the tagged commit is an ancestor of `main`, so a tag on an unmerged branch never publishes.
+   It runs `./gradlew testAndroidHostTest`, which covers every module's common and Android host
+   tests, the part of `checkAll` that exercises library behavior on Linux. It skips the formatting
+   and static checks that the hooks already ran. It then builds every publication in an isolated
+   local Maven repository on Linux. `tools/check_publications.py` verifies all root, Android, iOS
+   device, and iOS simulator publications, the files and checksums in their Gradle metadata, and
+   that every `com.otus` dependency in each POM and Gradle module file names the release version.
+4. Only after the `build` job passes does the `publish` job upload every module to GitHub
+   Packages with Gradle.
+5. Open a pull request in each app that bumps `otus-meta` in its version catalog when the app
    needs the release. Apps may stay on an older version.
 
 Published versions are immutable. Fix a bad release with a new patch version.
+
+Each job gets only the permissions it needs. The `build` job can read the repository and nothing
+else, so tests and build scripts never run with a token that can publish. Only the `publish` job
+can write packages. Neither checkout keeps Git credentials. The `publish` job builds the
+publications again from the same commit instead of uploading the `build` job's files, because
+uploading a Maven repository without Gradle would bypass the metadata handling that Gradle's
+publisher does against GitHub Packages, and that path cannot be tested without a release.
 
 To test the publisher without a release, select `publish` in GitHub Actions and use **Run workflow**
 on the branch to validate. Manual runs never upload. A branch push does not publish; only a new

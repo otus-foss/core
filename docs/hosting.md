@@ -20,10 +20,11 @@ iOS apps or run simulator tests.
 ## Packages
 
 Meta publishes to GitHub Packages at `https://maven.pkg.github.com/reazndev/otus-meta`. A version
-tag starts the `publish` workflow on Linux. It runs `checkAll`, builds every publication in an
-isolated local Maven repository, verifies the root metadata, platform binaries, and checksums,
-and then uploads with the workflow's `GITHUB_TOKEN`. A manual run does the same checks without
-uploading. See [releasing](releasing.md).
+tag on `main` starts the `publish` workflow on Linux. Its `build` job runs the modules' host tests,
+builds every publication in an isolated local Maven repository, and verifies the root metadata,
+platform binaries, checksums, and `com.otus` dependency versions. Its `publish` job then uploads
+with the workflow's `GITHUB_TOKEN`. The workflow does not run `checkAll`; the pre-push hook does.
+A manual run does the same checks without uploading. See [releasing](releasing.md).
 
 GitHub Packages has versions up to 0.3.0 and from 0.6.0 on. Versions 0.3.1 to 0.5.0 are not
 on GitHub Packages.
