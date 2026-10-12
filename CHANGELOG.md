@@ -2,8 +2,28 @@
 
 ## Unreleased
 
+- Fix a crash on Android in every JMAP upload and download, such as saving Sieve rules. URI
+  templates now escape the closing brace, which Android's ICU regex engine requires.
+- `PreviewCard` hides its preview from screen readers only when the card is a button, so a
+  preview without `onClick` keeps its controls reachable.
+- A minimized `ActionBar` with a `BarContext` shows it in a fully rounded shell that grows out
+  from behind the round button toward the start and shrinks back on the bezier curves; the whole
+  button runs the primary. The round button's ring is `accentLight`.
+- The full `ActionBar`'s primary swaps its icon and label the same way when it changes, including
+  across pages; the shell stays.
+- The minimized `ActionBar` button sits as far from the screen's end edge as from its bottom edge.
+  It stays in place while the keyboard moves, and fades and scales out like `PickerSearch`'s clear
+  button with the new `hidden` parameter or as the keyboard opens. It returns once the closing
+  keyboard drops below it.
+  When its primary changes, including when a page opens over another or closes back to it,
+  the old icon scales and fades out while the new one scales and fades in; the circle stays.
+- `ActionBar` takes `minimized`, which shows only the primary's icon in a 62 dp circle at the
+  bar's end and leaves out the secondary actions.
 - `ReorderableColumn` fills each row with `background`, `bgRegular` by default, so a dragged
   row no longer shows the rows and dividers beneath it. Pass `bgDark` inside a sheet.
+- Add `PreviewCard`, a raised `bgRegular` card that sketches a page with a `SketchMarker` and
+  shows a preview below, such as an action bar. With a title it has a header, and with `onClick`
+  the whole card is one button whose header ends in a chevron.
 - `Sidebar` is 336 dp wide: a 64 dp account rail and a 272 dp panel. On a narrower screen the
   panel shrinks so at least 56 dp of the page stays visible. The 64% width rule, kept between
   264 and 384 dp, is gone. Opening it clears focus and hides the software keyboard. It takes `subtitle` and a `rail` slot, its `entries` slot is
