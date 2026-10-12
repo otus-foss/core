@@ -51,7 +51,10 @@ public fun Chip(
     }
 }
 
-/** The pill and its 48 dp touch target, shared by [Chip] and [SidebarPill]; [fill] fills it while unselected. */
+/**
+ * The pill and its 48 dp touch target, shared by [Chip], [SidebarPill], and [IconPill]; [fill]
+ * fills it while unselected. A [circle] is as wide as it is tall, like an [IconButton].
+ */
 @Composable
 internal fun ChipFrame(
     onClick: () -> Unit,
@@ -59,6 +62,7 @@ internal fun ChipFrame(
     selected: Boolean,
     enabled: Boolean,
     fill: Color,
+    circle: Boolean = false,
     content: @Composable RowScope.() -> Unit,
 ) {
     val interactions = remember { MutableInteractionSource() }
@@ -86,10 +90,14 @@ internal fun ChipFrame(
                 ),
         ) {
             Row(
-                Modifier
-                    .heightIn(min = PanelTokens.chipHeight)
-                    .padding(horizontal = PanelTokens.chipPadding, vertical = PanelTokens.iconGap),
-                horizontalArrangement = Arrangement.spacedBy(PanelTokens.iconGap),
+                if (circle) {
+                    Modifier.size(PanelTokens.chipHeight)
+                } else {
+                    Modifier
+                        .heightIn(min = PanelTokens.chipHeight)
+                        .padding(horizontal = PanelTokens.chipPadding, vertical = PanelTokens.iconGap)
+                },
+                horizontalArrangement = Arrangement.spacedBy(PanelTokens.iconGap, Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically,
                 content = content,
             )

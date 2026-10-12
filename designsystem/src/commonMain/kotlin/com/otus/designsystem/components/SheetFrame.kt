@@ -4,11 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -59,10 +59,11 @@ import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 /**
- * A modal sheet that slides up from the bottom edge, titled [title] with a Done button. Done, the
- * scrim, Back, and swiping down anywhere on it all slide it away. Then Done runs [onDone] and the
- * others run [onDismiss]. [leadingAction] sits opposite Done and gets the same slide-away-then-done
- * path, so it can finish the sheet too.
+ * A modal sheet that slides up from the bottom edge, titled [title] with a [doneLabel] button. Done,
+ * the scrim, Back, and swiping down anywhere on it all slide it away. Then Done runs [onDone] and
+ * the others run [onDismiss]. [leadingAction] sits opposite Done and gets the same
+ * slide-away-then-done path, so it can finish the sheet too. The sheet is as tall as its content,
+ * up to most of the screen; content with a weighted child fills that height.
  */
 @Composable
 public fun SheetFrame(
@@ -70,6 +71,7 @@ public fun SheetFrame(
     onDismiss: () -> Unit,
     onDone: () -> Unit = onDismiss,
     doneEnabled: Boolean = true,
+    doneLabel: String = "Done",
     leadingAction: (@Composable (done: () -> Unit) -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
@@ -85,14 +87,14 @@ public fun SheetFrame(
     LaunchedEffect(Unit) { position.show(MotionCurve.Enter) }
     Dialog(close, properties = selectionSheetDialogProperties()) {
         CompositionLocalProvider(LocalDensity provides density) {
-            Box(Modifier.fillMaxSize().imePadding()) {
+            BoxWithConstraints(Modifier.fillMaxSize().imePadding()) {
                 SheetScrim(title, visible = 1f - position.hidden, onClick = close)
                 Surface(
                     Modifier
                         .align(Alignment.BottomCenter)
                         .widthIn(max = SheetTokens.maxWidth)
                         .fillMaxWidth()
-                        .fillMaxHeight(SheetTokens.HEIGHT_FRACTION)
+                        .heightIn(max = maxHeight * SheetTokens.HEIGHT_FRACTION)
                         .onSizeChanged { position.height = it.height }
                         .offset { IntOffset(0, (position.hidden * position.height).roundToInt()) }
                         .semantics { paneTitle = title },
@@ -109,6 +111,7 @@ public fun SheetFrame(
                             SheetHeader(
                                 title,
                                 onDone = done,
+                                doneLabel = doneLabel,
                                 doneEnabled = doneEnabled && !position.closing,
                                 leadingAction = leadingAction?.let { action -> { action(done) } },
                             )
@@ -138,13 +141,14 @@ private fun SheetScrim(
 
 private val BottomAndSides = WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal
 
-/** The grab handle, the centered [title], [leadingAction] at the start, and Done at the end. */
+/** The grab handle, the centered [title], [leadingAction] at the start, and [doneLabel] at the end. */
 @Composable
 internal fun SheetHeader(
     title: String,
     onDone: () -> Unit,
     modifier: Modifier = Modifier,
     doneEnabled: Boolean = true,
+    doneLabel: String = "Done",
     leadingAction: (@Composable () -> Unit)? = null,
 ) {
     Box(modifier.fillMaxWidth().height(ChoiceSheetTokens.headerHeight)) {
@@ -164,7 +168,7 @@ internal fun SheetHeader(
             fontWeight = FontWeight.SemiBold,
         )
         SheetHeaderAction(
-            "Done",
+            doneLabel,
             onDone,
             Modifier.align(Alignment.CenterEnd),
             color = OtusColors.accentLight,

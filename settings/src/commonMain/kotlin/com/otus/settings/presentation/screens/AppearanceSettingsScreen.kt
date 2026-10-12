@@ -11,6 +11,7 @@ import com.otus.dateformat.DateFormatPreference
 import com.otus.dateformat.currentDateLocaleIdentifier
 import com.otus.dateformat.currentLocalDate
 import com.otus.designsystem.components.ChoiceOptions
+import com.otus.designsystem.components.ChoiceRow
 import com.otus.designsystem.components.ChoiceSheet
 import com.otus.designsystem.components.SettingRow
 import com.otus.designsystem.components.SettingsSection
@@ -48,8 +49,7 @@ public fun AppearanceSettingsScreen(
                     selected = dateFormat.preference,
                     default = DateFormatPreference.DeviceLocale,
                 ),
-            label = { it.patternLabel },
-            detail = { dateFormatExample(it, locale, today) },
+            row = { ChoiceRow(it.patternLabel, dateFormatExample(it, locale, today)) },
             onSelect = dateFormat::select,
             onDismiss = { choosing = false },
         )
