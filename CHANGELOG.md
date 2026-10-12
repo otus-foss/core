@@ -108,6 +108,9 @@
   names an argument the method writes itself, such as `accountId`, or its `#` result reference.
   Before, `extra` replaced it, so a call could target an account other than the one checked
   against the session. Type-specific arguments such as `position` still work.
+- `SwipeActions` runs at most one action at a time. A release cannot commit again until the row
+  is back at rest, so dragging a dismissed row that is still shown no longer runs its action a
+  second time. A dismissed row that its list has not removed returns to rest after one second.
 
 ## 0.7.0 - 2026-10-11
 
