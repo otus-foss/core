@@ -34,6 +34,9 @@ internal object SettingTokens {
     val valuePaddingVertical: Dp = 8.dp
     val valueMaxWidth: Dp = 180.dp
 
+    /** Still leaves a short title such as "Mail that" one line on a 411 dp phone. */
+    val wideValueMaxWidth: Dp = 240.dp
+
     val switchWidth: Dp = 52.dp
     val switchHeight: Dp = 32.dp
     val switchThumb: Dp = 24.dp
