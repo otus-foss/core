@@ -1,5 +1,6 @@
 package com.otus.designsystem.components
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -45,8 +46,8 @@ import com.otus.designsystem.theme.motionTween
  * A compact list row. The app supplies display text, accessibility state, and leading content.
  * While the list is selecting, [selection] is set and accessibility services read it; a selected
  * row is tinted and shows a check in place of its leading content. Null means the list is not
- * selecting. [onLongClick], when given, usually starts selecting. The tint and its corners
- * animate as selection changes.
+ * selecting. [onLongClick], when given, usually starts selecting. The tint, the check, and the
+ * corners animate together as selection changes.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -78,7 +79,7 @@ public fun ContentRow(
             .padding(InboxTokens.rowPadding),
         horizontalArrangement = Arrangement.spacedBy(InboxTokens.itemGap),
     ) {
-        if (selected) SelectedMark() else leading()
+        Crossfade(selected, animationSpec = motionTween()) { if (it) SelectedMark() else leading() }
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(InboxTokens.detailGap)) {
             Row(horizontalArrangement = Arrangement.spacedBy(InboxTokens.detailGap)) {
                 Text(
