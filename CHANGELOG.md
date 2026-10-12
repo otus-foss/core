@@ -4,7 +4,7 @@
 
 - `Sidebar` is 336 dp wide: a 64 dp account rail and a 272 dp panel. On a narrower screen the
   panel shrinks so at least 56 dp of the page stays visible. The 64% width rule, kept between
-  264 and 384 dp, is gone. It takes `subtitle` and a `rail` slot, its `entries` slot is
+  264 and 384 dp, is gone. Opening it clears focus and hides the software keyboard. It takes `subtitle` and a `rail` slot, its `entries` slot is
   now `content`, and the `footer` slot is gone. The
   header shows a 16 sp SemiBold title over a 14 sp `text2` subtitle. Callers must pass the new
   arguments.

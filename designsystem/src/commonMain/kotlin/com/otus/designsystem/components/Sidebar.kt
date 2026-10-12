@@ -28,6 +28,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -36,7 +37,9 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.paneTitle
@@ -79,8 +82,18 @@ public fun Sidebar(
         isBackEnabled = state.isOpen,
         onBackCompleted = close,
     )
+    val showing = state.isOpen || state.progress > 0f
+    val focusManager = LocalFocusManager.current
+    val keyboard = LocalSoftwareKeyboardController.current
+    // A focused field, such as search, would keep the keyboard over the sidebar.
+    LaunchedEffect(showing) {
+        if (showing) {
+            focusManager.clearFocus()
+            keyboard?.hide()
+        }
+    }
     // One progress value drives the slide and the scrim, so a swipe or a reversal mid-way stays continuous.
-    if (!state.isOpen && state.progress == 0f) return
+    if (!showing) return
     val sign = if (LocalLayoutDirection.current == LayoutDirection.Rtl) -1f else 1f
     val flingThreshold = with(LocalDensity.current) { SidebarTokens.flingVelocity.toPx() }
     BoxWithConstraints(
