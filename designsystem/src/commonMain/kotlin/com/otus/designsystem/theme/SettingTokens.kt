@@ -17,11 +17,14 @@ internal object SettingTokens {
     /** Space above a section title, and between it and the section's first row. */
     val sectionGap: Dp = 24.dp
     val sectionTitleGap: Dp = 8.dp
+
+    /** An avatar before a section title, and the space between them. */
+    val sectionAvatar: Dp = 28.dp
+    val sectionLeadingGap: Dp = 12.dp
     val rowPadding: Dp = 16.dp
 
-    /** A compact row: one 22 sp line between these paddings comes to about 44 dp. */
-    val compactRowPadding: Dp = 10.dp
-    val compactRowHeight: Dp = 44.dp
+    /** A compact row: one 22 sp line between these paddings fills [PanelTokens.compactRowHeight]. */
+    val compactRowPadding: Dp = 7.dp
     val rowGap: Dp = 16.dp
     val textGap: Dp = 4.dp
     val dividerWidth: Dp = 1.dp

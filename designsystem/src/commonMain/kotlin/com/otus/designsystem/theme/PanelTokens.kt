@@ -7,6 +7,12 @@ import androidx.compose.ui.unit.sp
 
 public object PanelTokens {
     public val touchTarget: Dp = 48.dp
+
+    /**
+     * One row of a folder list: in the sidebar, the move sheet, and settings. Rows follow each
+     * other without gaps, so they are shorter than [touchTarget] to fit more folders on screen.
+     */
+    public val compactRowHeight: Dp = 36.dp
     public val chipHeight: Dp = 36.dp
     public val iconSize: Dp = 20.dp
     public val chipAvatarOverlap: Dp = 6.dp

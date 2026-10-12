@@ -18,8 +18,9 @@
   turns its chevron 90 degrees and collapses the group. Screen readers announce a heading button
   that is expanded or collapsed. Calls with only a text no longer compile.
 - `SidebarEntry` replaces `badge` with a `trailing` slot. Pass `SidebarCount` for a 14 sp `text2`
-  count, and `SidebarExpandButton`, a 36 dp chevron button, for an entry with nested entries. Its
-  row is 44 dp tall inside the 48 dp target, and its name uses the content color.
+  count, and `SidebarExpandButton`, a chevron button 48 dp wide and one row tall, for an entry
+  with nested entries. Its row is 36 dp tall (`PanelTokens.compactRowHeight`) with no gap to the
+  next entry, and its name uses the content color.
 - Add `SidebarPill`, a chip for a built-in mailbox with a `bgRegular` fill and an optional 14 sp
   `text2` count, sized by `PanelTokens.countSize`.
 - `Avatar` takes `fill`, which replaces the `colorIndex` fill.
@@ -126,10 +127,24 @@
 - `PickerSearch` fades and scales its clear button in when text appears and out when it is
   cleared, over 120 ms with the enter and exit curves. It takes a `modifier`, such as one that
   watches its focus.
-- `SettingRow` takes a `density`. `RowDensity.Compact` drops the hairline and uses 10 dp vertical
-  padding with a 44 dp minimum height and a one-line title. A 48 dp trailing control, such as
-  `SidebarExpandButton`, overlaps the row's edges instead of making it taller. Other rows keep
-  `RowDensity.Regular` and look as before.
+- `SettingRow` takes a `density`. `RowDensity.Compact` drops the hairline and uses 7 dp vertical
+  padding with a 36 dp minimum height, the same as a `SidebarEntry`, and a one-line title. A
+  taller trailing control, such as `SidebarExpandButton`, reaches into the row's padding instead
+  of making it taller. Other rows keep `RowDensity.Regular` and look as before.
+- Add `CollapsibleTree`, which lists items in tree order and lets an item with nested items
+  collapse them, with the `Collapsible` motion. Its `row` slot receives whether the item is
+  expanded, null when nothing is nested, and a callback that changes it. `expandAll` shows every
+  item, such as while a search narrows the list.
+- `SelectionRow` is 44 dp tall without a subtitle (`SheetTokens.selectionRowHeight`), with 12 dp
+  side padding and no vertical padding, so a leading icon or drag handle no longer makes it
+  64 dp. A row with a subtitle keeps its 64 dp minimum with 8 dp above and below the text.
+  `ReorderableScope.DragHandle` is 48 dp wide and 36 dp tall. Add `SheetTokens.selectionRowHeight`
+  and `SheetTokens.rowPadding`.
+- Add `AvatarStack`, up to four overlapping 20 dp avatars outlined in the background color, with an
+  optional 14 sp `text2` label and a spoken description. `AvatarStackChip` draws its avatars with
+  it.
+- `SettingsSection` takes an optional `avatar`, a `ChipAvatar` drawn at 28 dp, 12 dp before the
+  title.
 - Add `Collapsible`, which unfolds its content downward with a fade while expanded and folds it
   back up, at the default motion speed, for rows nested under a collapsible row.
 
