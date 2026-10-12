@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
@@ -29,15 +30,10 @@ public fun Avatar(
     colorIndex: Int = 0,
     size: Dp = AvatarTokens.size,
     ring: BorderStroke? = null,
+    fill: Color = avatarFill(colorIndex),
 ) {
-    val background =
-        when (colorIndex) {
-            1 -> OtusColors.bgLight
-            2 -> OtusColors.bgDark
-            else -> OtusColors.accentDark
-        }
     Box(
-        modifier.size(size).clip(CircleShape).background(background),
+        modifier.size(size).clip(CircleShape).background(fill),
         contentAlignment = Alignment.Center,
     ) {
         if (image == null) {
@@ -53,6 +49,13 @@ public fun Avatar(
         if (ring != null) Box(Modifier.matchParentSize().border(ring, CircleShape))
     }
 }
+
+private fun avatarFill(colorIndex: Int): Color =
+    when (colorIndex) {
+        1 -> OtusColors.bgLight
+        2 -> OtusColors.bgDark
+        else -> OtusColors.accentDark
+    }
 
 /** Smaller avatars scale their initials with the circle so they stay inside the shape. */
 @Composable
