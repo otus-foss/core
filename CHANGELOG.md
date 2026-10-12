@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+- The avatar module refuses more private and special-use hosts in every check that uses the shared
+  host rule: `HttpAvatarImageLoader` and `HttpWebsiteIconSource` requests and redirects,
+  `avatarIconDomain`, `PublicSuffixDomainResolver`, and `AvatarService` domain icons. Besides
+  `localhost`, `local`, `internal`, `test`, and `invalid`, it now refuses `lan`, `home`, `corp`,
+  `intranet`, `private`, `localdomain`, `example`, `onion`, `alt`, and all of `arpa`, such as
+  `home.arpa`.
+  Hosts whose last label is not alphabetic or an `xn--` IDN label are refused too, because
+  resolvers read forms such as `0x7f.0x1` as an IPv4 address. Before, a website could redirect an
+  icon request, or advertise an icon link, to a host such as `printer.lan` on the user's network.
+  `HttpAvatarImageLoader` also refuses HTTPS URLs on any port other than 443. Senders at these
+  domains keep their initials. Public names that resolve to private addresses still pass; see
+  [the avatar guide](docs/avatar.md).
 - Fix a crash on Android in every JMAP upload and download, such as saving Sieve rules. URI
   templates now escape the closing brace, which Android's ICU regex engine requires.
 - `PreviewCard` hides its preview from screen readers only when the card is a button, so a

@@ -34,7 +34,7 @@ class HttpAvatarImageLoaderTest {
                     },
                 )
             try {
-                assertContentEquals(bytes, loader.load("https://company.example/favicon.png")?.bytes)
+                assertContentEquals(bytes, loader.load("https://company.com/favicon.png")?.bytes)
             } finally {
                 loader.close()
             }
@@ -53,11 +53,15 @@ class HttpAvatarImageLoaderTest {
                 )
             try {
                 listOf(
-                    "http://company.example/a.png",
-                    "https://user:pass@company.example/a.png",
+                    "http://company.com/a.png",
+                    "https://user:pass@company.com/a.png",
                     "file:///a.png",
                     "https://localhost/a.png",
                     "https://127.0.0.1/a.png",
+                    "https://[::1]/a.png",
+                    "https://printer.lan/a.png",
+                    "https://company.com:8443/a.png",
+                    "https://company.com:22/a.png",
                 ).forEach { assertNull(loader.load(it)) }
                 assertEquals(0, calls)
             } finally {
@@ -85,7 +89,7 @@ class HttpAvatarImageLoaderTest {
                                 respond(
                                     "",
                                     HttpStatusCode.MovedPermanently,
-                                    headersOf(HttpHeaders.Location, "https://cdn.example/icon.png"),
+                                    headersOf(HttpHeaders.Location, "https://cdn.example.net/icon.png"),
                                 )
                             }
 
@@ -96,12 +100,12 @@ class HttpAvatarImageLoaderTest {
                     },
                 )
             try {
-                assertContentEquals(bytes, loader.load("https://company.example/favicon.png?old=1")?.bytes)
+                assertContentEquals(bytes, loader.load("https://company.com/favicon.png?old=1")?.bytes)
                 assertEquals(
                     listOf(
-                        "https://company.example/favicon.png?old=1",
-                        "https://company.example/icons/icon",
-                        "https://cdn.example/icon.png",
+                        "https://company.com/favicon.png?old=1",
+                        "https://company.com/icons/icon",
+                        "https://cdn.example.net/icon.png",
                     ),
                     urls,
                 )
@@ -114,11 +118,17 @@ class HttpAvatarImageLoaderTest {
     fun unsafeRedirectTargetsAreRefusedBeforeFetching() =
         runTest {
             for (target in listOf(
-                "http://company.example/icon.png",
-                "https://user:pass@company.example/icon.png",
+                "http://company.com/icon.png",
+                "https://user:pass@company.com/icon.png",
                 "https://localhost/icon.png",
                 "https://127.0.0.1/icon.png",
                 "file:///icon.png",
+                "https://printer.lan/admin",
+                "https://PRINTER.LAN./admin",
+                "//nas.home.arpa/admin",
+                "https://router/admin",
+                "https://0x7f.0x1/icon.png",
+                "https://[fe80::1]/icon.png",
             )) {
                 var calls = 0
                 val loader =
@@ -129,7 +139,7 @@ class HttpAvatarImageLoaderTest {
                         },
                     )
                 try {
-                    assertNull(loader.load("https://company.example/favicon.png"))
+                    assertNull(loader.load("https://company.com/favicon.png"))
                     assertEquals(1, calls)
                 } finally {
                     loader.close()
@@ -147,12 +157,12 @@ class HttpAvatarImageLoaderTest {
                         avatarEngine {
                             calls++
                             val next =
-                                if (loop) "https://company.example/icon" else "https://company.example/icon$calls"
+                                if (loop) "https://company.com/icon" else "https://company.com/icon$calls"
                             respond("", HttpStatusCode.Found, headersOf(HttpHeaders.Location, next))
                         },
                     )
                 try {
-                    assertNull(loader.load("https://company.example/icon"))
+                    assertNull(loader.load("https://company.com/icon"))
                     assertEquals(if (loop) 1 else 4, calls)
                 } finally {
                     loader.close()
@@ -171,7 +181,7 @@ class HttpAvatarImageLoaderTest {
                     },
                 )
             try {
-                assertNull(loader.load("https://company.example/a.png"))
+                assertNull(loader.load("https://company.com/a.png"))
             } finally {
                 loader.close()
             }
@@ -191,7 +201,7 @@ class HttpAvatarImageLoaderTest {
                     },
                 )
             try {
-                listOf("html", "svg", "missing").forEach { assertNull(loader.load("https://company.example/$it")) }
+                listOf("html", "svg", "missing").forEach { assertNull(loader.load("https://company.com/$it")) }
             } finally {
                 loader.close()
             }
@@ -210,7 +220,7 @@ class HttpAvatarImageLoaderTest {
                     },
                 )
             try {
-                assertNull(loader.load("https://company.example/favicon.png"))
+                assertNull(loader.load("https://company.com/favicon.png"))
                 assertEquals(2, calls)
             } finally {
                 loader.close()
