@@ -38,7 +38,7 @@ import org.jetbrains.compose.resources.DrawableResource
 /**
  * One destination row: icon, then name, then [trailing], such as a [SidebarCount] or a
  * [SidebarExpandButton]. Nested entries are indented by [depth]. The current destination is
- * highlighted.
+ * highlighted. Rows are [PanelTokens.compactRowHeight] tall and follow each other without gaps.
  */
 @Composable
 public fun SidebarEntry(
@@ -52,40 +52,32 @@ public fun SidebarEntry(
 ) {
     val interactions = remember { MutableInteractionSource() }
     val shape = RoundedCornerShape(SidebarTokens.entryRadius)
-    Box(
+    Row(
         modifier
             .fillMaxWidth()
-            .heightIn(min = PanelTokens.touchTarget)
+            .heightIn(min = PanelTokens.compactRowHeight)
             .selectable(
                 selected,
                 interactionSource = interactions,
                 indication = null,
                 role = Role.Tab,
                 onClick = onClick,
-            ),
-        contentAlignment = Alignment.CenterStart,
+            ).clip(shape)
+            .background(if (selected) OtusColors.accentDark else Color.Transparent)
+            .controlPressFeedback(interactions, shape)
+            .padding(horizontal = SidebarTokens.entryPadding),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(SidebarTokens.entryPadding),
     ) {
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .heightIn(min = SidebarTokens.entryHeight)
-                .clip(shape)
-                .background(if (selected) OtusColors.accentDark else Color.Transparent)
-                .controlPressFeedback(interactions, shape)
-                .padding(horizontal = SidebarTokens.entryPadding),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(SidebarTokens.entryPadding),
-        ) {
-            Box(Modifier.padding(start = SidebarTokens.nestIndent * depth)) { Symbol(icon) }
-            Text(
-                label,
-                Modifier.weight(1f),
-                style = panelTextStyle().copy(color = Color.Unspecified),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-            trailing()
-        }
+        Box(Modifier.padding(start = SidebarTokens.nestIndent * depth)) { Symbol(icon) }
+        Text(
+            label,
+            Modifier.weight(1f),
+            style = panelTextStyle().copy(color = Color.Unspecified),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+        trailing()
     }
 }
 
@@ -133,8 +125,8 @@ public fun SidebarCount(text: String) {
 }
 
 /**
- * Shows or hides the nested entries of the [SidebarEntry] named [label]. Compose extends its touch
- * area to 48 dp around the 36 dp button.
+ * Shows or hides the nested entries of the [SidebarEntry] named [label]. Its touch area is 48 dp
+ * wide and as tall as a [PanelTokens.compactRowHeight] row, so it never makes a row taller.
  */
 @Composable
 public fun SidebarExpandButton(
@@ -146,7 +138,7 @@ public fun SidebarExpandButton(
     val interactions = remember { MutableInteractionSource() }
     Box(
         modifier
-            .size(PanelTokens.touchTarget)
+            .size(PanelTokens.touchTarget, PanelTokens.compactRowHeight)
             .semantics { contentDescription = if (expanded) "Collapse $label" else "Expand $label" }
             .toggleable(
                 expanded,

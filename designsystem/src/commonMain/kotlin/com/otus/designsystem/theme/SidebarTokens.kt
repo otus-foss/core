@@ -14,15 +14,11 @@ internal object SidebarTokens {
     /** On a narrow screen the panel shrinks so at least this much of the page stays visible. */
     val pageVisible = 56.dp
     val inset = 8.dp
-    val entryGap = 4.dp
     val entryPadding = 12.dp
     val entryRadius = 16.dp
 
-    /** A folder row's height inside its 48 dp touch target, so rows sit [entryGap] apart. */
-    val entryHeight = 44.dp
-
     /** The expand button at the end of a folder row with subfolders. */
-    val expandButton = 36.dp
+    val expandButton = 32.dp
     val headingChevron = 16.dp
 
     /** Headings, counts, and the subtitle under the title. */

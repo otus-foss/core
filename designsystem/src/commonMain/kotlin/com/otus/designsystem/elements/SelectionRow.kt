@@ -3,7 +3,6 @@ package com.otus.designsystem.elements
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,11 +20,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.dp
 import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PanelTokens
 import com.otus.designsystem.theme.SheetTokens
 import com.otus.designsystem.theme.panelTextStyle
 
+/**
+ * A choice in a sheet: an optional [leading] icon or avatar, the [title] and [subtitle], and a
+ * checkbox unless it is a [singleChoice]. A row without a subtitle is
+ * [SheetTokens.selectionRowHeight] tall; a subtitle makes it taller.
+ */
 @Composable
 public fun SelectionRow(
     title: String,
@@ -37,19 +41,12 @@ public fun SelectionRow(
     leading: (@Composable () -> Unit)? = null,
 ) {
     val interactions = remember { MutableInteractionSource() }
-    Box(
+    val shape = RoundedCornerShape(SheetTokens.rowRadius)
+    Row(
         modifier
             .fillMaxWidth()
-            .heightIn(
-                min =
-                    if (singleChoice ||
-                        isOneLine(subtitle, leading)
-                    ) {
-                        PanelTokens.touchTarget
-                    } else {
-                        SheetTokens.rowHeight
-                    },
-            ).then(
+            .heightIn(min = if (subtitle == null) SheetTokens.selectionRowHeight else SheetTokens.rowHeight)
+            .then(
                 if (singleChoice) {
                     Modifier.selectable(
                         selected = selected,
@@ -66,31 +63,18 @@ public fun SelectionRow(
                         role = Role.Checkbox,
                     ) { onClick() }
                 },
-            ),
-        contentAlignment = Alignment.Center,
+            ).clip(shape)
+            .background(if (selected) OtusColors.accentDark else OtusColors.bgDark)
+            .controlPressFeedback(interactions, shape)
+            .padding(horizontal = SheetTokens.gap, vertical = if (subtitle == null) 0.dp else SheetTokens.rowPadding),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(SheetTokens.gap),
     ) {
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(SheetTokens.rowRadius))
-                .background(if (selected) OtusColors.accentDark else OtusColors.bgDark)
-                .controlPressFeedback(interactions, RoundedCornerShape(SheetTokens.rowRadius))
-                .padding(SheetTokens.gap),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(SheetTokens.gap),
-        ) {
-            leading?.invoke()
-            SelectionLabel(title, subtitle, Modifier.weight(1f))
-            if (!singleChoice) SelectionCheckmark(selected)
-        }
+        leading?.invoke()
+        SelectionLabel(title, subtitle, Modifier.weight(1f))
+        if (!singleChoice) SelectionCheckmark(selected)
     }
 }
-
-/** A subtitle or a leading avatar needs the taller row; a plain title fits the touch target. */
-private fun isOneLine(
-    subtitle: String?,
-    leading: (@Composable () -> Unit)?,
-): Boolean = subtitle == null && leading == null
 
 @Composable
 private fun SelectionCheckmark(selected: Boolean) {

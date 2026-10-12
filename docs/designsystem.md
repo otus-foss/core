@@ -24,13 +24,15 @@ Dark mode is the only color mode. The palette is recorded in
 - `components`: `ActionBar`, `ActionBarHost`, `BarAction`, `BarContext`, `BarToken`, `ActionDialog`, `ChoiceDialog`, `ChoiceSheet`, `ConfirmDialog`, `InputDialog`, `ContextPanel`, `DatePickerDialog`,
   `MonthNavigation`, `MonthYearPicker`, `PageScaffold`, `Subpage`, `PageSection`, `PanelSurface`,
   `PickerSearch`, `PreviewCard`, `PullToRefresh`, `ReorderableColumn`, `SelectionSheet`, `SheetFrame`, `SettingRow`,
-  `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarRail`, `SummaryCard` (with `NamedAvatar`), `Collapsible`,
+  `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarRail`, `SummaryCard` (with `NamedAvatar`), `Collapsible`, `CollapsibleTree`, `AvatarStack`,
   `SidebarSwipeArea`, and
   `SwipeActions`.
 - Settings rows follow Notion's settings pages: flat rows with a title and `text2` description
   beside the control, `bgLight` hairlines between them, and large section titles. The whole row is
   the control; `ToggleSwitch` and `ValueButton` only show its state. A long picker, such as Mail's
-  move folders, uses `RowDensity.Compact`: about 44 dp per row and no hairlines. A row without a click is
+  folder lists, uses `RowDensity.Compact`: 36 dp per row and no hairlines. Every folder list, the
+  sidebar's `SidebarEntry` rows included, uses `PanelTokens.compactRowHeight`, so folders sit at
+  the same density everywhere, below the 48 dp touch target by the user's choice. A row without a click is
   static, and a `RowButton` at its end acts on its own. Settings choices open a `ChoiceSheet`,
   which lists a `ChoiceOptions` default in its own group first, applies a choice at once, and
   closes with Done. Destructive settings actions ask with `ConfirmDialog` first; its confirming
@@ -39,7 +41,8 @@ Dark mode is the only color mode. The palette is recorded in
   and menus. Mail's rules pages still use `PageSection`
   and `ActionRow`.
 - Version 0.3.0 adds `DateRangePicker` for dates up to today, its continuous week calendar,
-  and `AvatarStackChip` with `ChipAvatar` values. The app maps its senders or attendees into
+  and `AvatarStackChip` with `ChipAvatar` values. `AvatarStack` draws the same avatars without
+  the pill, such as the senders a rule files into a folder. The app maps its senders or attendees into
   these values; the component has no contact lookup or feature dependencies.
 - `SwipeActions` hosts one list row with an optional `SwipeAction` for each direction. The app
   decides which actions a row offers and what they do; the component only reveals, confirms, and
