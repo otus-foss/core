@@ -133,6 +133,11 @@
   collapse them, with the `Collapsible` motion. Its `row` slot receives whether the item is
   expanded, null when nothing is nested, and a callback that changes it. `expandAll` shows every
   item, such as while a search narrows the list.
+- `SelectionRow` is 44 dp tall without a subtitle (`SheetTokens.selectionRowHeight`), with 12 dp
+  side padding and no vertical padding, so a leading icon or drag handle no longer makes it
+  64 dp. A row with a subtitle keeps its 64 dp minimum with 8 dp above and below the text.
+  `ReorderableScope.DragHandle` is 48 dp wide and 36 dp tall. Add `SheetTokens.selectionRowHeight`
+  and `SheetTokens.rowPadding`.
 - Add `AvatarStack`, up to four overlapping 20 dp avatars outlined in the background color, with an
   optional 14 sp `text2` label and a spoken description. `AvatarStackChip` draws its avatars with
   it.
