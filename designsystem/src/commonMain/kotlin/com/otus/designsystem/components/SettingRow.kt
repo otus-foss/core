@@ -51,19 +51,40 @@ public fun SettingRow(
     density: RowDensity = RowDensity.Regular,
     trailing: @Composable () -> Unit = {},
 ) {
-    val interactions = remember { MutableInteractionSource() }
     SettingRowLayout(
         title,
         description,
+        person = null,
         icon,
         trailing,
         density,
-        onClick?.let {
-            modifier
-                .clickable(interactions, indication = null, role = Role.Button, onClick = it)
-                .controlPressFeedback(interactions, RoundedCornerShape(SheetTokens.rowRadius))
-        } ?: modifier,
+        onClick?.let { modifier.rowButton(it) } ?: modifier,
     )
+}
+
+/**
+ * A [SettingRow] button whose [description] names [person], with their avatar before the name, such
+ * as the person whose mail usually goes to a suggested folder.
+ */
+@Composable
+public fun SettingRow(
+    title: String,
+    onClick: () -> Unit,
+    description: String,
+    person: NamedAvatar,
+    modifier: Modifier = Modifier,
+    icon: DrawableResource? = null,
+    density: RowDensity = RowDensity.Regular,
+) {
+    SettingRowLayout(title, description, person, icon, trailing = {}, density, modifier.rowButton(onClick))
+}
+
+/** Makes the whole row one button with the shared press feedback. */
+@Composable
+private fun Modifier.rowButton(onClick: () -> Unit): Modifier {
+    val interactions = remember { MutableInteractionSource() }
+    return clickable(interactions, indication = null, role = Role.Button, onClick = onClick)
+        .controlPressFeedback(interactions, RoundedCornerShape(SheetTokens.rowRadius))
 }
 
 /** A settings row that turns something on or off; the whole row is the switch. */
@@ -80,6 +101,7 @@ public fun SettingToggleRow(
     SettingRowLayout(
         title,
         description,
+        person = null,
         icon,
         trailing = { ToggleSwitch(checked) },
         density = RowDensity.Regular,
@@ -99,6 +121,7 @@ public fun SettingToggleRow(
 private fun SettingRowLayout(
     title: String,
     description: String?,
+    person: NamedAvatar?,
     icon: DrawableResource?,
     trailing: @Composable () -> Unit,
     density: RowDensity,
@@ -131,8 +154,9 @@ private fun SettingRowLayout(
                 overflow = TextOverflow.Ellipsis,
             )
             description?.let {
-                Text(
+                PersonText(
                     it,
+                    person,
                     color = OtusColors.text2,
                     fontSize = SettingTokens.descriptionSize,
                     lineHeight = SettingTokens.descriptionLineHeight,

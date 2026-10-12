@@ -14,8 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
-import com.otus.designsystem.elements.Avatar
-import com.otus.designsystem.elements.rememberAvatarImage
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.SheetTokens
 import com.otus.designsystem.theme.SummaryTokens
@@ -57,12 +55,7 @@ public fun SummaryCard(
                     horizontalArrangement = Arrangement.spacedBy(SummaryTokens.avatarGap),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Avatar(
-                        person.avatar.initials,
-                        image = rememberAvatarImage(person.avatar.imageBytes),
-                        colorIndex = person.avatar.colorIndex,
-                        size = SummaryTokens.avatarSize,
-                    )
+                    SmallAvatar(person.avatar)
                     SummaryText(person.name, Modifier.weight(1f, fill = false))
                 }
             }
