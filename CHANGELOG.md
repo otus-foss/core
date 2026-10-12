@@ -38,8 +38,8 @@
   and `TEXT_EXIT_MILLIS` becomes `MotionSpeed.Fast` with `MotionCurve.Exit`.
 - Durations moved to the nearest speed. Control press feedback and the refresh indicator's
   crossfade go from 100 to 120 ms. The toggle switch goes from 150 to 160 ms. The reorder shift
-  and outgoing text go from 180 to 160 ms. Panel mode changes and the sidebar's close go from 220
-  to 240 ms. The sheet's open goes from 250 to 240 ms, and incoming text from 260 to 240 ms. The
+  and outgoing text go from 180 to 160 ms. Panel mode changes, the sidebar's close, and the
+  section chevron's turn go from 220 to 240 ms. The sheet's open goes from 250 to 240 ms, and incoming text from 260 to 240 ms. The
   sheet's close, row selection, and the swipe flash go from 200 to 240 ms, the largest change.
   The sidebar's open and a swiped row's settle stay at 300 ms.
 - The refresh indicator's crossfade and its arming fade, which used Compose's default curve or
