@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from check_architecture import violations, visual_resource_violations
+from check_architecture import source_code, violations, visual_resource_violations
 
 
 def check(module, package, body, source_set="commonMain"):
@@ -56,6 +56,36 @@ class ProtocolModuleTests(unittest.TestCase):
         self.assertTrue(check("jmap", "", "import io.ktor.client.*"))
         self.assertTrue(check("jmap", "", '@Suppress("unused") fun x() = 1'))
 
+    def test_qualified_and_android_suppressions_are_rejected(self):
+        for annotation in (
+            '@SuppressLint("NewApi") fun x() = 1',
+            '@android.annotation.SuppressLint("NewApi") fun x() = 1',
+            '@kotlin.Suppress("unused") fun x() = 1',
+            '@SuppressWarnings("unused") fun x() = 1',
+        ):
+            with self.subTest(annotation=annotation):
+                self.assertTrue(check("jmap", "", annotation, "androidMain"))
+        path = Path("jmap/src/commonMain/kotlin/com/otus/jmap/Example.kt")
+        for directive in ('@file:kotlin.Suppress("unused")', '@file: Suppress("unused")'):
+            with self.subTest(directive=directive):
+                self.assertTrue(violations(path, f"{directive}\npackage com.otus.jmap\n"))
+
+    def test_string_templates_are_still_checked(self):
+        body = 'fun x() = "${android.os.Build.MODEL} and ${com.otus.mail.app.App()}"'
+        errors = check("jmap", "", body)
+        self.assertIn("platform-only API in commonMain", errors)
+        self.assertIn("shared libraries cannot depend on Mail or Calendar app code", errors)
+        self.assertEqual(check("jmap", "", 'val x = "android.os.Build and $name"'), [])
+
+    def test_source_code_keeps_template_code_and_line_count(self):
+        text = 'val a = "x ${f("}")} y"\nval b = """\n${g { 1 }}\n"""\nval c = \'"\' // "\n'
+        code = source_code(text)
+        self.assertEqual(text.count("\n"), code.count("\n"))
+        self.assertIn("f(", code)
+        self.assertIn("g { 1 }", code)
+        self.assertNotIn("x ", code)
+        self.assertIn("val c", code)
+
 
 class DesignSystemTests(unittest.TestCase):
     def test_compose_is_allowed_in_layers(self):
@@ -88,6 +118,14 @@ class DesignSystemTests(unittest.TestCase):
     def test_literal_colors_belong_in_theme(self):
         self.assertTrue(check("designsystem", "elements", "val c = Color(0xFFFFFFFF)"))
         self.assertEqual(check("designsystem", "theme", "val c = Color(0xFFFFFFFF)"), [])
+
+    def test_aliased_and_decimal_literal_colors_belong_in_theme(self):
+        aliased = "import androidx.compose.ui.graphics.Color as Tint\nval c = Tint(0xFFFFFFFF)"
+        self.assertTrue(check("designsystem", "elements", aliased))
+        self.assertTrue(check("designsystem", "elements", "val c = Color(red = 0.5f, 0f, 0f)"))
+        self.assertTrue(check("designsystem", "elements", "val c = Color(255, 0, 0)"))
+        token = "val c = Color(OtusColors.text1.value)"
+        self.assertEqual(check("designsystem", "elements", token), [])
 
     def test_portable_compose_platform_package_is_allowed(self):
         body = "import androidx.compose.ui.platform.LocalDensity"
@@ -148,6 +186,18 @@ class VisualResourceTests(unittest.TestCase):
         for module in ("accounts", "settings"):
             path = Path(module) / "src/commonMain/composeResources/drawable/icon.xml"
             self.assertTrue(visual_resource_violations(path))
+
+    def test_qualified_drawable_directories_are_checked(self):
+        for directory in (
+            "composeResources/drawable-night",
+            "composeResources/drawable-xxhdpi",
+            "res/drawable-v24",
+        ):
+            path = Path("settings/src/commonMain") / directory / "icon.xml"
+            with self.subTest(directory=directory):
+                self.assertTrue(visual_resource_violations(path))
+        path = Path("designsystem/src/commonMain/composeResources/drawable-night/icon.xml")
+        self.assertFalse(visual_resource_violations(path))
 
     def test_design_system_drawables_and_data_files_are_allowed(self):
         for path in (

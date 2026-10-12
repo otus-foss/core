@@ -48,7 +48,9 @@ Dark mode is the only color mode. The palette is recorded in
   inverted corners: concave fillets that reach past the row into its neighbors, and a rounded
   free end. The swiped row draws above its neighbors so they do not cover the fillets. Colors use `accentRegular`, `text1`, and
   `bgRegular`. Rows that should show it against the screen edge must reach that edge. A row inside `SidebarSwipeArea` keeps its swipes, because the sidebar opens only
-  from the context panel.
+  from the context panel. A release runs an action only when no other action of that row is
+  running. A dismissing action leaves the row at the edge for its list to remove; if the row is
+  still there one second later, for example because removal failed, it returns to rest.
 - `ReorderableColumn` lets the user reorder a short list by dragging each row's handle. Only the
   handle starts a drag, so rows keep their own taps and the list around them still scrolls. The
   dragged row draws above the others and stays within the column; the rows it passes step aside

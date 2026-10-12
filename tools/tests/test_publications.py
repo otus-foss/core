@@ -10,6 +10,17 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from check_publications import TARGETS, violations
 
+RELEASE = {"requires": "1.0.0"}
+
+
+def pom(otus_version):
+    return f"""<project xmlns="http://maven.apache.org/POM/4.0.0"><dependencies>
+<dependency><groupId>com.otus</groupId><artifactId>jmap</artifactId>
+<version>{otus_version}</version></dependency>
+<dependency><groupId>org.example</groupId><artifactId>lib</artifactId>
+<version>2</version></dependency>
+</dependencies></project>"""
+
 
 class PublicationTests(unittest.TestCase):
     def setUp(self):
@@ -23,18 +34,22 @@ class PublicationTests(unittest.TestCase):
             basename = f"{artifact}-1.0.0"
             content = b"compiled library"
             (directory / f"{basename}.{extension}").write_bytes(content)
-            (directory / f"{basename}.pom").write_text("<project />")
+            (directory / f"{basename}.pom").write_text(pom("1.0.0"))
             metadata = {
                 "component": {"group": "com.otus", "module": "sample", "version": "1.0.0"},
                 "variants": [
                     {
+                        "dependencies": [
+                            {"group": "com.otus", "module": "jmap", "version": RELEASE},
+                            {"group": "org.example", "module": "lib", "version": {"requires": "2"}},
+                        ],
                         "files": [
                             {
                                 "url": f"{basename}.{extension}",
                                 "size": len(content),
                                 "sha256": hashlib.sha256(content).hexdigest(),
                             }
-                        ]
+                        ],
                     }
                 ],
             }
@@ -94,6 +109,23 @@ class PublicationTests(unittest.TestCase):
         metadata["component"]["version"] = "0.9.0"
         path.write_text(json.dumps(metadata))
         self.assertTrue(any("Wrong publication coordinates" in error for error in self.check()))
+
+    def test_pom_dependency_on_another_otus_version_fails(self):
+        self.artifact_path("-android", "pom").write_text(pom("0.9.0"))
+        errors = self.check()
+        self.assertTrue(any("another com.otus version" in error for error in errors))
+
+    def test_module_dependency_on_another_otus_version_fails(self):
+        path = self.artifact_path("-iosarm64", "module")
+        metadata = json.loads(path.read_text())
+        metadata["variants"][0]["dependencies"][0]["version"] = {"requires": "0.9.0"}
+        path.write_text(json.dumps(metadata))
+        errors = self.check()
+        self.assertTrue(any("another com.otus version" in error for error in errors))
+
+    def test_invalid_pom_fails(self):
+        self.artifact_path("", "pom").write_text("<project>")
+        self.assertTrue(any("Invalid POM" in error for error in self.check()))
 
 
 if __name__ == "__main__":

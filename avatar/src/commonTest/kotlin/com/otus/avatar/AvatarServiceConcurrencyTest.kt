@@ -100,7 +100,7 @@ class AvatarServiceConcurrencyTest {
                     domains = AvatarDomainResolver { "company.com" },
                     iconFallback = DomainIconSource { image },
                 )
-            // Virtual time: six hanging icon requests must give up within the shared limit.
+            // Virtual time: three hanging icon requests must give up within the shared limit.
             val result =
                 withTimeout(DOMAIN_ICON_LIMIT_MILLIS + 1) {
                     service.resolve(

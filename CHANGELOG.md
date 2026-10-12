@@ -90,6 +90,32 @@
   both are app decisions.
 - Add `symbol_more_horiz`, drawn from the Material Symbols Rounded `more_horiz` glyph geometry
   (Apache 2.0).
+- `AvatarService` fetches and caches website icons only for the sender's registrable domain from
+  the injected `AvatarDomainResolver`, never for the exact hostname. `noreply@email.openai.com`
+  now requests icons from `openai.com` only. Before, a sender could give each recipient a unique
+  subdomain and learn from the icon request when and from which IP address the inbox loaded.
+- `JmapAccountRepository.connect` finishes a save that has started even when the caller is
+  cancelled, including forgetting the old connection and calling `onAccountChanged`. A cancel
+  that arrives before the save stores nothing.
+- `AccountsState` reloads accounts and calls `onChange` when a connection it was told to cancel
+  still saved an account, and leaves `status` at `Idle`. A cancelled account load no longer sets
+  `loading` to false while the load that replaced it is still running.
+- `AndroidLoginStore` reports Android Keystore `ProviderException` and `IOException` failures
+  like other Keystore errors. `secret` returns `LoginSecret.Unreadable` and `save` throws
+  `LoginStoreException`, where both used to throw the raw exception. Concurrent first uses no
+  longer race to generate the Keystore key.
+- `GetMethod`, `QueryMethod`, and `SetMethod` throw `IllegalArgumentException` when `extra`
+  names an argument the method writes itself, such as `accountId`, or its `#` result reference.
+  Before, `extra` replaced it, so a call could target an account other than the one checked
+  against the session. Type-specific arguments such as `position` still work.
+- `SwipeActions` runs at most one action at a time. A release cannot commit again until the row
+  is back at rest, so dragging a dismissed row that is still shown no longer runs its action a
+  second time. A dismissed row that its list has not removed returns to rest after one second.
+- `tools/check_architecture.py` rejects `@SuppressLint`, `@SuppressWarnings`, and qualified
+  suppressions such as `@kotlin.Suppress` and `@file:kotlin.Suppress`. It checks code inside
+  `${...}` string templates, finds literal colors passed to an aliased `Color` import or given as
+  decimal numbers, and checks qualified drawable directories such as `drawable-night` and Android
+  `res` drawables. Update the apps' copies of the checker to match.
 
 ## 0.7.0 - 2026-10-11
 

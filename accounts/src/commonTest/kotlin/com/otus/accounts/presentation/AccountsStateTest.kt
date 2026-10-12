@@ -7,8 +7,10 @@ import com.otus.accounts.domain.ConnectedAccount
 import com.otus.accounts.domain.JmapAccountDraft
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withContext
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -40,6 +42,39 @@ class AccountsStateTest {
             state.connect(draft)
             runCurrent()
             assertEquals(ConnectStatus.Connected("Ada"), state.status)
+        }
+
+    @Test
+    fun dismissingDuringASaveShowsTheAccountItStored() =
+        runTest {
+            val repository = AccountStateRepository()
+            val state = AccountsState(repository, this)
+            runCurrent()
+            val pending = CompletableDeferred<ConnectOutcome>()
+            repository.pendingSave = pending
+            state.connect(JmapAccountDraft("https://example.org/jmap", "grace", "secret"))
+            runCurrent()
+            state.cancelConnect()
+            runCurrent()
+            pending.complete(ConnectOutcome.Connected(repository.newAccount))
+            runCurrent()
+            assertEquals(ConnectStatus.Idle, state.status)
+            assertEquals(listOf(repository.account, repository.newAccount), state.accounts)
+        }
+
+    @Test
+    fun cancelledLoadDoesNotEndTheLoadThatReplacedIt() =
+        runTest {
+            val repository = AccountStateRepository()
+            repository.pendingRead = CompletableDeferred()
+            val state = AccountsState(repository, this)
+            runCurrent()
+            state.reload()
+            runCurrent()
+            assertTrue(state.loading)
+            repository.pendingRead?.complete(Unit)
+            runCurrent()
+            assertFalse(state.loading)
         }
 
     @Test
@@ -114,16 +149,25 @@ private class AccountStateRepository : AccountRepository {
     val account = ConnectedAccount("a", "Ada", "ada", "example.org")
     var failRead = false
     var failRemove = false
+    val newAccount = ConnectedAccount("b", "Grace", "grace", "example.org")
     var pendingConnection: CompletableDeferred<ConnectOutcome>? = null
+    var pendingSave: CompletableDeferred<ConnectOutcome>? = null
+    var pendingRead: CompletableDeferred<Unit>? = null
     private var saved = listOf(account)
 
     override suspend fun accounts(): List<ConnectedAccount> {
+        pendingRead?.await()
         if (failRead) throw AccountStorageException(IllegalStateException("read failed"))
         return saved
     }
 
-    override suspend fun connect(draft: JmapAccountDraft): ConnectOutcome =
-        pendingConnection?.await() ?: ConnectOutcome.Connected(account)
+    override suspend fun connect(draft: JmapAccountDraft): ConnectOutcome {
+        // Like JmapAccountRepository, a started save finishes even when the caller is cancelled.
+        pendingSave?.let { save ->
+            return withContext(NonCancellable) { save.await().also { saved = saved + newAccount } }
+        }
+        return pendingConnection?.await() ?: ConnectOutcome.Connected(account)
+    }
 
     override suspend fun remove(id: String) {
         if (failRemove) throw AccountStorageException(IllegalStateException("remove failed"))

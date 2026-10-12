@@ -4,6 +4,7 @@ import hashlib
 import json
 import sys
 from pathlib import Path
+from xml.etree import ElementTree
 
 TARGETS = {"": "jar", "-android": "aar", "-iosarm64": "klib", "-iossimulatorarm64": "klib"}
 
@@ -19,6 +20,9 @@ def violations(repository: Path, modules: list[str], version: str) -> list[str]:
                 path = directory / f"{basename}.{ending}"
                 if not path.is_file() or path.stat().st_size == 0:
                     errors.append(f"Missing or empty artifact: {path}")
+            pom_path = directory / f"{basename}.pom"
+            if pom_path.is_file() and pom_path.stat().st_size:
+                errors.extend(pom_violations(pom_path, version))
             metadata_path = directory / f"{basename}.module"
             if not metadata_path.is_file():
                 continue
@@ -43,6 +47,11 @@ def violations(repository: Path, modules: list[str], version: str) -> list[str]:
                     }
                     if references != expected:
                         errors.append(f"Incomplete platform references: {metadata_path}")
+                if any(
+                    spec.get("requires") != version or spec.get("strictly", version) != version
+                    for spec in otus_module_dependencies(variants)
+                ):
+                    errors.append(f"Dependency on another com.otus version: {metadata_path}")
                 for variant in variants:
                     for item in variant.get("files", []):
                         path = directory / item["url"]
@@ -56,6 +65,33 @@ def violations(repository: Path, modules: list[str], version: str) -> list[str]:
             except (ValueError, KeyError, TypeError):
                 errors.append(f"Invalid publication metadata: {metadata_path}")
     return errors
+
+
+def otus_module_dependencies(variants: list[dict]) -> list[dict]:
+    """The version of every com.otus dependency and constraint in Gradle module metadata."""
+    return [
+        entry.get("version", {})
+        for variant in variants
+        for key in ("dependencies", "dependencyConstraints")
+        for entry in variant.get(key, [])
+        if entry["group"] == "com.otus"
+    ]
+
+
+def pom_violations(path: Path, version: str) -> list[str]:
+    """Modules release together, so a POM may only name com.otus artifacts of this release."""
+    try:
+        root = ElementTree.fromstring(path.read_bytes())
+    except ElementTree.ParseError:
+        return [f"Invalid POM: {path}"]
+    versions = [
+        dependency.findtext("{*}version")
+        for dependency in root.iterfind(".//{*}dependency")
+        if dependency.findtext("{*}groupId") == "com.otus"
+    ]
+    if any(found != version for found in versions):
+        return [f"Dependency on another com.otus version: {path}"]
+    return []
 
 
 def main() -> int:

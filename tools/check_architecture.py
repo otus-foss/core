@@ -19,18 +19,88 @@ FEATURE_LAYERS = {"domain", "data", "presentation"}
 FEATURE_UI_MODULES = frozenset({"accounts", "settings"})
 # Design-system code may format dates, but must not reach protocol, storage, or feature modules.
 UI_ALLOWED_MODULES = frozenset({"dateformat"})
+# Kotlin, Java, and Android suppressions, also when qualified, such as `@kotlin.Suppress`.
+SUPPRESSIONS = (
+    r"@(?:file:\s*)?(?:[\w.]+\.)?Suppress(?:Lint|Warnings)?\b"
+    r"|ktlint-disable|detekt:|swiftlint:disable|swiftformat:disable"
+)
 SERVICE_TYPES = (
     r"\b\w*(?:ViewModel|Repository|NavController)\b|\b(?:viewModel|koinInject|hiltViewModel)\s*[(<]"
 )
 
 
 def source_code(text: str) -> str:
-    """Remove literals/comments before checking code references (not type resolution)."""
-    return re.sub(
-        r'"""[\s\S]*?"""|"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\'|/\*[\s\S]*?\*/|//[^\n]*',
-        lambda match: "\n" * match.group().count("\n"),
-        text,
-    )
+    """Remove literals/comments before checking code references (not type resolution).
+
+    String templates keep their `${...}` code, so references inside them are still checked.
+    Newlines are kept so that line counts do not change.
+    """
+    output: list[str] = []
+    _scan_code(text, 0, output, in_template=False)
+    return "".join(output)
+
+
+def _scan_code(text: str, index: int, output: list[str], in_template: bool) -> int:
+    """Copy code from index; inside a template, stop after the brace that closes it."""
+    depth = 0
+    while index < len(text):
+        if text.startswith("//", index):
+            end = text.find("\n", index)
+            index = len(text) if end < 0 else end
+        elif text.startswith("/*", index):
+            end = text.find("*/", index + 2)
+            end = len(text) if end < 0 else end + 2
+            output.append("\n" * text.count("\n", index, end))
+            index = end
+        elif text[index] == '"':
+            index = _scan_string(text, index, output)
+        elif text[index] == "'":
+            index = _skip_char(text, index)
+        else:
+            character = text[index]
+            index += 1
+            if in_template and character == "}" and depth == 0:
+                return index
+            depth += {"{": 1, "}": -1}.get(character, 0)
+            output.append(character)
+    return index
+
+
+def _scan_string(text: str, index: int, output: list[str]) -> int:
+    quote = '"""' if text.startswith('"""', index) else '"'
+    index += len(quote)
+    while index < len(text):
+        if text.startswith(quote, index):
+            # A raw string may end in extra quotes, such as `""""`.
+            index += len(quote)
+            while quote == '"""' and text.startswith('"', index):
+                index += 1
+            return index
+        if quote == '"' and text[index] == "\\":
+            index += 2
+        elif text.startswith("${", index):
+            output.append(" ")
+            index = _scan_code(text, index + 2, output, in_template=True)
+            output.append(" ")
+        else:
+            if text[index] == "\n":
+                output.append("\n")
+            index += 1
+    return index
+
+
+def _skip_char(text: str, index: int) -> int:
+    index += 1
+    while index < len(text) and text[index] != "'":
+        index += 2 if text[index] == "\\" else 1
+    return index + 1
+
+
+def literal_color(code: str) -> bool:
+    """A Color call with a number, also through an import alias such as `Color as Tint`."""
+    aliases = re.findall(r"^import\s+[\w.]*\bColor\s+as\s+(\w+)", code, re.MULTILINE)
+    names = "|".join(["Color", *aliases])
+    return bool(re.search(rf"\b(?:{names})\s*\(\s*(?:\w+\s*=\s*)?[-+]?\.?\d", code))
 
 
 def module_base(module: str) -> str:
@@ -47,9 +117,7 @@ def uses(code: str, apis: tuple[str, ...]) -> bool:
 
 def violations(path: Path, text: str, ui_modules: frozenset[str] = frozenset()) -> list[str]:
     errors = file_length_violations(path, text)
-    if re.search(
-        r"@(?:file:)?Suppress\b|ktlint-disable|detekt:|swiftlint:disable|swiftformat:disable", text
-    ):
+    if re.search(SUPPRESSIONS, text):
         errors.append("inline lint suppression is prohibited; fix the violation")
     if path.suffix != ".kt":
         return errors
@@ -78,7 +146,7 @@ def violations(path: Path, text: str, ui_modules: frozenset[str] = frozenset()) 
         errors.append("use responsibility-specific packages instead of catch-all packages")
     if "domain" in location and uses(code, (*PLATFORM_APIS, *DATA_APIS, *UI_APIS)):
         errors.append("domain contains UI/platform/network/database dependencies")
-    if "theme" not in location and re.search(r"\bColor\s*\(\s*0[xX]", code):
+    if "theme" not in location and literal_color(code):
         errors.append("literal colors belong in theme")
     if is_ui_module(module):
         errors.extend(ui_violations(location, code, ui_modules | {module}))
@@ -165,9 +233,11 @@ def modules() -> list[str]:
 
 
 def visual_resource_violations(path: Path) -> list[str]:
+    # Qualified directories such as drawable-night or drawable-xxhdpi hold drawables too.
+    drawable = any(part == "drawable" or part.startswith("drawable-") for part in path.parts)
     if (
-        "composeResources" in path.parts
-        and "drawable" in path.parts
+        ("composeResources" in path.parts or "res" in path.parts)
+        and drawable
         and not is_ui_module(path.parts[0])
     ):
         return ["visual drawable resources belong in a design-system module"]

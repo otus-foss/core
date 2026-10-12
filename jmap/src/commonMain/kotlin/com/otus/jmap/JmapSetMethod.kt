@@ -19,8 +19,13 @@ public class SetMethod(
     private val destroy: List<String> = emptyList(),
     /** When set, the server rejects the whole call with `stateMismatch` if its state differs. */
     private val ifInState: String? = null,
+    /** Type-specific arguments. Must not name an argument this method writes itself. */
     private val extra: Map<String, JsonElement> = emptyMap(),
 ) : JmapMethod<SetResult>("${type.name}/set", type.capability, accountId) {
+    init {
+        requireExtraArguments(extra, setOf("accountId", "ifInState", "create", "update", "destroy"))
+    }
+
     override fun arguments(): JsonObject =
         buildJsonObject {
             put("accountId", JsonPrimitive(accountId))
