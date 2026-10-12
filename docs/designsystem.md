@@ -24,18 +24,19 @@ Dark mode is the only color mode. The palette is recorded in
 - `components`: `ActionBar`, `ActionBarHost`, `BarAction`, `BarContext`, `BarToken`, `ActionDialog`, `ChoiceDialog`, `ChoiceSheet`, `ConfirmDialog`, `InputDialog`, `ContextPanel`, `DatePickerDialog`,
   `MonthNavigation`, `MonthYearPicker`, `PageScaffold`, `Subpage`, `PageSection`, `PanelSurface`,
   `PickerSearch`, `PullToRefresh`, `ReorderableColumn`, `SelectionSheet`, `SheetFrame`, `SettingRow`,
-  `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarRail`,
+  `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarRail`, `SummaryCard` (with `NamedAvatar`), `Collapsible`,
   `SidebarSwipeArea`, and
   `SwipeActions`.
 - Settings rows follow Notion's settings pages: flat rows with a title and `text2` description
   beside the control, `bgLight` hairlines between them, and large section titles. The whole row is
-  the control; `ToggleSwitch` and `ValueButton` only show its state. A row without a click is
+  the control; `ToggleSwitch` and `ValueButton` only show its state. A long picker, such as Mail's
+  move folders, uses `RowDensity.Compact`: about 44 dp per row and no hairlines. A row without a click is
   static, and a `RowButton` at its end acts on its own. Settings choices open a `ChoiceSheet`,
   which lists a `ChoiceOptions` default in its own group first, applies a choice at once, and
   closes with Done. Destructive settings actions ask with `ConfirmDialog` first; its confirming
   button uses the primary style because the palette has no warning color, which is an open design
-  decision. `ChoiceDialog` and `ActionDialog` remain for one-shot picks,
-  such as moving a message, and menus. Mail's rules pages still use `PageSection`
+  decision. `ChoiceDialog` and `ActionDialog` remain for one-shot picks
+  and menus. Mail's rules pages still use `PageSection`
   and `ActionRow`.
 - Version 0.3.0 adds `DateRangePicker` for dates up to today, its continuous week calendar,
   and `AvatarStackChip` with `ChipAvatar` values. The app maps its senders or attendees into
