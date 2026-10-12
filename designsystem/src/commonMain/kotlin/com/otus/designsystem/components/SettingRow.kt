@@ -26,6 +26,7 @@ import com.otus.designsystem.elements.ToggleSwitch
 import com.otus.designsystem.elements.controlPressFeedback
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PageTokens
+import com.otus.designsystem.theme.PanelTokens
 import com.otus.designsystem.theme.SettingTokens
 import com.otus.designsystem.theme.SheetTokens
 import org.jetbrains.compose.resources.DrawableResource
@@ -36,8 +37,9 @@ import kotlin.math.min
  * [com.otus.designsystem.elements.ValueButton], a chevron, or a
  * [com.otus.designsystem.elements.RowButton]. A hairline separates it from the row above. With
  * [onClick] the whole row is one button; without it, only its trailing controls act. A
- * [RowDensity.Compact] row drops the hairline and fits one line in about 44 dp; a 48 dp trailing
- * control overlaps its edges instead of making it taller.
+ * [RowDensity.Compact] row drops the hairline and fits one line in
+ * [PanelTokens.compactRowHeight]; a taller trailing control reaches into its padding instead of
+ * making it taller.
  */
 @Composable
 public fun SettingRow(
@@ -108,7 +110,7 @@ private fun SettingRowLayout(
             .fillMaxWidth()
             .then(
                 if (compact) {
-                    Modifier.heightIn(min = SettingTokens.compactRowHeight)
+                    Modifier.heightIn(min = PanelTokens.compactRowHeight)
                 } else {
                     Modifier.topHairline(OtusColors.bgLight, PageTokens.textInset)
                 },
@@ -138,14 +140,14 @@ private fun SettingRowLayout(
             }
         }
         // The row pads its content, so the control may only claim the height inside that padding.
-        val inner = SettingTokens.compactRowHeight - SettingTokens.compactRowPadding * 2
+        val inner = PanelTokens.compactRowHeight - SettingTokens.compactRowPadding * 2
         if (compact) Box(Modifier.overlapHeight(inner)) { trailing() } else trailing()
     }
 }
 
 /**
  * Lays the content out at most [height] tall and centers anything taller across that height, so a
- * 48 dp control reaches into a compact row's padding without making the row taller.
+ * row-high control reaches into a compact row's padding without making the row taller.
  */
 private fun Modifier.overlapHeight(height: Dp): Modifier =
     layout { measurable, constraints ->

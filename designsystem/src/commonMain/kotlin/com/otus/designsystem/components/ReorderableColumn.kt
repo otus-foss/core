@@ -109,7 +109,7 @@ private class ReorderRow(
     override fun DragHandle(label: String) {
         Box(
             Modifier
-                .size(PanelTokens.touchTarget)
+                .size(PanelTokens.touchTarget, PanelTokens.compactRowHeight)
                 .semantics {
                     contentDescription = "Reorder $label"
                     customActions = listOfNotNull(moveAction("Move up", up), moveAction("Move down", down))
