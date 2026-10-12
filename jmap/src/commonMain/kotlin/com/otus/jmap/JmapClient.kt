@@ -31,7 +31,11 @@ public class JmapClient(
     private val http = if (engine == null) HttpClient { configure() } else HttpClient(engine) { configure() }
     private val urls = JmapUrls(policy)
 
-    /** Authenticated, bounded blob download (RFC 8620, section 6.2). No redirect receives credentials. */
+    /**
+     * Authenticated, bounded blob download (RFC 8620, section 6.2). No redirect receives credentials.
+     * [name] fills the template's `{name}`, the file name a server gives in `Content-Disposition`;
+     * it defaults to `download`.
+     */
     public suspend fun download(
         session: JmapSession,
         auth: JmapAuth,
@@ -39,7 +43,9 @@ public class JmapClient(
         blobId: String,
         mediaType: String,
         maxBytes: Long,
-    ): JmapBlob = JmapDownloads(http, urls, policy).download(session, auth, accountId, blobId, mediaType, maxBytes)
+        name: String = DEFAULT_DOWNLOAD_NAME,
+    ): JmapBlob =
+        JmapDownloads(http, urls, policy).download(session, auth, accountId, blobId, mediaType, maxBytes, name)
 
     /** Authenticated blob upload (RFC 8620, section 6.1), within the server's `maxSizeUpload`. */
     public suspend fun upload(

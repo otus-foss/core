@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- `JmapClient.download` and `JmapConnection.download` take a `name`, which fills the download
+  URL's `{name}`, the file name the server reports for the blob (RFC 8620, section 6.2). It
+  defaults to `download`. Every blob used to be requested as `avatar`; callers that pass no name,
+  such as Mail's Sieve script download, now request `download`. `JmapContactPhotoSource` passes
+  `avatar`, so contact-photo requests are unchanged. Existing calls compile unchanged.
 - Fix a crash on Android in every JMAP upload and download, such as saving Sieve rules. URI
   templates now escape the closing brace, which Android's ICU regex engine requires.
 - `PreviewCard` hides its preview from screen readers only when the card is a button, so a
