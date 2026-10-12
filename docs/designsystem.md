@@ -23,7 +23,7 @@ Dark mode is the only color mode. The palette is recorded in
   `controlPressFeedback` modifier.
 - `components`: `ActionBar`, `ActionBarHost`, `BarAction`, `BarContext`, `BarToken`, `ActionDialog`, `ChoiceDialog`, `ChoiceSheet`, `ConfirmDialog`, `InputDialog`, `ContextPanel`, `DatePickerDialog`,
   `MonthNavigation`, `MonthYearPicker`, `PageScaffold`, `Subpage`, `PageSection`, `PanelSurface`,
-  `PickerSearch`, `PullToRefresh`, `ReorderableColumn`, `SelectionSheet`, `SheetFrame`, `SettingRow`,
+  `PickerSearch`, `PreviewCard`, `PullToRefresh`, `ReorderableColumn`, `SelectionSheet`, `SheetFrame`, `SettingRow`,
   `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarRail`, `SummaryCard` (with `NamedAvatar`), `Collapsible`,
   `SidebarSwipeArea`, and
   `SwipeActions`.
@@ -54,7 +54,9 @@ Dark mode is the only color mode. The palette is recorded in
   still there one second later, for example because removal failed, it returns to rest.
 - `ReorderableColumn` lets the user reorder a short list by dragging each row's handle. Only the
   handle starts a drag, so rows keep their own taps and the list around them still scrolls. The
-  dragged row draws above the others and stays within the column; the rows it passes step aside
+  dragged row draws above the others and stays within the column. Each row is filled with
+  `background`, `bgRegular` by default; pass `bgDark` inside a sheet so a moving row hides the rows
+  beneath it. The rows it passes step aside
   at the fast speed, 160 ms, and a haptic marks each new place. The caller gets one `onMove(from, to)` on drop
   and owns the order. Each handle names its row for accessibility services and offers Move up and
   Move down. Give every row a unique, stable key. Changing the row order cancels an active drag.
@@ -65,7 +67,9 @@ Dark mode is the only color mode. The palette is recorded in
   buttons never move. Without a `BarContext`, the primary fills the shell with its label. With
   one, the primary shrinks to a 60 dp button at the shell's end, and a `BarToken` with the
   primary's label and the context's subtitle fills the rest. The whole shell stays one button,
-  read as "label, description". The app chooses the actions and the context; the component only
+  read as "label, description". With `minimized`, the bar shows only the primary's icon in a
+  62 dp circle at its end, filled like the full primary and read as "label, description"; the
+  secondary actions are not drawn. The app chooses the actions and the context; the component only
   draws them and reports clicks. `ActionBarHost` places the bar over the bottom of a page, above
   the navigation bar and keyboard, and pads the page's content so it can scroll clear of the bar.
   Mail uses it for an open message and for selected messages; see

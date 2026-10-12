@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- `ActionBar` takes `minimized`, which shows only the primary's icon in a 62 dp circle at the
+  bar's end and leaves out the secondary actions.
+- `ReorderableColumn` fills each row with `background`, `bgRegular` by default, so a dragged
+  row no longer shows the rows and dividers beneath it. Pass `bgDark` inside a sheet.
+- Add `PreviewCard`, a raised `bgRegular` card that sketches a page with a `SketchMarker` and
+  shows a preview below, such as an action bar. With a title it has a header, and with `onClick`
+  the whole card is one button whose header ends in a chevron.
 - `Sidebar` is 336 dp wide: a 64 dp account rail and a 272 dp panel. On a narrower screen the
   panel shrinks so at least 56 dp of the page stays visible. The 64% width rule, kept between
   264 and 384 dp, is gone. Opening it clears focus and hides the software keyboard. It takes `subtitle` and a `rail` slot, its `entries` slot is
