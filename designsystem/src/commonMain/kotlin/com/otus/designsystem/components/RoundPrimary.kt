@@ -16,21 +16,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import com.otus.designsystem.elements.Symbol
 import com.otus.designsystem.elements.controlPressFeedback
 import com.otus.designsystem.theme.ActionBarTokens
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PanelTokens
 
 /**
- * A minimized bar's only button: [primary]'s icon in a circle as tall as the bar, filled like the
- * full bar's primary. Its description names the [context] too, since nothing else shows it.
+ * A minimized bar's only button: [icon], [primary]'s symbol, in a circle as tall as the bar,
+ * filled like the full bar's primary. Its description names the [context] too, since nothing else
+ * shows it.
  */
 @Composable
 internal fun RoundPrimary(
     primary: BarAction,
     context: BarContext?,
     modifier: Modifier = Modifier,
+    icon: @Composable () -> Unit,
 ) {
     val interactions = remember { MutableInteractionSource() }
     Box(
@@ -48,8 +49,7 @@ internal fun RoundPrimary(
     ) {
         CompositionLocalProvider(
             LocalContentColor provides if (primary.enabled) OtusColors.text1 else OtusColors.text3,
-        ) {
-            Symbol(primary.symbol, primary.mirrorInRtl, ActionBarTokens.symbolSize)
-        }
+            content = icon,
+        )
     }
 }

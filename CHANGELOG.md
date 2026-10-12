@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+- The full `ActionBar`'s primary swaps its icon and label the same way when it changes, including
+  across pages; the shell stays.
+- Add `DividerLabel`, a `text2` heading followed by a `bgLight` line, for splitting one list into
+  groups.
+- The minimized `ActionBar` button sits as far from the screen's end edge as from its bottom edge.
+  It stays in place while the keyboard moves, and fades and scales out like `PickerSearch`'s clear
+  button with the new `hidden` parameter or as the keyboard opens. It returns once the closing
+  keyboard drops below it.
+  When its primary changes, including when a page opens over another or closes back to it,
+  the old icon scales and fades out while the new one scales and fades in; the circle stays.
 - `ActionBar` takes `minimized`, which shows only the primary's icon in a 62 dp circle at the
   bar's end and leaves out the secondary actions.
 - `ReorderableColumn` fills each row with `background`, `bgRegular` by default, so a dragged

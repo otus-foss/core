@@ -23,7 +23,7 @@ Dark mode is the only color mode. The palette is recorded in
   `controlPressFeedback` modifier.
 - `components`: `ActionBar`, `ActionBarHost`, `BarAction`, `BarContext`, `BarToken`, `ActionDialog`, `ChoiceDialog`, `ChoiceSheet`, `ConfirmDialog`, `InputDialog`, `ContextPanel`, `DatePickerDialog`,
   `MonthNavigation`, `MonthYearPicker`, `PageScaffold`, `Subpage`, `PageSection`, `PanelSurface`,
-  `PickerSearch`, `PreviewCard`, `PullToRefresh`, `ReorderableColumn`, `SelectionSheet`, `SheetFrame`, `SettingRow`,
+  `DividerLabel`, `PickerSearch`, `PreviewCard`, `PullToRefresh`, `ReorderableColumn`, `SelectionSheet`, `SheetFrame`, `SettingRow`,
   `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarRail`, `SummaryCard` (with `NamedAvatar`), `Collapsible`,
   `SidebarSwipeArea`, and
   `SwipeActions`.
@@ -67,8 +67,17 @@ Dark mode is the only color mode. The palette is recorded in
   buttons never move. Without a `BarContext`, the primary fills the shell with its label. With
   one, the primary shrinks to a 60 dp button at the shell's end, and a `BarToken` with the
   primary's label and the context's subtitle fills the rest. The whole shell stays one button,
-  read as "label, description". With `minimized`, the bar shows only the primary's icon in a
-  62 dp circle at its end, filled like the full primary and read as "label, description"; the
+  read as "label, description". When the primary changes, including when a page opens over
+  another or closes back to it, its icon and label fade and scale out while the new ones fade and
+  scale in, 120 ms on the exit and enter curves; the shell stays. With `minimized`, the bar shows only the primary's icon in a
+  62 dp circle at its end, as far from the screen's end edge as from its bottom edge (the
+  navigation bar counts toward both), filled like the full primary. It stays in place while the
+  keyboard moves. With `hidden`, or when the keyboard starts opening, it fades and scales out like
+  `PickerSearch`'s clear button, 120 ms on the exit curve. It fades and scales back in on the
+  enter curve once the closing keyboard drops below it. Pass `hidden` as soon as a field will take
+  the keyboard, because the keyboard otherwise covers the button within a few frames. When its primary changes, including when a page opens over another or closes
+  back to it, or when a selection's bar replaces a list's, the old icon fades and scales out while the new one fades and scales in inside
+  the circle, which stays, at the same speed and curves and read as "label, description"; the
   secondary actions are not drawn. The app chooses the actions and the context; the component only
   draws them and reports clicks. `ActionBarHost` places the bar over the bottom of a page, above
   the navigation bar and keyboard, and pads the page's content so it can scroll clear of the bar.

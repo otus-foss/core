@@ -2,6 +2,7 @@ package com.otus.designsystem.components
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Transition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
@@ -52,6 +53,7 @@ import kotlin.math.roundToInt
  * The primary action in its shell. The shell is one button in both states, so its description
  * names the context too. The action's end edge and icon stay put while its width animates. A bar
  * that appears with a context starts full and collapses into it, like one whose context arrives later.
+ * When the primary changes, its icon and label swap inside the shell; see [rememberPrimaryFace].
  */
 @Composable
 internal fun PrimaryShell(
@@ -71,6 +73,7 @@ internal fun PrimaryShell(
     val progress = animation.value
     val fadeStart = ActionBarTokens.CONTEXT_FADE_START
     val textColor = if (primary.enabled) OtusColors.text1 else OtusColors.text3
+    val face = rememberPrimaryFace(primary)
     Box(
         modifier
             .heightIn(min = ActionBarTokens.height)
@@ -92,20 +95,24 @@ internal fun PrimaryShell(
                     },
                 )
             }
-            Action(primary, shape, Modifier.matchParentSize()) { progress }
-            Text(
-                primary.label,
+            Action(primary, face, shape, Modifier.matchParentSize()) { progress }
+            face.Swapping(
                 Modifier
                     .align(Alignment.CenterStart)
                     .padding(start = ActionBarTokens.labelInset, end = ActionBarTokens.collapsedActionWidth)
                     .graphicsLayer { alpha = (1f - progress / fadeStart).coerceIn(0f, 1f) }
                     .clearAndSetSemantics {},
-                fontSize = ActionBarTokens.titleSize,
-                lineHeight = ActionBarTokens.titleLineHeight,
-                fontWeight = FontWeight.SemiBold,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
+                contentAlignment = Alignment.CenterStart,
+            ) {
+                Text(
+                    it.label,
+                    fontSize = ActionBarTokens.titleSize,
+                    lineHeight = ActionBarTokens.titleLineHeight,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
         }
     }
 }
@@ -114,6 +121,7 @@ internal fun PrimaryShell(
 @Composable
 private fun Action(
     primary: BarAction,
+    face: Transition<PrimaryFace>,
     shape: RoundedCornerShape,
     modifier: Modifier,
     progress: () -> Float,
@@ -135,7 +143,7 @@ private fun Action(
             Box(
                 Modifier.align(Alignment.CenterEnd).width(ActionBarTokens.collapsedActionWidth).fillMaxHeight(),
                 contentAlignment = Alignment.Center,
-            ) { Symbol(primary.symbol, primary.mirrorInRtl, ActionBarTokens.symbolSize) }
+            ) { face.Swapping { Symbol(it.symbol, it.mirrorInRtl, ActionBarTokens.symbolSize) } }
         }
     }
 }
