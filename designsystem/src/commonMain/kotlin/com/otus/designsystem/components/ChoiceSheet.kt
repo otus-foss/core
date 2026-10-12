@@ -31,6 +31,7 @@ import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PanelTokens
 import com.otus.designsystem.theme.SettingTokens
 import com.otus.designsystem.theme.SheetTokens
+import com.otus.designsystem.theme.SummaryTokens
 import org.jetbrains.compose.resources.DrawableResource
 
 /**
@@ -80,13 +81,15 @@ public fun <T> ChoiceSheet(
 
 /**
  * How one [ChoiceSheet] option reads: [label] over an optional `text2` [detail], after [icon]. A
- * [person] named in the label gets their avatar before the name, as in [PersonText].
+ * [person] named in the label gets their avatar before the name, as in [PersonText]. With a
+ * [keyword], the label is a [ValueToken] instead, such as "From" before an address.
  */
 public data class ChoiceRow(
     val label: String,
     val detail: String? = null,
     val icon: DrawableResource? = null,
     val person: NamedAvatar? = null,
+    val keyword: String? = null,
 )
 
 @Composable
@@ -109,13 +112,29 @@ private fun ChoiceOption(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         row.icon?.let { Symbol(it) }
-        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(SettingTokens.textGap)) {
-            PersonText(
-                row.label,
-                row.person,
-                fontSize = SettingTokens.titleSize,
-                lineHeight = SettingTokens.titleLineHeight,
-            )
+        Column(
+            Modifier.weight(1f),
+            verticalArrangement =
+                Arrangement.spacedBy(
+                    if (row.keyword !=
+                        null
+                    ) {
+                        SummaryTokens.avatarGap
+                    } else {
+                        SettingTokens.textGap
+                    },
+                ),
+        ) {
+            if (row.keyword != null) {
+                ValueToken(row.label, keyword = row.keyword, avatar = row.person?.avatar)
+            } else {
+                PersonText(
+                    row.label,
+                    row.person,
+                    fontSize = SettingTokens.titleSize,
+                    lineHeight = SettingTokens.titleLineHeight,
+                )
+            }
             row.detail?.let {
                 Text(
                     it,
