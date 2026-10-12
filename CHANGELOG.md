@@ -33,8 +33,10 @@
   `keyword`, which shows the label as a `ValueToken`.
 - `SheetFrame` is as tall as its content, up to 88% of the screen; content with a weighted child
   still fills that height. It takes `doneLabel`, such as "Undo", for its trailing action.
-- Add `ValueToken`: a value in an outlined box, with an optional keyword, avatar, or icon. With
-  `onClick` it is a picker that fills its width and ends in a down chevron.
+- Add `ValueToken`, a value in an outlined box with an optional keyword and an avatar or icon, and
+  `ValuePicker`, which adds a divider and a down chevron and calls `onClick` on tap. The picker is
+  48 dp tall, reads as one button such as "Move to Receipts, change", and takes `enabled`. Give it
+  `Modifier.fillMaxWidth()` to stretch the outline, with the chevron at the end.
 - Add `PersonText`, which puts a person's small avatar before their name in a line of text, and a
   `SettingRow` variant whose description names a `person` that way.
 - Add `IconPill`, a round icon-only toggle that sits beside `SidebarPill`s.

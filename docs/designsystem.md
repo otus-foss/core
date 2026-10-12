@@ -24,7 +24,7 @@ Dark mode is the only color mode. The palette is recorded in
 - `components`: `ActionBar`, `ActionBarHost`, `BarAction`, `BarContext`, `BarToken`, `ActionDialog`, `ChoiceDialog`, `ChoiceSheet` (with `ChoiceRow`), `ConfirmDialog`, `InputDialog`, `ContextPanel`, `DatePickerDialog`,
   `MonthNavigation`, `MonthYearPicker`, `PageScaffold`, `Subpage`, `PageSection`, `PanelSurface`,
   `PickerSearch`, `PullToRefresh`, `ReorderableColumn`, `SelectionSheet`, `SheetFrame`, `SettingRow`,
-  `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarRail`, `SummaryCard` and `PersonText` (with `NamedAvatar`), `ValueToken`, `Collapsible`, `CollapsibleTree`, `AvatarStack`,
+  `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarRail`, `SummaryCard` and `PersonText` (with `NamedAvatar`), `ValueToken`, `ValuePicker`, `Collapsible`, `CollapsibleTree`, `AvatarStack`,
   `SidebarSwipeArea`, and
   `SwipeActions`.
 - Settings rows follow Notion's settings pages: flat rows with a title and `text2` description
@@ -37,6 +37,11 @@ Dark mode is the only color mode. The palette is recorded in
   which lists a `ChoiceOptions` default in its own group first, optionally with an icon per
   option, applies a choice at once, and closes with Done. Sheets are as tall as their content, up
   to 88% of the screen; a sheet with a weighted list, such as Mail's Move to sheet, fills that height.
+  `ValueToken` shows a value in an outline, optionally after a keyword and an avatar or icon,
+  such as "Move to" and a folder symbol before "Receipts". `ValuePicker` puts the same token, a
+  thin divider, and a down chevron in one outline. The whole picker is one 48 dp button that calls
+  `onClick`, and the app opens its choices there. Screen readers hear "Move to Receipts, change".
+  A disabled picker uses `text3` and ignores taps.
   `IconPill` is an icon-only toggle that sits at the end of a row of `SidebarPill`s. Destructive settings actions ask with `ConfirmDialog` first; its confirming
   button uses the primary style because the palette has no warning color, which is an open design
   decision. `ChoiceDialog` and `ActionDialog` remain for one-shot picks
