@@ -111,6 +111,11 @@
 - `SwipeActions` runs at most one action at a time. A release cannot commit again until the row
   is back at rest, so dragging a dismissed row that is still shown no longer runs its action a
   second time. A dismissed row that its list has not removed returns to rest after one second.
+- `tools/check_architecture.py` rejects `@SuppressLint`, `@SuppressWarnings`, and qualified
+  suppressions such as `@kotlin.Suppress` and `@file:kotlin.Suppress`. It checks code inside
+  `${...}` string templates, finds literal colors passed to an aliased `Color` import or given as
+  decimal numbers, and checks qualified drawable directories such as `drawable-night` and Android
+  `res` drawables. Update the apps' copies of the checker to match.
 
 ## 0.7.0 - 2026-10-11
 
