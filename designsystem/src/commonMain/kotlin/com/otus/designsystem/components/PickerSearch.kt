@@ -1,5 +1,10 @@
 package com.otus.designsystem.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.heightIn
@@ -16,18 +21,27 @@ import com.otus.designsystem.elements.Symbol
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_close
 import com.otus.designsystem.resources.symbol_search
+import com.otus.designsystem.theme.MotionCurve
+import com.otus.designsystem.theme.MotionSpeed
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PanelTokens
 import com.otus.designsystem.theme.SheetTokens
+import com.otus.designsystem.theme.motionTween
 
+/**
+ * A rounded search field for a picker. Its clear button fades and grows in once there is text, and
+ * shrinks away when the text is cleared.
+ */
 @Composable
 public fun PickerSearch(
     value: String,
     onChange: (String) -> Unit,
     placeholder: String,
+    modifier: Modifier = Modifier,
 ) {
     val focus = LocalFocusManager.current
     Surface(
+        modifier,
         shape = CircleShape,
         color = OtusColors.bgRegular,
         border = BorderStroke(PanelTokens.borderWidth, OtusColors.strokeBgDark),
@@ -47,7 +61,13 @@ public fun PickerSearch(
                 Modifier.weight(1f).padding(horizontal = SheetTokens.gap),
                 onSearch = { focus.clearFocus() },
             )
-            if (value.isNotEmpty()) {
+            val arrive = motionTween<Float>(MotionSpeed.Quick, MotionCurve.Enter)
+            val leave = motionTween<Float>(MotionSpeed.Quick, MotionCurve.Exit)
+            AnimatedVisibility(
+                value.isNotEmpty(),
+                enter = fadeIn(arrive) + scaleIn(arrive),
+                exit = fadeOut(leave) + scaleOut(leave),
+            ) {
                 IconButton(
                     "Clear picker search",
                     { onChange("") },

@@ -32,7 +32,7 @@ import com.otus.designsystem.theme.SheetTokens
 /**
  * A bottom sheet that picks one of [choices], in rounded groups with a check beside the selected
  * one. Choosing an option applies it at once and moves the check; Done, the scrim, Back, or
- * dragging the sheet down closes it.
+ * dragging the sheet down closes it. [footnote] explains the choice in `text2` below the groups.
  */
 @Composable
 public fun <T> ChoiceSheet(
@@ -42,6 +42,7 @@ public fun <T> ChoiceSheet(
     onSelect: (T) -> Unit,
     onDismiss: () -> Unit,
     detail: (T) -> String? = { null },
+    footnote: String? = null,
 ) {
     SheetFrame(title, onDismiss) {
         Column(
@@ -60,6 +61,14 @@ public fun <T> ChoiceSheet(
                         }
                     }
                 }
+            }
+            footnote?.let {
+                Text(
+                    it,
+                    Modifier.padding(horizontal = ChoiceSheetTokens.optionPadding),
+                    color = OtusColors.text2,
+                    fontSize = SheetTokens.detailSize,
+                )
             }
         }
     }
