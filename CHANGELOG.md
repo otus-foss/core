@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Fix a crash on Android in every JMAP upload and download, such as saving Sieve rules. URI
+  templates now escape the closing brace, which Android's ICU regex engine requires.
 - `ReorderableColumn` fills each row with `background`, `bgRegular` by default, so a dragged
   row no longer shows the rows and dividers beneath it. Pass `bgDark` inside a sheet.
 - `Sidebar` is 336 dp wide: a 64 dp account rail and a 272 dp panel. On a narrower screen the
