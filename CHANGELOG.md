@@ -27,6 +27,17 @@
 - `SettingToggleRow` takes an optional `icon`, as `SettingRow` does.
 - Add the `symbol_all_inbox` Material Symbol.
 - Add `symbol_auto_filter`, a funnel with a sparkle, for rules that sort mail automatically.
+- Breaking: `ChoiceSheet` takes `row: (T) -> ChoiceRow` in place of `label` and `detail`. Replace
+  `label = { it.name }, detail = { it.hint }` with `row = { ChoiceRow(it.name, it.hint) }`.
+  `ChoiceRow` also takes an optional `icon`, a `person` whose avatar goes before their name, and a
+  `keyword`, which shows the label as a `ValueToken`.
+- `SheetFrame` is as tall as its content, up to 88% of the screen; content with a weighted child
+  still fills that height. It takes `doneLabel`, such as "Undo", for its trailing action.
+- Add `ValueToken`: a value in an outlined box, with an optional keyword, avatar, or icon. With
+  `onClick` it is a picker that fills its width and ends in a down chevron.
+- Add `PersonText`, which puts a person's small avatar before their name in a line of text, and a
+  `SettingRow` variant whose description names a `person` that way.
+- Add `IconPill`, a round icon-only toggle that sits beside `SidebarPill`s.
 - Breaking: `Motion`, `MotionSpeed`, `MotionCurve`, and `LocalMotionScale` replace
   `MotionTokens`, and every animation in the design system now uses them.
   `Motion.millis(speed, scale)` returns `240 ms / (factor × scale)`, rounded.
