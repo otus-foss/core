@@ -11,6 +11,7 @@ import com.otus.accounts.domain.ConnectedAccount
 import com.otus.accounts.domain.JmapAccountDraft
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 
 public sealed interface ConnectStatus {
@@ -52,6 +53,7 @@ public class AccountsState(
     private var pending: Pair<JmapAccountDraft, String>? = null
     private var connecting: Job? = null
     private var loadingAccounts: Job? = null
+    private var loadGeneration = 0
 
     init {
         reload()
@@ -64,6 +66,12 @@ public class AccountsState(
         connecting =
             scope.launch {
                 val outcome = repository.connect(draft)
+                // A save that started finishes even after the sheet closed, so show the stored account.
+                if (outcome is ConnectOutcome.Connected) {
+                    onChange()
+                    reload()
+                }
+                ensureActive()
                 status =
                     when (outcome) {
                         is ConnectOutcome.Connected -> {
@@ -79,10 +87,6 @@ public class AccountsState(
                             ConnectStatus.ConfirmHost(outcome.host)
                         }
                     }
-                if (outcome is ConnectOutcome.Connected) {
-                    onChange()
-                    reload()
-                }
             }
     }
 
@@ -106,10 +110,11 @@ public class AccountsState(
 
     public fun reload() {
         loadingAccounts?.cancel()
-        loadingAccounts = scope.launch { loadAccounts() }
+        val generation = ++loadGeneration
+        loadingAccounts = scope.launch { loadAccounts(generation) }
     }
 
-    private suspend fun loadAccounts() {
+    private suspend fun loadAccounts(generation: Int) {
         loading = true
         try {
             accounts = repository.accounts()
@@ -117,7 +122,8 @@ public class AccountsState(
         } catch (expected: AccountStorageException) {
             storageError = "Couldn't load saved accounts. Try again."
         } finally {
-            loading = false
+            // A cancelled load finishes after its replacement started; only the latest load ends loading.
+            if (generation == loadGeneration) loading = false
         }
     }
 

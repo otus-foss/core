@@ -5,7 +5,7 @@ import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withTimeoutOrNull
 
-/** Contact photos are account-specific; website icons are shared by every sender at that host. */
+/** Contact photos are account-specific; website icons are shared by every sender at that domain. */
 public class AvatarService(
     private val contacts: ContactPhotoSource = ContactPhotoSource { _, _ -> null },
     private val images: AvatarImageLoader = AvatarImageLoader { null },
@@ -37,8 +37,11 @@ public class AvatarService(
                 }.image
         val domain =
             if (contact == null) {
-                domainKey(normalized, options)?.let { key ->
-                    cache.load(key, started) { fetches.withPermit { domainImage(normalized.email, options) } }.image
+                iconDomain(normalized.email, options)?.let { website ->
+                    cache
+                        .load(domainKey(website, options), started) {
+                            fetches.withPermit { domainImage(website, options) }
+                        }.image
                 }
             } else {
                 null
@@ -61,7 +64,8 @@ public class AvatarService(
         if (!isAvatarEmail(normalized.email)) return null
         val contact = cache.peek(contactKey(normalized, options))
         val fallback = generatedAvatar(request.name, normalized.email)
-        val domain = if (contact?.image == null) domainKey(normalized, options)?.let { cache.peek(it) } else null
+        val website = if (contact?.image == null) iconDomain(normalized.email, options) else null
+        val domain = website?.let { cache.peek(domainKey(it, options)) }
         return when {
             contact?.image != null -> ResolvedAvatar(fallback, contact.image, AvatarOrigin.Contact)
             domain?.image != null -> ResolvedAvatar(fallback, domain.image, AvatarOrigin.Domain)
@@ -82,31 +86,39 @@ public class AvatarService(
     ) = AvatarCacheKey(request.accountKey, "contact:${options.externalContactImages}:${request.email}")
 
     private fun domainKey(
-        request: AvatarRequest,
+        domain: String,
         options: AvatarOptions,
-    ): AvatarCacheKey? =
-        if (options.domainIcons) {
-            avatarIconDomain(request.email)?.let { AvatarCacheKey(null, "domain:${options.domainIconProxy}:$it") }
-        } else {
+    ) = AvatarCacheKey(null, "domain:${options.domainIconProxy}:$domain")
+
+    /**
+     * Only the registrable domain, never the exact host: a sender could otherwise give each recipient
+     * a unique subdomain and learn from the icon request when and where the message was shown.
+     */
+    private suspend fun iconDomain(
+        email: String,
+        options: AvatarOptions,
+    ): String? {
+        val host = avatarIconDomain(email)?.takeIf { options.domainIcons } ?: return null
+        return resolvedDomain(host)?.takeIf { isPublicAvatarHost(it) && (host == it || host.endsWith(".$it")) }
+    }
+
+    private suspend fun resolvedDomain(host: String): String? =
+        runCatching { domains.resolve(host) }.getOrElse {
+            if (it is CancellationException) throw it
             null
         }
 
     private suspend fun domainImage(
-        email: String,
+        domain: String,
         options: AvatarOptions,
     ): AvatarImage? =
         avatarOrNull {
-            val host = avatarIconDomain(email) ?: return@avatarOrNull null
-            val domain = domains.resolve(host) ?: return@avatarOrNull null
-            if (!isPublicAvatarHost(domain) || (host != domain && !host.endsWith(".$domain"))) return@avatarOrNull null
             val direct =
                 withTimeoutOrNull(DOMAIN_ICON_TIMEOUT_MILLIS) {
-                    listOf(host, domain).distinct().firstNotNullOfOrNull { website ->
-                        avatarOrNull { images.websiteIcon(website) }
-                            ?: DOMAIN_ICON_PATHS.firstNotNullOfOrNull { path ->
-                                avatarOrNull { images.load("https://$website/$path") }
-                            }
-                    }
+                    avatarOrNull { images.websiteIcon(domain) }
+                        ?: DOMAIN_ICON_PATHS.firstNotNullOfOrNull { path ->
+                            avatarOrNull { images.load("https://$domain/$path") }
+                        }
                 }
             direct ?: if (options.domainIconProxy) iconFallback.icon(domain) else null
         }

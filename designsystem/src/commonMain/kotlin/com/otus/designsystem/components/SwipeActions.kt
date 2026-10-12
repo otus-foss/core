@@ -41,6 +41,7 @@ import com.otus.designsystem.theme.MotionSpeed
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.SwipeTokens
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -67,7 +68,8 @@ public fun SwipeActions(
     var width by remember { mutableIntStateOf(0) }
     val state = rememberSwipeState(width, startToEnd != null, endToStart != null)
     val flash = remember { Animatable(0f) }
-    // Keeps the action a release ran on the backdrop until the row is still, even if the row's actions change.
+    // Keeps the action a release ran on the backdrop until the row is back at rest, even if the row's
+    // actions change. While it is set, no release can run another action.
     var running by remember { mutableStateOf<RunningSwipe?>(null) }
     val scope = rememberCoroutineScope()
     val currentStartToEnd by rememberUpdatedState(startToEnd)
@@ -75,10 +77,11 @@ public fun SwipeActions(
     val fling =
         remember(state, threshold, motionScale) {
             thresholdFlingBehavior(state, threshold, motionScale) { side ->
-                val action = side.pick(currentStartToEnd, currentEndToStart)
+                val action = side.pick(currentStartToEnd, currentEndToStart)?.takeIf { running == null }
                 action?.let {
+                    // Set before the launch, so a second release in the same frame cannot also commit.
+                    running = RunningSwipe(side, it)
                     scope.launch {
-                        running = RunningSwipe(side, it)
                         try {
                             runSwipe(state, side, it, flash, motionScale)
                         } finally {
@@ -156,10 +159,12 @@ private class RunningSwipe(
 /**
  * Runs [action] after a release toward [side]. The row slides to that side's anchor while the
  * action flashes. A dismissing action runs after its flash and leaves the row for its list to
- * remove; any other runs at once and the row returns to rest. The slide outranks user drags, so a
- * touch cannot stop the row halfway and release it past the threshold a second time.
+ * remove; if the row is still there after [SwipeTokens.DISMISS_RESTORE_MILLIS], for example because
+ * removal failed, it returns to rest. Any other action runs at once and the row returns to rest.
+ * The slides outrank user drags, so a touch cannot stop the row halfway and release it past the
+ * threshold a second time.
  */
-private suspend fun runSwipe(
+internal suspend fun runSwipe(
     state: AnchoredDraggableState<SwipeAnchor>,
     side: SwipeAnchor,
     action: SwipeAction,
@@ -176,6 +181,12 @@ private suspend fun runSwipe(
     state.anchoredDrag(MutatePriority.PreventUserInput) { anchors ->
         slideTo(state.requireOffset(), anchors.positionOf(side), motionScale)
         if (!action.dismisses) slideTo(state.requireOffset(), anchors.positionOf(SwipeAnchor.Settled), motionScale)
+    }
+    if (action.dismisses) {
+        delay(SwipeTokens.DISMISS_RESTORE_MILLIS)
+        state.anchoredDrag(MutatePriority.PreventUserInput) { anchors ->
+            slideTo(state.requireOffset(), anchors.positionOf(SwipeAnchor.Settled), motionScale)
+        }
     }
 }
 

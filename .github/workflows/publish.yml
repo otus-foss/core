@@ -6,26 +6,32 @@ on:
   push:
     tags: ["v*"]
 
-permissions:
-  contents: read
-  packages: write
+permissions: {}
 
 concurrency:
   group: publish
   cancel-in-progress: false
 
 jobs:
-  publish:
+  build:
     # Kotlin builds Android artifacts and both iOS library variants on Linux.
-    # App linking and simulator tests remain in the separate macOS quality job. The pre-push hook
-    # ran checkAll before the tag was pushed, so this job only builds, verifies, and uploads.
+    # App linking and simulator tests remain in the separate macOS quality job. This job has no
+    # package permission, so tests and build scripts never run with a token that can publish.
     runs-on: ubicloud-standard-2
     timeout-minutes: 60
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
       - name: Check that the tag matches the version
         if: github.event_name == 'push'
         run: test "v$(sed -n 's/^version=//p' gradle.properties)" = "$GITHUB_REF_NAME"
+      - name: Check that the tag is on main
+        if: github.event_name == 'push'
+        run: git merge-base --is-ancestor "$GITHUB_SHA" origin/main
       - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
         with:
           distribution: temurin
@@ -35,13 +41,38 @@ jobs:
           packages: platform-tools
       - uses: gradle/actions/setup-gradle@48b5f213c81028ace310571dc5ec0fbbca0b2947 # v4
       - run: sdkmanager 'platforms;android-37.0' 'build-tools;36.0.0'
+      - name: Run every module's common and Android host tests
+        run: ./gradlew testAndroidHostTest --console=plain
       # Build every publication first so a failing module cannot leave a release half uploaded.
       - name: Build every publication in an isolated local repository
         run: ./gradlew publishToMavenLocal -Dmaven.repo.local="$PWD/build/publications-local" --console=plain
       - name: Verify all root, Android, and iOS artifacts
         run: python3 tools/check_publications.py build/publications-local "$(sed -n 's/^version=//p' gradle.properties)"
+
+  publish:
+    # Only a version tag uploads, after the build job has tested and verified the same commit.
+    # Gradle builds the publications again here; see docs/releasing.md.
+    needs: build
+    if: github.event_name == 'push'
+    runs-on: ubicloud-standard-2
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407 # v3
+        with:
+          packages: platform-tools
+      - uses: gradle/actions/setup-gradle@48b5f213c81028ace310571dc5ec0fbbca0b2947 # v4
+      - run: sdkmanager 'platforms;android-37.0' 'build-tools;36.0.0'
       - name: Publish the tagged release to GitHub Packages
-        if: github.event_name == 'push'
         run: ./gradlew publishAllPublicationsToGitHubPackagesRepository --console=plain
         env:
           ORG_GRADLE_PROJECT_GitHubPackagesUsername: ${{ github.actor }}

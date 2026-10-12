@@ -2,7 +2,9 @@
 
 Status: accepted following the user's Linux-only Forgejo runner configuration on 2026-10-09.
 Since [decision 0012](0012-github-primary.md), the same Linux publisher runs on GitHub and uploads
-to GitHub Packages.
+to GitHub Packages. Superseded in part by [decision 0013](0013-local-quality-gate.md): the
+publisher no longer runs `checkAll`. It runs the modules' host tests instead; see
+[releasing](../releasing.md).
 
 ## Problem
 

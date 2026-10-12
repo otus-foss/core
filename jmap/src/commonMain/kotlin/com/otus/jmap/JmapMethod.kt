@@ -2,6 +2,7 @@ package com.otus.jmap
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
@@ -74,3 +75,16 @@ public sealed class JmapIds {
 }
 
 internal fun strings(values: List<String>): JsonArray = JsonArray(values.map { JsonPrimitive(it) })
+
+/**
+ * Type-specific arguments cannot replace the ones a method writes itself, so `extra` cannot point
+ * a call at an account other than the one its capability was checked for. `#name` result
+ * references count as `name`.
+ */
+internal fun requireExtraArguments(
+    extra: Map<String, JsonElement>,
+    standard: Set<String>,
+) {
+    val clashes = extra.keys.filter { it.removePrefix("#") in standard }
+    require(clashes.isEmpty()) { "extra arguments replace standard ones: $clashes" }
+}

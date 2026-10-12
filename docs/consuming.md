@@ -8,22 +8,30 @@ sibling checkout. Calendar has not adopted Meta packages yet.
 ## Released versions
 
 Each module is a Maven artifact `com.otus:<module>` in this repository's GitHub Packages registry.
-Add the registry to the app's `settings.gradle.kts`, limited to the `com.otus` group so that no
-other dependency resolves from it:
+Add the registry to the app's `settings.gradle.kts` as exclusive content for the `com.otus`
+group. No other dependency resolves from it, and `com.otus` resolves only from it:
 
 ```kotlin
 dependencyResolutionManagement {
     repositories {
         // existing google() and mavenCentral() entries
-        maven("https://maven.pkg.github.com/reazndev/otus-meta") {
-            name = "otusMeta"
-            // Gradle checks credentials before every build; without a token only -Potus.meta.path works.
-            if (providers.gradleProperty("otusMetaPassword").isPresent) credentials(PasswordCredentials::class)
-            mavenContent { includeGroup("com.otus") }
+        exclusiveContent {
+            forRepository {
+                maven("https://maven.pkg.github.com/reazndev/otus-meta") {
+                    name = "otusMeta"
+                    // Gradle checks credentials before every build; without a token only -Potus.meta.path works.
+                    if (providers.gradleProperty("otusMetaPassword").isPresent) credentials(PasswordCredentials::class)
+                }
+            }
+            filter { includeGroup("com.otus") }
         }
     }
 }
 ```
+
+`mavenContent { includeGroup(...) }` alone only keeps other groups out of this registry, so a
+`com.otus` artifact that someone else published to Maven Central could still win; `exclusiveContent`
+makes this registry the only source for the group.
 
 Pin one version for every module in the app's `gradle/libs.versions.toml`:
 
