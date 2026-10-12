@@ -94,6 +94,12 @@
   the injected `AvatarDomainResolver`, never for the exact hostname. `noreply@email.openai.com`
   now requests icons from `openai.com` only. Before, a sender could give each recipient a unique
   subdomain and learn from the icon request when and from which IP address the inbox loaded.
+- `JmapAccountRepository.connect` finishes a save that has started even when the caller is
+  cancelled, including forgetting the old connection and calling `onAccountChanged`. A cancel
+  that arrives before the save stores nothing.
+- `AccountsState` reloads accounts and calls `onChange` when a connection it was told to cancel
+  still saved an account, and leaves `status` at `Idle`. A cancelled account load no longer sets
+  `loading` to false while the load that replaced it is still running.
 
 ## 0.7.0 - 2026-10-11
 

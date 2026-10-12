@@ -21,6 +21,9 @@ import com.otus.jmap.login.LoginStoreException
 import io.ktor.http.Url
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonObject
 
@@ -90,31 +93,38 @@ public class JmapAccountRepository(
         return true
     }
 
+    /**
+     * A started save always finishes with its follow-ups, so a cancel cannot leave a stored password
+     * behind a stale connection. The caller still sees the cancellation.
+     */
     private suspend fun save(
         draft: JmapAccountDraft,
         session: JmapSession,
     ): ConnectOutcome {
-        val login =
-            withContext(Dispatchers.IO) {
-                // Reconnecting the same user on the same server replaces its login instead of adding one.
-                val existing =
-                    logins.logins().firstOrNull {
-                        it.username == draft.username &&
-                            it.sessionUrl == draft.sessionUrl
-                    }
-                JmapLogin(
-                    id = existing?.id ?: "${draft.username} ${draft.sessionUrl}",
-                    sessionUrl = draft.sessionUrl,
-                    username = draft.username,
-                    name =
-                        session.accountFor(service.capability)?.let { session.accounts[it]?.name }?.ifBlank { null }
-                            ?: draft.username,
-                    trustedOrigins = draft.trustedOrigins,
-                ).also { logins.save(it, draft.password) }
-            }
-        connections.forget(login.id)
-        onAccountChanged(login.id)
-        return ConnectOutcome.Connected(login.toConnected())
+        currentCoroutineContext().ensureActive()
+        return withContext(NonCancellable) {
+            val login =
+                withContext(Dispatchers.IO) {
+                    // Reconnecting the same user on the same server replaces its login instead of adding one.
+                    val existing =
+                        logins.logins().firstOrNull {
+                            it.username == draft.username &&
+                                it.sessionUrl == draft.sessionUrl
+                        }
+                    JmapLogin(
+                        id = existing?.id ?: "${draft.username} ${draft.sessionUrl}",
+                        sessionUrl = draft.sessionUrl,
+                        username = draft.username,
+                        name =
+                            session.accountFor(service.capability)?.let { session.accounts[it]?.name }?.ifBlank { null }
+                                ?: draft.username,
+                        trustedOrigins = draft.trustedOrigins,
+                    ).also { logins.save(it, draft.password) }
+                }
+            connections.forget(login.id)
+            onAccountChanged(login.id)
+            ConnectOutcome.Connected(login.toConnected())
+        }
     }
 }
 
