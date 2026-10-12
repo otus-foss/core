@@ -11,12 +11,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -27,21 +28,26 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.min
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
@@ -52,17 +58,22 @@ import com.otus.designsystem.theme.panelTextStyle
 import kotlinx.coroutines.launch
 
 /**
- * App-independent navigation sidebar. It half-opens from the leading edge over the current page,
- * and a swipe back toward that edge closes it. Wrap the page in [SidebarSwipeArea] to open it by swiping.
- * Fill [entries] and [footer] with [com.otus.designsystem.elements.SidebarEntry] rows.
+ * App-independent navigation sidebar: a [rail] of accounts along the leading edge, and a panel
+ * with [title] and [subtitle] over the scrolling [content]. It is 336 dp wide, or narrower when
+ * that would leave less than 56 dp of the page visible. It half-opens from the leading edge over
+ * the current page, and a swipe back toward that edge closes it. Wrap the page in
+ * [SidebarSwipeArea] to open it by swiping. Fill [rail] with [SidebarRail], and [content] with
+ * [com.otus.designsystem.elements.SidebarHeading] sections and
+ * [com.otus.designsystem.elements.SidebarEntry] rows.
  */
 @Composable
 public fun Sidebar(
     state: SidebarState,
     title: String,
+    subtitle: String,
+    rail: @Composable () -> Unit,
     modifier: Modifier = Modifier,
-    footer: @Composable ColumnScope.() -> Unit = {},
-    entries: @Composable ColumnScope.() -> Unit,
+    content: @Composable ColumnScope.() -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val close: () -> Unit = { scope.launch { state.close() } }
@@ -71,8 +82,18 @@ public fun Sidebar(
         isBackEnabled = state.isOpen,
         onBackCompleted = close,
     )
+    val showing = state.isOpen || state.progress > 0f
+    val focusManager = LocalFocusManager.current
+    val keyboard = LocalSoftwareKeyboardController.current
+    // A focused field, such as search, would keep the keyboard over the sidebar.
+    LaunchedEffect(showing) {
+        if (showing) {
+            focusManager.clearFocus()
+            keyboard?.hide()
+        }
+    }
     // One progress value drives the slide and the scrim, so a swipe or a reversal mid-way stays continuous.
-    if (!state.isOpen && state.progress == 0f) return
+    if (!showing) return
     val sign = if (LocalLayoutDirection.current == LayoutDirection.Rtl) -1f else 1f
     val flingThreshold = with(LocalDensity.current) { SidebarTokens.flingVelocity.toPx() }
     BoxWithConstraints(
@@ -85,7 +106,6 @@ public fun Sidebar(
                 onDragStopped = { state.settle(it * sign, flingThreshold) },
             ),
     ) {
-        val width = (maxWidth * SidebarTokens.WIDTH_FRACTION).coerceIn(SidebarTokens.minWidth, SidebarTokens.maxWidth)
         Box(
             Modifier
                 .fillMaxSize()
@@ -102,20 +122,20 @@ public fun Sidebar(
         Box(
             Modifier
                 .fillMaxHeight()
-                .width(width)
+                .width(min(SidebarTokens.width, maxWidth - SidebarTokens.pageVisible))
                 .onSizeChanged { state.widthPx = it.width.toFloat() }
                 .graphicsLayer {
                     // Slide fully past the leading screen edge.
                     translationX = -sign * size.width * (1f - state.progress)
                 },
         ) {
-            SidebarSurface(title, footer, entries)
+            SidebarSurface(title, subtitle, rail, content)
         }
     }
 }
 
 /** Flush with the top, leading, and bottom screen edges, so only the trailing edge, mid-screen, gets a stroke. */
-private fun Modifier.trailingStroke(): Modifier =
+internal fun Modifier.trailingStroke(): Modifier =
     drawWithContent {
         drawContent()
         val width = PanelTokens.borderWidth.toPx()
@@ -129,48 +149,61 @@ private val sidebarInsetSides = WindowInsetsSides.Top + WindowInsetsSides.Bottom
 @Composable
 private fun SidebarSurface(
     title: String,
-    footer: @Composable ColumnScope.() -> Unit,
-    entries: @Composable ColumnScope.() -> Unit,
+    subtitle: String,
+    rail: @Composable () -> Unit,
+    content: @Composable ColumnScope.() -> Unit,
 ) {
     Surface(
         Modifier.fillMaxSize().semantics { paneTitle = title }.trailingStroke(),
         color = OtusColors.bgDark,
         contentColor = OtusColors.text1,
     ) {
-        Column(
-            Modifier
-                .windowInsetsPadding(WindowInsets.safeDrawing.only(sidebarInsetSides))
-                .padding(horizontal = SidebarTokens.inset),
-        ) {
-            // Shares the context panel's header height, so the name lines up with the page title.
-            Box(
-                Modifier
-                    .fillMaxWidth()
-                    .heightIn(
-                        min = PanelTokens.headerHeight,
-                    ).padding(horizontal = SidebarTokens.inset),
-                contentAlignment = Alignment.CenterStart,
-            ) {
-                Text(
-                    title,
-                    Modifier.semantics { heading() },
-                    style =
-                        panelTextStyle().copy(
-                            fontSize = SidebarTokens.titleSize,
-                            lineHeight = SidebarTokens.titleLineHeight,
-                        ),
+        Row(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(sidebarInsetSides))) {
+            rail()
+            Column(Modifier.weight(1f)) {
+                SidebarHeader(title, subtitle)
+                Column(
+                    Modifier
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = SidebarTokens.inset)
+                        .padding(bottom = SidebarTokens.inset),
+                    content = content,
                 )
             }
-            Column(
-                Modifier.weight(1f).verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(SidebarTokens.entryGap),
-                content = entries,
-            )
-            Column(
-                Modifier.padding(bottom = SidebarTokens.inset),
-                verticalArrangement = Arrangement.spacedBy(SidebarTokens.entryGap),
-                content = footer,
-            )
         }
+    }
+}
+
+/** Shares the context panel's header height, so the title lines up with the page title. */
+@Composable
+private fun SidebarHeader(
+    title: String,
+    subtitle: String,
+) {
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .height(PanelTokens.headerHeight)
+            .padding(horizontal = SidebarTokens.inset + SidebarTokens.entryPadding),
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Text(
+            title,
+            Modifier.semantics { heading() },
+            style = panelTextStyle(),
+            fontWeight = FontWeight.SemiBold,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+        Text(
+            subtitle,
+            style = panelTextStyle(),
+            color = OtusColors.text2,
+            fontSize = SidebarTokens.detailSize,
+            lineHeight = SidebarTokens.detailLineHeight,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }
