@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- `ReorderableColumn` fills each row with `background`, `bgRegular` by default, so a dragged
+  row no longer shows the rows and dividers beneath it. Pass `bgDark` inside a sheet.
 - `Sidebar` is 336 dp wide: a 64 dp account rail and a 272 dp panel. On a narrower screen the
   panel shrinks so at least 56 dp of the page stays visible. The 64% width rule, kept between
   264 and 384 dp, is gone. Opening it clears focus and hides the software keyboard. It takes `subtitle` and a `rail` slot, its `entries` slot is

@@ -54,7 +54,9 @@ Dark mode is the only color mode. The palette is recorded in
   still there one second later, for example because removal failed, it returns to rest.
 - `ReorderableColumn` lets the user reorder a short list by dragging each row's handle. Only the
   handle starts a drag, so rows keep their own taps and the list around them still scrolls. The
-  dragged row draws above the others and stays within the column; the rows it passes step aside
+  dragged row draws above the others and stays within the column. Each row is filled with
+  `background`, `bgRegular` by default; pass `bgDark` inside a sheet so a moving row hides the rows
+  beneath it. The rows it passes step aside
   at the fast speed, 160 ms, and a haptic marks each new place. The caller gets one `onMove(from, to)` on drop
   and owns the order. Each handle names its row for accessibility services and offers Move up and
   Move down. Give every row a unique, stable key. Changing the row order cancels an active drag.

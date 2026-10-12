@@ -2,6 +2,7 @@ package com.otus.designsystem.components
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.snap
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,6 +18,7 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
@@ -43,7 +45,9 @@ import com.otus.designsystem.theme.motionTween
  * row follows the finger within the column while the others step aside, and a haptic marks each
  * new place. [onMove] reports the row's old and new index once it is dropped; the caller owns the
  * order. [key] must return a unique, stable key for each row. Every row is composed, so keep the
- * list short. Changing the order or removing a row cancels an active drag.
+ * list short. Changing the order or removing a row cancels an active drag. Each row is painted
+ * with [background], which must match the surface behind the column so a moving row hides the
+ * rows it passes over.
  */
 @Composable
 public fun <T> ReorderableColumn(
@@ -52,6 +56,7 @@ public fun <T> ReorderableColumn(
     onMove: (from: Int, to: Int) -> Unit,
     modifier: Modifier = Modifier,
     spacing: Dp = 0.dp,
+    background: Color = OtusColors.bgRegular,
     row: @Composable ReorderableScope.(T) -> Unit,
 ) {
     val keys = items.map(key)
@@ -86,6 +91,7 @@ public fun <T> ReorderableColumn(
                     Modifier
                         .zIndex(if (dragged) 1f else 0f)
                         .graphicsLayer { translationY = if (dragged) drag.offset else shift }
+                        .background(background)
                         .onSizeChanged { drag.heights[itemKey] = it.height },
                 ) { scope.row(item) }
             }
