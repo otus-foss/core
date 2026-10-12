@@ -15,16 +15,16 @@ Dark mode is the only color mode. The palette is recorded in
   `panelTextStyle()` uses Figtree.
 - `elements`: `ActionButton`, `ActionRow`, `AnimatedText`, `Avatar`, `AvatarImage`, `BarIconButton`, `CalendarDay`,
   `ComposeBody`, `ComposeField`, `ComposeValueField`,
-  `CalendarMonthBackground`, `Chip`, `IconButton`, `InputField`, `LabelPill`, `RefreshIndicator`,
+  `CalendarMonthBackground`, `Chip`, `IconButton`, `IconPill`, `InputField`, `LabelPill`, `RefreshIndicator`,
   `RowButton`, `SearchField`, `SearchPrompt`, `SelectionRow`, `SidebarEntry`, `SidebarHeading`,
   `SidebarCount`, `SidebarExpandButton`, `SidebarPill`, `SidebarRailAccount`, `SidebarRailAdd`, `SidebarRailDivider`,
   `SidebarRailIcon`, `Symbol`,
   `ToggleSwitch`, `ValueButton`, and the
   `controlPressFeedback` modifier.
-- `components`: `ActionBar`, `ActionBarHost`, `BarAction`, `BarContext`, `BarToken`, `ActionDialog`, `ChoiceDialog`, `ChoiceSheet`, `ConfirmDialog`, `InputDialog`, `ContextPanel`, `DatePickerDialog`,
+- `components`: `ActionBar`, `ActionBarHost`, `BarAction`, `BarContext`, `BarToken`, `ActionDialog`, `ChoiceDialog`, `ChoiceSheet` (with `ChoiceRow`), `ConfirmDialog`, `InputDialog`, `ContextPanel`, `DatePickerDialog`,
   `MonthNavigation`, `MonthYearPicker`, `PageScaffold`, `Subpage`, `PageSection`, `PanelSurface`,
   `PickerSearch`, `PullToRefresh`, `ReorderableColumn`, `SelectionSheet`, `SheetFrame`, `SettingRow`,
-  `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarRail`, `SummaryCard` (with `NamedAvatar`), `Collapsible`, `CollapsibleTree`, `AvatarStack`,
+  `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarRail`, `SummaryCard` and `PersonText` (with `NamedAvatar`), `Collapsible`, `CollapsibleTree`, `AvatarStack`,
   `SidebarSwipeArea`, and
   `SwipeActions`.
 - Settings rows follow Notion's settings pages: flat rows with a title and `text2` description
@@ -34,8 +34,10 @@ Dark mode is the only color mode. The palette is recorded in
   sidebar's `SidebarEntry` rows included, uses `PanelTokens.compactRowHeight`, so folders sit at
   the same density everywhere, below the 48 dp touch target by the user's choice. A row without a click is
   static, and a `RowButton` at its end acts on its own. Settings choices open a `ChoiceSheet`,
-  which lists a `ChoiceOptions` default in its own group first, applies a choice at once, and
-  closes with Done. Destructive settings actions ask with `ConfirmDialog` first; its confirming
+  which lists a `ChoiceOptions` default in its own group first, optionally with an icon per
+  option, applies a choice at once, and closes with Done. Sheets are as tall as their content, up
+  to 88% of the screen; a sheet with a weighted list, such as Mail's Move to sheet, fills that height.
+  `IconPill` is an icon-only toggle that sits at the end of a row of `SidebarPill`s. Destructive settings actions ask with `ConfirmDialog` first; its confirming
   button uses the primary style because the palette has no warning color, which is an open design
   decision. `ChoiceDialog` and `ActionDialog` remain for one-shot picks
   and menus. Mail's rules pages still use `PageSection`

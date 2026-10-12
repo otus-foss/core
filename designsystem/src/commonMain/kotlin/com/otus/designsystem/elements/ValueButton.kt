@@ -19,16 +19,18 @@ import com.otus.designsystem.theme.SettingTokens
 
 /**
  * The current value of a choice, outlined with a down chevron. It only shows [value]; the
- * enclosing row opens the choice and supplies the accessible name.
+ * enclosing row opens the choice and supplies the accessible name. A [wide] button fits longer
+ * values, such as an email address, beside a short title.
  */
 @Composable
 public fun ValueButton(
     value: String,
     modifier: Modifier = Modifier,
+    wide: Boolean = false,
 ) {
     Row(
         modifier
-            .widthIn(max = SettingTokens.valueMaxWidth)
+            .widthIn(max = if (wide) SettingTokens.wideValueMaxWidth else SettingTokens.valueMaxWidth)
             .border(PanelTokens.borderWidth, OtusColors.bgLight, RoundedCornerShape(SettingTokens.valueRadius))
             .padding(horizontal = SettingTokens.valuePaddingHorizontal, vertical = SettingTokens.valuePaddingVertical),
         horizontalArrangement = Arrangement.spacedBy(PanelTokens.iconGap),

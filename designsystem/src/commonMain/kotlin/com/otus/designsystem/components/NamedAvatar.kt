@@ -1,6 +1,6 @@
 package com.otus.designsystem.components
 
-/** A person named in a [SummaryCard], with the avatar shown before the [name]. */
+/** A person named in a [SummaryCard] or [PersonText], with the avatar shown before the [name]. */
 public class NamedAvatar(
     public val name: String,
     public val avatar: ChipAvatar,
