@@ -61,12 +61,13 @@ public fun SettingToggleRow(
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     description: String? = null,
+    icon: DrawableResource? = null,
 ) {
     val interactions = remember { MutableInteractionSource() }
     SettingRowLayout(
         title,
         description,
-        icon = null,
+        icon,
         trailing = { ToggleSwitch(checked) },
         modifier =
             modifier
