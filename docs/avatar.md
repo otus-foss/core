@@ -42,8 +42,9 @@ close an explicitly owned `HttpAvatarImageLoader` when its owning scope ends.
 ## Caching and domain icons
 
 The service keeps up to 64 recently used contact/domain records in memory. Contact keys include the
-login, normalized email and external-image policy. Website icons use the exact hostname and proxy
-policy, shared across senders and accounts. Two addresses at `proton.me` fetch the website icon once;
+login, normalized email and external-image policy. Website icons use the registrable website domain
+and proxy policy, shared across senders and accounts. Two addresses at `proton.me` fetch the website
+icon once, and so do `a@mail.example.com` and `b@news.example.com`;
 their individual contact photos still take priority and remain separate. Display names never enter
 cache keys, so initials always follow the current name.
 
@@ -61,10 +62,10 @@ lookups waiting for a fetch permit and prevents old results from repopulating me
 `HttpWebsiteIconSource` first reads a bounded portion of the website's HTML and tries advertised raster icon links,
 prioritizing larger declared sizes and Apple touch icons. Relative links use the final website URL
 after redirects. This finds Proton's 180 px touch icon rather than enlarging the 32 px proxy favicon.
-If discovery fails, it tries HTTPS `apple-touch-icon.png`, `favicon.png`, and `favicon.ico` on the
-sender's exact hostname, then on its registrable website domain from the bundled Public Suffix List.
-All direct website attempts together have an 8-second budget. For example, `email.openai.com` falls
-back to `openai.com`. An exact root hostname is fetched only once. Multi-label suffixes such as `co.uk`, private hosting suffixes
+If discovery fails, it tries HTTPS `apple-touch-icon.png`, `favicon.png`, and `favicon.ico`.
+The service sends all of these requests to the sender's registrable website domain from the bundled
+Public Suffix List, never to the exact hostname. All direct website attempts together have an
+8-second budget. For example, `noreply@email.openai.com` fetches only from `openai.com`. Multi-label suffixes such as `co.uk`, private hosting suffixes
 such as `github.io`, wildcards, and exceptions are respected. Bare public suffixes, IP literals,
 internal hosts, and malformed hostnames retain initials. Shared mail providers such as `proton.me`
 are eligible for a website logo; this identifies the provider, not the individual sender.
@@ -76,10 +77,17 @@ The service has no baked-in cache provider: callers inject `DomainIconSource`, a
 `domainIconProxy` as well as `domainIcons`. Contacts always take priority. No message-body images or
 email-hash avatar services are used. This fallback also covers websites that block direct requests.
 
+Fetching a website icon tells that website the device's IP address and when the inbox showed the
+sender. A sender who gave each recipient a unique subdomain, such as `u-12345.example.com`, could
+otherwise use the icon request as a read receipt. The service therefore fetches and caches icons
+only per registrable domain, so every subdomain shares one request to `example.com`. The registrable
+domain still learns the device's IP address once per cache period, which is why `domainIcons` is
+off by default and callers may keep it off.
+
 `PublicSuffixDomainResolver` accepts an injected suspend loader for the rules. Mail wiring reads
 `files/public_suffix_list.dat` from packaged Compose resources. The parser is common Kotlin,
-loads once off the UI thread, and never downloads rules at runtime. The service defaults to using
-an exact hostname unless a resolver is injected. Calendar includes the same parser and resource
+loads once off the UI thread, and never downloads rules at runtime. Without an injected resolver,
+the service treats the whole hostname as the website domain. Calendar includes the same parser and resource
 in its own older copy until it adopts this module. IDNs require an ASCII hostname supplied by the caller.
 
 The list snapshot is `2026-10-01_23-02-52_UTC`, upstream commit

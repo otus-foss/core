@@ -13,7 +13,7 @@ class AvatarDomainIconTest {
     private val domains = PublicSuffixDomainResolver { "com\nme\nio\ngithub.io" }
 
     @Test
-    fun missingSubdomainIconFallsBackToRootAndIconCacheReceivesOnlyTheRoot() =
+    fun subdomainSenderFetchesOnlyTheRegistrableDomainAndItsIconCache() =
         runTest {
             val urls = mutableListOf<String>()
             val cachedDomains = mutableListOf<String>()
@@ -34,9 +34,6 @@ class AvatarDomainIconTest {
             val result = service.resolve(request, options)
             assertEquals(
                 listOf(
-                    "https://email.openai.com/apple-touch-icon.png",
-                    "https://email.openai.com/favicon.png",
-                    "https://email.openai.com/favicon.ico",
                     "https://openai.com/apple-touch-icon.png",
                     "https://openai.com/favicon.png",
                     "https://openai.com/favicon.ico",
@@ -49,60 +46,56 @@ class AvatarDomainIconTest {
         }
 
     @Test
-    fun subdomainIconWinsWithoutFetchingTheRootOrIconCache() =
+    fun perRecipientSubdomainsShareOneFetchAndNeverReachTheSubdomain() =
         runTest {
             val urls = mutableListOf<String>()
-            var cacheCalls = 0
+            val websites = mutableListOf<String>()
             val service =
                 AvatarService(
                     images =
-                        AvatarImageLoader {
-                            urls += it
-                            if (it == "https://email.openai.com/favicon.ico") image else null
+                        object : AvatarImageLoader {
+                            override suspend fun load(url: String): AvatarImage? {
+                                urls += url
+                                return null
+                            }
+
+                            override suspend fun websiteIcon(domain: String): AvatarImage? {
+                                websites += domain
+                                return image
+                            }
                         },
                     domains = domains,
-                    iconFallback =
-                        DomainIconSource {
-                            cacheCalls++
-                            image
-                        },
                 )
-            assertSame(image, service.resolve(request, options).image)
-            assertEquals(
-                listOf(
-                    "https://email.openai.com/apple-touch-icon.png",
-                    "https://email.openai.com/favicon.png",
-                    "https://email.openai.com/favicon.ico",
-                ),
-                urls,
-            )
-            assertEquals(0, cacheCalls)
+            val first = service.resolve(request.copy(email = "x@u-12345.evil.com"), options)
+            val second = service.resolve(request.copy(email = "x@u-67890.evil.com"), options)
+            assertSame(image, first.image)
+            assertSame(image, second.image)
+            assertEquals(listOf("evil.com"), websites)
+            assertEquals(emptyList(), urls)
         }
 
     @Test
-    fun failedSubdomainRequestsUseTheRootWebsiteIconWithoutAnIconCache() =
+    fun failedRootRequestsUseTheIconCache() =
         runTest {
             val urls = mutableListOf<String>()
-            var cacheCalls = 0
+            val cachedDomains = mutableListOf<String>()
             val service =
                 AvatarService(
                     images =
                         AvatarImageLoader {
                             urls += it
-                            if (it.contains("email.openai.com")) error("Subdomain unreachable")
-                            if (it == "https://openai.com/favicon.ico") image else null
+                            error("Website unreachable")
                         },
                     domains = domains,
                     iconFallback =
                         DomainIconSource {
-                            cacheCalls++
+                            cachedDomains += it
                             image
                         },
                 )
             assertSame(image, service.resolve(request, options).image)
-            assertEquals("https://openai.com/favicon.ico", urls.last())
-            assertEquals(6, urls.size)
-            assertEquals(0, cacheCalls)
+            assertEquals(3, urls.size)
+            assertEquals(listOf("openai.com"), cachedDomains)
         }
 
     @Test

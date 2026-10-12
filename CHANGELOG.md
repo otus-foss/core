@@ -90,6 +90,10 @@
   both are app decisions.
 - Add `symbol_more_horiz`, drawn from the Material Symbols Rounded `more_horiz` glyph geometry
   (Apache 2.0).
+- `AvatarService` fetches and caches website icons only for the sender's registrable domain from
+  the injected `AvatarDomainResolver`, never for the exact hostname. `noreply@email.openai.com`
+  now requests icons from `openai.com` only. Before, a sender could give each recipient a unique
+  subdomain and learn from the icon request when and from which IP address the inbox loaded.
 
 ## 0.7.0 - 2026-10-11
 
