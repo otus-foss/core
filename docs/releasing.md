@@ -17,6 +17,10 @@ migration each app needs. A release renames `Unreleased` to the version and date
 
 ## Publishing
 
+**Publishing is paused.** A version tag no longer starts the `publish` workflow, so pushing a
+tag uploads nothing. Manual runs still validate without uploading. Resume the tag trigger in
+`.github/workflows/publish.yml` before the next release.
+
 The GitHub `publish` workflow uploads to GitHub Packages at
 `https://maven.pkg.github.com/reazndev/otus-meta` using
 `publishAllPublicationsToGitHubPackagesRepository` and the workflow's `GITHUB_TOKEN`. It runs on

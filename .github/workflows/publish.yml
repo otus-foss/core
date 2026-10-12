@@ -1,10 +1,9 @@
 name: publish
 
 # Manual runs validate the complete release locally without uploading packages.
+# Paused: version tags no longer publish. To resume, trigger on pushed tags matching "v*" again.
 on:
   workflow_dispatch:
-  push:
-    tags: ["v*"]
 
 permissions: {}
 
