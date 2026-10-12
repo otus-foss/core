@@ -97,7 +97,7 @@ private fun NumberCircle(
 ) {
     Avatar(
         text,
-        colorIndex = BG_LIGHT_INDEX,
+        fill = OtusColors.bgLight,
         size = ActionBarTokens.tokenSize,
         ring = BorderStroke(ActionBarTokens.tokenRing, OtusColors.bgDark).takeIf { ring },
     )
@@ -127,6 +127,3 @@ private fun DateSquare(date: BarToken.Date) {
         )
     }
 }
-
-/** [Avatar]'s bgLight fill. */
-private const val BG_LIGHT_INDEX = 1

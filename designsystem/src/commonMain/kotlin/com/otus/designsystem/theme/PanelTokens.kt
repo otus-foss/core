@@ -25,4 +25,7 @@ public object PanelTokens {
     public val fadeWidth: Dp = 24.dp
     public val textSize: TextUnit = 16.sp
     public val lineHeight: TextUnit = 20.sp
+
+    /** A count beside a label, such as unread mail in a chip. */
+    public val countSize: TextUnit = 14.sp
 }

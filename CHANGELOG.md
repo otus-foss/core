@@ -2,6 +2,27 @@
 
 ## Unreleased
 
+- `Sidebar` is 336 dp wide: a 64 dp account rail and a 272 dp panel. On a narrower screen the
+  panel shrinks so at least 56 dp of the page stays visible. The 64% width rule, kept between
+  264 and 384 dp, is gone. Opening it clears focus and hides the software keyboard. It takes `subtitle` and a `rail` slot, its `entries` slot is
+  now `content`, and the `footer` slot is gone. The
+  header shows a 16 sp SemiBold title over a 14 sp `text2` subtitle. Callers must pass the new
+  arguments.
+- Add `SidebarRail`, which scrolls its items and pins a `text2` Settings button to its bottom, and
+  the rail elements `SidebarRailAccount`, `SidebarRailIcon`, `SidebarRailAdd`, and
+  `SidebarRailDivider`. The selected item has an `accentDark` fill and a 2 dp `accentLight`
+  outline; badges are 20 dp `accentDark` pills.
+- `SidebarHeading` takes `expanded`, `onExpandedChange`, and an optional end `action`. Tapping it
+  turns its chevron 90 degrees and collapses the group. Screen readers announce a heading button
+  that is expanded or collapsed. Calls with only a text no longer compile.
+- `SidebarEntry` replaces `badge` with a `trailing` slot. Pass `SidebarCount` for a 14 sp `text2`
+  count, and `SidebarExpandButton`, a 36 dp chevron button, for an entry with nested entries. Its
+  row is 44 dp tall inside the 48 dp target, and its name uses the content color.
+- Add `SidebarPill`, a chip for a built-in mailbox with a `bgRegular` fill and an optional 14 sp
+  `text2` count, sized by `PanelTokens.countSize`.
+- `Avatar` takes `fill`, which replaces the `colorIndex` fill.
+- `SettingToggleRow` takes an optional `icon`, as `SettingRow` does.
+- Add the `symbol_all_inbox` Material Symbol.
 - Breaking: `Motion`, `MotionSpeed`, `MotionCurve`, and `LocalMotionScale` replace
   `MotionTokens`, and every animation in the design system now uses them.
   `Motion.millis(speed, scale)` returns `240 ms / (factor × scale)`, rounded.

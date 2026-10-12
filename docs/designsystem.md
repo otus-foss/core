@@ -16,13 +16,16 @@ Dark mode is the only color mode. The palette is recorded in
 - `elements`: `ActionButton`, `ActionRow`, `AnimatedText`, `Avatar`, `AvatarImage`, `BarIconButton`, `CalendarDay`,
   `ComposeBody`, `ComposeField`, `ComposeValueField`,
   `CalendarMonthBackground`, `Chip`, `IconButton`, `InputField`, `LabelPill`, `RefreshIndicator`,
-  `RowButton`, `SearchField`, `SearchPrompt`, `SelectionRow`, `SidebarEntry`, `Symbol`,
+  `RowButton`, `SearchField`, `SearchPrompt`, `SelectionRow`, `SidebarEntry`, `SidebarHeading`,
+  `SidebarCount`, `SidebarExpandButton`, `SidebarPill`, `SidebarRailAccount`, `SidebarRailAdd`, `SidebarRailDivider`,
+  `SidebarRailIcon`, `Symbol`,
   `ToggleSwitch`, `ValueButton`, and the
   `controlPressFeedback` modifier.
 - `components`: `ActionBar`, `ActionBarHost`, `BarAction`, `BarContext`, `BarToken`, `ActionDialog`, `ChoiceDialog`, `ChoiceSheet`, `ConfirmDialog`, `InputDialog`, `ContextPanel`, `DatePickerDialog`,
   `MonthNavigation`, `MonthYearPicker`, `PageScaffold`, `Subpage`, `PageSection`, `PanelSurface`,
   `PickerSearch`, `PullToRefresh`, `ReorderableColumn`, `SelectionSheet`, `SheetFrame`, `SettingRow`,
-  `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarSwipeArea`, and
+  `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarRail`,
+  `SidebarSwipeArea`, and
   `SwipeActions`.
 - Settings rows follow Notion's settings pages: flat rows with a title and `text2` description
   beside the control, `bgLight` hairlines between them, and large section titles. The whole row is

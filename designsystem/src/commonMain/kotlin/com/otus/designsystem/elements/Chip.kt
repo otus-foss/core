@@ -6,6 +6,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -40,6 +41,26 @@ public fun Chip(
     detail: String? = null,
     leading: (@Composable () -> Unit)? = null,
 ) {
+    ChipFrame(onClick, modifier, selected, enabled, OtusColors.bgDark) {
+        leading?.invoke()
+        label?.let { ChipText(it) }
+        detail?.let {
+            ChipDivider(selected)
+            ChipText(it)
+        }
+    }
+}
+
+/** The pill and its 48 dp touch target, shared by [Chip] and [SidebarPill]; [fill] fills it while unselected. */
+@Composable
+internal fun ChipFrame(
+    onClick: () -> Unit,
+    modifier: Modifier,
+    selected: Boolean,
+    enabled: Boolean,
+    fill: Color,
+    content: @Composable RowScope.() -> Unit,
+) {
     val interactions = remember { MutableInteractionSource() }
     Box(
         modifier
@@ -56,7 +77,7 @@ public fun Chip(
         Surface(
             modifier = Modifier.reportControlVisualBounds().controlPressFeedback(interactions),
             shape = CircleShape,
-            color = if (selected) OtusColors.accentDark else OtusColors.bgDark,
+            color = if (selected) OtusColors.accentDark else fill,
             contentColor = if (enabled) OtusColors.text1 else OtusColors.text3,
             border =
                 BorderStroke(
@@ -70,20 +91,14 @@ public fun Chip(
                     .padding(horizontal = PanelTokens.chipPadding, vertical = PanelTokens.iconGap),
                 horizontalArrangement = Arrangement.spacedBy(PanelTokens.iconGap),
                 verticalAlignment = Alignment.CenterVertically,
-            ) {
-                leading?.invoke()
-                label?.let { ChipText(it) }
-                detail?.let {
-                    ChipDivider(selected)
-                    ChipText(it)
-                }
-            }
+                content = content,
+            )
         }
     }
 }
 
 @Composable
-private fun ChipText(text: String) {
+internal fun ChipText(text: String) {
     Text(text, style = panelTextStyle().copy(color = Color.Unspecified), maxLines = 1)
 }
 
