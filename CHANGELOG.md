@@ -23,6 +23,73 @@
 - `Avatar` takes `fill`, which replaces the `colorIndex` fill.
 - `SettingToggleRow` takes an optional `icon`, as `SettingRow` does.
 - Add the `symbol_all_inbox` Material Symbol.
+- Breaking: `Motion`, `MotionSpeed`, `MotionCurve`, and `LocalMotionScale` replace
+  `MotionTokens`, and every animation in the design system now uses them.
+  `Motion.millis(speed, scale)` returns `240 ms / (factor × scale)`, rounded.
+  `Motion.tween(speed, curve, scale)` builds a tween for code outside composition, and the
+  composable `motionTween(speed, curve)` applies `LocalMotionScale` itself. `LocalMotionScale`
+  defaults to 1; providing 2 makes every animation twice as fast, and Android's animator duration
+  scale still applies on top. See [the design system guide](docs/designsystem.md#motion).
+- Breaking: removed `MotionTokens` and `PanelTokens.MODE_TRANSITION_MILLIS`. To migrate, replace
+  `MotionTokens.standard`, `enter`, and `exit` with `MotionCurve.Standard.easing`, `Enter.easing`,
+  and `Exit.easing`, or better, replace the whole `tween(...)` with `motionTween(speed, curve)`.
+  Replace `tween(PanelTokens.MODE_TRANSITION_MILLIS)` with `motionTween()`.
+  `MotionTokens.TEXT_REPLACEMENT_MILLIS` becomes `MotionSpeed.Normal` with `MotionCurve.Enter`,
+  and `TEXT_EXIT_MILLIS` becomes `MotionSpeed.Fast` with `MotionCurve.Exit`.
+- Durations moved to the nearest speed. Control press feedback and the refresh indicator's
+  crossfade go from 100 to 120 ms. The toggle switch goes from 150 to 160 ms. The reorder shift
+  and outgoing text go from 180 to 160 ms. Panel mode changes, the sidebar's close, and the
+  section chevron's turn go from 220 to 240 ms. The sheet's open goes from 250 to 240 ms, and incoming text from 260 to 240 ms. The
+  sheet's close, row selection, and the swipe flash go from 200 to 240 ms, the largest change.
+  The sidebar's open and a swiped row's settle stay at 300 ms.
+- The refresh indicator's crossfade and its arming fade, which used Compose's default curve or
+  spring, now use the standard curve at `Quick` speed.
+- `SidebarState` takes the motion scale from the `Sidebar` that shows it, and `SheetFrame` and
+  `SwipeActions` read it when they start. A `SidebarState` used without a `Sidebar` animates at
+  scale 1.
+
+- Add `ActionBar(primary, modifier, secondary, context)`, the bottom bar of a page. Up to three
+  `secondary` `BarAction`s sit icon-only in a group, each a 48 dp `BarIconButton` that shows its
+  label in a tooltip on long press. A disabled action keeps its slot and turns its icon `text3`.
+  The `primary` action fills a shell beside the group and shows its label. With a `BarContext`,
+  the action shrinks to a 60 dp button at the shell's end, and the context fills the rest: a
+  `BarToken`, the primary's label, and the context's subtitle. The whole shell is then one button
+  that accessibility services read as "label, description". A disabled primary has a `bgDark`
+  fill, a `strokeBgDark` border, and `text3` content, so no accent suggests it can be pressed.
+  More than three secondary actions throw.
+- `BarToken` draws what the context is about: `Person`, `People(first, count)` (an avatar and the
+  number of others), `Count`, or `Date(month, day)`. The width animation runs at `MotionSpeed.Fast`, 160 ms, quicker than the spec's 220 ms, with the
+  standard curve. The label fades out over its first 40%, and the context fades in over the rest.
+  A changed token, label, or subtitle crossfades in at `Normal` speed and out at `Fast` speed,
+  like `AnimatedText`.
+- Add `ActionBarHost(bar, modifier, content)`. It places the bar 8 dp from the screen edges, above
+  the navigation bar and the keyboard, and passes `content` bottom padding equal to the bar's
+  height so the last item can scroll above it. A null `bar` adds no padding.
+- Add `ActionBarTokens`. The 62 dp height and the 60 dp collapsed action width come from the
+  supplied spec. The other sizes were measured from the spec's U2 image and are not verified
+  Figma values; see [mail design foundations](docs/suite/mail-design.md#action-bar).
+- `ContentRow` takes `selection` and `onLongClick`. A selected row gets an `accentDark` tint,
+  rounded by the new `InboxTokens.selectionRadius` (22 dp), and an `accentRegular` circle with a
+  check in place of its leading content. `selection` is null while the list is not selecting, so
+  accessibility services announce selection state only during a selection. Its
+  `RowSelection.joinedAbove` and `joinedBelow` square the corners a selected neighbor touches, so
+  adjacent selected rows read as one block. The tint fades and the corners reshape at `Normal`
+  speed with the standard curve. Both
+  parameters come before `leading`, so named-argument and trailing-lambda calls compile
+  unchanged. Calls that passed `leading` as the fifth positional argument must use `leading =`.
+- Add `ComposeField(label, value, onValueChange, modifier, kind, trailing)`, a header line of a
+  message being written: a `text2` label beside a borderless single-line field, at least 48 dp
+  tall, with a `bgLight` hairline below. The field names itself with the label, and `trailing`
+  holds a control for the line. `ComposeValueField(label, value, onClick, modifier)` shows a
+  chosen value, such as the From address, as one button with a down chevron, or as static text
+  when `onClick` is null.
+- Add `ComposeBody(value, onValueChange, placeholder, modifier)`, the borderless multi-line text
+  of a message. It fills the space the caller gives it, takes taps anywhere in it, and shows the
+  placeholder in `text3` while empty.
+- Add `ComposeTokens` for the label gap and hairline width. No Figma frame covers compose yet, so
+  both are app decisions.
+- Add `symbol_more_horiz`, drawn from the Material Symbols Rounded `more_horiz` glyph geometry
+  (Apache 2.0).
 
 ## 0.7.0 - 2026-10-11
 

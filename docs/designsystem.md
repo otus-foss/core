@@ -8,16 +8,20 @@ Dark mode is the only color mode. The palette is recorded in
 
 ## Contents
 
-- `theme`: `OtusColors`, `OtusTheme`, `MotionTokens`, and tokens for avatars, calendars, control
-  feedback, pages, panels, refresh, sheets, and the sidebar. `panelTextStyle()` uses Figtree.
-- `elements`: `ActionButton`, `ActionRow`, `AnimatedText`, `Avatar`, `AvatarImage`, `CalendarDay`,
+- `theme`: `OtusColors`, `OtusTheme`, `Motion` (with `MotionSpeed`, `MotionCurve`, and
+  `LocalMotionScale`), and tokens for avatars, calendars, control
+  feedback, pages, panels, refresh, sheets, the sidebar, the action bar (`ActionBarTokens`), and
+  compose fields (`ComposeTokens`).
+  `panelTextStyle()` uses Figtree.
+- `elements`: `ActionButton`, `ActionRow`, `AnimatedText`, `Avatar`, `AvatarImage`, `BarIconButton`, `CalendarDay`,
+  `ComposeBody`, `ComposeField`, `ComposeValueField`,
   `CalendarMonthBackground`, `Chip`, `IconButton`, `InputField`, `LabelPill`, `RefreshIndicator`,
   `RowButton`, `SearchField`, `SearchPrompt`, `SelectionRow`, `SidebarEntry`, `SidebarHeading`,
   `SidebarCount`, `SidebarExpandButton`, `SidebarPill`, `SidebarRailAccount`, `SidebarRailAdd`, `SidebarRailDivider`,
   `SidebarRailIcon`, `Symbol`,
   `ToggleSwitch`, `ValueButton`, and the
   `controlPressFeedback` modifier.
-- `components`: `ActionDialog`, `ChoiceDialog`, `ChoiceSheet`, `ConfirmDialog`, `InputDialog`, `ContextPanel`, `DatePickerDialog`,
+- `components`: `ActionBar`, `ActionBarHost`, `BarAction`, `BarContext`, `BarToken`, `ActionDialog`, `ChoiceDialog`, `ChoiceSheet`, `ConfirmDialog`, `InputDialog`, `ContextPanel`, `DatePickerDialog`,
   `MonthNavigation`, `MonthYearPicker`, `PageScaffold`, `Subpage`, `PageSection`, `PanelSurface`,
   `PickerSearch`, `PullToRefresh`, `ReorderableColumn`, `SelectionSheet`, `SheetFrame`, `SettingRow`,
   `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarRail`,
@@ -48,14 +52,86 @@ Dark mode is the only color mode. The palette is recorded in
 - `ReorderableColumn` lets the user reorder a short list by dragging each row's handle. Only the
   handle starts a drag, so rows keep their own taps and the list around them still scrolls. The
   dragged row draws above the others and stays within the column; the rows it passes step aside
-  over 180 ms, and a haptic marks each new place. The caller gets one `onMove(from, to)` on drop
+  at the fast speed, 160 ms, and a haptic marks each new place. The caller gets one `onMove(from, to)` on drop
   and owns the order. Each handle names its row for accessibility services and offers Move up and
   Move down. Give every row a unique, stable key. Changing the row order cancels an active drag.
   Every row is composed, so it suits settings lists, not message lists.
+- `ActionBar` is a page's bottom bar: up to three icon-only secondary actions in a group, and the
+  primary action in a shell beside it. Each secondary action is a 48 dp `BarIconButton` that
+  shows its label on long press. A disabled action stays in its slot with a `text3` icon, so the
+  buttons never move. Without a `BarContext`, the primary fills the shell with its label. With
+  one, the primary shrinks to a 60 dp button at the shell's end, and a `BarToken` with the
+  primary's label and the context's subtitle fills the rest. The whole shell stays one button,
+  read as "label, description". The app chooses the actions and the context; the component only
+  draws them and reports clicks. `ActionBarHost` places the bar over the bottom of a page, above
+  the navigation bar and keyboard, and pads the page's content so it can scroll clear of the bar.
+  Mail uses it for an open message and for selected messages; see
+  [Mail's action bar guide](https://github.com/reazndev/otus-mail/blob/main/docs/action-bar.md).
+- `ComposeField` and `ComposeBody` lay out a message being written. Each header line, such as
+  To or Subject, puts a `text2` label beside a borderless field with a `bgLight` hairline below,
+  like Gmail's and Apple Mail's compose headers. `ComposeValueField` shows a chosen value, such
+  as the From address, and opens the choice when tapped. The body has no border and fills the
+  rest of the page. The app owns the draft, parsing, and saving.
 
 All visual tokens live here, including `InboxTokens`. New elements and reusable components
 belong here even when only Mail currently uses them. Their APIs use values and callbacks,
 without app dependencies.
+
+## Motion
+
+Every animation in the design system and in Mail takes its duration and curve from `Motion`, in
+`theme/Motion.kt`. The rules for picking a speed and a curve are in
+[mail design foundations](suite/mail-design.md#motion).
+
+`MotionCurve` holds three cubic Bézier curves:
+
+| Curve | Bézier | Use |
+| --- | --- | --- |
+| `Standard` | (0.4, 0, 0.2, 1) | The default, for anything that changes in place |
+| `Enter` | (0.2, 0, 0, 1) | Decelerates, for sheets, the sidebar, and text that arrive |
+| `Exit` | (0.4, 0, 1, 1) | Accelerates, for the same things as they leave |
+
+`MotionSpeed` divides the 240 ms base duration (`Motion.BASE_MILLIS`) by its factor:
+
+| Speed | Factor | Duration | Use |
+| --- | --- | --- | --- |
+| `Quick` | 2 | 120 ms | Press feedback, the refresh indicator |
+| `Fast` | 1.5 | 160 ms | Toggle switch, reorder shift, action bar collapse, outgoing text |
+| `Normal` | 1 | 240 ms | Panel modes, sheets, row selection, swipe flash, incoming text |
+| `Relaxed` | 0.8 | 300 ms | Sidebar opening, a swiped row settling |
+
+A duration is `240 ms / (factor × scale)`, rounded to the nearest millisecond. The scale comes
+from `LocalMotionScale`, which defaults to 1. Providing 2 runs every animation twice as fast, and
+0.5 runs it at half speed. Android's animator duration scale, set in the developer options or by
+the system's remove animations setting, applies on top of the result, because Compose reads it
+for every animation.
+
+A composable reads the scale for you:
+
+```kotlin
+val thumb by animateDpAsState(target, motionTween(MotionSpeed.Fast))
+```
+
+Transition lambdas, such as `AnimatedContent`'s `transitionSpec`, are not composable. Read the
+scale outside the lambda and pass it in:
+
+```kotlin
+val motionScale = LocalMotionScale.current
+AnimatedContent(
+    state,
+    transitionSpec = { fadeIn(Motion.tween(scale = motionScale)) togetherWith fadeOut(Motion.tween(scale = motionScale)) },
+) { ... }
+```
+
+State holders that animate outside composition, such as `SidebarState`, the sheet position, and
+the swipe settle, receive the scale from the composable that creates or drives them, and call
+`Motion.tween(speed, curve, scale)` or `Motion.millis(speed, scale)`. The sidebar, for example,
+shortens its tween to the distance left after a partial swipe:
+
+```kotlin
+val millis = Motion.millis(MotionSpeed.Relaxed, motionScale)
+val spec = TweenSpec<Float>((millis * remaining).roundToInt(), easing = MotionCurve.Enter.easing)
+```
 
 ## Resources
 
@@ -100,7 +176,7 @@ The continuous calendar layout and gestures remain unchanged.
 
 ## Tests
 
-Common tests cover the continuous calendar week model, decoded-avatar cache, reorder behavior,
+Common tests cover the continuous calendar week model, decoded-avatar cache, motion durations, reorder behavior,
 and sheet animation interruption and completion. An Android host test covers image decoding. The
 Compose UI tests for panels, pickers, motion, and press feedback still run in Mail's `androidApp`,
 because they need an Android activity. Moving them here needs a host-test setup with an activity
@@ -111,7 +187,8 @@ and is open work.
 Meta owns every branded element, reusable component, visual token, and symbol resource.
 `ContentRow` renders `ContentRowText`, containing the title, subtitle, trailing text, and
 metadata, with caller-supplied accessibility state and a
-leading slot. `DetailRow` renders caller-supplied details with optional tree indentation.
+leading slot. A `selected` row is tinted `accentDark` and shows a check in place of the leading
+slot; `onLongClick`, when given, usually starts selecting. `DetailRow` renders caller-supplied details with optional tree indentation.
 `EmptyState` renders caller-supplied text and icon with an optional action. These APIs take
 values and callbacks; Mail domain models and workflow decisions stay in Mail adapters.
 `InboxTokens` preserves the existing message-list and empty-state sizes.

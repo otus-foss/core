@@ -2,7 +2,6 @@ package com.otus.designsystem.components
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animate
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.MutatePriority
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.AnchoredDragScope
@@ -36,7 +35,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.zIndex
-import com.otus.designsystem.theme.MotionTokens
+import com.otus.designsystem.theme.LocalMotionScale
+import com.otus.designsystem.theme.Motion
+import com.otus.designsystem.theme.MotionSpeed
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.SwipeTokens
 import kotlinx.coroutines.coroutineScope
@@ -62,6 +63,7 @@ public fun SwipeActions(
     content: @Composable () -> Unit,
 ) {
     val threshold = with(LocalDensity.current) { SwipeTokens.threshold.toPx() }
+    val motionScale = LocalMotionScale.current
     var width by remember { mutableIntStateOf(0) }
     val state = rememberSwipeState(width, startToEnd != null, endToStart != null)
     val flash = remember { Animatable(0f) }
@@ -71,14 +73,14 @@ public fun SwipeActions(
     val currentStartToEnd by rememberUpdatedState(startToEnd)
     val currentEndToStart by rememberUpdatedState(endToStart)
     val fling =
-        remember(state, threshold) {
-            thresholdFlingBehavior(state, threshold) { side ->
+        remember(state, threshold, motionScale) {
+            thresholdFlingBehavior(state, threshold, motionScale) { side ->
                 val action = side.pick(currentStartToEnd, currentEndToStart)
                 action?.let {
                     scope.launch {
                         running = RunningSwipe(side, it)
                         try {
-                            runSwipe(state, side, it, flash)
+                            runSwipe(state, side, it, flash, motionScale)
                         } finally {
                             running = null
                         }
@@ -162,26 +164,28 @@ private suspend fun runSwipe(
     side: SwipeAnchor,
     action: SwipeAction,
     flash: Animatable<Float, *>,
+    motionScale: Float,
 ) = coroutineScope {
     launch {
         flash.snapTo(SwipeTokens.FLASH_ALPHA)
         if (!action.dismisses) action.onSwipe()
-        flash.animateTo(0f, tween(SwipeTokens.FLASH_MILLIS, easing = MotionTokens.standard))
+        flash.animateTo(0f, Motion.tween(scale = motionScale))
         // Running a dismissing action removes the row, so it waits until the flash has faded.
         if (action.dismisses) action.onSwipe()
     }
     state.anchoredDrag(MutatePriority.PreventUserInput) { anchors ->
-        slideTo(state.requireOffset(), anchors.positionOf(side))
-        if (!action.dismisses) slideTo(state.requireOffset(), anchors.positionOf(SwipeAnchor.Settled))
+        slideTo(state.requireOffset(), anchors.positionOf(side), motionScale)
+        if (!action.dismisses) slideTo(state.requireOffset(), anchors.positionOf(SwipeAnchor.Settled), motionScale)
     }
 }
 
 private suspend fun AnchoredDragScope.slideTo(
     from: Float,
     to: Float,
+    motionScale: Float,
 ) {
     if (to.isNaN()) return
-    animate(from, to, animationSpec = tween(SwipeTokens.SETTLE_MILLIS, easing = MotionTokens.standard)) { value, _ ->
+    animate(from, to, animationSpec = Motion.tween(MotionSpeed.Relaxed, scale = motionScale)) { value, _ ->
         dragTo(value)
     }
 }

@@ -20,5 +20,4 @@ internal object RefreshTokens {
 
     /** Arc opacity before the pull reaches the threshold. */
     const val ARMING_ALPHA = 0.3f
-    const val FADE_MILLIS = 100
 }

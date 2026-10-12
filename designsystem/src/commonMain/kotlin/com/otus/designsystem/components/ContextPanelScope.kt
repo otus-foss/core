@@ -6,7 +6,6 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.horizontalScroll
@@ -32,7 +31,8 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
 import com.otus.designsystem.elements.LocalControlVisualBounds
-import com.otus.designsystem.theme.MotionTokens
+import com.otus.designsystem.theme.LocalMotionScale
+import com.otus.designsystem.theme.Motion
 import com.otus.designsystem.theme.PanelTokens
 
 /** Wrap each chip in [item] so its measured position drives its own cutout. */
@@ -63,6 +63,7 @@ public class ContextPanelScope internal constructor(
         expanded: Boolean,
         content: @Composable ContextPanelScope.(Boolean) -> Unit,
     ) {
+        val motionScale = LocalMotionScale.current
         AnimatedContent(
             targetState = expanded,
             contentAlignment = Alignment.CenterStart,
@@ -70,9 +71,7 @@ public class ContextPanelScope internal constructor(
                 // Moving an outgoing cutout above the rail creates a second contour that snaps back
                 // to the incoming pill as the old one fades. Animate size and opacity at a stable Y.
                 (EnterTransition.None togetherWith ExitTransition.None).using(
-                    SizeTransform(
-                        clip = false,
-                    ) { _, _ -> tween(PanelTokens.MODE_TRANSITION_MILLIS, easing = MotionTokens.standard) },
+                    SizeTransform(clip = false) { _, _ -> Motion.tween(scale = motionScale) },
                 )
             },
             label = "Panel pill group",
@@ -80,7 +79,7 @@ public class ContextPanelScope internal constructor(
             // The pill layer's fade, also used by any cutout that must appear or leave under the surface.
             val visibility =
                 transition.animateFloat(
-                    transitionSpec = { tween(PanelTokens.MODE_TRANSITION_MILLIS, easing = MotionTokens.standard) },
+                    transitionSpec = { Motion.tween(scale = motionScale) },
                     label = "Panel pill visibility",
                 ) { if (it == EnterExitState.Visible) 1f else 0f }
             val scope =

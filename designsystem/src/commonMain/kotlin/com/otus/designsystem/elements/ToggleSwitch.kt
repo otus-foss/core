@@ -2,7 +2,6 @@ package com.otus.designsystem.elements
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
@@ -15,9 +14,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.otus.designsystem.theme.MotionTokens
+import com.otus.designsystem.theme.MotionSpeed
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.SettingTokens
+import com.otus.designsystem.theme.motionTween
 
 /**
  * An on/off switch. It only shows [checked]; the enclosing row is the toggle and supplies the
@@ -29,13 +29,10 @@ public fun ToggleSwitch(
     modifier: Modifier = Modifier,
 ) {
     val travel = SettingTokens.switchWidth - SettingTokens.switchThumb - SettingTokens.switchInset * 2
-    val thumb by animateDpAsState(
-        if (checked) travel else 0.dp,
-        tween(SettingTokens.SWITCH_MILLIS, easing = MotionTokens.standard),
-    )
+    val thumb by animateDpAsState(if (checked) travel else 0.dp, motionTween(MotionSpeed.Fast))
     val track by animateColorAsState(
         if (checked) OtusColors.accentLight else OtusColors.bgLight,
-        tween(SettingTokens.SWITCH_MILLIS, easing = MotionTokens.standard),
+        motionTween(MotionSpeed.Fast),
     )
     Box(
         modifier

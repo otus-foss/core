@@ -1,7 +1,7 @@
 package com.otus.designsystem.elements
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
@@ -18,12 +18,15 @@ import androidx.compose.ui.semantics.text
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
-import com.otus.designsystem.theme.MotionTokens
+import com.otus.designsystem.theme.LocalMotionScale
+import com.otus.designsystem.theme.Motion
+import com.otus.designsystem.theme.MotionCurve
+import com.otus.designsystem.theme.MotionSpeed
 
 /**
  * Replace a label with a clipped vertical slide and fade. Increasing order moves upward;
  * decreasing order moves downward. The caller supplies ordering, without calendar knowledge here.
- * Unchanged text does not animate. Compose's motion duration scale controls reduced motion.
+ * Unchanged text does not animate. [LocalMotionScale] and the system animator scale set the pace.
  */
 @Composable
 public fun AnimatedText(
@@ -33,6 +36,7 @@ public fun AnimatedText(
     style: TextStyle = LocalTextStyle.current,
     textAlign: TextAlign = TextAlign.Center,
 ) {
+    val motionScale = LocalMotionScale.current
     AnimatedContent(
         targetState = OrderedLabel(text, order),
         modifier = modifier.clipToBounds().clearAndSetSemantics { this.text = AnnotatedString(text) },
@@ -41,13 +45,9 @@ public fun AnimatedText(
         transitionSpec = {
             val direction = if (targetState.order >= initialState.order) 1 else -1
             val incoming =
-                slideInVertically(tween(MotionTokens.TEXT_REPLACEMENT_MILLIS, easing = MotionTokens.enter)) {
-                    direction * it
-                } + fadeIn(tween(MotionTokens.TEXT_REPLACEMENT_MILLIS, easing = MotionTokens.enter))
+                slideInVertically(textEnterSpec(motionScale)) { direction * it } + fadeIn(textEnterSpec(motionScale))
             val outgoing =
-                slideOutVertically(tween(MotionTokens.TEXT_EXIT_MILLIS, easing = MotionTokens.exit)) {
-                    -direction * it
-                } + fadeOut(tween(MotionTokens.TEXT_EXIT_MILLIS, easing = MotionTokens.exit))
+                slideOutVertically(textExitSpec(motionScale)) { -direction * it } + fadeOut(textExitSpec(motionScale))
             (incoming togetherWith outgoing).using(null)
         },
         label = "Text replacement",
@@ -55,6 +55,14 @@ public fun AnimatedText(
         Text(label.text, style = style, textAlign = textAlign)
     }
 }
+
+/** New text arrives at the normal speed. */
+internal fun <T> textEnterSpec(motionScale: Float): TweenSpec<T> =
+    Motion.tween(MotionSpeed.Normal, MotionCurve.Enter, motionScale)
+
+/** Old text leaves faster than new text arrives, so the two overlap only briefly. */
+internal fun <T> textExitSpec(motionScale: Float): TweenSpec<T> =
+    Motion.tween(MotionSpeed.Fast, MotionCurve.Exit, motionScale)
 
 private data class OrderedLabel(
     val text: String,

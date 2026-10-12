@@ -21,6 +21,4 @@ internal object ChoiceSheetTokens {
 
     /** Dragged further down than this share of its height, the sheet closes on release. */
     const val DISMISS_FRACTION = 0.25f
-    const val ENTER_MILLIS = 250
-    const val EXIT_MILLIS = 200
 }

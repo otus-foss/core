@@ -49,7 +49,8 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.window.Dialog
 import com.otus.designsystem.elements.controlPressFeedback
 import com.otus.designsystem.theme.ChoiceSheetTokens
-import com.otus.designsystem.theme.MotionTokens
+import com.otus.designsystem.theme.LocalMotionScale
+import com.otus.designsystem.theme.MotionCurve
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PanelTokens
 import com.otus.designsystem.theme.SheetTokens
@@ -74,13 +75,14 @@ public fun SheetFrame(
 ) {
     val density = LocalDensity.current
     val scope = rememberCoroutineScope()
-    val position = remember { SheetPosition() }
+    val motionScale = LocalMotionScale.current
+    val position = remember { SheetPosition(motionScale) }
     // Read when the slide ends, so a draft changed during the animation is the one finished.
     val currentOnDismiss by rememberUpdatedState(onDismiss)
     val currentOnDone by rememberUpdatedState(onDone)
     val close: () -> Unit = { scope.launch { position.hide { currentOnDismiss() } } }
     val done: () -> Unit = { scope.launch { position.hide { currentOnDone() } } }
-    LaunchedEffect(Unit) { position.show(MotionTokens.enter) }
+    LaunchedEffect(Unit) { position.show(MotionCurve.Enter) }
     Dialog(close, properties = selectionSheetDialogProperties()) {
         CompositionLocalProvider(LocalDensity provides density) {
             Box(Modifier.fillMaxSize().imePadding()) {

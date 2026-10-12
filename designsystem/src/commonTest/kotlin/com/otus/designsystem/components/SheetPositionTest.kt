@@ -1,7 +1,7 @@
 package com.otus.designsystem.components
 
 import androidx.compose.runtime.MonotonicFrameClock
-import com.otus.designsystem.theme.MotionTokens
+import com.otus.designsystem.theme.MotionCurve
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -21,7 +21,7 @@ class SheetPositionTest {
             val position = SheetPosition()
             var finished = 0
             val clock = frameClock()
-            launch(clock) { position.show(MotionTokens.enter) }.join()
+            launch(clock) { position.show(MotionCurve.Enter) }.join()
             val close = launch(clock) { position.hide { finished++ } }
             runCurrent()
             assertTrue(position.closing)
@@ -37,13 +37,13 @@ class SheetPositionTest {
         runTest {
             val position = SheetPosition()
             val clock = frameClock()
-            val entry = launch(clock) { position.show(MotionTokens.enter) }
+            val entry = launch(clock) { position.show(MotionCurve.Enter) }
             advanceTimeBy(64)
             var finished = false
             launch(clock) { position.hide { finished = true } }.join()
             assertTrue(entry.isCancelled)
             assertTrue(finished)
-            launch(clock) { position.show(MotionTokens.enter) }.join()
+            launch(clock) { position.show(MotionCurve.Enter) }.join()
             assertEquals(1f, position.hidden)
         }
 
@@ -51,7 +51,7 @@ class SheetPositionTest {
     fun draggingInterruptsEntryAndClampsTheSheetToItsHeight() =
         runTest {
             val position = SheetPosition().apply { height = 400 }
-            val entry = launch(frameClock()) { position.show(MotionTokens.enter) }
+            val entry = launch(frameClock()) { position.show(MotionCurve.Enter) }
             advanceTimeBy(64)
             position.dragBy(-400f)
             entry.join()
@@ -66,7 +66,7 @@ class SheetPositionTest {
         runTest {
             val position = SheetPosition().apply { height = 400 }
             val clock = frameClock()
-            launch(clock) { position.show(MotionTokens.enter) }.join()
+            launch(clock) { position.show(MotionCurve.Enter) }.join()
             var closes = 0
             position.dragBy(40f)
             launch(clock) { position.release(0f, 600f) { closes++ } }.join()
