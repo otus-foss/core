@@ -1,5 +1,9 @@
 package com.otus.designsystem.components
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
@@ -8,9 +12,13 @@ import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertWidthIsEqualTo
+import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.width
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_folder
 import com.otus.designsystem.theme.PanelTokens
@@ -20,6 +28,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35])
@@ -62,5 +71,18 @@ class ValuePickerTest {
             .assertIsNotEnabled()
             .performClick()
         assertEquals(0, clicks)
+    }
+
+    @Test
+    fun pickerFitsItsValueUnlessTheCallerFillsTheWidth() {
+        compose.setContent {
+            Column(Modifier.width(320.dp)) {
+                ValuePicker("Receipts", {})
+                ValuePicker("Archive", {}, Modifier.fillMaxWidth())
+            }
+        }
+        val fitted = compose.onNodeWithContentDescription("Receipts, change").getBoundsInRoot()
+        assertTrue(fitted.width < 320.dp)
+        compose.onNodeWithContentDescription("Archive, change").assertWidthIsEqualTo(320.dp)
     }
 }

@@ -4,6 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,7 +31,8 @@ import org.jetbrains.compose.resources.DrawableResource
  * A [ValueToken] the user taps to change its [value]: the token, a thin divider, and a down
  * chevron in one outline. The whole picker is one 48 dp tall target that calls [onClick], where
  * the app opens its choices, for example a folder sheet. Screen readers hear "[keyword] [value],
- * change". A disabled picker dims and ignores taps.
+ * change". A disabled picker dims and ignores taps. It fits its content; with
+ * `Modifier.fillMaxWidth()` the outline fills the width and the chevron sits at its end.
  */
 @Composable
 public fun ValuePicker(
@@ -43,16 +46,22 @@ public fun ValuePicker(
 ) {
     val interactions = remember { MutableInteractionSource() }
     val label = valuePickerLabel(value, keyword)
-    Box(
+    BoxWithConstraints(
         modifier
             .heightIn(min = PanelTokens.touchTarget)
             .clickable(interactions, indication = null, enabled = enabled, role = Role.Button, onClick = onClick)
             .clearAndSetSemantics { contentDescription = label },
         contentAlignment = Alignment.Center,
     ) {
+        // A caller that fixes the width, such as with fillMaxWidth, stretches the outline to it.
+        val fill = constraints.hasBoundedWidth && constraints.minWidth == constraints.maxWidth
         CompositionLocalProvider(LocalContentColor provides if (enabled) OtusColors.text1 else OtusColors.text3) {
-            ValueOutline(Modifier.controlPressFeedback(interactions, RoundedCornerShape(SettingTokens.valueRadius))) {
-                ValueLabel(value, keyword, avatar, icon, enabled)
+            ValueOutline(
+                Modifier
+                    .then(if (fill) Modifier.fillMaxWidth() else Modifier)
+                    .controlPressFeedback(interactions, RoundedCornerShape(SettingTokens.valueRadius)),
+            ) {
+                ValueLabel(value, keyword, avatar, icon, enabled, fill)
                 Box(Modifier.size(PanelTokens.borderWidth, PanelTokens.iconSize).background(OtusColors.bgLight))
                 Symbol(Res.drawable.symbol_expand_more)
             }

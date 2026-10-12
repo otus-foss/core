@@ -52,7 +52,10 @@ internal fun ValueOutline(
     )
 }
 
-/** The keyword, avatar or icon, and value inside a [ValueOutline]. A disabled label dims its keyword. */
+/**
+ * The keyword, avatar or icon, and value inside a [ValueOutline]. A disabled label dims its
+ * keyword. A [fill] label's value takes the outline's spare width.
+ */
 @Composable
 internal fun RowScope.ValueLabel(
     value: String,
@@ -60,6 +63,7 @@ internal fun RowScope.ValueLabel(
     avatar: ChipAvatar?,
     icon: DrawableResource?,
     enabled: Boolean = true,
+    fill: Boolean = false,
 ) {
     keyword?.let {
         Text(
@@ -74,7 +78,7 @@ internal fun RowScope.ValueLabel(
     icon?.let { Symbol(it, size = SummaryTokens.avatarSize) }
     Text(
         value,
-        Modifier.weight(1f, fill = false),
+        Modifier.weight(1f, fill = fill),
         fontSize = SettingTokens.titleSize,
         lineHeight = SettingTokens.titleLineHeight,
         maxLines = 1,
