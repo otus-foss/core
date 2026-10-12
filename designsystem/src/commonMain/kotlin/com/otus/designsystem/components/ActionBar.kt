@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ProvideTextStyle
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -35,7 +36,9 @@ import com.otus.designsystem.theme.panelTextStyle
  * The bottom bar of a page: up to [MAX_SECONDARY] icon-only [secondary] actions in a group, and
  * the [primary] action in a shell beside it. Without a [context] the primary fills the shell with
  * its label; with one, it shrinks to its icon at the shell's end and the context fills the rest.
- * The whole shell then runs the primary.
+ * The whole shell then runs the primary. A [minimized] bar shows only the primary's icon, in a
+ * circle at the bar's end; see [MinimizedBar]. A minimized bar that is [hidden], such as while a
+ * search field is about to take the keyboard, scales out in place; a full bar ignores [hidden].
  */
 @Composable
 public fun ActionBar(
@@ -43,8 +46,14 @@ public fun ActionBar(
     modifier: Modifier = Modifier,
     secondary: List<BarAction> = emptyList(),
     context: BarContext? = null,
+    minimized: Boolean = false,
+    hidden: Boolean = false,
 ) {
     require(secondary.size <= MAX_SECONDARY) { "An action bar holds at most $MAX_SECONDARY secondary actions" }
+    if (minimized) {
+        MinimizedBar(primary, context, hidden, modifier)
+        return
+    }
     ProvideTextStyle(panelTextStyle()) {
         Row(
             modifier.fillMaxWidth(),
@@ -106,7 +115,7 @@ public fun ActionBarHost(
                     .onSizeChanged { barHeight = it.height }
                     .windowInsetsPadding(WindowInsets.navigationBars.union(WindowInsets.ime))
                     .padding(ActionBarTokens.barInset),
-            ) { it() }
+            ) { CompositionLocalProvider(LocalHostedBar provides true) { it() } }
         }
     }
 }
