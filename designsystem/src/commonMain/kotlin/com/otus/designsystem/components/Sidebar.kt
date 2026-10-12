@@ -114,7 +114,7 @@ public fun Sidebar(
             Modifier
                 .fillMaxSize()
                 .graphicsLayer { alpha = state.progress }
-                .background(OtusColors.bgDark.copy(alpha = SidebarTokens.SCRIM_ALPHA))
+                .background(OtusColors.scrim.copy(alpha = SidebarTokens.SCRIM_ALPHA))
                 .semantics { contentDescription = "Close navigation" }
                 .clickable(
                     remember { MutableInteractionSource() },

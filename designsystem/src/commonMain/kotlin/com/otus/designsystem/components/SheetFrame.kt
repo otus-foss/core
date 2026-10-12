@@ -133,7 +133,7 @@ private fun SheetScrim(
     Box(
         Modifier
             .fillMaxSize()
-            .background(OtusColors.bgDark.copy(alpha = SheetTokens.SCRIM_ALPHA * visible))
+            .background(OtusColors.scrim.copy(alpha = SheetTokens.SCRIM_ALPHA * visible))
             .semantics { contentDescription = "Dismiss $title" }
             .clickable(remember { MutableInteractionSource() }, indication = null, onClick = onClick),
     )

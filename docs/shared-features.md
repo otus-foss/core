@@ -14,7 +14,12 @@ The app supplies its own `DateFormatPreferenceStore`. Selection writes the store
 updating the displayed preference; an unsuccessful write does not report a saved change.
 The appearance screen offers date formatting as a flat `SettingRow` with the pattern in a
 `ValueButton`; tapping it opens a `ChoiceSheet`. Its trailing `content` slot places app-owned
-sections below it, such as Mail's swipe actions. Dark mode remains the only theme.
+sections below it, such as Mail's swipe actions. Its Look section starts with a Theme row that
+shows the theme's name and accent and opens `ThemeSettingsScreen`, and an app adds its own rows
+to the section through the `look` slot. `ThemeSettingsScreen` shows the app's preview, the four
+themes as cards, the accent presets with a custom color sheet, and the three accent shades. A
+choice applies at once and is written to the app's `ThemePreferenceStore` first. Pass
+`ThemeSettingsState.palette` to `OtusTheme`.
 
 ## Accounts
 

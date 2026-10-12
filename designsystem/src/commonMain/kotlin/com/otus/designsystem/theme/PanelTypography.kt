@@ -25,12 +25,13 @@ public fun panelTextStyle(): TextStyle {
     val semiBold = Font(Res.font.figtree_semibold, FontWeight.SemiBold)
     val bold = Font(Res.font.figtree_bold, FontWeight.Bold)
     val black = Font(Res.font.figtree_black, FontWeight.Black)
-    return remember(regular, semiBold, bold, black) {
+    val color = OtusColors.text1
+    return remember(regular, semiBold, bold, black, color) {
         TextStyle(
             fontFamily = FontFamily(regular, semiBold, bold, black),
             fontSize = PanelTokens.textSize,
             lineHeight = PanelTokens.lineHeight,
-            color = OtusColors.text1,
+            color = color,
         )
     }
 }

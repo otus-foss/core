@@ -32,6 +32,8 @@ internal object SettingTokens {
     val valueRadius: Dp = 8.dp
     val valuePaddingHorizontal: Dp = 12.dp
     val valuePaddingVertical: Dp = 8.dp
+    val valuePaddingSwatch: Dp = 8.dp
+    val valueSwatchGap: Dp = 8.dp
     val valueMaxWidth: Dp = 180.dp
 
     val switchWidth: Dp = 52.dp

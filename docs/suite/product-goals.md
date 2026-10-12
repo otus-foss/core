@@ -65,7 +65,7 @@ Both apps expose the same portable avatar service for senders and future attende
 and external contact URLs are configurable service options, enabled for Mail inbox senders, with
 generated initials always available.
 
-Mail colors are supplied in [mail design foundations](mail-design.md). Both apps use that palette in dark mode only, with text-1 as the default text color. Detailed interaction designs remain open.
+Mail colors are supplied in [mail design foundations](mail-design.md). That palette is the default theme; users can pick Light, Graphite, or Black and any accent (decision 0014). text-1 is the default text color. Detailed interaction designs remain open.
 
 Both apps include reusable date-format choices, locale-aware formatting, and app-private preference
 adapters. Mail uses them for displayed inbox dates and date-filter summaries. Its Settings and

@@ -2,6 +2,28 @@
 
 ## Unreleased
 
+- Add user themes (decision 0014). `ThemeBase` has four themes: `Otus`, `Light`, `Graphite`, and
+  `Black`. `AccentPreset` has seven accents, and `ThemeChoice(base, accent).palette` builds an
+  `OtusPalette`. `accentShades` derives an accent's fill, outline, and text shades and keeps text
+  readable at 4.5:1 on each theme. Otus with Otus blue keeps the original palette exactly.
+- **Breaking:** `OtusColors` tokens are now getters that follow the current palette, and
+  `OtusTheme` takes a `palette`, `OtusPalette.Otus` by default. Apps pass their
+  `ThemeSettingsState.palette`. Code that stored a token in a property must read it when drawing
+  instead. `CalendarTokens.monthBackground` and `alternateMonthBackground` are now getters.
+- Add `OtusColors.scrim`; sheets, dialogs, and the sidebar dim the page with it, so the scrim
+  stays dark in the Light theme.
+- Add the color helpers `hslColor`, `toHsl`, `contrast`, `toHex`, and `parseHexColor`, and
+  `ThemeTokens`.
+- Add `ColorSwatch`, `AddSwatch`, `ColorSlider`, and `ThemeCard`, and the symbols
+  `symbol_palette`, `symbol_menu`, `symbol_swipe_left`, `symbol_swipe_right`, `symbol_view_agenda`,
+  `symbol_check_circle`, `symbol_calendar_month`, and `symbol_collapse_content` (Material Symbols
+  Rounded, Apache 2.0).
+- `ValueButton` drops its down chevron and takes an optional `swatch` color shown as a dot
+  before the value.
+- Add `ThemeSettingsState`, `ThemePreferenceStore`, and `ThemeSettingsScreen` to `settings`.
+- **Breaking:** `AppearanceSettingsScreen` takes `theme` and `onTheme` and opens with a Look
+  section: a Theme row, the app's rows from the new `look` slot, and the date format. The Dates
+  section is gone. Apps must pass the new arguments.
 - Fix a crash on Android in every JMAP upload and download, such as saving Sieve rules. URI
   templates now escape the closing brace, which Android's ICU regex engine requires.
 - `PreviewCard` hides its preview from screen readers only when the card is a button, so a
