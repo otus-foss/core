@@ -2,7 +2,6 @@ package com.otus.designsystem.components
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.snap
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,10 +33,10 @@ import androidx.compose.ui.zIndex
 import com.otus.designsystem.elements.Symbol
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_drag_indicator
-import com.otus.designsystem.theme.MotionTokens
+import com.otus.designsystem.theme.MotionSpeed
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.ReorderTokens
+import com.otus.designsystem.theme.motionTween
 
 /**
  * A column whose rows the user reorders by dragging each row's [ReorderableScope.DragHandle]. The
@@ -70,9 +69,10 @@ public fun <T> ReorderableColumn(
             key(itemKey) {
                 val dragged = index == from
                 // Rows snap back into their new places on drop instead of animating from their old ones.
+                val shiftMotion = motionTween<Float>(MotionSpeed.Fast)
                 val shift by animateFloatAsState(
                     if (target == null || dragged) 0f else reorderShift(index, from, target, heights[from], spacingPx),
-                    if (target == null) snap() else tween(ReorderTokens.SHIFT_MILLIS, easing = MotionTokens.standard),
+                    if (target == null) snap() else shiftMotion,
                     label = "Reorder shift",
                 )
                 val scope =

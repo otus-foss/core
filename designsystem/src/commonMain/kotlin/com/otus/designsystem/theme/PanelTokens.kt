@@ -6,7 +6,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 public object PanelTokens {
-    public const val MODE_TRANSITION_MILLIS: Int = 220
     public val touchTarget: Dp = 48.dp
     public val chipHeight: Dp = 36.dp
     public val iconSize: Dp = 20.dp

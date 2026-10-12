@@ -23,8 +23,4 @@ internal object SidebarTokens {
 
     /** A swipe released faster than this, per second, opens or closes the sidebar regardless of position. */
     val flingVelocity = 400.dp
-
-    /** Opening decelerates with [MotionTokens.enter]; closing accelerates away with [MotionTokens.exit]. */
-    const val OPEN_MILLIS = 300
-    const val CLOSE_MILLIS = 220
 }

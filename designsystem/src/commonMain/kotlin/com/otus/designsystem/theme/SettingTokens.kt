@@ -31,5 +31,4 @@ internal object SettingTokens {
     val switchHeight: Dp = 32.dp
     val switchThumb: Dp = 24.dp
     val switchInset: Dp = 4.dp
-    const val SWITCH_MILLIS: Int = 150
 }

@@ -2,7 +2,6 @@ package com.otus.designsystem.elements
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,9 +22,11 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
+import com.otus.designsystem.theme.MotionSpeed
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PanelTokens
 import com.otus.designsystem.theme.RefreshTokens
+import com.otus.designsystem.theme.motionTween
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -48,7 +49,7 @@ public fun RefreshIndicator(
             .background(OtusColors.bgDark, CircleShape)
             .border(PanelTokens.borderWidth, OtusColors.strokeBgDark, CircleShape),
     ) {
-        Crossfade(refreshing, animationSpec = tween(RefreshTokens.FADE_MILLIS)) { spinning ->
+        Crossfade(refreshing, animationSpec = motionTween(MotionSpeed.Quick)) { spinning ->
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 if (spinning) {
                     CircularProgressIndicator(
@@ -67,7 +68,7 @@ public fun RefreshIndicator(
 @Composable
 private fun PullArc(progress: () -> Float) {
     val armed = progress() >= 1f
-    val alpha by animateFloatAsState(if (armed) 1f else RefreshTokens.ARMING_ALPHA)
+    val alpha by animateFloatAsState(if (armed) 1f else RefreshTokens.ARMING_ALPHA, motionTween(MotionSpeed.Quick))
     val arrow = remember { Path() }
     Canvas(Modifier.fillMaxSize()) {
         val arc = ArcValues(progress())

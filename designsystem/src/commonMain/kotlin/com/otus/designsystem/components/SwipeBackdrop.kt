@@ -1,7 +1,6 @@
 package com.otus.designsystem.components
 
 import androidx.compose.animation.core.animate
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.ScrollScope
@@ -24,7 +23,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import com.otus.designsystem.elements.Symbol
-import com.otus.designsystem.theme.MotionTokens
+import com.otus.designsystem.theme.Motion
+import com.otus.designsystem.theme.MotionSpeed
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.SwipeTokens
 import kotlin.math.abs
@@ -97,11 +97,13 @@ private fun Modifier.revealArea(
 
 /**
  * Settles a release by distance alone. Past [threshold], [commit] takes over the row and moves it
- * from where it was released; anything shorter, or a side [commit] declines, returns to rest.
+ * from where it was released; anything shorter, or a side [commit] declines, returns to rest at a
+ * pace set by [motionScale].
  */
 internal fun thresholdFlingBehavior(
     state: AnchoredDraggableState<SwipeAnchor>,
     threshold: Float,
+    motionScale: Float,
     commit: (SwipeAnchor) -> Boolean,
 ): TargetedFlingBehavior =
     object : TargetedFlingBehavior {
@@ -118,7 +120,7 @@ internal fun thresholdFlingBehavior(
             animate(
                 start,
                 end,
-                animationSpec = tween(SwipeTokens.SETTLE_MILLIS, easing = MotionTokens.standard),
+                animationSpec = Motion.tween(MotionSpeed.Relaxed, scale = motionScale),
             ) { value, _ ->
                 previous += scrollBy(value - previous)
                 onRemainingDistanceUpdated(end - previous)

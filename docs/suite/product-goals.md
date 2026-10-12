@@ -48,11 +48,15 @@ reusable visual compositions are developed in Meta. Mail connects JMAP accounts 
 be created, renamed, nested, and deleted; messages can be moved between them. Rules that file
 arriving mail into folders run on the server as one Sieve script (RFC 9661) where the server
 supports it; see the [Mail folders guide](https://github.com/reazndev/otus-mail/blob/main/docs/folders.md).
-Messages can be marked read or unread, flagged, archived, trashed, and moved, from an open
-message or by swiping its row; Appearance & behavior chooses each swipe and whether opening a
+Messages can be marked read or unread, flagged, archived, trashed, filed as spam, and moved, from
+an open message, a selection, or by swiping a row; Appearance & behavior chooses each swipe and whether opening a
 message marks it read. An optional Read later switch, off by default, gives each account whose
 server allows it an ordinary folder named Read later, with a button and swipe that add mail to it
 while it stays in the inbox. Message rows name the other folders a message is in as label pills.
+An open message is a page over the list, with an action bar at the bottom and a menu for the
+other actions. Long-pressing rows selects them, and the same bar acts on the selection.
+Appearance & behavior chooses each bar's buttons; see the
+[Mail action bar guide](https://github.com/reazndev/otus-mail/blob/main/docs/action-bar.md).
 Settings pages use flat rows, choice sheets, and confirmation dialogs from
 Meta's design system. Sync and sending are not
 implemented yet. No sample mail is shipped; populated-list validation uses test-only fixtures. Calendar retains its welcome screen. Full synchronization, calendar workflows, and contact management remain goals. Mail can now look up

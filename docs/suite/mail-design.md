@@ -101,13 +101,65 @@ Figma components (review `39:2`). The approved joined month navigation (`40:14`)
 implemented in Mail: one outlined capsule, a center month/year pill, and separate arrow targets. See
 [Mail selection sheets](https://github.com/reazndev/otus-mail/blob/main/docs/selection-sheets.md) for behavior and validation.
 
+## Action bar
+
+The spec times the primary's collapse into a context at 220 ms. On the device this felt slow, so
+at the user's request it runs at `MotionSpeed.Fast`, 160 ms. The context still fades in after 40%
+of the width animation.
+
+The supplied action bar spec arrived without its first section, which held the dimensions and
+API. Only two sizes come from its text: the 62 dp bar height and the 60 dp collapsed primary
+action. The other sizes in `ActionBarTokens` were measured from the spec's U2 image. They are app
+decisions, not verified Figma values, and no Figma frame for the bar has been inspected.
+
+| Property | Value |
+| --- | --- |
+| Gap between group and shell | 8 dp |
+| Corner radius | 22 dp, the panel radius |
+| Group horizontal padding | 7 dp |
+| Gap between secondary slots | 2 dp |
+| Symbol size | 24 dp |
+| Label inset, without context | 20 dp |
+| Context inset | 12 dp |
+| Token size | 36 dp |
+| Gap after the token | 10 dp |
+| Avatar and count overlap | 12 dp |
+| Ring around the count | 2 dp |
+| Date token radius | 8 dp |
+| Title text | 18 sp |
+| Subtitle text | 14 sp |
+
+The group and shell use `bg-dark` with a `stroke-bg-dark` border. The primary action is
+`accent-dark` with an `accent-regular` border, and a disabled one is `bg-dark` with a `stroke-bg-dark` border. Selected list rows
+use an `accent-dark` tint. The palette is unchanged.
+
 ## Motion
 
-Both apps provide the same named cubic Bézier curves in `MotionTokens`: standard
-(0.4, 0, 0.2, 1), enter (0.2, 0, 0, 1), and exit (0.4, 0, 1, 1). These are app motion
-decisions, not verified Figma motion values. Keep the independent implementations aligned.
+Every animation uses Meta's `Motion` API: three cubic Bézier curves in `MotionCurve`, four
+speeds in `MotionSpeed`, and a global speed multiplier in `LocalMotionScale`. The curves are
+standard (0.4, 0, 0.2, 1), enter (0.2, 0, 0, 1), and exit (0.4, 0, 1, 1). The curves and speeds
+are app motion decisions, not verified Figma motion values. The
+[design system guide](../designsystem.md#motion) lists them and shows how to use them.
+
+Rules for both apps:
+
+- Animate with `Motion.tween(speed, curve)` or `motionTween(speed, curve)`, or use
+  `Motion.millis(speed)` for a spec that is not a tween. Every animation respects
+  `LocalMotionScale`.
+- Never add a raw duration constant, a `tween` with a literal duration, a new
+  `CubicBezierEasing`, or an animation that falls back to a Compose default spec.
+- Pick the speed by what moves. `Quick` is feedback on touch, `Fast` is a small change in place,
+  `Normal` is panels, sheets, and text, and `Relaxed` is a large surface such as the sidebar or a
+  settling row.
+- Pick the curve by direction. `Standard` is the default, `Enter` is for things that arrive, and
+  `Exit` is for things that leave.
+- To make everything faster or slower, change `LocalMotionScale`. Do not edit the speeds.
+
+Mail follows these rules. Calendar still has its own motion code and adopts `Motion` when it
+moves to Meta's design system.
 
 The reusable `AnimatedText` element slides and fades between labels. Mail uses it for the
 date-picker month/year capsule: later months move up, earlier months move down, and year text
-changes only across years. Incoming text takes 260 ms; outgoing text takes 180 ms.
+changes only across years. Incoming text arrives at `Normal` speed with the enter curve, 240 ms;
+outgoing text leaves at `Fast` speed with the exit curve, 160 ms.
 See [Mail motion](https://github.com/reazndev/otus-mail/blob/main/docs/motion.md) and [Calendar motion](https://github.com/reazndev/otus-calendar/blob/main/docs/motion.md).
