@@ -26,6 +26,7 @@
 - `Avatar` takes `fill`, which replaces the `colorIndex` fill.
 - `SettingToggleRow` takes an optional `icon`, as `SettingRow` does.
 - Add the `symbol_all_inbox` Material Symbol.
+- Add `symbol_auto_filter`, a funnel with a sparkle, for rules that sort mail automatically.
 - Breaking: `Motion`, `MotionSpeed`, `MotionCurve`, and `LocalMotionScale` replace
   `MotionTokens`, and every animation in the design system now uses them.
   `Motion.millis(speed, scale)` returns `240 ms / (factor × scale)`, rounded.
