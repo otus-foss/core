@@ -14,6 +14,7 @@
 
 - [Architecture](architecture.md): module ownership, planned extraction, and dependency rules.
 - [JMAP](jmap.md): the `jmap` module's API, security rules, protocol coverage, and checks.
+- [Push subscriptions](push.md): the `push` module that keeps JMAP push subscriptions current.
 - [Date formatting](dateformat.md): the `dateformat` module's choices, API, and storage.
 - [Avatars](avatar.md): the `avatar` module's lookup order, caching, and privacy limits.
 - [Shared features](shared-features.md): settings and JMAP account setup modules.
