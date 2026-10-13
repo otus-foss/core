@@ -32,10 +32,14 @@ internal data class PrimaryFace(
     val label: String,
 )
 
-/** What the frontmost bar shows: its primary's [face], which swaps as it changes, and its [context]. */
+/**
+ * What the frontmost bar shows: its primary's [face], which swaps as it changes, and its [context].
+ * [inFront] says whether this bar is the frontmost hosted bar itself.
+ */
 internal class FrontBar(
     val face: Transition<PrimaryFace>,
     val context: BarContext?,
+    val inFront: Boolean,
 )
 
 /**
@@ -66,7 +70,11 @@ internal fun rememberFrontBar(
         onDispose { FrontBars.slots -= slot }
     }
     state.targetState = face
-    return FrontBar(rememberTransition(state, label = "Primary face"), if (front != null) front.context else context)
+    return FrontBar(
+        rememberTransition(state, label = "Primary face"),
+        if (front != null) front.context else context,
+        inFront = hosted && FrontBars.slots.lastOrNull() === slot,
+    )
 }
 
 /** Whether a bar sits in an [ActionBarHost], so it takes part in [FrontBars]. */
@@ -86,7 +94,14 @@ internal fun Transition<PrimaryFace>.Swapping(
     val leave = motionTween<Float>(MotionSpeed.Quick, MotionCurve.Exit)
     AnimatedContent(
         modifier,
-        transitionSpec = { (fadeIn(arrive) + scaleIn(arrive)) togetherWith (fadeOut(leave) + scaleOut(leave)) },
+        // No size transform: the content follows its container at once, such as a label in a widening bar.
+        transitionSpec = {
+            (
+                fadeIn(
+                    arrive,
+                ) + scaleIn(arrive)
+            ) togetherWith (fadeOut(leave) + scaleOut(leave)) using null
+        },
         contentAlignment = contentAlignment,
     ) { content(it) }
 }
