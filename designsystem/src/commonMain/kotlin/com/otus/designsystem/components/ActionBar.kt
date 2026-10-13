@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ProvideTextStyle
 import androidx.compose.runtime.Composable
@@ -24,6 +25,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import com.otus.designsystem.elements.BarIconButton
@@ -31,14 +34,17 @@ import com.otus.designsystem.theme.ActionBarTokens
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PanelTokens
 import com.otus.designsystem.theme.panelTextStyle
+import kotlin.math.roundToInt
 
 /**
  * The bottom bar of a page: up to [MAX_SECONDARY] icon-only [secondary] actions in a group, and
  * the [primary] action in a shell beside it. Without a [context] the primary fills the shell with
  * its label; with one, it shrinks to its icon at the shell's end and the context fills the rest.
- * The whole shell then runs the primary. A [minimized] bar shows only the primary's icon, in a
- * circle at the bar's end; see [MinimizedBar]. A minimized bar that is [hidden], such as while a
- * search field is about to take the keyboard, scales out in place; a full bar ignores [hidden].
+ * The whole shell then runs the primary. A bar that takes over from another, such as a page's bar
+ * opening over the list's, moves its shell and action from where the other drew them in one motion;
+ * see [BarEntry]. A [minimized] bar shows only the primary's icon, in a circle at the bar's end;
+ * see [MinimizedBar]. A minimized bar that is [hidden], such as while a search field is about to
+ * take the keyboard, scales out in place; a full bar ignores [hidden].
  */
 @Composable
 public fun ActionBar(
@@ -54,14 +60,40 @@ public fun ActionBar(
         MinimizedBar(primary, context, hidden, modifier)
         return
     }
+    val front = rememberFrontBar(primary, context)
+    val entry = rememberBarEntry(front)
     ProvideTextStyle(panelTextStyle()) {
-        Row(
+        Layout(
+            listOf(
+                { SecondaryGroup(secondary) },
+                { PrimaryShell(primary, context, front, entry) },
+            ),
             modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(ActionBarTokens.gap),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            if (secondary.isNotEmpty()) SecondaryGroup(secondary)
-            PrimaryShell(primary, context, Modifier.weight(1f))
+        ) { (groups, shells), constraints ->
+            val width = constraints.maxWidth
+            val gap = ActionBarTokens.gap.roundToPx()
+            val group = groups.single()
+            val ownGroup =
+                if (secondary.isEmpty()) {
+                    0
+                } else {
+                    group.maxIntrinsicWidth(ActionBarTokens.height.roundToPx()) +
+                        gap
+                }
+            val shellWidth = entry.blend((width - ownGroup).toFloat()) { it.shellWidth.toFloat() }.roundToInt()
+            val shell = shells.single().measure(constraints.copy(minWidth = shellWidth, maxWidth = shellWidth))
+            // The group ends one gap before the shell, also while the shell moves in.
+            val groupWidth = width - shellWidth - gap
+            val placedGroup =
+                group
+                    .takeIf {
+                        groupWidth > 0
+                    }?.measure(constraints.copy(minWidth = groupWidth, maxWidth = groupWidth))
+            val height = maxOf(shell.height, placedGroup?.height ?: 0)
+            layout(width, height) {
+                placedGroup?.placeRelative(0, (height - placedGroup.height) / 2)
+                shell.placeRelative(width - shellWidth, (height - shell.height) / 2)
+            }
         }
     }
 }
@@ -72,23 +104,31 @@ public const val MAX_SECONDARY: Int = 3
 @Composable
 private fun SecondaryGroup(actions: List<BarAction>) {
     val shape = RoundedCornerShape(ActionBarTokens.radius)
-    Row(
+    // The bar sets the group's width; while it moves in, the icons keep their places and clip.
+    Box(
         Modifier
             .height(ActionBarTokens.height)
+            .clip(shape)
             .background(OtusColors.bgDark, shape)
-            .border(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape)
-            .padding(horizontal = ActionBarTokens.groupPadding),
-        horizontalArrangement = Arrangement.spacedBy(ActionBarTokens.slotGap),
-        verticalAlignment = Alignment.CenterVertically,
+            .border(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape),
     ) {
-        actions.forEach {
-            BarIconButton(
-                it.label,
-                it.symbol,
-                it.onClick,
-                enabled = it.enabled,
-                mirrorInRtl = it.mirrorInRtl,
-            )
+        Row(
+            Modifier
+                .align(Alignment.CenterStart)
+                .wrapContentWidth(Alignment.Start, unbounded = true)
+                .padding(horizontal = ActionBarTokens.groupPadding),
+            horizontalArrangement = Arrangement.spacedBy(ActionBarTokens.slotGap),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            actions.forEach {
+                BarIconButton(
+                    it.label,
+                    it.symbol,
+                    it.onClick,
+                    enabled = it.enabled,
+                    mirrorInRtl = it.mirrorInRtl,
+                )
+            }
         }
     }
 }
