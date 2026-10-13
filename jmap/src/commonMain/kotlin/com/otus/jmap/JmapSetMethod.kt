@@ -36,27 +36,39 @@ public class SetMethod(
             extra.forEach { (key, value) -> put(key, value) }
         }
 
-    override fun decode(arguments: JsonObject): SetResult {
-        val dto = JmapJson.decodeFromJsonElement(SetDto.serializer(), arguments)
-        val result =
-            SetResult(
-                oldState = dto.oldState,
-                newState = dto.newState,
-                created = dto.created.orEmpty(),
-                updated = dto.updated.orEmpty(),
-                destroyed = dto.destroyed.orEmpty(),
-                notCreated = dto.notCreated.orEmpty(),
-                notUpdated = dto.notUpdated.orEmpty(),
-                notDestroyed = dto.notDestroyed.orEmpty(),
-            )
-        result.validateOutcomes(create.keys, update.keys, destroy)
-        return result
-    }
+    override fun decode(arguments: JsonObject): SetResult =
+        decodeSetResult(arguments, create.keys, update.keys, destroy, hasState = true)
+}
+
+/** Decodes a `/set` response. Types without state, such as `PushSubscription`, pass [hasState] false. */
+internal fun decodeSetResult(
+    arguments: JsonObject,
+    creations: Set<String>,
+    updates: Set<String>,
+    destructions: List<String>,
+    hasState: Boolean,
+): SetResult {
+    val dto = JmapJson.decodeFromJsonElement(SetDto.serializer(), arguments)
+    require(!hasState || dto.newState != null) { "set response has no newState" }
+    val result =
+        SetResult(
+            oldState = dto.oldState,
+            newState = dto.newState.orEmpty(),
+            created = dto.created.orEmpty(),
+            updated = dto.updated.orEmpty(),
+            destroyed = dto.destroyed.orEmpty(),
+            notCreated = dto.notCreated.orEmpty(),
+            notUpdated = dto.notUpdated.orEmpty(),
+            notDestroyed = dto.notDestroyed.orEmpty(),
+        )
+    result.validateOutcomes(creations, updates, destructions)
+    return result
 }
 
 /** The outcome of a `/set` call. Each object succeeds or fails on its own. */
 public data class SetResult(
     val oldState: String?,
+    /** Empty for `PushSubscription/set`, which has no state (RFC 8620, section 7.2.2). */
     val newState: String,
     /** Server-set properties of each created object, keyed by creation id; they include `id`. */
     val created: Map<String, JsonObject>,
@@ -90,7 +102,7 @@ public data class SetError(
 @Serializable
 private data class SetDto(
     val oldState: String? = null,
-    val newState: String,
+    val newState: String? = null,
     val created: Map<String, JsonObject>? = null,
     val updated: Map<String, JsonObject?>? = null,
     val destroyed: List<String>? = null,

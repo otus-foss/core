@@ -42,6 +42,12 @@ It moved here from otus-mail at version 0.1.0.
   IDs and creation references resolved within the same method. Additional server updates are
   allowed; conflicting success/error outcomes are rejected. References resolved in earlier
   methods remain server-validated because the decoder does not have that creation-ID map.
+- Push (section 7): `PushSubscriptionSetMethod` creates, verifies, and destroys subscriptions, and
+  `PushSubscriptionGetMethod` lists them. `NewPushSubscription` takes the push URL, which must be
+  https, and the Web Push `PushKeys`. These calls have no account and no state, so the results'
+  `state` and `newState` are empty. `PushMessage.decode` reads a push body into a `StateChange` or a
+  `Verification`, and returns null for an unknown `@type`. `JmapSession.vapidPublicKey` reads the
+  key a server advertises under RFC 9749. See [decision 0015](decisions/0015-push-notifications.md).
 - `QueryResult.position` and `total` use `Long` and nullable `Long`, respectively, within
   RFC 8620's range of 0 through 2^53-1. Version 0.4.0 changes these from `Int` and nullable `Int`;
   consumers must rebuild and check bounds before converting counters to narrower types.
@@ -92,7 +98,11 @@ only), OAuth, and sharing logins between the two installed apps.
 | RFC 7617 | Basic credentials; a colon in the username is rejected | `JmapLoginTest` |
 | 1.3, 5.5 | Query counters support the full unsigned 53-bit range | `JmapDecodingTest` |
 
-Not implemented yet: `/queryChanges`, `/copy`, Blob/upload (RFC 9404), push (section 7), and
+| 7.1, 7.2 | `StateChange` and `PushVerification` messages; `PushSubscription/get` and `/set` without an account or state; https push URLs | `JmapPushTest` |
+| RFC 9749 | The VAPID public key from the session | `JmapPushTest` |
+
+Not implemented yet: `/queryChanges`, `/copy`, Blob/upload (RFC 9404), the EventSource stream
+(section 7.3), and
 request limits such as `maxCallsInRequest`. `maxObjectsInSet` is read, and Mail batches large
 moves within it.
 
