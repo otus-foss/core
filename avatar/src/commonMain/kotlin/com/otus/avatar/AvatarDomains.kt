@@ -7,19 +7,53 @@ internal fun isAvatarEmail(email: String): Boolean =
 /** Conservative ASCII hostname handling. IDNs and internal hosts retain their local fallback. */
 public fun avatarIconDomain(email: String): String? {
     if (!isAvatarEmail(email)) return null
-    val domain = email.substringAfter('@').lowercase()
-    return domain.takeIf(::isPublicAvatarHost)
+    return email.substringAfter('@').takeIf(::isPublicAvatarHost)?.lowercase()
 }
 
+/**
+ * The only host check before every public avatar request, including redirects and advertised icon links,
+ * so it fails closed: absolute, percent-encoded, and non-ASCII names are refused rather than normalized.
+ * It sees names only; a public name whose DNS answer is a private address still passes.
+ */
 internal fun isPublicAvatarHost(host: String): Boolean {
-    val labels = host.lowercase().split('.')
-    return labels.size > 1 &&
-        labels.all {
-            it.isNotEmpty() && it.length <= MAX_LABEL_LENGTH &&
-                it.first().isLetterOrDigit() && it.last().isLetterOrDigit() &&
-                it.all { character -> character in 'a'..'z' || character in '0'..'9' || character == '-' }
-        } && labels.last().any { it in 'a'..'z' } && labels.last() !in INTERNAL_SUFFIXES
+    val labels = host.split('.')
+    val topLevel = labels.last().lowercase()
+    return labels.size > 1 && labels.all(::isAsciiLabel) && isTopLevelLabel(topLevel) && topLevel !in PRIVATE_SUFFIXES
 }
+
+/** Checked before lowercasing, which turns some non-ASCII letters, such as the Kelvin sign, into ASCII. */
+private fun isAsciiLabel(label: String): Boolean =
+    label.length in 1..MAX_LABEL_LENGTH && label.first() != '-' && label.last() != '-' &&
+        label.all { it in 'a'..'z' || it in 'A'..'Z' || it in '0'..'9' || it == '-' }
+
+/**
+ * Real top-level domains are alphabetic or IDN A-labels. Resolvers read a numeric last label as IPv4,
+ * so this refuses forms such as `127.1` and `0x7f.0x1`; IPv6 literals already fail the label check.
+ */
+private fun isTopLevelLabel(label: String): Boolean = label.all { it in 'a'..'z' } || label.startsWith("xn--")
 
 private const val MAX_LABEL_LENGTH = 63
-private val INTERNAL_SUFFIXES = setOf("local", "localhost", "internal", "test", "invalid")
+
+/**
+ * Top-level labels of special-use names (RFC 6761, 6762, 7686, 8375, 9476), the infrastructure domain
+ * `arpa`, and widely used private top-level names. None hosts a public website; a name under them that
+ * resolves at all usually points into the user's network.
+ */
+private val PRIVATE_SUFFIXES =
+    setOf(
+        "alt",
+        "arpa",
+        "corp",
+        "example",
+        "home",
+        "internal",
+        "intranet",
+        "invalid",
+        "lan",
+        "local",
+        "localdomain",
+        "localhost",
+        "onion",
+        "private",
+        "test",
+    )

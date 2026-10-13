@@ -54,6 +54,47 @@ class JmapDownloadTest {
         }
 
     @Test
+    fun theCallersFileNameFillsTheTemplatePercentEncoded() =
+        runTest {
+            val paths = mutableListOf<String>()
+            val client =
+                JmapClient(
+                    MockEngine { request ->
+                        paths += request.url.encodedPath
+                        respond(byteArrayOf(1), headers = pngHeaders)
+                    },
+                )
+            val target = session("/download/{accountId}/{blobId}/{name}?type={type}")
+            client.download(target, ADA, "contacts", "rules", "application/sieve", 10, name = "my rules/v1.sieve")
+            client.download(target, ADA, "contacts", "rules", "application/sieve", 10)
+            assertEquals(
+                listOf("/download/contacts/rules/my%20rules%2Fv1.sieve", "/download/contacts/rules/download"),
+                paths,
+            )
+        }
+
+    @Test
+    fun connectionDownloadsPassTheFileNameThrough() =
+        runTest {
+            val paths = mutableListOf<String>()
+            val client =
+                JmapClient(
+                    MockEngine { request ->
+                        if (request.url.encodedPath == "/jmap/session") {
+                            json(DOWNLOAD_SESSION)
+                        } else {
+                            paths += request.url.encodedPath
+                            respond(byteArrayOf(1), headers = pngHeaders)
+                        }
+                    },
+                )
+            val connection = JmapConnection(client, "https://mail.example.org/jmap/session", ADA)
+            connection.download("d1", "rules", "application/sieve", 10, name = "rules.sieve")
+            connection.download("d1", "rules", "application/sieve", 10)
+            assertEquals(listOf("/download/d1/rules/rules.sieve", "/download/d1/rules/download"), paths)
+        }
+
+    @Test
     fun untrustedDownloadHostReceivesNoRequestOrCredentials() =
         runTest {
             val client = JmapClient(MockEngine { error("Untrusted host must not receive a request") })
@@ -91,3 +132,8 @@ class JmapDownloadTest {
             }
         }
 }
+
+private const val DOWNLOAD_SESSION = """
+{"capabilities":{"urn:ietf:params:jmap:core":{}},"accounts":{"d1":{"name":"Ada"}},"apiUrl":"/jmap/",
+ "downloadUrl":"/download/{accountId}/{blobId}/{name}?type={type}"}
+"""

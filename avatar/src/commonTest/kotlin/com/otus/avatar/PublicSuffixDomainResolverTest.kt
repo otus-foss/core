@@ -32,9 +32,9 @@ class PublicSuffixDomainResolverTest {
 
     @Test
     fun unknownSuffixesUseTheDefaultRuleAndUnsafeHostsAreRejected() {
-        assertEquals("company.example", rules.registrableDomain("mail.company.example"))
+        assertEquals("company.org", rules.registrableDomain("mail.company.org"))
         assertEquals("openai.com", rules.registrableDomain("EMAIL.OPENAI.COM"))
-        listOf("localhost", "a.internal", "127.0.0.1", "a..com", "a.com/path")
+        listOf("localhost", "a.internal", "printer.lan", "nas.home.arpa", "127.0.0.1", "a..com", "a.com/path")
             .forEach { assertNull(rules.registrableDomain(it)) }
     }
 

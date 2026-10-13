@@ -28,10 +28,11 @@ internal class JmapDownloads(
         blobId: String,
         mediaType: String,
         maxBytes: Long,
+        name: String,
     ): JmapBlob {
         require(maxBytes > 0 && maxBytes <= policy.maxResponseBytes)
         require(accountId in session.accounts)
-        val target = downloadTarget(session, accountId, blobId, mediaType)
+        val target = downloadTarget(session, accountId, blobId, mediaType, name)
         return try {
             http
                 .prepareGet(target) {
@@ -54,12 +55,16 @@ internal class JmapDownloads(
         accountId: String,
         blobId: String,
         mediaType: String,
+        name: String,
     ): Url {
         val template = session.downloadUrl ?: throw JmapException.NotJmap("no blob download endpoint")
-        val values = mapOf("accountId" to accountId, "blobId" to blobId, "type" to mediaType, "name" to "avatar")
+        val values = mapOf("accountId" to accountId, "blobId" to blobId, "type" to mediaType, "name" to name)
         return urls.trustedTarget(session, expandUriTemplate(template, values))
     }
 }
+
+/** The `{name}` for a download whose caller has no file name (RFC 8620, section 6.2). */
+internal const val DEFAULT_DOWNLOAD_NAME = "download"
 
 private fun checkBlobSize(
     size: Long,

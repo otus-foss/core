@@ -22,6 +22,9 @@ import io.ktor.http.Url
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
@@ -38,9 +41,13 @@ public class JmapAccountRepository(
     private val service: AccountService,
     private val onAccountChanged: suspend (String) -> Unit = {},
 ) : AccountRepository {
+    /** Asks every login's server at once, so the list waits for the slowest server, not for each in turn. */
     override suspend fun accounts(): List<ConnectedAccount> =
-        storage { logins.logins() }.map { login ->
-            login.toConnected().copy(emailAddresses = identityAddresses(login, service, connections))
+        coroutineScope {
+            storage { logins.logins() }
+                .map { login ->
+                    async { login.toConnected().copy(emailAddresses = identityAddresses(login, service, connections)) }
+                }.awaitAll()
         }
 
     override suspend fun connect(draft: JmapAccountDraft): ConnectOutcome {

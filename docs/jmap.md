@@ -45,6 +45,10 @@ It moved here from otus-mail at version 0.1.0.
 - `QueryResult.position` and `total` use `Long` and nullable `Long`, respectively, within
   RFC 8620's range of 0 through 2^53-1. Version 0.4.0 changes these from `Int` and nullable `Int`;
   consumers must rebuild and check bounds before converting counters to narrower types.
+- `download(accountId, blobId, mediaType, maxBytes, name)` reads at most `maxBytes` of a blob through
+  the session's `downloadUrl` (section 6.2). `name` fills the template's `{name}`, the file name the
+  server reports in `Content-Disposition`, and defaults to `download`. Template values are
+  percent-encoded, including slashes.
 - `upload(accountId, bytes, mediaType)` stores a blob through the session's `uploadUrl` (section 6.1)
   with the same https and trusted-origin checks as downloads. Redirects are not followed. A blob over
   the advertised `maxSizeUpload` throws `UploadTooLarge` before anything is sent.

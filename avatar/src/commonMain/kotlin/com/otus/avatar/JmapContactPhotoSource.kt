@@ -62,7 +62,15 @@ public class JmapContactPhotoSource(
         external: Boolean,
     ): AvatarImage? {
         if (media.blobId != null && media.mediaType in CONTACT_RASTER_TYPES) {
-            val blob = connection.download(account, media.blobId, requireNotNull(media.mediaType), MAX_AVATAR_BYTES)
+            val mediaType = requireNotNull(media.mediaType)
+            val blob =
+                connection.download(
+                    account,
+                    media.blobId,
+                    mediaType,
+                    MAX_AVATAR_BYTES,
+                    name = AVATAR_DOWNLOAD_NAME,
+                )
             return blob.bytes.takeIf { it.isNotEmpty() && blob.mediaType in CONTACT_RASTER_TYPES }?.let(::AvatarImage)
         }
         val uri = media.uri
@@ -91,4 +99,5 @@ private fun inlineContactImage(uri: String): AvatarImage? {
 }
 
 private const val MAX_INLINE_IMAGE_CHARS = 700_000
+private const val AVATAR_DOWNLOAD_NAME = "avatar"
 private val CONTACT_RASTER_TYPES = setOf("image/png", "image/jpeg", "image/webp")

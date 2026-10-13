@@ -52,6 +52,8 @@ addresses below the account name, omit addresses already used as the name or sig
 wildcard identities such as `*@example.org`. Receiving aliases without an identity are not exposed
 by this method. Addresses refresh when accounts reload and are not persisted. A network, credential,
 or identity error falls back to the saved sign-in and server. Other services skip identity discovery.
+Each saved login's server is asked at the same time, so the list waits only for the slowest one and
+keeps the saved order.
 
 ## Boundaries and checks
 

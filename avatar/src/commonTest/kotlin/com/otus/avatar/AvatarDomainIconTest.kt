@@ -188,7 +188,7 @@ class AvatarDomainIconTest {
                             calls++
                             image
                         },
-                    domains = AvatarDomainResolver { "other.example" },
+                    domains = AvatarDomainResolver { "other.com" },
                     iconFallback =
                         DomainIconSource {
                             calls++

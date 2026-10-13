@@ -12,7 +12,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertSame
 
 class AvatarServiceTest {
-    private val request = AvatarRequest("work", "ada@company.example", "Ada Lovelace")
+    private val request = AvatarRequest("work", "ada@company.com", "Ada Lovelace")
     private val image = AvatarImage(byteArrayOf(1, 2, 3))
 
     @Test
@@ -62,7 +62,7 @@ class AvatarServiceTest {
                 )
             val result = service.resolve(request, AvatarOptions(domainIcons = true))
             assertEquals(
-                listOf("https://company.example/apple-touch-icon.png", "https://company.example/favicon.png"),
+                listOf("https://company.com/apple-touch-icon.png", "https://company.com/favicon.png"),
                 urls,
             )
             assertEquals(AvatarOrigin.Domain, result.origin)
@@ -89,11 +89,11 @@ class AvatarServiceTest {
                     },
                 )
             service.resolve(request)
-            service.resolve(request.copy(email = " ada@COMPANY.EXAMPLE ", name = "Augusta Ada"))
+            service.resolve(request.copy(email = " ada@COMPANY.COM ", name = "Augusta Ada"))
             service.resolve(request.copy(accountKey = "personal"))
             service.resolve(request, AvatarOptions(externalContactImages = true))
-            service.resolve(request.copy(email = "ada+work@company.example"))
-            service.resolve(request.copy(email = "Ada@company.example"))
+            service.resolve(request.copy(email = "ada+work@company.com"))
+            service.resolve(request.copy(email = "Ada@company.com"))
             assertEquals(4, calls.size)
             assertEquals("AA", service.resolve(request.copy(name = "Augusta Ada")).fallback.initials)
         }
@@ -180,13 +180,13 @@ class AvatarServiceTest {
 
     @Test
     fun generatedIdentityIsStableAndInitialsFollowTheCurrentName() {
-        val original = generatedAvatar("Ada Lovelace", "ada@company.example")
-        assertEquals(original.colorIndex, generatedAvatar("Augusta Ada", "ada@company.example").colorIndex)
-        assertEquals(original, generatedAvatar("Ada Lovelace", " ada@COMPANY.EXAMPLE "))
-        assertEquals("A", generatedAvatar("", "ada@company.example").initials)
+        val original = generatedAvatar("Ada Lovelace", "ada@company.com")
+        assertEquals(original.colorIndex, generatedAvatar("Augusta Ada", "ada@company.com").colorIndex)
+        assertEquals(original, generatedAvatar("Ada Lovelace", " ada@COMPANY.COM "))
+        assertEquals("A", generatedAvatar("", "ada@company.com").initials)
         assertEquals("?", generatedAvatar("", "").initials)
-        assertNotEquals(avatarEmailKey("a.da@company.example"), avatarEmailKey("ada@company.example"))
-        assertEquals(original, generatedAvatar("Ada Lovelace", "Ada@Company.Example"))
+        assertNotEquals(avatarEmailKey("a.da@company.com"), avatarEmailKey("ada@company.com"))
+        assertEquals(original, generatedAvatar("Ada Lovelace", "Ada@Company.Com"))
     }
 
     @Test
@@ -195,15 +195,15 @@ class AvatarServiceTest {
             "ada@localhost",
             "ada@127.0.0.1",
             "ada@a.local",
-            "ada@company.example/path",
+            "ada@company.com/path",
             "ada@a..com",
             "ada@-a.com",
-            "ada@@company.example",
+            "ada@@company.com",
             "",
         ).forEach {
             assertNull(avatarIconDomain(it), it)
         }
-        assertEquals("company.example", avatarIconDomain("ada@COMPANY.EXAMPLE"))
+        assertEquals("company.com", avatarIconDomain("ada@COMPANY.COM"))
         assertEquals("proton.me", avatarIconDomain("ada@proton.me"))
         assertEquals("gmail.com", avatarIconDomain("ada@gmail.com"))
         assertEquals("outlook.com", avatarIconDomain("ada@outlook.com"))
