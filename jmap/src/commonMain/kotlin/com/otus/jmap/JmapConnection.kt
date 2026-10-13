@@ -29,12 +29,14 @@ public class JmapConnection(
     /** One request with a single call. */
     public suspend fun <T> call(method: JmapMethod<T>): T = request { call(method) }
 
+    /** Downloads through [JmapClient.download]; [name] is the file name the server gives the blob. */
     public suspend fun download(
         accountId: String,
         blobId: String,
         mediaType: String,
         maxBytes: Long,
-    ): JmapBlob = withSession { client.download(it, auth, accountId, blobId, mediaType, maxBytes) }
+        name: String = DEFAULT_DOWNLOAD_NAME,
+    ): JmapBlob = withSession { client.download(it, auth, accountId, blobId, mediaType, maxBytes, name) }
 
     public suspend fun upload(
         accountId: String,

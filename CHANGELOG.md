@@ -14,6 +14,11 @@
   `HttpAvatarImageLoader` also refuses HTTPS URLs on any port other than 443. Senders at these
   domains keep their initials. Public names that resolve to private addresses still pass; see
   [the avatar guide](docs/avatar.md).
+- `JmapClient.download` and `JmapConnection.download` take a `name`, which fills the download
+  URL's `{name}`, the file name the server reports for the blob (RFC 8620, section 6.2). It
+  defaults to `download`. Every blob used to be requested as `avatar`; callers that pass no name,
+  such as Mail's Sieve script download, now request `download`. `JmapContactPhotoSource` passes
+  `avatar`, so contact-photo requests are unchanged. Existing calls compile unchanged.
 - Fix a crash on Android in every JMAP upload and download, such as saving Sieve rules. URI
   templates now escape the closing brace, which Android's ICU regex engine requires.
 - `PreviewCard` hides its preview from screen readers only when the card is a button, so a
@@ -149,6 +154,10 @@
 - `AccountsState` reloads accounts and calls `onChange` when a connection it was told to cancel
   still saved an account, and leaves `status` at `Idle`. A cancelled account load no longer sets
   `loading` to false while the load that replaced it is still running.
+- `JmapAccountRepository.accounts()` asks every saved login's server for its sending addresses at
+  the same time instead of one after another, so the list waits for the slowest server rather
+  than for each server in turn. Accounts keep their saved order, and a server that fails still
+  falls back to its saved sign-in without affecting the others.
 - `AndroidLoginStore` reports Android Keystore `ProviderException` and `IOException` failures
   like other Keystore errors. `secret` returns `LoginSecret.Unreadable` and `save` throws
   `LoginStoreException`, where both used to throw the raw exception. Concurrent first uses no
