@@ -5,6 +5,11 @@
 - Add `MotionCurve.Reverse`, the standard curve played backward. When a page closes, the action
   bar beneath now moves back on it, and a context that goes away in place uses it too, so both
   replay the way the bar collapsed.
+- Add JMAP push wire types (RFC 8620, section 7, and decision 0015): `PushSubscriptionGetMethod`,
+  `PushSubscriptionSetMethod`, `PushSubscription`, `NewPushSubscription`, `PushKeys`, and
+  `PushMessage` with `StateChange` and `Verification`. `JmapCapability.WEBPUSH_VAPID` and
+  `JmapSession.vapidPublicKey` read the server's VAPID key (RFC 9749). `SetResult.newState` and
+  `GetResult.state` are empty for these state-less calls.
 - Add user themes (decision 0014). `ThemeBase` has four themes: `Otus`, `Light`, `Graphite`, and
   `Black`. `AccentPreset` has seven accents, and `ThemeChoice(base, accent).palette` builds an
   `OtusPalette`. `accentShades` derives an accent's fill, outline, and text shades and keeps text

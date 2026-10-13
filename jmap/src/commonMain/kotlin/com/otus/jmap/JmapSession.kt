@@ -16,6 +16,9 @@ public object JmapCapability {
 
     /** Sieve script management (RFC 9661). */
     public const val SIEVE: String = "urn:ietf:params:jmap:sieve"
+
+    /** The server signs Web Push messages with VAPID (RFC 9749). */
+    public const val WEBPUSH_VAPID: String = "urn:ietf:params:jmap:webpush-vapid"
 }
 
 /**
@@ -46,6 +49,16 @@ public data class JmapSession(
     /** The largest upload the server accepts, in octets (section 2), if the server says. */
     public val maxSizeUpload: Long?
         get() = capabilityObjects[JmapCapability.CORE]?.unsigned("maxSizeUpload")
+
+    /**
+     * The server's VAPID public key (RFC 9749), base64url-encoded P-256. Push services such as
+     * Google's FCM accept pushes only from a server that signs them with this key.
+     */
+    public val vapidPublicKey: String?
+        get() =
+            (capabilityObjects[JmapCapability.WEBPUSH_VAPID]?.get("applicationServerKey") as? JsonPrimitive)
+                ?.takeIf { it.isString && it.content.isNotEmpty() }
+                ?.content
 
     /** The primary account for [capability], else the first account offering it, else null. */
     public fun accountFor(capability: String): String? =

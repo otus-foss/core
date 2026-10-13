@@ -47,6 +47,7 @@ public class GetMethod<T>(
 }
 
 public data class GetResult<T>(
+    /** Empty for `PushSubscription/get`, which has no state (RFC 8620, section 7.2.1). */
     val state: String,
     val list: List<T>,
     val notFound: List<String>,
@@ -142,7 +143,7 @@ public data class ChangesResult(
 )
 
 @Serializable
-private class GetDto(
+internal class GetDto(
     val state: String = "",
     val list: JsonArray,
     val notFound: List<String> = emptyList(),
