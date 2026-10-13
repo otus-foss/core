@@ -25,11 +25,11 @@ class AvatarServiceConcurrencyTest {
                         image
                     },
                 )
-            val slow = async { service.resolve(AvatarRequest("work", "slow@company.example")) }
+            val slow = async { service.resolve(AvatarRequest("work", "slow@company.com")) }
             yield()
             // Covers every former lock stripe: none of these may wait for the slow sender.
             repeat(SENDERS) {
-                assertSame(image, service.resolve(AvatarRequest("work", "person$it@company.example")).image)
+                assertSame(image, service.resolve(AvatarRequest("work", "person$it@company.com")).image)
             }
             assertFalse(slow.isCompleted)
             release.complete(Unit)
@@ -52,7 +52,7 @@ class AvatarServiceConcurrencyTest {
                         image
                     },
                 )
-            val request = AvatarRequest("work", "ada@company.example")
+            val request = AvatarRequest("work", "ada@company.com")
             val owner = async { service.resolve(request) }
             entered.await()
             val waiter = async { service.resolve(request) }
@@ -76,10 +76,10 @@ class AvatarServiceConcurrencyTest {
                 )
             val busy =
                 List(FETCH_LIMIT) { index ->
-                    async { service.resolve(AvatarRequest("work", "busy$index@company.example")) }
+                    async { service.resolve(AvatarRequest("work", "busy$index@company.com")) }
                 }
             yield()
-            val request = AvatarRequest("work", "queued@company.example")
+            val request = AvatarRequest("work", "queued@company.com")
             val queued = async { service.resolve(request) }
             yield()
             assertEquals(0, queuedCalls)
@@ -132,7 +132,7 @@ class AvatarServiceConcurrencyTest {
                             image
                         },
                 )
-            val request = AvatarRequest("work", "ada@company.example")
+            val request = AvatarRequest("work", "ada@company.com")
             val options = AvatarOptions(domainIcons = true)
             val pending = async { service.resolve(request, options) }
             entered.await()

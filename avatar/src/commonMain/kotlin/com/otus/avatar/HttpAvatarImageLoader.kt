@@ -104,9 +104,10 @@ public class HttpAvatarImageLoader(
         }
     }
 
+    /** Only the default HTTPS port, so a public name whose DNS answer is private cannot probe other ports. */
     private fun Url.isPublicImageUrl(): Boolean =
-        protocol == URLProtocol.HTTPS && user.isNullOrEmpty() && password.isNullOrEmpty() &&
-            isPublicAvatarHost(host)
+        protocol == URLProtocol.HTTPS && port == URLProtocol.HTTPS.defaultPort && user.isNullOrEmpty() &&
+            password.isNullOrEmpty() && isPublicAvatarHost(host)
 
     private class ImageResponse(
         val image: AvatarImage? = null,

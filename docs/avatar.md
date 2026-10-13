@@ -30,7 +30,7 @@ the reusable service can keep remote requests disabled. No appearance-setting sw
 val images = HttpAvatarImageLoader()
 val service = AvatarService(contacts = contactPhotos, images = images)
 val result = service.resolve(
-    AvatarRequest(loginId, "ada@company.example", "Ada Lovelace"),
+    AvatarRequest(loginId, "ada@example.com", "Ada Lovelace"),
     AvatarOptions(domainIcons = true),
 )
 ```
@@ -107,6 +107,32 @@ The entire load, including redirects, times out after five seconds. Domain icons
 they are not proof that a sender is authentic. The image cache supports offline display; it does not
 synchronize contacts offline.
 
+A public hostname is an ASCII DNS name of at least two labels whose last label is alphabetic or an
+`xn--` IDN label. The same check covers the sender's domain and every request of the public
+loader: the first URL, each redirect, advertised icon links, and external contact photos. The loader
+also requires HTTPS on the default port 443. A website therefore cannot send the device to a private
+or special-use name on the user's network, but see the DNS limit below. The check refuses:
+
+- single-label names, such as `printer`;
+- IP literals in every form the URL parser accepts, such as `192.168.1.1`, `127.1`, `0x7f.0x1`, and
+  `[::1]`; resolvers read a numeric last label as an IPv4 address, and no real top-level domain has
+  one;
+- special-use and reserved names: `localhost`, `test`, `invalid`, and `example` (RFC 6761), `local`
+  (RFC 6762), `onion` (RFC 7686), `alt` (RFC 9476), `internal` (reserved by ICANN for private use),
+  and all of `arpa`, which includes `home.arpa` (RFC 8375);
+- the widespread private top-level names `lan`, `home`, `corp`, `intranet`, `private`, and
+  `localdomain`.
+
+Suffixes match whole labels and ignore case, so `lan` and `printer.lan` are refused while `plan.com`
+is allowed. Names with a trailing dot, percent-encoding, or non-ASCII characters are refused rather
+than normalized, so they cannot bypass the list.
+
+The check sees only the name, never the address it resolves to. A public name whose DNS answer is a
+private, loopback, or link-local address, such as a wildcard DNS service or a record the sender
+controls, still receives the request, so a website can direct icon requests into the user's network
+that way. Common code has no resolver to check the address; refusing such answers needs a DNS check
+in each platform's HTTP engine, which the module does not have yet.
+
 ## Use in the apps
 
 Each app creates one `AvatarService` per process and passes its own login IDs as `accountKey`.
@@ -132,8 +158,9 @@ still leave a photo unavailable during slow or changing searches; normal avatar 
 Common tests cover resolution priority, account/options isolation, missing capabilities, exact email
 matching, address-book permissions, blobs/data URIs/external URLs, website-domain resolution,
 provider icons, icon-cache options and domain-only requests, cache expiry/eviction/invalidation,
-cancellation, credential isolation, redirects, and response-size limits. Persistent-cache tests cover
-process recreation, bounded disk usage, corrupt records and account removal.
+cancellation, credential isolation, redirects, refused private and special-use hosts, and
+response-size limits. Persistent-cache tests cover process recreation, bounded disk usage, corrupt
+records and account removal.
 Contact search tests also cover later-page exact matches, server-clamped page sizes, exhaustion,
 changing queries, stalled pagination, search deadlines, and caller cancellation.
 Mail's inbox tests cover restoring avatars before network work; see
