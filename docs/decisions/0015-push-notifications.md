@@ -26,8 +26,9 @@ points the distributor at it; Otus only sees the endpoint URL the distributor ha
 needs no setup when the server signs pushes with VAPID. Otherwise FCM rejects the push, and the
 user can enter the URL of a gateway they run. Otus does not offer a public gateway.
 
-The Settings page shows the active mode, when the last push arrived, when the subscription
-expires, and a button that sends a test notification, so a self-hosted setup can be checked.
+The Settings page shows the active mode and whether each account's server pushes. Planned
+additions: when the last push arrived, and a button that sends a test notification, so a
+self-hosted setup can be checked.
 
 ## Builds
 
@@ -41,10 +42,10 @@ Apple credentials, which this decision rules out.
 
 - `com.otus:jmap` holds the wire types: `PushSubscription` methods, `PushMessage`, and the VAPID
   key from the session. Added in this change.
-- A new `com.otus:push` module will hold subscription upkeep (create, verify, renew before
-  `expires`, destroy), Web Push decryption, duplicate filtering, the background check scheduler,
-  and the Android UnifiedPush receiver. Each app passes the data types it watches and a function
-  to call when they change.
+- `com.otus:push` holds subscription upkeep: create, verify, renew before `expires`, and destroy.
+  Each app passes the data types it watches. The UnifiedPush connector library decrypts Web Push
+  messages, so Otus has no crypto code. The Android receiver and the background check stay in
+  Mail until Calendar needs them.
 - A separate `com.otus:push-fcm` artifact will hold the embedded FCM distributor, so the F-Droid
   flavor can leave it out.
 - `com.otus:settings` will hold the Notifications page.
@@ -74,10 +75,11 @@ everything since the last saved state.
 
 ## Order
 
-1. Wire types in `com.otus:jmap`, and this record.
+1. Wire types in `com.otus:jmap`, and this record. Done.
 2. Mail notifications on the background check, with a saved state per account and
-   `Email/changes`.
-3. UnifiedPush, tested on a device against a self-hosted ntfy, ntfy.sh, and Sunup.
+   `Email/changes`. Done.
+3. UnifiedPush. Built with `com.otus:push`; the device test against a self-hosted ntfy, ntfy.sh,
+   and Sunup is still open.
 4. The Google mode and the two build flavors.
 5. A device test of the always connected mode.
 6. Calendar uses `com.otus:push`.
