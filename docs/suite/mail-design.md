@@ -8,7 +8,7 @@
 - Linked node: `0:1`
 - Inspection status: Figma MCP access verified. Inbox (`19:386`) and search (`19:322`) panels inspected through metadata, design context, and screenshots. File-wide variables and other frames are not fully audited.
 
-The palette below was supplied directly by the user. Preserve these values until a later explicit design decision changes them. Do not infer additional Figma modes, components, typography, or spacing from this list. The user has now requested this palette for both apps in dark mode only.
+The palette below was supplied directly by the user. Preserve these values until a later explicit design decision changes them. Do not infer additional Figma modes, components, typography, or spacing from this list. This palette is the default Otus theme with the Otus blue accent. The user can now pick other themes and accents; see [decision 0014](../decisions/0014-user-themes.md).
 
 ## Mail palette
 

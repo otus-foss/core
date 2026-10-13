@@ -35,7 +35,8 @@ compiling for iOS. Read [the suite product goals](docs/suite/product-goals.md) a
   and callbacks at their public boundary. The shared `accounts` and `settings` feature modules
   may use Compose only in `presentation`, with composables in `components` or `screens`. Keep
   their domain, data, and presentation layers separate; design-system code cannot depend on
-  features. See decision 0007. Use named palette tokens; dark mode is the only color mode.
+  features. See decision 0007. Use named palette tokens; they follow the theme the user picks, so
+  read them when drawing and never copy them into stored values. See decision 0014.
 - Animate only through `Motion`. Use `motionTween(speed, curve)` in composables,
   `Motion.tween(speed, curve, scale)` outside composition, or `Motion.millis(speed, scale)` for a
   spec that is not a tween, and respect `LocalMotionScale` everywhere. Never add a raw duration

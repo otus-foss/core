@@ -17,25 +17,45 @@ import com.otus.designsystem.components.SettingRow
 import com.otus.designsystem.components.SettingsSection
 import com.otus.designsystem.components.Subpage
 import com.otus.designsystem.elements.ValueButton
+import com.otus.designsystem.resources.Res
+import com.otus.designsystem.resources.symbol_calendar_month
+import com.otus.designsystem.resources.symbol_palette
 import com.otus.settings.presentation.DateFormatSettingsState
+import com.otus.settings.presentation.ThemeSettingsState
 import com.otus.settings.presentation.dateFormatExample
+import com.otus.settings.presentation.title
 
-/** Shared appearance settings. An app adds its own sections, such as gestures, below them in [content]. */
+/**
+ * Shared appearance settings. The Look section opens the theme page with [onTheme] and shows the
+ * date format; an app adds its own rows to it in [look], such as the sidebar, and its own sections,
+ * such as gestures, below it in [content].
+ */
 @Composable
 public fun AppearanceSettingsScreen(
     dateFormat: DateFormatSettingsState,
+    theme: ThemeSettingsState,
+    onTheme: () -> Unit,
     onBack: () -> Unit,
+    look: @Composable ColumnScope.() -> Unit = {},
     content: @Composable ColumnScope.() -> Unit = {},
 ) {
     val locale = currentDateLocaleIdentifier()
     val today = remember { currentLocalDate() }
     var choosing by rememberSaveable { mutableStateOf(false) }
     Subpage("Appearance & behavior", onBack) {
-        SettingsSection("Dates") {
+        SettingsSection("Look") {
+            SettingRow(
+                "Theme",
+                onTheme,
+                description = "Colors across the whole app",
+                icon = Res.drawable.symbol_palette,
+            ) { ValueButton(theme.choice.base.title, swatch = theme.choice.accent) }
+            look()
             SettingRow(
                 "Date format",
                 { choosing = true },
                 description = "Shown as ${dateFormatExample(dateFormat.preference, locale, today)}",
+                icon = Res.drawable.symbol_calendar_month,
             ) { ValueButton(dateFormat.preference.shortLabel) }
         }
         content()

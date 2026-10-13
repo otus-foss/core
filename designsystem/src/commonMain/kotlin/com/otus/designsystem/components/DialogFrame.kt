@@ -59,7 +59,7 @@ public fun DialogFrame(
                 Box(
                     Modifier
                         .fillMaxSize()
-                        .background(OtusColors.bgDark.copy(alpha = SheetTokens.SCRIM_ALPHA))
+                        .background(OtusColors.scrim.copy(alpha = SheetTokens.SCRIM_ALPHA))
                         .semantics { contentDescription = "Dismiss $title" }
                         .clickable(remember { MutableInteractionSource() }, indication = null, onClick = onDismiss),
                 )
