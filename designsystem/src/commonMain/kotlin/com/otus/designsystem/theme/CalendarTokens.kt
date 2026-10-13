@@ -19,8 +19,8 @@ public object CalendarTokens {
     public const val MONTH_LABEL_LENGTH: Int = 3
     public val monthLabelSize: TextUnit = 12.sp
     public val monthLabelLineHeight: TextUnit = 12.sp
-    public val monthBackground: Color = OtusColors.bgDark
-    public val alternateMonthBackground: Color = OtusColors.bgRegular
+    public val monthBackground: Color get() = OtusColors.bgDark
+    public val alternateMonthBackground: Color get() = OtusColors.bgRegular
     public val monthCornerRadius: Dp = 8.dp
     public val markerEdgeInset: Dp = 2.dp
     public val endpointRadius: Dp = 4.dp

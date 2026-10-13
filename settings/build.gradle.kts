@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
-// Shared settings pages: the settings list and Appearance & behavior with the date-format choice.
+// Shared settings pages: the settings list, Appearance & behavior with the date-format choice, and the theme page.
 // Published as com.otus:settings.
 plugins {
     `maven-publish`
