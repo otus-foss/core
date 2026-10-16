@@ -19,6 +19,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import com.otus.designsystem.elements.ExpandChevron
 import com.otus.designsystem.elements.controlPressFeedback
+import com.otus.designsystem.theme.FolderRowTokens
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PanelTokens
 import com.otus.designsystem.theme.ScopeSheetTokens
@@ -48,7 +49,7 @@ public fun AccountGroupRow(
             .semantics { heading() }
             .toggleable(expanded, interactions, indication = null, role = Role.Button, onValueChange = onExpandedChange)
             .controlPressFeedback(interactions)
-            .padding(horizontal = SheetTokens.gap),
+            .padding(start = SheetTokens.gap, end = FolderRowTokens.endPadding),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(SheetTokens.gap),
     ) {
@@ -61,7 +62,7 @@ public fun AccountGroupRow(
         )
         Text(title, Modifier.weight(1f), style = panelTextStyle(), maxLines = 1, overflow = TextOverflow.Ellipsis)
         detail?.let { Text(it, style = panelTextStyle(), color = OtusColors.text3, maxLines = 1) }
-        action?.invoke()
-        ExpandChevron(expanded, Modifier.padding(start = SheetTokens.gap))
+        // The same two columns as a FolderSettingRow's settings icon and drag handle.
+        TrailingIcons(first = action, last = { ExpandChevron(expanded) })
     }
 }
