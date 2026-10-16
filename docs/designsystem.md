@@ -3,7 +3,7 @@
 The `designsystem` module (`com.otus.designsystem`, artifact `com.otus:designsystem`) holds the
 Otus theme, elements, and components. It moved here from otus-mail in version 0.2.0. Elements and
 components take values and callbacks; they own no ViewModels, navigation, networking, or storage.
-The user picks one of five themes and an accent color. Changing any single color saves a custom
+The user picks one of four themes and an accent color. Changing any single color saves a custom
 theme. The Otus theme with Otus blue is the palette recorded in [mail design foundations](suite/mail-design.md). See
 [decision 0014](decisions/0014-user-themes.md).
 

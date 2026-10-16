@@ -44,6 +44,7 @@ class ThemeSettingsStateTest {
     fun anUnreadablePartFallsBackToItsDefault() {
         assertEquals(ThemeChoice(ThemeBase.Light), decodeThemeChoice("light purple"))
         assertEquals(ThemeChoice(accent = AccentPreset.Green.color), decodeThemeChoice("sepia #3F8F6B"))
+        assertEquals(ThemeChoice(accent = AccentPreset.Green.color), decodeThemeChoice("graphite #3F8F6B"))
         assertEquals(ThemeChoice(), decodeThemeChoice(""))
         assertEquals(
             ThemeChoice(

@@ -51,10 +51,10 @@ class AccentShadesTest {
 
     @Test
     fun thePaletteTakesTheThemeSurfacesAndTheAccentShades() {
-        val choice = ThemeChoice(ThemeBase.Graphite, AccentPreset.Green.color)
+        val choice = ThemeChoice(ThemeBase.Ink, AccentPreset.Green.color)
         val palette = choice.palette
-        assertEquals(ThemeBase.Graphite.page, palette.bgRegular)
-        assertEquals(ThemeBase.Graphite.raised, palette.bgDark)
+        assertEquals(ThemeBase.Ink.page, palette.bgRegular)
+        assertEquals(ThemeBase.Ink.raised, palette.bgDark)
         assertEquals(choice.shades.fill, palette.accentDark)
         assertEquals(choice.shades.text, palette.accentLight)
         assertFalse(palette.isLight)

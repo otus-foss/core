@@ -49,17 +49,6 @@ public enum class ThemeBase(
         text3 = Color(0xFF696B70),
     ),
 
-    /** Warm grey dark, after Notion's dark mode. */
-    Graphite(
-        page = Color(0xFF252525),
-        raised = Color(0xFF191919),
-        light = Color(0xFF373737),
-        stroke = Color(0xFF2F2F2F),
-        text1 = Color(0xFFD4D4D4),
-        text2 = Color(0xFFA3A3A3),
-        text3 = Color(0xFF8F8F8F),
-    ),
-
     /** True black for OLED screens, after the X mobile app. */
     Black(
         page = Color(0xFF000000),
