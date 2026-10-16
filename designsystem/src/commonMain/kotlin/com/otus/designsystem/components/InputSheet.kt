@@ -16,7 +16,7 @@ import com.otus.designsystem.theme.SheetTokens
 
 /**
  * A [SheetFrame] with one text field, such as a new name, focused when it opens. Its header button
- * reads [confirmLabel] and passes the text to [onConfirm]; [problem] explains why the current text
+ * reads [confirmLabel], passes the text to [onConfirm], and closes; [problem] explains why the text
  * cannot be used and disables that button. Like [InputDialog], an untouched field shows no error.
  */
 @Composable
@@ -36,7 +36,10 @@ public fun InputSheet(
     SheetFrame(
         title,
         onDismiss,
-        onDone = { onConfirm(value) },
+        onDone = {
+            onConfirm(value)
+            onDismiss()
+        },
         doneEnabled = error == null,
         doneLabel = confirmLabel,
     ) {
