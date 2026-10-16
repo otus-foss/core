@@ -47,7 +47,7 @@ public fun ActionRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(SheetTokens.gap),
     ) {
-        icon?.let { Symbol(it) }
+        icon?.let { LeadingSymbol(it) }
         Column(Modifier.weight(1f)) {
             Text(title, style = panelTextStyle())
             summary?.let {
