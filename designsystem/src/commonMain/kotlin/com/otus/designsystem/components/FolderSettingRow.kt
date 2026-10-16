@@ -16,9 +16,13 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.LayoutDirection
 import com.otus.designsystem.elements.FolderToggle
+import com.otus.designsystem.elements.MAX_INDENT_STEPS
 import com.otus.designsystem.elements.SidebarCount
 import com.otus.designsystem.elements.SidebarFolder
 import com.otus.designsystem.elements.Symbol
@@ -29,6 +33,7 @@ import com.otus.designsystem.resources.symbol_chevron_right
 import com.otus.designsystem.resources.symbol_folder
 import com.otus.designsystem.theme.FolderRowTokens
 import com.otus.designsystem.theme.OtusColors
+import com.otus.designsystem.theme.PanelTokens
 import com.otus.designsystem.theme.RuleChipTokens
 import com.otus.designsystem.theme.SettingTokens
 import com.otus.designsystem.theme.SheetTokens
@@ -60,6 +65,7 @@ public fun FolderSettingRow(
             .heightIn(min = FolderRowTokens.minHeight)
             .clickable(interactions, indication = null, role = Role.Button, onClick = onClick)
             .controlPressFeedback(interactions, RoundedCornerShape(SheetTokens.rowRadius))
+            .treeGuides(folder.depth)
             .nestIndent(FolderRowTokens.nestIndent, folder.depth)
             .padding(
                 end = FolderRowTokens.endPadding,
@@ -125,3 +131,17 @@ public fun FolderOwnerLine(
 ) {
     AvatarStack(listOf(owner), label = text, ring = OtusColors.bgLight, size = RuleChipTokens.compactAvatar)
 }
+
+/**
+ * A thin line down the row under each folder icon above it, one per level of [depth], so nested
+ * rows read as a tree. Rows follow each other without gaps, so the lines join up.
+ */
+private fun Modifier.treeGuides(depth: Int): Modifier =
+    drawBehind {
+        val width = PanelTokens.borderWidth.toPx()
+        repeat(depth.coerceAtMost(MAX_INDENT_STEPS)) { level ->
+            val center = (FolderRowTokens.nestIndent * level + PanelTokens.touchTarget / 2).toPx()
+            val x = if (layoutDirection == LayoutDirection.Rtl) size.width - center else center
+            drawLine(OtusColors.bgLight, Offset(x, 0f), Offset(x, size.height), width)
+        }
+    }

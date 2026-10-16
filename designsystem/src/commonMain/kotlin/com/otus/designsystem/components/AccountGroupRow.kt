@@ -27,7 +27,8 @@ import com.otus.designsystem.theme.panelTextStyle
 
 /**
  * Heads one account's part of a list, such as its folders: a small [avatar], the account's
- * [title], a [detail] such as "6 folders", and a chevron. Tapping it folds the part away.
+ * [title], a [detail] such as "6 folders", an optional [action] such as a New folder button, and
+ * a chevron. Tapping it folds the part away.
  */
 @Composable
 public fun AccountGroupRow(
@@ -37,6 +38,7 @@ public fun AccountGroupRow(
     onExpandedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     detail: String? = null,
+    action: (@Composable () -> Unit)? = null,
 ) {
     val interactions = remember { MutableInteractionSource() }
     Row(
@@ -59,6 +61,7 @@ public fun AccountGroupRow(
         )
         Text(title, Modifier.weight(1f), style = panelTextStyle(), maxLines = 1, overflow = TextOverflow.Ellipsis)
         detail?.let { Text(it, style = panelTextStyle(), color = OtusColors.text3, maxLines = 1) }
+        action?.invoke()
         ExpandChevron(expanded, Modifier.padding(start = SheetTokens.gap))
     }
 }

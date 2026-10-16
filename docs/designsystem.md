@@ -28,7 +28,7 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
 - `components`: `ActionBar`, `ActionBarHost`, `BarAction`, `BarContext`, `BarToken`, `ActionDialog`, `ChoiceDialog`, `ChoiceSheet` (with `ChoiceRow`), `ConfirmDialog`, `InputDialog`, `ContextPanel`, `DatePickerDialog`,
   `MonthNavigation`, `MonthYearPicker`, `PageScaffold`, `Subpage`, `PageSection`, `PanelSurface`,
   `PickerSearch`, `PreviewCard`, `PullToRefresh`, `ReorderableColumn`, `ReorderableTree`, `SelectionSheet`, `SheetFrame`, `SettingRow`,
-  `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarHeader`, `SidebarMailboxGrid`, `ScopeSheet`, `ScopeRow` and `ScopeChildRow` (with `ScopeOption`), `ScopePicker`,
+  `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarHeader`, `SidebarMailboxGrid`, `ScopeSheet`, `ScopeRow` and `ScopeChildRow` (with `ScopeOption`), `ScopePicker`, `AccountGroupRow`,
   `RuleChip`, `RuleChipGroup`, and `AddRuleChip` (with `RuleChipLine`, `RuleChipValue`, `RuleSegment`, and
   `RuleSegmentStyle`), `FolderSettingRow` with `FolderRuleSummary` and `FolderOwnerLine`, `SummaryCard` and `PersonText` (with `NamedAvatar`), `ValueToken`, `ValuePicker`, `Collapsible`, `CollapsibleTree`, `AvatarStack`, `ContextMenu` (with `MenuAction`),
   `SidebarSwipeArea`, `SlidingOverlay`, `SlidingPages`, `SwipeActions`, and `ThemeCard`.
@@ -145,7 +145,9 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   conditions, on the same grid. `AddRuleChip` is a dashed chip of the same height with its plus in
   the slot column and its label in the value column. A chip or group with `onClick` is one button.
 - `FolderSettingRow` is one folder on a folder settings page: the folder icon, the name in 17 sp,
-  an optional detail line, a chevron, and an optional `handle` after it, at least 56 dp tall and indented 20 dp per level. The
+  an optional detail line, a chevron, and an optional `handle` after it, at least 56 dp tall and
+  indented 20 dp per level. A 1 dp `bgLight` guide runs down the row under the icon of each level
+  above it, so consecutive rows draw a tree. The
   icon expands and collapses subfolders like `SidebarFolderEntry`'s, shares its code, and takes
   `LocalIconTint`. `SidebarFolder.icon` replaces the closed folder, such as `symbol_folder_shared`. The detail
   is a slot: `FolderRuleSummary` shows the first rule as a compact chip and a `text3` count such as
