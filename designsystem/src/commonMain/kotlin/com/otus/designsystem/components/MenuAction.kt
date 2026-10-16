@@ -2,10 +2,13 @@ package com.otus.designsystem.components
 
 import org.jetbrains.compose.resources.DrawableResource
 
-/** One row of a [ContextMenu], led by its [symbol] when it has one. Choosing it closes the menu first. */
+/**
+ * One choice of a [ContextMenu] or [QuickActionBar]. Choosing it closes the menu first. A
+ * [ContextMenu] row leads with the [icon] when it has one; a [QuickActionBar] shows only the
+ * [icon] and reads the [label] to screen readers.
+ */
 public class MenuAction(
     public val label: String,
-    public val symbol: DrawableResource? = null,
-    public val mirrorInRtl: Boolean = false,
+    public val icon: DrawableResource? = null,
     public val onClick: () -> Unit,
 )

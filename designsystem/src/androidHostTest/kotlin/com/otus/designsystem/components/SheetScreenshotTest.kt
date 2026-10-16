@@ -1,0 +1,54 @@
+package com.otus.designsystem.components
+
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.unit.dp
+import com.otus.designsystem.elements.Chip
+import com.otus.designsystem.screenshot.screenScreenshot
+import org.junit.Rule
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
+import org.robolectric.annotation.GraphicsMode
+import kotlin.test.Test
+
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [35], qualifiers = "w360dp-h640dp-xhdpi")
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
+class SheetScreenshotTest {
+    @get:Rule
+    val compose = createComposeRule()
+
+    @Test
+    fun sheetFrame() =
+        compose.screenScreenshot("sheet_frame") {
+            SheetFrame("Move to", onDismiss = {}) {
+                SummaryCard("Invoice 2026-031", "Tomas Berg", Modifier.padding(16.dp))
+            }
+        }
+
+    @Test
+    fun selectionSheet() =
+        compose.screenScreenshot("selection_sheet_search") {
+            SelectionSheet(
+                "From",
+                onDismiss = {},
+                onClear = {},
+                onApply = {},
+                search = { PickerSearch("", {}, "Search people") },
+            ) {
+                SettingToggleRow("Mira Chen", checked = true, {})
+                SettingToggleRow("Tomas Berg", checked = false, {})
+                SettingToggleRow("Lena Park", checked = true, {})
+            }
+        }
+
+    @Test
+    fun selectionSheetApplyDisabled() =
+        compose.screenScreenshot("selection_sheet_apply_disabled") {
+            SelectionSheet("Folder", onDismiss = {}, onClear = {}, onApply = {}, applyEnabled = false) {
+                Chip("Receipts", {})
+            }
+        }
+}

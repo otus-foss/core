@@ -1,0 +1,40 @@
+package com.otus.designsystem.components
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.zIndex
+import com.otus.designsystem.theme.OtusColors
+import com.otus.designsystem.theme.SheetTokens
+
+/**
+ * The box around one row of a reorderable list, keyed by [key]. It measures the row for [drag],
+ * paints it with [background], and moves it by [shift]. The [dragged] row follows the finger
+ * above the others with a `bgLight` fill, at [draggedAlpha] so a row under it can show through.
+ */
+internal fun Modifier.reorderSlot(
+    drag: ReorderDrag,
+    key: Any,
+    dragged: Boolean,
+    background: Color,
+    shift: Float = 0f,
+    draggedAlpha: Float = 1f,
+): Modifier =
+    zIndex(if (dragged) 1f else 0f)
+        .graphicsLayer {
+            translationY = if (dragged) drag.offset else shift
+            alpha = if (dragged) draggedAlpha else 1f
+        }.background(background)
+        .then(
+            if (dragged) {
+                Modifier.background(
+                    OtusColors.bgLight,
+                    RoundedCornerShape(SheetTokens.rowRadius),
+                )
+            } else {
+                Modifier
+            },
+        ).onSizeChanged { drag.heights[key] = it.height }
