@@ -43,4 +43,41 @@ class ReorderMathTest {
         assertEquals(50f, clampDrag(heights, from = 1, offset = 500f, spacing = spacing))
         assertEquals(12f, clampDrag(heights, from = 1, offset = 12f, spacing = spacing))
     }
+
+    @Test
+    fun theMiddleHalfOfARowTakesADropOntoIt() {
+        // Row 1 spans 50 to 130, so its middle half is 70 to 110. Row 0's bottom edge starts at 40.
+        assertEquals(null, nestTarget(heights, from = 0, offset = 29f, spacing = spacing))
+        assertEquals(1, nestTarget(heights, from = 0, offset = 30f, spacing = spacing))
+        assertEquals(1, nestTarget(heights, from = 0, offset = 70f, spacing = spacing))
+        assertEquals(null, nestTarget(heights, from = 0, offset = 71f, spacing = spacing))
+        // Moving up, row 2's top edge starts at 140 and leads.
+        assertEquals(1, nestTarget(heights, from = 2, offset = -40f, spacing = spacing))
+        assertEquals(null, nestTarget(heights, from = 2, offset = -20f, spacing = spacing))
+        assertEquals(0, nestTarget(heights, from = 2, offset = -125f, spacing = spacing))
+    }
+
+    @Test
+    fun withNestingARowPassesAnotherOnlyBeyondItsMiddleHalf() {
+        assertEquals(ReorderDrop(0), reorderDrop(heights, from = 0, offset = 20f, spacing = spacing, nesting = true))
+        assertEquals(
+            ReorderDrop(0, onto = 1),
+            reorderDrop(heights, from = 0, offset = 50f, spacing = spacing, nesting = true),
+        )
+        assertEquals(ReorderDrop(1), reorderDrop(heights, from = 0, offset = 71f, spacing = spacing, nesting = true))
+        assertEquals(
+            ReorderDrop(2, onto = null),
+            reorderDrop(heights, from = 0, offset = 140f, spacing = spacing, nesting = true),
+        )
+        assertEquals(
+            ReorderDrop(1, onto = 0),
+            reorderDrop(heights, from = 1, offset = -40f, spacing = spacing, nesting = true),
+        )
+        assertEquals(ReorderDrop(0), reorderDrop(heights, from = 1, offset = -50f, spacing = spacing, nesting = true))
+    }
+
+    @Test
+    fun withoutNestingTheDropOnlyReorders() {
+        assertEquals(ReorderDrop(1), reorderDrop(heights, from = 0, offset = 51f, spacing = spacing, nesting = false))
+    }
 }

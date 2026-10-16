@@ -3,13 +3,10 @@ package com.otus.designsystem.elements
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -19,13 +16,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
-import com.otus.designsystem.resources.Res
-import com.otus.designsystem.resources.symbol_folder
-import com.otus.designsystem.resources.symbol_folder_open
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PanelTokens
 import com.otus.designsystem.theme.SidebarTokens
@@ -76,30 +69,5 @@ public fun SidebarFolderEntry(
             overflow = TextOverflow.Ellipsis,
         )
         folder.count?.let { SidebarCount(it) }
-    }
-}
-
-/** The folder icon in a target 48 dp wide and one row tall; it folds the subfolders when there are any. */
-@Composable
-private fun FolderToggle(
-    label: String,
-    expanded: Boolean?,
-    onExpandedChange: (Boolean) -> Unit,
-) {
-    val interactions = remember { MutableInteractionSource() }
-    val toggle =
-        expanded?.let {
-            Modifier
-                .semantics { contentDescription = if (it) "Collapse $label" else "Expand $label" }
-                .toggleable(it, interactions, indication = null, role = Role.Button, onValueChange = onExpandedChange)
-        } ?: Modifier
-    Box(
-        Modifier.size(PanelTokens.touchTarget, PanelTokens.compactRowHeight).then(toggle),
-        contentAlignment = Alignment.Center,
-    ) {
-        Box(
-            Modifier.size(SidebarTokens.expandButton).controlPressFeedback(interactions),
-            contentAlignment = Alignment.Center,
-        ) { LeadingSymbol(if (expanded == true) Res.drawable.symbol_folder_open else Res.drawable.symbol_folder) }
     }
 }

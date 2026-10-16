@@ -5,6 +5,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -87,36 +88,47 @@ private fun HeaderTitle(
             .padding(horizontal = SidebarTokens.entryPadding),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(SidebarTokens.entryPadding),
-    ) {
-        if (avatars.isNotEmpty()) {
-            // The title names the scope; initials would only repeat it.
-            AvatarStack(
-                avatars,
-                Modifier.clearAndSetSemantics {},
-                ring = OtusColors.bgLight,
-                size = SidebarTokens.headerAvatar,
-            )
-        }
-        Column(Modifier.weight(1f)) {
+    ) { ScopeTitle(title, subtitle, avatars) }
+}
+
+/**
+ * [avatars], then a SemiBold [title] over an optional `text2` [subtitle], as in the [SidebarHeader]
+ * and a [ScopePicker]. Place it in a row spaced by [SidebarTokens.entryPadding].
+ */
+@Composable
+internal fun RowScope.ScopeTitle(
+    title: String,
+    subtitle: String?,
+    avatars: List<ChipAvatar>,
+) {
+    if (avatars.isNotEmpty()) {
+        // The title names the scope; initials would only repeat it.
+        AvatarStack(
+            avatars,
+            Modifier.clearAndSetSemantics {},
+            ring = OtusColors.bgLight,
+            size = SidebarTokens.headerAvatar,
+        )
+    }
+    Column(Modifier.weight(1f)) {
+        Text(
+            title,
+            Modifier.semantics { heading() },
+            style = panelTextStyle(),
+            fontWeight = FontWeight.SemiBold,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+        subtitle?.let {
             Text(
-                title,
-                Modifier.semantics { heading() },
+                it,
                 style = panelTextStyle(),
-                fontWeight = FontWeight.SemiBold,
+                color = OtusColors.text2,
+                fontSize = SidebarTokens.detailSize,
+                lineHeight = SidebarTokens.detailLineHeight,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
-            subtitle?.let {
-                Text(
-                    it,
-                    style = panelTextStyle(),
-                    color = OtusColors.text2,
-                    fontSize = SidebarTokens.detailSize,
-                    lineHeight = SidebarTokens.detailLineHeight,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
         }
     }
 }
