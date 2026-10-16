@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+  <!-- Matches BrandColors.background, behind the launcher icon and the launch animation. -->
+  <color name="otus_brand_background">#151515</color>
+</resources>

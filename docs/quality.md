@@ -49,6 +49,37 @@ Publication checks cannot replace iOS app linking or simulator tests. The `ios` 
 with `if: false`, so CI runs no simulator tests until it is enabled again. See
 [decision 0011](decisions/0011-linux-library-publication.md).
 
+## Coverage
+
+Kover measures line and branch coverage. It reports numbers but does not fail any build.
+
+```sh
+./gradlew koverHtmlReport
+./gradlew koverLog
+```
+
+`koverHtmlReport` writes one report for all modules to `build/reports/kover/html/` and one per
+module to `<module>/build/reports/kover/html/`. `koverLog` prints line coverage for each module.
+
+Kover counts only the code that runs on the JVM, through the common and Android host tests.
+Kotlin/Native tests for iOS do not count, and neither does code in `iosMain`.
+
+Baseline from 2026-10-16, measured on commit `faad586`:
+
+| Module | Line | Branch |
+| --- | --- | --- |
+| `accounts` | 56.1% | 28.0% |
+| `avatar` | 96.8% | 73.3% |
+| `dateformat` | 89.8% | 100% |
+| `designsystem` | 12.6% | 9.6% |
+| `jmap` | 96.4% | 58.5% |
+| `push` | 97.3% | 77.3% |
+| `settings` | 77.5% | 59.6% |
+| All modules | 50.0% | 37.3% |
+
+The `designsystem` module holds two thirds of the measured lines, so it decides most of the
+total.
+
 ## Architecture checks
 
 `tools/check_architecture.py` applies the rules in [the architecture guide](architecture.md) to
