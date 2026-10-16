@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Add `InputSheet`, `InputDialog`'s text field in a `SheetFrame`.
 - Add `QuickActionBar`, a small bar of icon `MenuAction`s that opens above a long-pressed point.
   `MenuAction` takes an optional `icon` before `onClick`. `FolderSettingRow` takes `onLongClick`
   with the pressed point, and its drag handle now comes from the `ReorderableScope` overload
