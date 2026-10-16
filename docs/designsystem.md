@@ -209,7 +209,11 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   the keyboard, because the keyboard otherwise covers the button within a few frames. When its primary changes, including when a page opens over another or closes
   back to it, or when a selection's bar replaces a list's, the old icon fades and scales out while the new one fades and scales in inside
   the circle, which stays, at the same speed and curves and read as "label, description"; the
-  secondary actions are not drawn. The app chooses the actions and the context; the component only
+  secondary actions are not drawn. With `more`, a 62 dp `bgDark` circle with a `strokeBgDark` ring
+  and a ⋯ icon sits at the bar's start, balanced against the navigation bar like the primary. It
+  scales in when it first appears and hides with the primary. Tapping it opens the `MenuAction`s
+  in a `ContextMenu` 8 dp above it, lined up with its start edge, which leaves the screen behind
+  it undimmed. A full bar ignores `more`. The app chooses the actions and the context; the component only
   draws them and reports clicks. `ActionBarHost` places the bar over the bottom of a page, above
   the navigation bar and keyboard, and pads the page's content so it can scroll clear of the bar.
   Mail uses it for an open message and for selected messages; see

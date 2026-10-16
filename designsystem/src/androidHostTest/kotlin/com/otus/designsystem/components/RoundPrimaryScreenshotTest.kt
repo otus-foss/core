@@ -44,7 +44,12 @@ class RoundPrimaryScreenshotTest {
     fun minimizedBar() =
         compose.screenshot("minimized_bar_visible") {
             Column(Modifier.width(344.dp)) {
-                MinimizedBar(send, BarContext("Mira Chen", BarToken.Person(DemoPeople.mira.avatar)), hidden = false)
+                MinimizedBar(
+                    send,
+                    BarContext("Mira Chen", BarToken.Person(DemoPeople.mira.avatar)),
+                    hidden = false,
+                    more = emptyList(),
+                )
             }
         }
 }

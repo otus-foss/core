@@ -10,9 +10,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -37,6 +38,7 @@ import androidx.compose.ui.unit.round
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
+import com.otus.designsystem.elements.Symbol
 import com.otus.designsystem.elements.controlPressFeedback
 import com.otus.designsystem.theme.MenuTokens
 import com.otus.designsystem.theme.MotionSpeed
@@ -67,7 +69,7 @@ public fun ContextMenu(
                 .padding(MenuTokens.inset),
         ) {
             actions.forEach { action ->
-                MenuRow(action.label) {
+                MenuRow(action) {
                     onDismiss()
                     action.onClick()
                 }
@@ -112,20 +114,24 @@ public fun Modifier.onPressDown(onPress: (Offset) -> Unit): Modifier =
 
 @Composable
 private fun MenuRow(
-    label: String,
+    action: MenuAction,
     onClick: () -> Unit,
 ) {
     val interactions = remember { MutableInteractionSource() }
     val shape = RoundedCornerShape(MenuTokens.radius - MenuTokens.inset)
-    Box(
+    Row(
         Modifier
             .fillMaxWidth()
             .heightIn(min = PanelTokens.touchTarget)
             .clickable(interactions, indication = null, role = Role.Button, onClick = onClick)
             .controlPressFeedback(interactions, shape)
             .padding(horizontal = MenuTokens.rowPadding),
-        contentAlignment = Alignment.CenterStart,
-    ) { Text(label, style = panelTextStyle()) }
+        horizontalArrangement = Arrangement.spacedBy(MenuTokens.iconGap),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        action.icon?.let { Symbol(it) }
+        Text(action.label, style = panelTextStyle())
+    }
 }
 
 /** Puts the menu's corner on the point, flipping it to stay [edge] pixels inside the window. */
