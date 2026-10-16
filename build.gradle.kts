@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform) apply false
     alias(libs.plugins.kotlinMultiplatform) apply false
     alias(libs.plugins.kotlinSerialization) apply false
+    alias(libs.plugins.kover)
 }
 
 spotless {
@@ -107,7 +108,16 @@ tasks.register("checkAll") {
     dependsOn(subprojects.map { "${it.path}:check" })
 }
 
+// Coverage is measured, not enforced; see docs/quality.md for the baseline.
+dependencies { subprojects.forEach { kover(it) } }
+
 subprojects {
+    apply(
+        plugin =
+            rootProject.libs.plugins.kover
+                .get()
+                .pluginId,
+    )
     // The repository name selects the GitHubPackagesUsername and GitHubPackagesPassword properties.
     plugins.withId("maven-publish") {
         extensions.configure<PublishingExtension> {
