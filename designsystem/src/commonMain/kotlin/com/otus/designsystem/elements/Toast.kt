@@ -1,0 +1,120 @@
+package com.otus.designsystem.elements
+
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import com.otus.designsystem.theme.MotionSpeed
+import com.otus.designsystem.theme.OtusColors
+import com.otus.designsystem.theme.PanelTokens
+import com.otus.designsystem.theme.ToastTokens
+import com.otus.designsystem.theme.motionTween
+import com.otus.designsystem.theme.panelTextStyle
+
+/**
+ * A short message in a pill, with an optional [action] at its end. A ring beside the action's
+ * label shows the [remaining] share of the toast's time. A [lifted] toast, one being dragged,
+ * draws a shade lighter.
+ */
+@Composable
+public fun Toast(
+    text: String,
+    action: ToastAction?,
+    remaining: Float,
+    modifier: Modifier = Modifier,
+    lifted: Boolean = false,
+) {
+    val fill by animateColorAsState(
+        if (lifted) OtusColors.bgRegular else OtusColors.bgDark,
+        motionTween(MotionSpeed.Quick),
+        label = "Toast fill",
+    )
+    Row(
+        modifier
+            .height(ToastTokens.height)
+            .background(fill, CircleShape)
+            .border(PanelTokens.borderWidth, OtusColors.strokeBgDark, CircleShape)
+            .padding(start = ToastTokens.textInset, end = if (action == null) ToastTokens.textInset else 0.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text,
+            Modifier.weight(1f),
+            style = panelTextStyle(),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+        action?.let { ToastButton(it, remaining, if (lifted) OtusColors.bgLight else OtusColors.bgRegular) }
+    }
+}
+
+/** The action, with a touch area the toast's full height around its visible pill. */
+@Composable
+private fun ToastButton(
+    action: ToastAction,
+    remaining: Float,
+    fill: Color,
+) {
+    val interactions = remember { MutableInteractionSource() }
+    Box(
+        Modifier
+            .fillMaxHeight()
+            .clickable(interactions, indication = null, role = Role.Button, onClick = action.onAction)
+            .padding(ToastTokens.actionInset),
+    ) {
+        Row(
+            Modifier
+                .fillMaxHeight()
+                .controlPressFeedback(interactions)
+                .background(fill, CircleShape)
+                .padding(horizontal = ToastTokens.actionPadding),
+            horizontalArrangement = Arrangement.spacedBy(ToastTokens.actionGap),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            TimerRing(remaining)
+            Text(action.label, style = panelTextStyle(), maxLines = 1)
+        }
+    }
+}
+
+/** An arc that shrinks from a full circle as the toast's time runs out. */
+@Composable
+private fun TimerRing(remaining: Float) {
+    val color = OtusColors.text1
+    Canvas(Modifier.size(ToastTokens.ringSize)) {
+        val stroke = ToastTokens.ringStroke.toPx()
+        drawArc(
+            color,
+            startAngle = -90f,
+            sweepAngle = 360f * remaining.coerceIn(0f, 1f),
+            useCenter = false,
+            topLeft = Offset(stroke / 2, stroke / 2),
+            size = Size(size.width - stroke, size.height - stroke),
+            style = Stroke(stroke, cap = StrokeCap.Round),
+        )
+    }
+}

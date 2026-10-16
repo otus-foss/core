@@ -6,7 +6,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-/** Theme cards, accent swatches, and color sliders on the theme settings page. */
+/** Theme cards, accent swatches, and color sliders on the theme settings page, and folder color swatches. */
 public object ThemeTokens {
     public val cardRadius: Dp = 18.dp
     public val cardPadding: Dp = 6.dp
@@ -67,6 +67,9 @@ public object ThemeTokens {
 
     /** The colored dot inside a value button, such as the current accent. */
     public val valueDot: Dp = 18.dp
+
+    /** The folder color circle beside each option in the folder color sheet. */
+    public val folderSwatch: Dp = 20.dp
 
     public val sliderHeight: Dp = 32.dp
     public val sliderThumb: Dp = 28.dp

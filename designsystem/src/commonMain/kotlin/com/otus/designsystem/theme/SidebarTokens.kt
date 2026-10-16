@@ -4,14 +4,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 internal object SidebarTokens {
-    /** The account rail along the leading edge. */
-    val railWidth = 64.dp
+    /** The page stays visible beyond it. */
+    val width = 336.dp
 
-    /** The panel beside the rail; the page stays visible beyond it. */
-    val panelWidth = 272.dp
-    val width = railWidth + panelWidth
-
-    /** On a narrow screen the panel shrinks so at least this much of the page stays visible. */
+    /** On a narrow screen the sidebar shrinks so at least this much of the page stays visible. */
     val pageVisible = 56.dp
     val inset = 8.dp
     val entryPadding = 12.dp
@@ -29,20 +25,24 @@ internal object SidebarTokens {
     val nestIndent = 16.dp
     const val SCRIM_ALPHA = 0.65f
 
-    val railAvatar = 40.dp
-    val railGap = 4.dp
+    /** The avatars before the header's title. */
+    val headerAvatar = 32.dp
 
-    /** The selected rail item's outline, drawn this far outside its circle. */
-    val selectionOutline = 2.dp
-    val selectionOffset = 2.dp
-    val railLabelSize = 12.sp
-    val railLabelLineHeight = 14.sp
-    val railDividerWidth = 24.dp
-    val dashLength = 3.dp
-    val badgeHeight = 20.dp
-    val badgePadding = 6.dp
+    /** The large row for the main mailbox, such as Inbox. */
+    val inboxHeight = 52.dp
+
+    /** One mailbox in the grid: its icon over a short label. */
+    val tileHeight = 64.dp
+    const val TILE_COLUMNS = 3
+    val tileLabelSize = 12.sp
+    val tileLabelLineHeight = 16.sp
+    val tileLabelGap = 4.dp
+
+    /** A count on a tile's icon, ringed in the surface color so it stands clear of the icon. */
+    val badgeHeight = 16.dp
+    val badgePadding = 4.dp
     val badgeRing = 2.dp
-    val badgeSize = 12.sp
+    val badgeSize = 10.sp
 
     /** A swipe released faster than this, per second, opens or closes the sidebar regardless of position. */
     val flingVelocity = 400.dp
