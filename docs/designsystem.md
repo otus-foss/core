@@ -118,7 +118,7 @@ Every animation in the design system and in Mail takes its duration and curve fr
 `theme/Motion.kt`. The rules for picking a speed and a curve are in
 [mail design foundations](suite/mail-design.md#motion).
 
-`MotionCurve` holds four cubic Bézier curves:
+`MotionCurve` holds five cubic Bézier curves:
 
 | Curve | Bézier | Use |
 | --- | --- | --- |
@@ -126,6 +126,7 @@ Every animation in the design system and in Mail takes its duration and curve fr
 | `Reverse` | (0.8, 0, 0.6, 1) | `Standard` played backward, for undoing a change so it retraces its steps |
 | `Enter` | (0.2, 0, 0, 1) | Decelerates, for sheets, the sidebar, and text that arrive |
 | `Exit` | (0.4, 0, 1, 1) | Accelerates, for the same things as they leave |
+| `Rise` | (0.2, 0.8, 0.25, 1) | Jumps off at once and settles slowly, for the launch animation only |
 
 `MotionSpeed` divides the 240 ms base duration (`Motion.BASE_MILLIS`) by its factor:
 
@@ -184,6 +185,30 @@ variation loaded first. The variable file it replaces defaulted to Light 300. It
 used by Mail, accounts, and settings with their Apache 2.0 license. The generated public `Res`
 class lives in `com.otus.designsystem.resources`. Apps select icons from this bundle and pass
 them to `Symbol` as `DrawableResource` values.
+
+## Brand
+
+`designsystem/brand/` keeps the source SVGs: the Otus logo, the owl on its own, the Mail app icon,
+and Mail's launch animation in a play-once and a looping version. The drawables are converted
+from these files, so change the SVG first and convert again.
+
+- `brand_otus_logo` and `brand_owl` are Compose drawables of the logo and the owl. Nothing uses
+  them yet.
+- `brand_mail_owl`, `brand_mail_eye_left`, `brand_mail_eye_right`, and `brand_mail_envelope` are
+  the launch animation's layers, each on the same 128 unit canvas so they line up when stacked.
+- `otus_mail_icon` is an Android launcher icon in `androidMain/res`, which merges into the app. It
+  is adaptive from Android 8 on, with the owl and envelope scaled into the 66 dp safe circle, and
+  the full square icon before that. Its background, `otus_brand_background`, matches
+  `BrandTokens.background`.
+
+`MailLaunch` plays the launch animation on the brand background. It starts with the play-once
+version. While the app reports `loading`, it continues with the loop, starting from the loop's
+settled pose, which matches where the intro ends. Once the owl has arrived and loading has
+finished, or on a tap, the mark shrinks to `BrandTokens.LAUNCH_EXIT_SCALE` and the whole screen
+fades out at `Relaxed` speed on the `Exit` curve. `MailLaunchTimeline` holds both runs' keyframes
+as fractions of `Motion.LAUNCH_MILLIS` (3 s) and `Motion.LAUNCH_LOOP_MILLIS` (4.2 s), and
+`KeyframeTrack` eases between them like a CSS keyframes rule. The tilt and the blink use
+`Standard` where the SVGs use ease-in-out and linear timing. `LocalMotionScale` scales all of it.
 
 ## Behavior guides
 
