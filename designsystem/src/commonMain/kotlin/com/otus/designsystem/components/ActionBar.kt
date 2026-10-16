@@ -43,8 +43,9 @@ import kotlin.math.roundToInt
  * The whole shell then runs the primary. A bar that takes over from another, such as a page's bar
  * opening over the list's, moves its shell and action from where the other drew them in one motion;
  * see [BarEntry]. A [minimized] bar shows only the primary's icon, in a circle at the bar's end;
- * see [MinimizedBar]. A minimized bar that is [hidden], such as while a search field is about to
- * take the keyboard, scales out in place; a full bar ignores [hidden].
+ * see [MinimizedBar]. A minimized bar puts [more] behind a round button at its start, which opens
+ * them in a [ContextMenu]. A minimized bar that is [hidden], such as while a search field is about
+ * to take the keyboard, scales out in place; a full bar ignores [more] and [hidden].
  */
 @Composable
 public fun ActionBar(
@@ -54,10 +55,11 @@ public fun ActionBar(
     context: BarContext? = null,
     minimized: Boolean = false,
     hidden: Boolean = false,
+    more: List<MenuAction> = emptyList(),
 ) {
     require(secondary.size <= MAX_SECONDARY) { "An action bar holds at most $MAX_SECONDARY secondary actions" }
     if (minimized) {
-        MinimizedBar(primary, context, hidden, modifier)
+        MinimizedBar(primary, context, hidden, more, modifier)
         return
     }
     val front = rememberFrontBar(primary, context)
