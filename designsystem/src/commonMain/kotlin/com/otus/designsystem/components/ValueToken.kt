@@ -12,7 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import com.otus.designsystem.elements.Symbol
+import com.otus.designsystem.elements.LeadingSymbol
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PanelTokens
 import com.otus.designsystem.theme.SettingTokens
@@ -75,7 +75,7 @@ internal fun RowScope.ValueLabel(
         )
     }
     avatar?.let { SmallAvatar(it) }
-    icon?.let { Symbol(it, size = SummaryTokens.avatarSize) }
+    icon?.let { LeadingSymbol(it, SummaryTokens.avatarSize, enabled) }
     Text(
         value,
         Modifier.weight(1f, fill = fill),

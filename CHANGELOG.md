@@ -2,6 +2,22 @@
 
 ## Unreleased
 
+- **Breaking:** `Sidebar` has no account rail. It takes a `header` slot in place of `subtitle` and
+  `rail`, and `title` now only names the pane for screen readers. `SidebarRail`,
+  `SidebarRailAccount`, `SidebarRailIcon`, `SidebarRailAdd`, and `SidebarRailDivider` are gone.
+  Apps pass a `SidebarHeader` and offer the account choice in a sheet such as `ScopeSheet`.
+- Add the sidebar pieces `SidebarHeader`, `SidebarInboxEntry`, `SidebarMailboxTile` with
+  `SidebarMailboxGrid`, `SidebarFolderEntry` with `SidebarFolder`, `SidebarDivider`, and
+  `SectionCaption`. Add `ScopeSheet`, `ScopeRow`, `ScopeChildRow`, and `ScopeOption` for a
+  "Show mail from" style picker with pinned choices and expandable groups. `AvatarStack` takes an
+  optional `size`. Add the `symbol_folder_open` and `symbol_keep` symbols.
+- Add `FolderColor`: `Default` and eight colors a user can give a folder, stored by `name` and
+  read back with `FolderColor.named`. `tint` and `tintIn(palette)` give the icon color for dark or
+  light themes, at 3:1 or more on `bgDark`, `bgRegular`, and `accentDark`.
+- Add `LocalIconTint`, which colors the leading icon of `SidebarEntry`, `ActionRow`, `SettingRow`,
+  `SettingToggleRow`, `ValuePicker`, and `ValueToken`, but not a disabled picker's icon.
+  `ChoiceRow` takes `iconTint` and a `swatch`, drawn by the new `FolderColorSwatch`, and
+  `ThemeTokens.folderSwatch` sizes it.
 - Add the Ink theme, darker than Otus with surfaces closer together, and custom themes (decision
   0014). `ThemeColor` names the ten colors a user can change. `ThemeChoice` keeps a list of
   `CustomTheme`s, and `withColor` on a built-in theme creates and selects a new custom theme, so

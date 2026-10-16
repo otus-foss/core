@@ -21,7 +21,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
-import com.otus.designsystem.elements.Symbol
+import com.otus.designsystem.elements.LeadingSymbol
 import com.otus.designsystem.elements.ToggleSwitch
 import com.otus.designsystem.elements.controlPressFeedback
 import com.otus.designsystem.theme.OtusColors
@@ -144,7 +144,7 @@ private fun SettingRowLayout(
         horizontalArrangement = Arrangement.spacedBy(SettingTokens.rowGap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        icon?.let { Symbol(it) }
+        icon?.let { LeadingSymbol(it) }
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(SettingTokens.textGap)) {
             Text(
                 title,
