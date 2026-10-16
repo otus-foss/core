@@ -34,12 +34,20 @@ public class ToastState {
 
     /** Shows [message] in front of the others, or replaces the toast of its group. */
     public fun show(message: ToastMessage) {
-        val merged = message.group?.let { group -> entries.firstOrNull { !it.leaving && it.message.group == group } }
+        val merged = message.group?.let(::shown)
         val entry = merged?.also { entries.remove(it) } ?: ToastEntry(nextId++, message)
         entry.message = message
         entry.elapsedMillis = 0L
         entries += entry
     }
+
+    /** The messages on screen, newest last, leaving out toasts that are fading out. */
+    public val messages: List<ToastMessage> get() = entries.filterNot { it.leaving }.map { it.message }
+
+    /** Whether a toast of [group] is on screen, so a merged message can keep counting from it. */
+    public fun isShowing(group: Any): Boolean = shown(group) != null
+
+    private fun shown(group: Any): ToastEntry? = entries.firstOrNull { !it.leaving && it.message.group == group }
 
     /** Runs every timer that is not paused [deltaMillis] forward and lets expired toasts leave. */
     internal fun tick(
