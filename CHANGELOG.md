@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Add the brand assets: source SVGs in `designsystem/brand/`, the `brand_otus_logo` and
+  `brand_owl` drawables, and Mail's adaptive launcher icon `otus_mail_icon` as an Android
+  resource.
+- Add `MailLaunch`, Mail's launch animation, which loops while the app loads and shrinks and
+  fades out once it is done. It comes with `BrandTokens`, `MotionCurve.Rise`,
+  `Motion.LAUNCH_MILLIS`, `Motion.LAUNCH_LOOP_MILLIS`, and `Motion.scaled(millis, scale)`.
 - Add the Ink theme, darker than Otus with surfaces closer together, and custom themes (decision
   0014). `ThemeColor` names the ten colors a user can change. `ThemeChoice` keeps a list of
   `CustomTheme`s, and `withColor` on a built-in theme creates and selects a new custom theme, so
