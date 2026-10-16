@@ -3,6 +3,8 @@
 The `designsystem` module (`com.otus.designsystem`, artifact `com.otus:designsystem`) holds the
 Otus theme, elements, and components. It moved here from otus-mail in version 0.2.0. Elements and
 components take values and callbacks; they own no ViewModels, navigation, networking, or storage.
+`HtmlView` is the one exception: with `loadRemote`, its web view fetches the images, styles, and
+fonts the document names.
 The user picks one of four themes and an accent color. Changing any single color saves a custom
 theme. The Otus theme with Otus blue is the palette recorded in [mail design foundations](suite/mail-design.md). See
 [decision 0014](decisions/0014-user-themes.md).
@@ -17,7 +19,7 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   compose fields (`ComposeTokens`).
   `panelTextStyle()` uses Figtree.
 - `elements`: `ActionButton`, `ActionRow`, `AnimatedText`, `Avatar`, `AvatarImage`, `BarIconButton`, `CalendarDay`,
-  `ComposeBody`, `ComposeField`, `ComposeValueField`,
+  `ComposeBody`, `ComposeField`, `ComposeValueField`, `HtmlView`,
   `CalendarMonthBackground`, `Chip`, `ColorSlider`, `ColorSwatch`, `AddSwatch`, `SwatchStack`, `IconButton`, `IconPill`, `InputField`, `LabelPill`, `RefreshIndicator`,
   `RowButton`, `SearchField`, `SearchPrompt`, `SelectionRow`, `SidebarEntry`, `SidebarHeading`,
   `SidebarCount`, `SidebarExpandButton`, `SidebarPill`, `SidebarRailAccount`, `SidebarRailAdd`, `SidebarRailDivider`,

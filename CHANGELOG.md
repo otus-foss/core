@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Add `HtmlView`, which shows an HTML document such as a message body in a platform web view.
+  Scripts never run. A Content Security Policy blocks frames, forms, and every outside resource
+  except remote images, styles, and fonts, which load only with `loadRemote`. Tapped web, mail,
+  and phone links go to `onOpenLink`; the view never navigates. On Android 13 and later, pages
+  without their own dark colors are darkened to match the theme.
 - Add the brand assets: source SVGs in `designsystem/brand/`, the `brand_otus_logo` and
   `brand_owl` drawables, and Mail's adaptive launcher icon `otus_mail_icon` as an Android
   resource.
