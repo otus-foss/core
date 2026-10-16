@@ -60,13 +60,9 @@ internal class ServerSubscription(
             }
         val result = connection.call(PushSubscriptionSetMethod(update = mapOf(id to patch)))
         return when {
-            // The server deleted it, perhaps because it expired; start a new one.
-            result.notUpdated[id]?.type == NOT_FOUND -> {
+            // The server deleted it or refused the code; a new one gets a new verification push.
+            id in result.notUpdated -> {
                 create(endpoint, replacing = null)
-            }
-
-            id !in result.updated -> {
-                record
             }
 
             else -> {
@@ -83,6 +79,8 @@ internal class ServerSubscription(
         endpoint: PushEndpoint,
         replacing: String?,
     ): PushRecord {
+        // RFC 8620, section 7.2 allows only https push URLs.
+        if (!endpoint.url.startsWith(HTTPS)) return PushRecord(endpoint, refused = true)
         val subscription = NewPushSubscription(deviceClientId, endpoint.url, endpoint.keys, expiry(), types)
         val result = createReplacing(subscription, replacing)
         val id = result?.createdId(CREATION)
@@ -120,14 +118,17 @@ internal class ServerSubscription(
             if (error.type in REFUSALS) null else throw error
         }
 
-    private fun expiresSoon(record: PushRecord): Boolean =
-        record.expires?.let { Instant.parse(it) - clock.now() < RENEW_BEFORE } ?: false
+    private fun expiresSoon(record: PushRecord): Boolean {
+        val expires = record.expires ?: return false
+        // Renewing replaces a date that cannot be read.
+        return Instant.parseOrNull(expires)?.let { it - clock.now() < RENEW_BEFORE } ?: true
+    }
 
     private fun expiry(): String = Instant.fromEpochSeconds((clock.now() + LIFETIME).epochSeconds).toString()
 
     private companion object {
         const val CREATION = "push"
-        const val NOT_FOUND = "notFound"
+        const val HTTPS = "https://"
 
         /** What a server without push subscriptions, or one that forbids them, answers. */
         val REFUSALS = setOf("unknownMethod", "forbidden")
