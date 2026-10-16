@@ -67,21 +67,6 @@ class ReorderDragTest {
         assertEquals(emptyList(), moves)
     }
 
-    @Test
-    fun aDropOntoARowNestsInsteadOfMoving() {
-        val nests = mutableListOf<Pair<Int, Int>>()
-        val drag = measuredDrag()
-        drag.layout(keys, 10f, ::move) { from, onto -> nests.add(from to onto) }
-        drag.start("first")
-        drag.moveBy(50f)
-        drag.drop()
-        drag.start("first")
-        drag.moveBy(140f)
-        drag.drop()
-        assertEquals(listOf(0 to 1), nests)
-        assertEquals(listOf(0 to 2), moves)
-    }
-
     private fun measuredDrag(): ReorderDrag =
         ReorderDrag().apply {
             layout(keys, 10f, ::move)

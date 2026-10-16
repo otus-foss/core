@@ -27,14 +27,13 @@ class LongPressReorderTest {
 
     private val clicks = mutableListOf<String>()
     private val moves = mutableListOf<Pair<Int, Int>>()
-    private val nests = mutableListOf<Pair<Int, Int>>()
 
     @Test
     fun aTapStillClicksTheRow() {
         showRows()
         compose.onNodeWithText("Clients").performClick()
         assertEquals(listOf("Clients"), clicks)
-        assertEquals(emptyList(), moves + nests)
+        assertEquals(emptyList(), moves)
     }
 
     @Test
@@ -43,15 +42,13 @@ class LongPressReorderTest {
         compose.onNodeWithText("Clients").performTouchInput { longClick() }
         compose.waitForIdle()
         assertEquals(emptyList(), clicks)
-        assertEquals(emptyList(), moves + nests)
+        assertEquals(emptyList(), moves)
     }
 
     @Test
-    fun draggingIntoTheMiddleOfARowNestsAndPastItMoves() {
+    fun aLongPressDragMovesTheRowPastOthers() {
         showRows()
-        dragFirstRowBy(ROW_HEIGHT / 2)
         dragFirstRowBy(ROW_HEIGHT * 2)
-        assertEquals(listOf(0 to 1), nests)
         assertEquals(listOf(0 to 2), moves)
         assertEquals(emptyList(), clicks)
     }
@@ -74,7 +71,6 @@ class LongPressReorderTest {
                 listOf("Clients", "Projects", "Receipts"),
                 key = { it },
                 onMove = { from, to -> moves.add(from to to) },
-                onNest = { from, onto -> nests.add(from to onto) },
             ) { name ->
                 Text(
                     name,

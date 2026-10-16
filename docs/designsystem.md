@@ -113,13 +113,8 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   A row without a handle passes `Modifier.dragOnLongPress()` from its `ReorderableScope`: a long
   press anywhere on the row starts the drag, and a tap still reaches the row's click. The gesture
   reads the initial pointer pass and consumes the rest of a long press, so lifting the finger does
-  not click the row or scroll the list. The overload with `onNest` also takes drops onto a row,
-  such as a folder dropped onto another folder. While the dragged row's leading edge, its bottom
-  edge moving down or its top edge moving up, is in the middle half of another row, that row gets
-  an `accentDark` fill and a drop calls `onNest(from, onto)`. In the outer quarters the drag
-  reorders and calls `onMove`, and a row steps aside only once the leading edge passes its middle
-  half. Screen readers get Move up and Move down but no way to nest; the app offers that elsewhere,
-  such as in a folder's settings.
+  not click the row or scroll the list. The dragged row gets a `bgLight` fill, and the other rows
+  step aside into the places they would take.
 - `RuleChip` shows one condition of a mail rule in a `bgLight` outline, like `ValueToken`. Its
   grid is fixed so stacked chips line up: a 52 dp label column (12 sp SemiBold `text2`), a 20 dp
   slot, and the value (15 sp, one line, ellipsis). The slot holds a 20 dp avatar for people and

@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- `ReorderableColumn` fills the row being dragged with `bgLight`. `FolderSettingRow` takes a
+- `ReorderableColumn` fills the row being dragged with `bgLight`; the other rows step aside. `FolderSettingRow` takes a
   `handle`, such as `ReorderableScope.DragHandle`, after its chevron, and `SidebarFolder` takes the
   `icon` that `FolderSettingRow` took before.
 - Add `Modifier.mutedRule()`, which fades a `RuleChip` or `RuleChipGroup` shown only for context,
@@ -15,8 +15,7 @@
   24 dp with `RowDensity.Compact`.
 - Add `FolderSettingRow` for a folder settings page, with the detail lines `FolderRuleSummary` and
   `FolderOwnerLine`, and `ScopePicker`, a card that opens an account picker.
-- `ReorderableColumn` has an overload with `onNest` that also takes drops onto a row.
-  `ReorderableScope` adds `Modifier.dragOnLongPress()`, which drags a row after a long press
+- `ReorderableScope` adds `Modifier.dragOnLongPress()`, which drags a row after a long press
   without a handle. Apps that implement `ReorderableScope` themselves must add it; the design
   system is the only implementer today.
 - Add the `symbol_short_text`, `symbol_code`, `symbol_forum`, `symbol_notes`, `symbol_schedule`,

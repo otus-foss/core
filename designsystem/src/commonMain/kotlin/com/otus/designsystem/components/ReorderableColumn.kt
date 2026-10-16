@@ -48,39 +48,14 @@ public fun <T> ReorderableColumn(
     background: Color = OtusColors.bgRegular,
     row: @Composable ReorderableScope.(T) -> Unit,
 ) {
-    ReorderableLayout(items, key, ReorderCallbacks(onMove, onNest = null), modifier, spacing, background, row)
+    ReorderableLayout(items, key, onMove, modifier, spacing, background, row)
 }
-
-/**
- * A [ReorderableColumn] whose rows also take drops onto them, such as a folder dropped onto
- * another folder to nest it. While the dragged row's leading edge is in the middle half of another
- * row, that row gets an `accentDark` fill, and dropping there calls [onNest] with the dragged
- * row's index and that row's index. Near a row's edges the drag reorders and calls [onMove]. Rows
- * follow each other without gaps.
- */
-@Composable
-public fun <T> ReorderableColumn(
-    items: List<T>,
-    key: (T) -> Any,
-    onMove: (from: Int, to: Int) -> Unit,
-    onNest: (from: Int, onto: Int) -> Unit,
-    modifier: Modifier = Modifier,
-    background: Color = OtusColors.bgRegular,
-    row: @Composable ReorderableScope.(T) -> Unit,
-) {
-    ReorderableLayout(items, key, ReorderCallbacks(onMove, onNest), modifier, 0.dp, background, row)
-}
-
-private class ReorderCallbacks(
-    val onMove: (Int, Int) -> Unit,
-    val onNest: ((Int, Int) -> Unit)?,
-)
 
 @Composable
 private fun <T> ReorderableLayout(
     items: List<T>,
     key: (T) -> Any,
-    callbacks: ReorderCallbacks,
+    onMove: (Int, Int) -> Unit,
     modifier: Modifier,
     spacing: Dp,
     background: Color,
@@ -89,10 +64,10 @@ private fun <T> ReorderableLayout(
     val keys = items.map(key)
     val spacingPx = with(LocalDensity.current) { spacing.toPx() }
     val drag = remember { ReorderDrag() }
-    SideEffect { drag.layout(keys, spacingPx, callbacks.onMove, callbacks.onNest) }
+    SideEffect { drag.layout(keys, spacingPx, onMove) }
     val heights = keys.map { drag.heights[it] ?: 0 }
     val from = keys.indexOf(drag.key)
-    val drop = if (from >= 0) reorderDrop(heights, from, drag.offset, spacingPx, callbacks.onNest != null) else null
+    val drop = if (from >= 0) reorderTarget(heights, from, drag.offset, spacingPx) else null
     val haptics = LocalHapticFeedback.current
     LaunchedEffect(drop) { if (drop != null) haptics.performHapticFeedback(HapticFeedbackType.SegmentTick) }
     Column(modifier, verticalArrangement = Arrangement.spacedBy(spacing)) {
@@ -103,7 +78,7 @@ private fun <T> ReorderableLayout(
                 // Rows snap back into their new places on drop instead of animating from their old ones.
                 val shiftMotion = motionTween<Float>(MotionSpeed.Fast)
                 val shift by animateFloatAsState(
-                    if (drop == null || dragged) 0f else reorderShift(index, from, drop.to, heights[from], spacingPx),
+                    if (drop == null || dragged) 0f else reorderShift(index, from, drop, heights[from], spacingPx),
                     if (drop == null) snap() else shiftMotion,
                     label = "Reorder shift",
                 )
@@ -112,8 +87,8 @@ private fun <T> ReorderableLayout(
                         drag,
                         itemKey,
                         haptics,
-                        up = { callbacks.onMove(index, index - 1) }.takeIf { index > 0 },
-                        down = { callbacks.onMove(index, index + 1) }.takeIf { index < items.lastIndex },
+                        up = { onMove(index, index - 1) }.takeIf { index > 0 },
+                        down = { onMove(index, index + 1) }.takeIf { index < items.lastIndex },
                     )
                 Box(
                     Modifier
@@ -121,7 +96,6 @@ private fun <T> ReorderableLayout(
                         .graphicsLayer { translationY = if (dragged) drag.offset else shift }
                         .background(background)
                         .then(if (dragged) Modifier.draggedFill() else Modifier)
-                        .then(if (index == drop?.onto) Modifier.nestHighlight() else Modifier)
                         .onSizeChanged { drag.heights[itemKey] = it.height },
                 ) { scope.row(item) }
             }
@@ -131,7 +105,3 @@ private fun <T> ReorderableLayout(
 
 /** Lifts the row being dragged off the rows around it. */
 private fun Modifier.draggedFill(): Modifier = background(OtusColors.bgLight, RoundedCornerShape(SheetTokens.rowRadius))
-
-/** Marks the row a dragged row would drop onto. */
-private fun Modifier.nestHighlight(): Modifier =
-    background(OtusColors.accentDark, RoundedCornerShape(SheetTokens.rowRadius))
