@@ -1,10 +1,9 @@
 package com.otus.settings.presentation.components
 
 import androidx.compose.runtime.Composable
-import com.otus.designsystem.components.ActionDialog
 import com.otus.designsystem.components.ConfirmDialog
-import com.otus.designsystem.components.DialogAction
 import com.otus.designsystem.components.InputDialog
+import com.otus.designsystem.components.MenuAction
 import com.otus.designsystem.theme.ThemeChoice
 import com.otus.settings.presentation.ThemeOption
 import com.otus.settings.presentation.copyName
@@ -12,9 +11,25 @@ import com.otus.settings.presentation.nameProblem
 import com.otus.settings.presentation.title
 
 /**
- * Shows [dialog]. Every theme can be duplicated; a custom theme can also be renamed or deleted.
- * [onChange] applies the new choice, and [onDialog] opens the next popup or closes with null.
+ * The menu for one theme card: every theme can be duplicated, and a custom theme can also be
+ * renamed or deleted. [onChange] applies a duplicate, and [onDialog] opens the rename or delete
+ * popup.
  */
+internal fun themeActions(
+    option: ThemeOption,
+    choice: ThemeChoice,
+    onChange: (ThemeChoice) -> Unit,
+    onDialog: (ThemeDialog) -> Unit,
+): List<MenuAction> {
+    val custom = option.custom
+    return buildList {
+        custom?.let { add(MenuAction("Rename") { onDialog(ThemeDialog.Rename(it)) }) }
+        add(MenuAction("Duplicate") { onChange(option.choice.withCopy(choice.copyName(option))) })
+        custom?.let { add(MenuAction("Delete") { onDialog(ThemeDialog.Delete(it)) }) }
+    }
+}
+
+/** Shows [dialog]; [onChange] applies the new choice, and [onDialog] closes it with null. */
 @Composable
 internal fun ThemeDialogs(
     dialog: ThemeDialog,
@@ -23,10 +38,6 @@ internal fun ThemeDialogs(
     onDialog: (ThemeDialog?) -> Unit,
 ) {
     when (dialog) {
-        is ThemeDialog.Actions -> {
-            ThemeActions(dialog.option, choice, onChange, onDialog)
-        }
-
         is ThemeDialog.Rename -> {
             InputDialog(
                 "Rename theme",
@@ -49,23 +60,4 @@ internal fun ThemeDialogs(
             )
         }
     }
-}
-
-@Composable
-private fun ThemeActions(
-    option: ThemeOption,
-    choice: ThemeChoice,
-    onChange: (ThemeChoice) -> Unit,
-    onDialog: (ThemeDialog?) -> Unit,
-) {
-    val custom = option.custom
-    ActionDialog(
-        option.title,
-        buildList {
-            custom?.let { add(DialogAction("Rename", { onDialog(ThemeDialog.Rename(it)) })) }
-            add(DialogAction("Duplicate", { onChange(option.choice.withCopy(choice.copyName(option))) }))
-            custom?.let { add(DialogAction("Delete", { onDialog(ThemeDialog.Delete(it)) })) }
-        },
-        onDismiss = { onDialog(null) },
-    )
 }

@@ -34,6 +34,7 @@ import com.otus.settings.presentation.components.ThemeCards
 import com.otus.settings.presentation.components.ThemeColorRows
 import com.otus.settings.presentation.components.ThemeDialog
 import com.otus.settings.presentation.components.ThemeDialogs
+import com.otus.settings.presentation.components.themeActions
 import com.otus.settings.presentation.title
 
 /**
@@ -64,7 +65,7 @@ public fun ThemeSettingsScreen(
                 .padding(ThemeTokens.previewPadding),
         ) { preview() }
         PageSection("Theme") {
-            ThemeCards(choice, state::select) { dialog = ThemeDialog.Actions(it) }
+            ThemeCards(choice, state::select) { themeActions(it, choice, state::select) { next -> dialog = next } }
         }
         PageSection("Accent color") {
             AccentPicker(

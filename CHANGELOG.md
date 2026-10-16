@@ -13,8 +13,9 @@
   which also names custom themes.
 - Add `SwatchStack`, overlapping color circles like `AvatarStack`. `ValueButton` takes an
   optional `fill` color with readable text on it. `SheetHeaderAction` is now public.
-- `ThemeCard` takes an optional `onActions`, run by a long press or the selected card's more
-  button.
+- Add `ContextMenu` with `MenuAction`: a small menu that opens where the user pressed, without
+  dimming the screen, and `Modifier.onPressDown` to find that point. `ThemeCard` takes optional
+  `actions` and opens them in it from a long press or the selected card's more button.
 - The theme page drops the accent shade examples and lists every color under Customize colors. A
   theme's actions duplicate it, and rename or delete a custom theme. "Reset to Otus" keeps custom
   themes.

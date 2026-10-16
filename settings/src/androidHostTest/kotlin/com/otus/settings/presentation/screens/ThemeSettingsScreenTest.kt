@@ -62,7 +62,7 @@ class ThemeSettingsScreenTest {
         state.select(ThemeChoice(ThemeBase.Ink).withColor(ThemeColor.Page, Color(0xFF101828)))
         showScreen()
         compose.onNodeWithContentDescription("Actions for Custom").performScrollTo().performClick()
-        compose.onNode(hasText("Delete") and hasClickAction()).performClick()
+        compose.onNodeWithText("Delete").performClick()
         compose.onNode(hasText("Delete") and hasClickAction()).performClick()
         assertEquals(ThemeChoice(ThemeBase.Ink), state.choice)
     }
