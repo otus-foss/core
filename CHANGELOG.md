@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- `FolderSettingRow` draws tree guide lines under the icons of the levels above it, and
+  `AccountGroupRow` takes an `action`, such as a New folder button, before its chevron.
 - Add `ReorderableTree` and `TreeDropTarget`. A dragged row stays over the rows without moving
   them, and an `accentLight` line shows whether it lands in a gap, at the depth of the row below,
   or inside a row as its first child. The app's `canDrop` hides targets it would refuse.
