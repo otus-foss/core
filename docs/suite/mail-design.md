@@ -135,9 +135,10 @@ use an `accent-dark` tint. The palette is unchanged.
 
 ## Motion
 
-Every animation uses Meta's `Motion` API: three cubic Bézier curves in `MotionCurve`, four
+Every animation uses Meta's `Motion` API: four cubic Bézier curves in `MotionCurve`, four
 speeds in `MotionSpeed`, and a global speed multiplier in `LocalMotionScale`. The curves are
-standard (0.4, 0, 0.2, 1), enter (0.2, 0, 0, 1), and exit (0.4, 0, 1, 1). The curves and speeds
+standard (0.4, 0, 0.2, 1), reverse (0.8, 0, 0.6, 1), enter (0.2, 0, 0, 1), and exit
+(0.4, 0, 1, 1). The curves and speeds
 are app motion decisions, not verified Figma motion values. The
 [design system guide](../designsystem.md#motion) lists them and shows how to use them.
 
@@ -151,8 +152,8 @@ Rules for both apps:
 - Pick the speed by what moves. `Quick` is feedback on touch, `Fast` is a small change in place,
   `Normal` is panels, sheets, and text, and `Relaxed` is a large surface such as the sidebar or a
   settling row.
-- Pick the curve by direction. `Standard` is the default, `Enter` is for things that arrive, and
-  `Exit` is for things that leave.
+- Pick the curve by direction. `Standard` is the default, `Reverse` undoes a `Standard` change so
+  it plays backward, `Enter` is for things that arrive, and `Exit` is for things that leave.
 - To make everything faster or slower, change `LocalMotionScale`. Do not edit the speeds.
 
 Mail follows these rules. Calendar still has its own motion code and adopts `Motion` when it

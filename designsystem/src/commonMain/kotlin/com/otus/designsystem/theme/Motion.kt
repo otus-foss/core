@@ -10,14 +10,17 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import kotlin.math.roundToInt
 
 /**
- * The shape of an animation over time. [Standard] suits anything that changes in place. [Enter]
- * and [Exit] are for things that arrive or leave in a direction, such as sheets, the sidebar, and
- * replaced text.
+ * The shape of an animation over time. [Standard] suits anything that changes in place, and
+ * [Reverse] undoes such a change. [Enter] and [Exit] are for things that arrive or leave in a
+ * direction, such as sheets, the sidebar, and replaced text.
  */
 public enum class MotionCurve(
     public val easing: Easing,
 ) {
     Standard(CubicBezierEasing(0.4f, 0f, 0.2f, 1f)),
+
+    /** [Standard] played backward, so undoing a change retraces it frame for frame. */
+    Reverse(CubicBezierEasing(0.8f, 0f, 0.6f, 1f)),
 
     /** Decelerates, so arriving content settles gently. */
     Enter(CubicBezierEasing(0.2f, 0f, 0f, 1f)),

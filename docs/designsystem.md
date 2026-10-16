@@ -79,7 +79,10 @@ palette recorded in [mail design foundations](suite/mail-design.md). See
   buttons never move. Without a `BarContext`, the primary fills the shell with its label. With
   one, the primary shrinks to a 60 dp button at the shell's end, and a `BarToken` with the
   primary's label and the context's subtitle fills the rest. The whole shell stays one button,
-  read as "label, description". When the primary changes, including when a page opens over
+  read as "label, description". A bar that opens over another moves its shell and action from
+  the other's in one 160 ms motion on the standard curve. When the page closes, the bar beneath
+  moves back on the reverse curve, so closing replays opening backward; a context that goes away
+  in place leaves the same way. When the primary changes, including when a page opens over
   another or closes back to it, its icon and label fade and scale out while the new ones fade and
   scale in, 120 ms on the exit and enter curves; the shell stays. With `minimized`, the bar shows only the primary's icon in a
   62 dp circle at its end, as far from the screen's end edge as from its bottom edge (the
@@ -115,11 +118,12 @@ Every animation in the design system and in Mail takes its duration and curve fr
 `theme/Motion.kt`. The rules for picking a speed and a curve are in
 [mail design foundations](suite/mail-design.md#motion).
 
-`MotionCurve` holds three cubic Bézier curves:
+`MotionCurve` holds four cubic Bézier curves:
 
 | Curve | Bézier | Use |
 | --- | --- | --- |
 | `Standard` | (0.4, 0, 0.2, 1) | The default, for anything that changes in place |
+| `Reverse` | (0.8, 0, 0.6, 1) | `Standard` played backward, for undoing a change so it retraces its steps |
 | `Enter` | (0.2, 0, 0, 1) | Decelerates, for sheets, the sidebar, and text that arrive |
 | `Exit` | (0.4, 0, 1, 1) | Accelerates, for the same things as they leave |
 

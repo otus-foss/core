@@ -38,6 +38,14 @@ class MotionTest {
     }
 
     @Test
+    fun reversePlaysStandardBackward() {
+        (0..20).map { it / 20f }.forEach { t ->
+            val backward = 1f - MotionCurve.Standard.easing.transform(1f - t)
+            assertEquals(backward, MotionCurve.Reverse.easing.transform(t), absoluteTolerance = 0.002f)
+        }
+    }
+
+    @Test
     fun aScaleThatIsNotPositiveIsRejected() {
         assertFailsWith<IllegalArgumentException> { Motion.millis(MotionSpeed.Normal, scale = 0f) }
     }
