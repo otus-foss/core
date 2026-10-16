@@ -1,44 +1,33 @@
 package com.otus.settings.presentation.components
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.otus.designsystem.components.MenuAction
 import com.otus.designsystem.components.ThemeCard
-import com.otus.designsystem.theme.ThemeBase
 import com.otus.designsystem.theme.ThemeChoice
-import com.otus.designsystem.theme.ThemeTokens
-import com.otus.settings.presentation.description
-import com.otus.settings.presentation.title
+import com.otus.settings.presentation.ThemeOption
+import com.otus.settings.presentation.options
 
-/** Every theme as a card in two columns, each sketched with [choice]'s accent. */
+/**
+ * Every theme, built-in and custom, as a card in two columns, each sketched in its own colors. A
+ * long press or the selected card's more button opens that theme's [actions].
+ */
 @Composable
 internal fun ThemeCards(
     choice: ThemeChoice,
-    onSelect: (ThemeBase) -> Unit,
+    onSelect: (ThemeChoice) -> Unit,
+    actions: (ThemeOption) -> List<MenuAction>,
 ) {
-    Column(
-        Modifier.fillMaxWidth().selectableGroup(),
-        verticalArrangement = Arrangement.spacedBy(ThemeTokens.cardGap),
-    ) {
-        ThemeBase.entries.chunked(COLUMNS).forEach { row ->
-            Row(horizontalArrangement = Arrangement.spacedBy(ThemeTokens.cardGap)) {
-                row.forEach { base ->
-                    ThemeCard(
-                        title = base.title,
-                        description = base.description,
-                        sketch = choice.copy(base = base).palette,
-                        selected = base == choice.base,
-                        onClick = { onSelect(base) },
-                        modifier = Modifier.weight(1f),
-                    )
-                }
-            }
-        }
+    PairedGrid(choice.options, Modifier.selectableGroup()) { option, modifier ->
+        ThemeCard(
+            title = option.title,
+            description = option.description,
+            sketch = option.choice.palette,
+            selected = option.selected,
+            onClick = { onSelect(option.choice) },
+            modifier = modifier,
+            actions = actions(option),
+        )
     }
 }
-
-private const val COLUMNS = 2

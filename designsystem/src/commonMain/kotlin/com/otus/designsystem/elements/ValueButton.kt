@@ -20,22 +20,28 @@ import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PanelTokens
 import com.otus.designsystem.theme.SettingTokens
 import com.otus.designsystem.theme.ThemeTokens
+import com.otus.designsystem.theme.contrast
 
 /**
  * The current value of a setting in an outlined chip, such as a choice or the word "Edit". A
- * [swatch] puts a dot of that color before the value, such as the current accent. It only shows
- * [value]; the enclosing row acts and supplies the accessible name.
+ * [swatch] puts a dot of that color before the value, such as the current accent. A [fill] colors
+ * the whole chip, such as a color shown by its hex code, and the text takes whichever of `text1`
+ * and `bgDark` reads better on it. It only shows [value]; the enclosing row acts and supplies the
+ * accessible name.
  */
 @Composable
 public fun ValueButton(
     value: String,
     modifier: Modifier = Modifier,
     swatch: Color? = null,
+    fill: Color? = null,
 ) {
+    val shape = RoundedCornerShape(SettingTokens.valueRadius)
     Row(
         modifier
             .widthIn(max = SettingTokens.valueMaxWidth)
-            .border(PanelTokens.borderWidth, OtusColors.bgLight, RoundedCornerShape(SettingTokens.valueRadius))
+            .then(if (fill == null) Modifier else Modifier.background(fill, shape))
+            .border(PanelTokens.borderWidth, OtusColors.bgLight, shape)
             .padding(
                 start = if (swatch == null) SettingTokens.valuePaddingHorizontal else SettingTokens.valuePaddingSwatch,
                 end = SettingTokens.valuePaddingHorizontal,
@@ -53,6 +59,14 @@ public fun ValueButton(
                     .border(PanelTokens.borderWidth, OtusColors.accentLight, CircleShape),
             )
         }
-        Text(value, Modifier.weight(1f, fill = false), maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Text(
+            value,
+            Modifier.weight(1f, fill = false),
+            color = fill?.let(::readableOn) ?: Color.Unspecified,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }
+
+private fun readableOn(fill: Color): Color = listOf(OtusColors.text1, OtusColors.bgDark).maxBy { contrast(it, fill) }

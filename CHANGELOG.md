@@ -2,6 +2,26 @@
 
 ## Unreleased
 
+- Add the Ink theme, darker than Otus with surfaces closer together, and custom themes (decision
+  0014). `ThemeColor` names the ten colors a user can change. `ThemeChoice` keeps a list of
+  `CustomTheme`s, and `withColor` on a built-in theme creates and selects a new custom theme, so
+  built-in themes never change. `withBase`, `withCustomTheme`, `withAccent`, `withName`,
+  `withCopy`, and `withoutCustomTheme` select, edit, rename, duplicate, and delete themes.
+- **Breaking:** the Graphite theme is removed. A saved choice of Graphite opens as Otus.
+- **Breaking:** `AccentShades.adjusted` is gone, and so are the accent card tokens
+  `accentCardPadding`, `accentCardGap`, `rolePillHeight`, and `roleLabelSize`.
+- **Breaking:** `ThemeBase.title` in `settings` is now internal. Use `ThemeChoice.themeTitle`,
+  which also names custom themes.
+- Add `SwatchStack`, overlapping color circles like `AvatarStack`. `ValueButton` takes an
+  optional `fill` color with readable text on it. `SheetHeaderAction` is now public.
+- Add `ContextMenu` with `MenuAction`: a small menu that opens where the user pressed, without
+  dimming the screen, and `Modifier.onPressDown` to find that point. `ThemeCard` takes optional
+  `actions` and opens them in it from a long press or the selected card's more button.
+- The theme page drops the accent shade examples and lists every color under Customize colors. A
+  theme's actions duplicate it, and rename or delete a custom theme. "Reset to Otus" keeps custom
+  themes.
+- The color sheets now close after Done or Reset. Before, the closed sheet stayed on screen,
+  dimmed the page, and blocked taps.
 - Add `SlidingPages`, which slides a new page in from the side and pushes the current one out.
   A deeper page comes in from the end edge on `MotionCurve.Standard`; a shallower one returns
   from the start edge on `MotionCurve.Reverse`. Both run at `MotionSpeed.Normal`.
@@ -14,6 +34,7 @@
 - **Breaking:** `AppearanceSettingsScreen` takes `animation` and adds an Animations row to the
   Look section. Apps must pass an `AnimationSettingsState` and provide its speed's scale as
   `LocalMotionScale`.
+
 - Add `MotionCurve.Reverse`, the standard curve played backward. When a page closes, the action
   bar beneath now moves back on it, and a context that goes away in place uses it too, so both
   replay the way the bar collapsed.
