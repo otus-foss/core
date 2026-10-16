@@ -93,6 +93,23 @@ class JmapAccountRepositoryTest {
         }
 
     @Test
+    fun removingRunsTheHookWhileTheCredentialsStillExist() =
+        runTest {
+            store.save(JmapLogin("ada", draft.sessionUrl, draft.username, "Ada"), "secret")
+            val client = JmapClient(stalwartLike { mailboxes })
+            var secretAtHook: LoginSecret? = null
+            JmapAccountRepository(
+                client,
+                JmapConnections(client, store),
+                store,
+                AccountService.Mail,
+                beforeRemove = { secretAtHook = store.secret(it) },
+            ).remove("ada")
+            assertIs<LoginSecret.Found>(secretAtHook)
+            assertTrue(store.logins().isEmpty())
+        }
+
+    @Test
     fun failuresSaveNothing() =
         runTest {
             val wrong = repository(stalwartLike()).connect(draft.copy(password = "other"))

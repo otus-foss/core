@@ -13,10 +13,13 @@ Each app connects its own push service, such as a UnifiedPush receiver on Androi
     push service reported.
   - `receive(loginId, verification)` keeps the code of a `PushVerification` push for the
     current subscription.
-  - `sync()` makes each server match. It creates or replaces subscriptions, sends verification
-    codes, renews subscriptions that expire within 3 days for another 7, and deletes them when
-    the endpoint is cleared.
-  - `status()` reports `Off`, `Waiting`, `Active`, or `Refused` per login.
+  - `sync()` makes each server match, asking all servers in parallel. It creates or replaces
+    subscriptions, sends verification codes, renews subscriptions past half their granted
+    lifetime for another 7 days, and deletes them when the endpoint is cleared.
+  - `forget(loginId)` deletes a login's subscription and record. Call it before the login's
+    credentials are removed; `JmapAccountRepository` takes it as `beforeRemove`.
+  - `status()` reports `Off`, `Waiting`, `Active`, or `Refused` per login, without waiting for a
+    running `sync`.
 - `PushStateStore` keeps each login's record as text in app-private storage. Records hold no
   credentials.
 
@@ -27,12 +30,17 @@ Each app connects its own push service, such as a UnifiedPush receiver on Androi
 - Creating a subscription also deletes this device's earlier ones, found by `deviceClientId`, so
   a reinstall does not leave the server pushing twice.
 - A server that answers `unknownMethod` or `forbidden`, or does not create the subscription, is
-  marked `Refused`. The next `sync` tries again.
+  marked `Refused`. The next `sync` tries again. A push URL that is not https is refused without
+  asking the server, and the login's earlier subscription is deleted.
+- A subscription still unverified an hour after creation is created again, because the server
+  pushes nothing until the client returns the code. An update the server rejects, such as a wrong
+  code, also starts a new subscription.
 - A server that cannot be reached keeps the login's record until the next `sync`.
-- A record of a removed login is dropped without contacting the server, because its credentials
-  are gone. The server deletes the subscription when it expires.
+- A record of a login removed without `forget` is dropped without contacting the server, because
+  its credentials are gone. The server deletes the subscription when it expires.
 
 ## Checks
 
 `PushSubscriptionsTest` covers creation, verification, replacement of an earlier endpoint and
-this device's old subscriptions, renewal, refusal, deletion, and an unreachable server.
+this device's old subscriptions, refusal, deletion, and an unreachable server.
+`PushSubscriptionUpkeepTest` covers renewal, retried verification, http endpoints, and `forget`.

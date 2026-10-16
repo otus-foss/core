@@ -45,6 +45,8 @@ internal data class PushRecord(
     val subscribed: PushEndpoint? = null,
     /** The UTCDate the server deletes the subscription. */
     val expires: String? = null,
+    /** The UTCDate the subscription was created or last renewed. */
+    val since: String? = null,
     /** A verification code received but not yet sent back. */
     val verificationCode: String? = null,
     val verified: Boolean = false,

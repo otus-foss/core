@@ -12,6 +12,7 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlin.time.Clock
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
 import kotlin.time.Instant
 
 /** The server calls that bring one login's subscription in line with its [PushRecord]. */
@@ -27,7 +28,7 @@ internal class ServerSubscription(
         val id = record.subscriptionId
         return when {
             endpoint == null -> {
-                id?.let { connection.call(PushSubscriptionSetMethod(destroy = listOf(it))) }
+                id?.let { destroy(it) }
                 null
             }
 
@@ -37,6 +38,11 @@ internal class ServerSubscription(
 
             record.verificationCode != null || expiresSoon(record) -> {
                 upkeep(record, id, endpoint)
+            }
+
+            // The verification push never arrived, and the server pushes nothing until it does.
+            !record.verified && age(record) > VERIFY_WITHIN -> {
+                create(endpoint, replacing = id)
             }
 
             else -> {
@@ -59,19 +65,16 @@ internal class ServerSubscription(
                 expires?.let { put("expires", JsonPrimitive(it)) }
             }
         val result = connection.call(PushSubscriptionSetMethod(update = mapOf(id to patch)))
-        return when {
-            // The server deleted it or refused the code; a new one gets a new verification push.
-            id in result.notUpdated -> {
-                create(endpoint, replacing = null)
-            }
-
-            else -> {
-                record.copy(
-                    verificationCode = null,
-                    verified = record.verified || code != null,
-                    expires = result.updated[id]?.stringOf("expires") ?: expires ?: record.expires,
-                )
-            }
+        return if (id in result.notUpdated) {
+            // The server deleted it or refused the change; a new one gets a new verification push.
+            create(endpoint, replacing = null)
+        } else {
+            record.copy(
+                verificationCode = null,
+                verified = record.verified || code != null,
+                expires = result.updated[id]?.stringOf("expires") ?: expires ?: record.expires,
+                since = if (expires != null) now() else record.since,
+            )
         }
     }
 
@@ -79,8 +82,10 @@ internal class ServerSubscription(
         endpoint: PushEndpoint,
         replacing: String?,
     ): PushRecord {
-        // RFC 8620, section 7.2 allows only https push URLs.
-        if (!endpoint.url.startsWith(HTTPS)) return PushRecord(endpoint, refused = true)
+        if (!NewPushSubscription.allows(endpoint.url)) {
+            replacing?.let { destroy(it) }
+            return PushRecord(endpoint, refused = true)
+        }
         val subscription = NewPushSubscription(deviceClientId, endpoint.url, endpoint.keys, expiry(), types)
         val result = createReplacing(subscription, replacing)
         val id = result?.createdId(CREATION)
@@ -92,6 +97,7 @@ internal class ServerSubscription(
                 subscriptionId = id,
                 subscribed = endpoint,
                 expires = result.created[CREATION]?.stringOf("expires") ?: subscription.expires,
+                since = now(),
             )
         }
     }
@@ -118,24 +124,37 @@ internal class ServerSubscription(
             if (error.type in REFUSALS) null else throw error
         }
 
-    private fun expiresSoon(record: PushRecord): Boolean {
-        val expires = record.expires ?: return false
-        // Renewing replaces a date that cannot be read.
-        return Instant.parseOrNull(expires)?.let { it - clock.now() < RENEW_BEFORE } ?: true
+    private suspend fun destroy(id: String) {
+        connection.call(PushSubscriptionSetMethod(destroy = listOf(id)))
     }
+
+    /** Past half of the granted lifetime, so a server that grants less than asked is still renewed in time. */
+    private fun expiresSoon(record: PushRecord): Boolean {
+        val text = record.expires ?: return false
+        val expires = Instant.parseOrNull(text)
+        val since = record.since?.let(Instant::parseOrNull) ?: expires?.minus(LIFETIME)
+        // Renewing replaces a date that cannot be read.
+        return expires == null || since == null || clock.now() - since > (expires - since) / 2
+    }
+
+    private fun age(record: PushRecord): Duration =
+        record.since?.let(Instant::parseOrNull)?.let { clock.now() - it } ?: Duration.INFINITE
+
+    private fun now(): String = Instant.fromEpochSeconds(clock.now().epochSeconds).toString()
 
     private fun expiry(): String = Instant.fromEpochSeconds((clock.now() + LIFETIME).epochSeconds).toString()
 
     private companion object {
         const val CREATION = "push"
-        const val HTTPS = "https://"
 
         /** What a server without push subscriptions, or one that forbids them, answers. */
         val REFUSALS = setOf("unknownMethod", "forbidden")
 
-        /** Servers may shorten it; [RENEW_BEFORE] leaves room for days without a sync. */
+        /** Servers may shorten it. */
         val LIFETIME: Duration = 7.days
-        val RENEW_BEFORE: Duration = 3.days
+
+        /** Servers send the verification push at once; this leaves room for a push app that was offline. */
+        val VERIFY_WITHIN: Duration = 1.hours
     }
 }
 
