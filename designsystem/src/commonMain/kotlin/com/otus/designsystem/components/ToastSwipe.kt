@@ -1,0 +1,196 @@
+package com.otus.designsystem.components
+
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.animate
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.LocalContentColor
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.AbsoluteAlignment
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
+import com.otus.designsystem.elements.Symbol
+import com.otus.designsystem.resources.Res
+import com.otus.designsystem.resources.symbol_close
+import com.otus.designsystem.theme.LocalMotionScale
+import com.otus.designsystem.theme.Motion
+import com.otus.designsystem.theme.MotionCurve
+import com.otus.designsystem.theme.MotionSpeed
+import com.otus.designsystem.theme.OtusColors
+import com.otus.designsystem.theme.PanelTokens
+import com.otus.designsystem.theme.ToastTokens
+import com.otus.designsystem.theme.motionTween
+import com.otus.designsystem.theme.panelTextStyle
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlin.math.abs
+import kotlin.math.sign
+
+/**
+ * Lets the user drag [content] sideways in either direction. A darker end opens behind it on the
+ * side it leaves, with a dim close symbol. Past [ToastTokens.DISMISS_FRACTION] of the width the
+ * symbol brightens and a haptic marks it; releasing there slides the toast
+ * out and calls [onDismiss], and shorter drags spring back. [onHeld] reports whether the toast is
+ * away from rest, so its timer can pause. [content] receives whether the toast is lifted.
+ */
+@Composable
+internal fun ToastSwipe(
+    enabled: Boolean,
+    onHeld: (Boolean) -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable (lifted: Boolean) -> Unit,
+) {
+    var width by remember { mutableIntStateOf(0) }
+    var offset by remember { mutableFloatStateOf(0f) }
+    var settle by remember { mutableStateOf<Job?>(null) }
+    val fade = remember { Animatable(1f) }
+    val scope = rememberCoroutineScope()
+    val motionScale = LocalMotionScale.current
+    val currentOnHeld by rememberUpdatedState(onHeld)
+    val currentOnDismiss by rememberUpdatedState(onDismiss)
+    val armed = width > 0 && abs(offset) >= width * ToastTokens.DISMISS_FRACTION
+    val held = offset != 0f
+    ThresholdHaptic(armed)
+    LaunchedEffect(held) { currentOnHeld(held) }
+    Box(
+        modifier
+            .onSizeChanged { width = it.width }
+            .draggable(
+                rememberDraggableState { offset += it },
+                Orientation.Horizontal,
+                enabled,
+                onDragStarted = { settle?.cancel() },
+                onDragStopped = {
+                    val dismissing = abs(offset) >= width * ToastTokens.DISMISS_FRACTION
+                    settle =
+                        scope.launch {
+                            if (dismissing) {
+                                launch {
+                                    fade.animateTo(
+                                        0f,
+                                        Motion.tween(MotionSpeed.Normal, MotionCurve.Exit, motionScale),
+                                    )
+                                }
+                                slide(offset, offset.sign * width, MotionCurve.Exit, motionScale) { offset = it }
+                                currentOnDismiss()
+                            } else {
+                                slide(offset, 0f, MotionCurve.Standard, motionScale) { offset = it }
+                            }
+                        }
+                },
+            ).graphicsLayer { alpha = fade.value },
+    ) {
+        if (held) DismissEnd(offset, armed, Modifier.matchParentSize())
+        Box(Modifier.graphicsLayer { translationX = offset }) { content(held) }
+    }
+}
+
+private suspend fun slide(
+    from: Float,
+    to: Float,
+    curve: MotionCurve,
+    motionScale: Float,
+    onFrame: (Float) -> Unit,
+) = animate(
+    from,
+    to,
+    animationSpec = Motion.tween(MotionSpeed.Normal, curve, motionScale),
+) { value, _ -> onFrame(value) }
+
+/**
+ * The darker pill behind a dragged toast, from the edge it left to just under it. A close symbol
+ * sits centered in the uncovered strip until it reaches its inset at that edge. It is dim until
+ * [armed]; then it brightens, and "Dismiss" fades in beside it once the label is fully uncovered.
+ */
+@Composable
+private fun DismissEnd(
+    offset: Float,
+    armed: Boolean,
+    modifier: Modifier,
+) {
+    val fromLeft = offset > 0f
+    val reveal = abs(offset)
+    val density = LocalDensity.current
+    var needed by remember { mutableIntStateOf(Int.MAX_VALUE) }
+    val inset =
+        with(density) {
+            ((reveal - PanelTokens.iconSize.toPx()) / 2f).coerceIn(0f, ToastTokens.textInset.toPx()).toDp()
+        }
+    val color by animateColorAsState(
+        if (armed) OtusColors.text1 else OtusColors.text3,
+        motionTween(MotionSpeed.Quick),
+        label = "Dismiss color",
+    )
+    val labelAlpha by animateFloatAsState(
+        if (armed && reveal >= needed) 1f else 0f,
+        motionTween(MotionSpeed.Quick),
+        label = "Dismiss label",
+    )
+    Box(modifier.dismissPill(offset)) {
+        Row(
+            Modifier
+                .align(if (fromLeft) AbsoluteAlignment.CenterLeft else AbsoluteAlignment.CenterRight)
+                .onSizeChanged { needed = it.width }
+                .padding(horizontal = inset),
+            horizontalArrangement = Arrangement.Absolute.spacedBy(ToastTokens.actionGap),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            val label = @Composable {
+                Text(
+                    "Dismiss",
+                    Modifier.graphicsLayer { alpha = labelAlpha },
+                    style = panelTextStyle(),
+                    color = color,
+                    maxLines = 1,
+                )
+            }
+            if (!fromLeft) label()
+            CompositionLocalProvider(LocalContentColor provides color) { Symbol(Res.drawable.symbol_close) }
+            if (fromLeft) label()
+        }
+    }
+}
+
+/** Fills a pill from the side the toast left, reaching a toast's height past [offset] so it tucks under it. */
+private fun Modifier.dismissPill(offset: Float): Modifier =
+    drawBehind {
+        val reach = minOf(abs(offset) + size.height, size.width)
+        val left = if (offset > 0f) 0f else size.width - reach
+        val radius = CornerRadius(size.height / 2f)
+        val border = PanelTokens.borderWidth.toPx()
+        drawRoundRect(OtusColors.bgDark, Offset(left, 0f), Size(reach, size.height), radius)
+        drawRoundRect(
+            OtusColors.strokeBgDark,
+            Offset(left + border / 2f, border / 2f),
+            Size(reach - border, size.height - border),
+            radius,
+            style = Stroke(border),
+        )
+    }

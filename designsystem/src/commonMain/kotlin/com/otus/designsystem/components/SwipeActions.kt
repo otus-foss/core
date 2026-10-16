@@ -203,7 +203,7 @@ private suspend fun AnchoredDragScope.slideTo(
 
 /** A haptic each time a drag crosses the point where releasing will act. */
 @Composable
-private fun ThresholdHaptic(armed: Boolean) {
+internal fun ThresholdHaptic(armed: Boolean) {
     val haptics = LocalHapticFeedback.current
     LaunchedEffect(armed) { if (armed) haptics.performHapticFeedback(HapticFeedbackType.GestureThresholdActivate) }
 }
