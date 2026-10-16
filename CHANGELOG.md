@@ -22,6 +22,18 @@
   themes.
 - The color sheets now close after Done or Reset. Before, the closed sheet stayed on screen,
   dimmed the page, and blocked taps.
+- Add `SlidingPages`, which slides a new page in from the side and pushes the current one out.
+  A deeper page comes in from the end edge on `MotionCurve.Standard`; a shallower one returns
+  from the start edge on `MotionCurve.Reverse`. Both run at `MotionSpeed.Normal`.
+- Add `SlidingOverlay`, the same slide for a page over another that stays composed, such as an
+  open message over its list.
+- Add `AnimationSpeed` (Instant, Slow, Regular, Fast), a user choice of `LocalMotionScale`.
+  Instant finishes every `Motion` animation at once. Add `AnimationSettingsState` and
+  `AnimationPreferenceStore` to `settings`, and the `symbol_speed` symbol (Material Symbols
+  Rounded, Apache 2.0).
+- **Breaking:** `AppearanceSettingsScreen` takes `animation` and adds an Animations row to the
+  Look section. Apps must pass an `AnimationSettingsState` and provide its speed's scale as
+  `LocalMotionScale`.
 
 - Add `MotionCurve.Reverse`, the standard curve played backward. When a page closes, the action
   bar beneath now moves back on it, and a context that goes away in place uses it too, so both
