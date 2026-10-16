@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add `TrailingIcons`, two touch-target-wide slots at a row's end. `FolderSettingRow` and
+  `AccountGroupRow` use it, so their icons line up in the same two columns.
 - Add `InputSheet`, `InputDialog`'s text field in a `SheetFrame`.
 - Add `QuickActionBar`, a small bar of icon `MenuAction`s that opens above a long-pressed point.
   `MenuAction` takes an optional `icon` before `onClick`. `FolderSettingRow` takes `onLongClick`

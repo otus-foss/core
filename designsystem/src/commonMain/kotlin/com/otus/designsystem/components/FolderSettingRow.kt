@@ -139,10 +139,14 @@ private fun FolderRowLayout(
             slots.detail?.invoke()
         }
         folder.count?.let { SidebarCount(it) }
-        CompositionLocalProvider(LocalContentColor provides OtusColors.text2) {
-            Symbol(Res.drawable.symbol_settings)
-        }
-        slots.handle?.invoke()
+        TrailingIcons(
+            first = {
+                CompositionLocalProvider(LocalContentColor provides OtusColors.text2) {
+                    Symbol(Res.drawable.symbol_settings)
+                }
+            },
+            last = slots.handle,
+        )
     }
 }
 

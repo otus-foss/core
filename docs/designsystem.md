@@ -144,6 +144,8 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   of" rule: one outline, a small `text3` title such as "ALL OF", and hairlines between its
   conditions, on the same grid. `AddRuleChip` is a dashed chip of the same height with its plus in
   the slot column and its label in the value column. A chip or group with `onClick` is one button.
+- `TrailingIcons` puts up to two icons at a row's end, each centered in a 48 dp slot with no gap,
+  so rows that use it, such as `FolderSettingRow` and `AccountGroupRow`, line them up.
 - `InputSheet` asks for one line of text, such as a new name, in a `SheetFrame`: the field is
   focused when it opens, the header button confirms, and `problem` disables it while the text
   can't be used. `InputDialog` asks the same in a popup.
