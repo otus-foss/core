@@ -110,7 +110,7 @@ app sees Read later as an ordinary folder.
 | `Email/set` keyword patch | Used | Read and unread (`$seen`), flagged (`$flagged`). |
 | `Email/set` `mailboxIds` patch | Used | Move, Archive, Trash, Read later, rule backfill. Batched within `maxObjectsInSet`. |
 | `Email/set` create and destroy drafts | In progress | Compose saves to the `drafts` role folder on `feat/action-bar`. |
-| HTML bodies (`htmlBody`) | Planned | Reader, [Mail #25](https://github.com/reazndev/otus-mail/issues/25). Today the app shows plain text only. |
+| HTML bodies (`htmlBody`) | Partial | Mail renders an open message's HTML body in `HtmlView` with scripts off and remote images hidden until the user shows them. Inline `cid:` images are not loaded yet. See [Mail #25](https://github.com/reazndev/otus-mail/issues/25). |
 | Headers beyond From and Subject (`to`, `cc`, `messageId`, `references`) | In progress | Compose reads them for replies on `feat/action-bar`. |
 | Attachment download | Planned | Mail #25. Rows show attachment names only. |
 | Server-side search (`text`, `from`, `subject` filters) | Planned | [Mail #23](https://github.com/reazndev/otus-mail/issues/23) plans local and server evaluation. Today search filters loaded messages on the device. |
