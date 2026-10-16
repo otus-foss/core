@@ -34,3 +34,25 @@ Common tests cover the shade rules and the saved choice.
 Components must take colors from `OtusColors` at the time they draw and never cache them outside
 composition. Colors that sit on accents or images, such as a swatch's check, are theme tokens of
 their own. Scrims use `OtusColors.scrim`, which is dark in every theme.
+
+## Update: Ink and custom colors
+
+The user asked for a fifth theme and for every color to be editable, not only the accent.
+
+**Ink** sits between Otus and Light. It is darker than Otus, and its page, raised surfaces,
+controls, and borders sit closer together, so screens show less contrast between surfaces. Its
+muted text still reads at 4.5:1 on the page.
+
+Each theme's ten colors (`ThemeColor`: page, raised surfaces, controls, borders, three text colors,
+and the three accent shades) can be changed one by one under Colors on the theme page. The
+built-in themes never change. The first change on a built-in theme creates a custom theme
+(`CustomTheme`) made from it and selects it; it shows as "Custom", "Custom 2", and so on, after the
+built-in cards. Later changes edit the selected custom theme. A custom theme stays, even with
+every color put back, until the user deletes it from the theme page; the app then switches to the
+theme it was made from. "Reset to Otus" selects Otus and Otus blue and keeps custom themes.
+
+The derived accent shades follow a changed page, raised surface, or text color. Picking a new
+accent drops the accent shades set by hand in the selected custom theme. The saved preference
+adds the selected custom theme, each custom theme and its source theme, and each changed color
+after the theme and accent, such as `light #2383E2 custom=1 1:ink 1:page=#101011`. Older saved
+values still read.

@@ -27,6 +27,17 @@ public enum class ThemeBase(
         text3 = Color(0xFF8A8A8A),
     ),
 
+    /** Darker than [Otus], with surfaces closer together so the page reads as one calm plane. */
+    Ink(
+        page = Color(0xFF18181A),
+        raised = Color(0xFF121213),
+        light = Color(0xFF2C2D2F),
+        stroke = Color(0xFF212224),
+        text1 = Color(0xFFE3E4E5),
+        text2 = Color(0xFFB9BABB),
+        text3 = Color(0xFF86878A),
+    ),
+
     /** Bright pages with white surfaces. */
     Light(
         page = Color(0xFFF2F2F3),
@@ -61,9 +72,26 @@ public enum class ThemeBase(
     ),
     ;
 
+    /** This theme's own [color], before the user changes it; null for the accent's derived shades. */
+    public fun color(color: ThemeColor): Color? =
+        when (color) {
+            ThemeColor.Page -> page
+            ThemeColor.Raised -> raised
+            ThemeColor.Controls -> light
+            ThemeColor.Borders -> stroke
+            ThemeColor.Text -> text1
+            ThemeColor.SecondaryText -> text2
+            ThemeColor.MutedText -> text3
+            ThemeColor.AccentFill, ThemeColor.AccentOutline, ThemeColor.AccentText -> null
+        }
+
     /** A light theme has dark text on bright pages. */
     public val isLight: Boolean
-        get() = page.luminance() > HALF_LUMINANCE
+        get() = page.isLightPage
 }
+
+/** Whether a page of this color is bright enough to need dark text. */
+internal val Color.isLightPage: Boolean
+    get() = luminance() > HALF_LUMINANCE
 
 private const val HALF_LUMINANCE = 0.5f
