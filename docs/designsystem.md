@@ -23,14 +23,15 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   `CalendarMonthBackground`, `Chip`, `ColorSlider`, `ColorSwatch`, `AddSwatch`, `SwatchStack`, `IconButton`, `IconPill`, `InputField`, `LabelPill`, `RefreshIndicator`,
   `RowButton`, `SearchField`, `SearchPrompt`, `SelectionRow`, `SidebarEntry`, `SidebarHeading`,
   `SidebarCount`, `SidebarExpandButton`, `SidebarPill`, `SidebarRailAccount`, `SidebarRailAdd`, `SidebarRailDivider`,
-  `SidebarRailIcon`, `Symbol`,
+  `SidebarRailIcon`, `Symbol`, `Toast` (with `ToastAction`),
   `ToggleSwitch`, `ValueButton`, and the
   `controlPressFeedback` modifier.
 - `components`: `ActionBar`, `ActionBarHost`, `BarAction`, `BarContext`, `BarToken`, `ActionDialog`, `ChoiceDialog`, `ChoiceSheet` (with `ChoiceRow`), `ConfirmDialog`, `InputDialog`, `ContextPanel`, `DatePickerDialog`,
   `MonthNavigation`, `MonthYearPicker`, `PageScaffold`, `Subpage`, `PageSection`, `PanelSurface`,
   `PickerSearch`, `PreviewCard`, `PullToRefresh`, `ReorderableColumn`, `SelectionSheet`, `SheetFrame`, `SettingRow`,
   `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarRail`, `SummaryCard` and `PersonText` (with `NamedAvatar`), `ValueToken`, `ValuePicker`, `Collapsible`, `CollapsibleTree`, `AvatarStack`, `ContextMenu` (with `MenuAction`),
-  `SidebarSwipeArea`, `SlidingOverlay`, `SlidingPages`, `SwipeActions`, and `ThemeCard`.
+  `SidebarSwipeArea`, `SlidingOverlay`, `SlidingPages`, `SwipeActions`, `ThemeCard`, and `ToastHost`
+  (with `ToastState` and `ToastMessage`).
 - Settings rows follow Notion's settings pages: flat rows with a title and `text2` description
   beside the control, `bgLight` hairlines between them, and large section titles. The whole row is
   the control; `ToggleSwitch` and `ValueButton` only show its state. A long picker, such as Mail's
@@ -66,6 +67,19 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   from the context panel. A release runs an action only when no other action of that row is
   running. A dismissing action leaves the row at the edge for its list to remove; if the row is
   still there one second later, for example because removal failed, it returns to rest.
+- `ToastHost` shows short messages from a `ToastState` in a pill above the page's bottom bar. A
+  `ToastMessage` may carry a `ToastAction`, such as Undo, with a ring that counts down its time:
+  5 seconds with an action, 3 without, longer when a screen reader is on. A message with the same
+  `group` as one on screen replaces it and restarts its timer, so the app can count up to
+  "3 emails deleted"; `isShowing(group)` tells the app whether to keep counting. Tapping the
+  action runs it and closes the toast. Other messages stack with the newest in front and up to two older ones
+  peeking out behind it, each on its own timer. Tapping the stack fans it out and pauses every
+  timer; tapping again or system back stacks it again. The group is as wide as its widest toast.
+  A toast can be dragged sideways in either direction: it lifts a shade lighter, its timer
+  pauses, and a darker `bgDark` end with a close symbol opens on the side it left. Past a third
+  of its width the symbol brightens and a haptic marks it, and "Dismiss" fades in once it is fully
+  uncovered. Releasing there removes the toast without running its action; shorter drags spring
+  back. Colors are `bgDark` at rest and `bgRegular` lifted, with `strokeBgDark` outlines.
 - `ReorderableColumn` lets the user reorder a short list by dragging each row's handle. Only the
   handle starts a drag, so rows keep their own taps and the list around them still scrolls. The
   dragged row draws above the others and stays within the column. Each row is filled with
