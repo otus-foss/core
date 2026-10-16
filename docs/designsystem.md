@@ -145,9 +145,10 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   conditions, on the same grid. `AddRuleChip` is a dashed chip of the same height with its plus in
   the slot column and its label in the value column. A chip or group with `onClick` is one button.
 - `FolderSettingRow` is one folder on a folder settings page: the folder icon, the name in 17 sp,
-  an optional detail line, a chevron, and an optional `handle` after it, at least 56 dp tall and
-  indented 20 dp per level. A 1 dp `bgLight` guide runs down the row under the icon of each level
-  above it, so consecutive rows draw a tree. The
+  an optional detail line, a `text2` settings icon, since tapping opens the folder's settings, and
+  an optional `handle` after it, at least 56 dp tall and indented 20 dp per level. A 1 dp
+  `bgLight` guide runs down the row under the icon of each level above it, so consecutive rows
+  draw a tree. The
   icon expands and collapses subfolders like `SidebarFolderEntry`'s, shares its code, and takes
   `LocalIconTint`. `SidebarFolder.icon` replaces the closed folder, such as `symbol_folder_shared`. The detail
   is a slot: `FolderRuleSummary` shows the first rule as a compact chip and a `text3` count such as

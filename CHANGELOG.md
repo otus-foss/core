@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- `FolderSettingRow` ends in a settings icon instead of a chevron.
 - `FolderSettingRow` draws tree guide lines under the icons of the levels above it, and
   `AccountGroupRow` takes an `action`, such as a New folder button, before its chevron.
 - Add `ReorderableTree` and `TreeDropTarget`. A dragged row stays over the rows without moving

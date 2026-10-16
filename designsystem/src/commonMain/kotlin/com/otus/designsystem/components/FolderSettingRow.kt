@@ -29,8 +29,8 @@ import com.otus.designsystem.elements.Symbol
 import com.otus.designsystem.elements.controlPressFeedback
 import com.otus.designsystem.elements.nestIndent
 import com.otus.designsystem.resources.Res
-import com.otus.designsystem.resources.symbol_chevron_right
 import com.otus.designsystem.resources.symbol_folder
+import com.otus.designsystem.resources.symbol_settings
 import com.otus.designsystem.theme.FolderRowTokens
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PanelTokens
@@ -41,12 +41,12 @@ import org.jetbrains.compose.resources.DrawableResource
 
 /**
  * A folder on a folder settings page, indented by its [SidebarFolder.depth]: the folder icon, the
- * name with an optional [detail] line under it, the optional count, and a chevron. Tapping the row
+ * name with an optional [detail] line under it, the optional count, and a settings icon. Tapping the row
  * calls [onClick], which opens the folder. With subfolders, [expanded] is non-null and the icon is
  * a toggle, an open folder while expanded. [SidebarFolder.icon] replaces the closed folder icon,
  * such as for a shared folder. The icon takes [com.otus.designsystem.elements.LocalIconTint].
  * Inside a [ReorderableColumn], pass [ReorderableScope.dragOnLongPress] in [modifier] so a long
- * press drags it, and [ReorderableScope.DragHandle] as [handle], which sits after the chevron.
+ * press drags it, and [ReorderableScope.DragHandle] as [handle], which sits after the settings icon.
  */
 @Composable
 public fun FolderSettingRow(
@@ -88,7 +88,7 @@ public fun FolderSettingRow(
         }
         folder.count?.let { SidebarCount(it) }
         CompositionLocalProvider(LocalContentColor provides OtusColors.text2) {
-            Symbol(Res.drawable.symbol_chevron_right, mirrorInRtl = true)
+            Symbol(Res.drawable.symbol_settings)
         }
         handle?.invoke()
     }
