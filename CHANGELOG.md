@@ -7,6 +7,7 @@
   `CustomTheme`s, and `withColor` on a built-in theme creates and selects a new custom theme, so
   built-in themes never change. `withBase`, `withCustomTheme`, `withAccent`, `withName`,
   `withCopy`, and `withoutCustomTheme` select, edit, rename, duplicate, and delete themes.
+- **Breaking:** the Graphite theme is removed. A saved choice of Graphite opens as Otus.
 - **Breaking:** `AccentShades.adjusted` is gone, and so are the accent card tokens
   `accentCardPadding`, `accentCardGap`, `rolePillHeight`, and `roleLabelSize`.
 - **Breaking:** `ThemeBase.title` in `settings` is now internal. Use `ThemeChoice.themeTitle`,

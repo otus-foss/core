@@ -20,7 +20,6 @@ internal val ThemeBase.title: String
             ThemeBase.Otus -> "Otus"
             ThemeBase.Ink -> "Ink"
             ThemeBase.Light -> "Light"
-            ThemeBase.Graphite -> "Graphite"
             ThemeBase.Black -> "Black"
         }
 
@@ -30,7 +29,6 @@ internal val ThemeBase.description: String
             ThemeBase.Otus -> "Soft dark, the default"
             ThemeBase.Ink -> "Darker, gentler contrast"
             ThemeBase.Light -> "Bright pages"
-            ThemeBase.Graphite -> "Warm grey dark"
             ThemeBase.Black -> "True black, for OLED"
         }
 

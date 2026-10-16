@@ -82,10 +82,10 @@ class ThemeSettingsScreenTest {
     @Test
     fun aLongPressDuplicatesABuiltInTheme() {
         showScreen()
-        compose.onNodeWithText("Graphite").performScrollTo().performTouchInput { longClick() }
+        compose.onNodeWithText("Black").performScrollTo().performTouchInput { longClick() }
         compose.onNodeWithText("Duplicate").performClick()
-        assertEquals(CustomTheme(1, ThemeBase.Graphite, name = "Graphite copy"), state.choice.customTheme)
-        compose.onNodeWithText("Graphite copy").assertExists()
+        assertEquals(CustomTheme(1, ThemeBase.Black, name = "Black copy"), state.choice.customTheme)
+        compose.onNodeWithText("Black copy").assertExists()
     }
 
     @Test

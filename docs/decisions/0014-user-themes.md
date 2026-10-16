@@ -8,7 +8,8 @@ and that apps offer no theme switch. The supplied palette stays the default: the
 Otus blue gives exactly the original values.
 
 The themes are **Otus** (the original soft dark), **Light**, **Graphite** (a warm grey dark after
-Notion), and **Black** (true black for OLED, after the X mobile app). The user picks one accent,
+Notion), and **Black** (true black for OLED, after the X mobile app). The update below adds Ink
+and removes Graphite. The user picks one accent,
 from seven presets or by hue, intensity, or hex code. Otus derives the accent's fill
 (`accentDark`), outline (`accentRegular`), and text (`accentLight`) shades for the chosen theme
 and moves the fill and text shades until text is readable at 4.5:1 or more.
@@ -38,6 +39,8 @@ their own. Scrims use `OtusColors.scrim`, which is dark in every theme.
 ## Update: Ink and custom colors
 
 The user asked for a fifth theme and for every color to be editable, not only the accent.
+
+The user asked to remove **Graphite**. A saved choice of Graphite now opens as Otus.
 
 **Ink** sits between Otus and Light. It is darker than Otus, and its page, raised surfaces,
 controls, and borders sit closer together, so screens show less contrast between surfaces. Its

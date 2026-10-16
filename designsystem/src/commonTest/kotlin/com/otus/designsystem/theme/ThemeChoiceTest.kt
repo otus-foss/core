@@ -10,12 +10,12 @@ class ThemeChoiceTest {
     @Test
     fun changingAColorMakesACustomThemeAndLeavesTheBuiltInOneAlone() {
         val page = Color(0xFF101828)
-        val choice = ThemeChoice(ThemeBase.Graphite).withColor(ThemeColor.Page, page)
-        assertEquals(listOf(CustomTheme(1, ThemeBase.Graphite, mapOf(ThemeColor.Page to page))), choice.customThemes)
+        val choice = ThemeChoice(ThemeBase.Light).withColor(ThemeColor.Page, page)
+        assertEquals(listOf(CustomTheme(1, ThemeBase.Light, mapOf(ThemeColor.Page to page))), choice.customThemes)
         assertEquals(1, choice.customId)
         assertEquals(page, choice.palette.bgRegular)
-        assertEquals(ThemeBase.Graphite.raised, choice.palette.bgDark)
-        assertEquals(ThemeBase.Graphite.page, choice.withBase(ThemeBase.Graphite).palette.bgRegular)
+        assertEquals(ThemeBase.Light.raised, choice.palette.bgDark)
+        assertEquals(ThemeBase.Light.page, choice.withBase(ThemeBase.Light).palette.bgRegular)
     }
 
     @Test
