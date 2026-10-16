@@ -60,32 +60,46 @@ public fun ContextMenu(
 ) {
     val edge = with(LocalDensity.current) { MenuTokens.edge.roundToPx() }
     val position = remember(at, edge) { AtPoint(at.round(), edge) }
+    MenuPopup(position, onDismiss) {
+        Column(
+            Modifier
+                .width(IntrinsicSize.Max)
+                .widthIn(min = MenuTokens.minWidth)
+                .menuSurface()
+                .padding(MenuTokens.inset),
+        ) {
+            actions.forEach { action ->
+                MenuRow(action) {
+                    onDismiss()
+                    action.onClick()
+                }
+            }
+        }
+    }
+}
+
+/** A focusable popup at [position] that fades and grows in, as menus open. */
+@Composable
+internal fun MenuPopup(
+    position: PopupPositionProvider,
+    onDismiss: () -> Unit,
+    content: @Composable () -> Unit,
+) {
     val shown = remember { MutableTransitionState(false).apply { targetState = true } }
-    val shape = RoundedCornerShape(MenuTokens.radius)
     Popup(position, onDismissRequest = onDismiss, properties = PopupProperties(focusable = true)) {
         AnimatedVisibility(
             shown,
             enter =
                 fadeIn(motionTween(MotionSpeed.Fast)) +
                     scaleIn(motionTween(MotionSpeed.Fast), initialScale = START_SCALE),
-        ) {
-            Column(
-                Modifier
-                    .width(IntrinsicSize.Max)
-                    .widthIn(min = MenuTokens.minWidth)
-                    .background(OtusColors.bgDark, shape)
-                    .border(PanelTokens.borderWidth, OtusColors.bgLight, shape)
-                    .padding(MenuTokens.inset),
-            ) {
-                actions.forEach { action ->
-                    MenuRow(action) {
-                        onDismiss()
-                        action.onClick()
-                    }
-                }
-            }
-        }
+        ) { content() }
     }
+}
+
+/** The raised `bgDark` surface with a `bgLight` outline that every menu sits on. */
+internal fun Modifier.menuSurface(): Modifier {
+    val shape = RoundedCornerShape(MenuTokens.radius)
+    return background(OtusColors.bgDark, shape).border(PanelTokens.borderWidth, OtusColors.bgLight, shape)
 }
 
 /** Calls [onPress] with the point of every press on the element, without taking the press from it. */
@@ -115,7 +129,7 @@ private fun MenuRow(
         horizontalArrangement = Arrangement.spacedBy(MenuTokens.iconGap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        action.symbol?.let { Symbol(it, action.mirrorInRtl) }
+        action.icon?.let { Symbol(it) }
         Text(action.label, style = panelTextStyle())
     }
 }
