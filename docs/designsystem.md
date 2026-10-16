@@ -11,7 +11,7 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
 
 - `theme`: `OtusColors`, `OtusTheme`, `OtusPalette`, `ThemeBase`, `ThemeChoice`, `ThemeColor`, `CustomTheme`, `AccentPreset`,
   `accentShades` (with `AccentShades`), color helpers (`hslColor`, `toHsl`, `contrast`, `toHex`,
-  `parseHexColor`), `ThemeTokens`, `Motion` (with `MotionSpeed`, `MotionCurve`, and
+  `parseHexColor`), `FolderColor`, `ThemeTokens`, `Motion` (with `MotionSpeed`, `MotionCurve`, and
   `LocalMotionScale`), and tokens for avatars, calendars, control
   feedback, pages, panels, refresh, sheets, the sidebar, the action bar (`ActionBarTokens`), and
   compose fields (`ComposeTokens`).
@@ -19,22 +19,22 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
 - `elements`: `ActionButton`, `ActionRow`, `AnimatedText`, `Avatar`, `AvatarImage`, `BarIconButton`, `CalendarDay`,
   `ComposeBody`, `ComposeField`, `ComposeValueField`,
   `CalendarMonthBackground`, `Chip`, `ColorSlider`, `ColorSwatch`, `AddSwatch`, `SwatchStack`, `IconButton`, `IconPill`, `InputField`, `LabelPill`, `RefreshIndicator`,
-  `RowButton`, `SearchField`, `SearchPrompt`, `SelectionRow`, `SidebarEntry`, `SidebarHeading`,
-  `SidebarCount`, `SidebarExpandButton`, `SidebarPill`, `SidebarRailAccount`, `SidebarRailAdd`, `SidebarRailDivider`,
-  `SidebarRailIcon`, `Symbol`,
+  `FolderColorSwatch`, `LocalIconTint`, `RowButton`, `SearchField`, `SearchPrompt`, `SelectionRow`, `SidebarEntry`, `SidebarHeading`,
+  `SidebarCount`, `SidebarExpandButton`, `SidebarPill`, `SidebarInboxEntry`, `SidebarMailboxTile`,
+  `SidebarFolderEntry` (with `SidebarFolder`), `SidebarDivider`, `SectionCaption`, `Symbol`,
   `ToggleSwitch`, `ValueButton`, and the
   `controlPressFeedback` modifier.
 - `components`: `ActionBar`, `ActionBarHost`, `BarAction`, `BarContext`, `BarToken`, `ActionDialog`, `ChoiceDialog`, `ChoiceSheet` (with `ChoiceRow`), `ConfirmDialog`, `InputDialog`, `ContextPanel`, `DatePickerDialog`,
   `MonthNavigation`, `MonthYearPicker`, `PageScaffold`, `Subpage`, `PageSection`, `PanelSurface`,
   `PickerSearch`, `PreviewCard`, `PullToRefresh`, `ReorderableColumn`, `SelectionSheet`, `SheetFrame`, `SettingRow`,
-  `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarRail`, `SummaryCard` and `PersonText` (with `NamedAvatar`), `ValueToken`, `ValuePicker`, `Collapsible`, `CollapsibleTree`, `AvatarStack`, `ContextMenu` (with `MenuAction`),
+  `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarHeader`, `SidebarMailboxGrid`, `ScopeSheet`, `ScopeRow` and `ScopeChildRow` (with `ScopeOption`), `SummaryCard` and `PersonText` (with `NamedAvatar`), `ValueToken`, `ValuePicker`, `Collapsible`, `CollapsibleTree`, `AvatarStack`, `ContextMenu` (with `MenuAction`),
   `SidebarSwipeArea`, `SlidingOverlay`, `SlidingPages`, `SwipeActions`, and `ThemeCard`.
 - Settings rows follow Notion's settings pages: flat rows with a title and `text2` description
   beside the control, `bgLight` hairlines between them, and large section titles. The whole row is
   the control; `ToggleSwitch` and `ValueButton` only show its state. A long picker, such as Mail's
-  folder lists, uses `RowDensity.Compact`: 36 dp per row and no hairlines. Every folder list, the
-  sidebar's `SidebarEntry` rows included, uses `PanelTokens.compactRowHeight`, so folders sit at
-  the same density everywhere, below the 48 dp touch target by the user's choice. A row without a click is
+  folder lists, uses `RowDensity.Compact`: 36 dp per row and no hairlines. Folder lists, including
+  `SidebarEntry` and `SidebarFolderEntry` rows, use `PanelTokens.compactRowHeight`, below the
+  48 dp touch target by the user's choice. A row without a click is
   static, and a `RowButton` at its end acts on its own. Settings choices open a `ChoiceSheet`,
   which lists a `ChoiceOptions` default in its own group first, optionally with an icon per
   option, applies a choice at once, and closes with Done. Sheets are as tall as their content, up
@@ -49,6 +49,38 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   decision. `ChoiceDialog` and `ActionDialog` remain for one-shot picks
   and menus. Mail's rules pages still use `PageSection`
   and `ActionRow`.
+- `FolderColor` lists the colors a user can give a folder: `Default` and eight named colors.
+  Apps store the enum `name` and read it back with `FolderColor.named`, which returns `Default`
+  for null or unknown names. `tint` is the icon color in the current theme, or null for
+  `Default`. Each color has one shade for dark themes and one for light themes, chosen by
+  `OtusPalette.isLight`, so custom themes use the shades of their kind. `FolderColorTest` checks
+  that every shade reaches 3:1 against `bgDark`, `bgRegular`, and `accentDark` for every theme and
+  accent preset. A new kind of theme adds a shade to each color in `FolderColor.kt`.
+  The color tints only the folder icon. Provide it with `LocalIconTint` around a row:
+  `SidebarEntry`, `ActionRow`, `SettingRow`, `SettingToggleRow`, `ValuePicker`, and `ValueToken`
+  then draw their leading icon in it. A composition local keeps these signatures within the
+  seven-parameter limit. Text, backgrounds, the selected fill, trailing icons, and a disabled
+  picker's icon keep their colors. A `ChoiceRow` takes `iconTint` for its icon, and `swatch` shows
+  a `FolderColorSwatch` before its label: a filled circle in the tint, or an empty `text2` ring for
+  `Default`. The swatch is decoration; screen readers hear the option's label.
+- The `Sidebar` is one panel, 336 dp wide, with a `header` slot over its scrolling content.
+  `SidebarHeader` shows avatars, a title, and an optional subtitle, then an unfold button and
+  Settings. Tapping the title or the unfold button calls `onPick`. Below it, `SidebarInboxEntry`
+  is a 52 dp row for the main mailbox. `SidebarMailboxGrid` puts `SidebarMailboxTile`s in three
+  equal columns; a tile shows a count badge on its icon's corner, and the caller shortens large
+  counts. `SidebarDivider` separates groups, and `SectionCaption` titles a group that does not
+  collapse, with an optional action at its end. A `SidebarFolderEntry` row is 36 dp tall, like
+  `SidebarEntry`, and its icon toggle is 48 dp wide. A folder with subfolders uses its icon as the expand toggle, an open folder
+  while expanded, and a long press calls `onLongClick`. Its row callback matches
+  `CollapsibleTree`, and its icon takes `LocalIconTint`.
+- `ScopeSheet` picks what a page shows, such as every account, one account, or one address. It
+  takes an optional search slot, such as `PickerSearch`, and a footnote. `ScopeRow` is a 64 dp
+  choice with 40 dp avatars. A row with a subtitle is a group with a SemiBold title, and passing
+  `expanded` adds a chevron. `ScopeChildRow` is a 52 dp nested choice with 32 dp avatars, indented
+  so its avatar lines up with the group's title. The chosen row gets an `accentDark` fill, and a
+  pinned row shows a pin. A long press calls `onLongClick`, which the row names
+  "Pin" or "Unpin" for screen readers. The caller wraps nested rows in `Collapsible` and owns what
+  is chosen, pinned, and expanded.
 - Version 0.3.0 adds `DateRangePicker` for dates up to today, its continuous week calendar,
   and `AvatarStackChip` with `ChipAvatar` values. `AvatarStack` draws the same avatars without
   the pill, such as the senders a rule files into a folder. The app maps its senders or attendees into
