@@ -43,6 +43,7 @@ these through pinned libraries or an opt-in composite build; Calendar is unchang
 | 2 | `designsystem` | `designsystem/` in both apps | Moved from Mail in 0.2.0. See [design system](designsystem.md). |
 | 3 | `dateformat` | `core/dateformat` in both apps | Moved from Mail in 0.2.0. See [date formatting](dateformat.md). |
 | 4 | `avatar` | `core/avatar` in both apps | Moved from Mail in 0.2.0; Calendar's copy is older. See [avatars](avatar.md). |
+| 5 | `push` | New | JMAP push subscriptions for Mail, and Calendar later. See [push](push.md) and decision 0015. |
 
 Later modules come from the roadmap issues once their APIs exist in one app and the second app
 needs them. Candidates are storage (SQLDelight drivers, migrations, blob files), sync cursors,
