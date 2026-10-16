@@ -10,10 +10,7 @@ import androidx.compose.ui.unit.dp
 import com.otus.designsystem.elements.SidebarCount
 import com.otus.designsystem.elements.SidebarEntry
 import com.otus.designsystem.elements.SidebarHeading
-import com.otus.designsystem.elements.SidebarRailAccount
-import com.otus.designsystem.elements.SidebarRailIcon
 import com.otus.designsystem.resources.Res
-import com.otus.designsystem.resources.symbol_all_inbox
 import com.otus.designsystem.resources.symbol_archive
 import com.otus.designsystem.resources.symbol_draft
 import com.otus.designsystem.resources.symbol_folder
@@ -47,7 +44,7 @@ class SidebarScreenshotTest {
         }
 
     @Test
-    fun rail() = compose.screenshot("sidebar_rail") { Box(Modifier.height(320.dp)) { Rail() } }
+    fun header() = compose.screenshot("sidebar_header") { Box(Modifier.height(80.dp)) { Header() } }
 
     @Composable
     private fun PageWithSidebar(state: SidebarState) =
@@ -55,16 +52,19 @@ class SidebarScreenshotTest {
             SidebarSwipeArea(state) {
                 PageScaffold("Inbox", navigationLabel = "Open navigation", onNavigation = {}) {}
             }
-            Sidebar(state, title = "Work", subtitle = "work@example.com", rail = { Rail() }) { Entries() }
+            Sidebar(state, title = "Work", header = { Header() }) { Entries() }
         }
 
     @Composable
-    private fun Rail() =
-        SidebarRail(onSettings = {}) {
-            SidebarRailIcon(Res.drawable.symbol_all_inbox, "All", "All accounts", selected = false, {})
-            SidebarRailAccount("WK", "Work account", selected = true, {}, badge = "4")
-            SidebarRailAccount("HM", "Home account", selected = false, {})
-        }
+    private fun Header() =
+        SidebarHeader(
+            "Work",
+            listOf(ChipAvatar("WK", colorIndex = 0)),
+            pickLabel = "Show mail from",
+            onPick = {},
+            onSettings = {},
+            subtitle = "work@example.com",
+        )
 
     @Composable
     private fun Entries() {
