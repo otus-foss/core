@@ -15,7 +15,6 @@ internal class ReorderDrag {
     private var keys: List<Any> = emptyList()
     private var spacing = 0f
     private var onMove: (Int, Int) -> Unit = { _, _ -> }
-    private var onNest: ((Int, Int) -> Unit)? = null
 
     private val from: Int
         get() = keys.indexOf(key)
@@ -27,14 +26,12 @@ internal class ReorderDrag {
         keys: List<Any>,
         spacing: Float,
         onMove: (Int, Int) -> Unit,
-        onNest: ((Int, Int) -> Unit)? = null,
     ) {
         if (keys != this.keys || spacing != this.spacing) cancel()
         heights.keys.filter { it !in keys }.forEach(heights::remove)
         this.keys = keys
         this.spacing = spacing
         this.onMove = onMove
-        this.onNest = onNest
     }
 
     fun start(key: Any) {
@@ -49,14 +46,9 @@ internal class ReorderDrag {
 
     fun drop() {
         val from = from
-        val onNest = onNest
-        val drop = if (from >= 0) reorderDrop(rowHeights, from, offset, spacing, nesting = onNest != null) else null
+        val to = if (from >= 0) reorderTarget(rowHeights, from, offset, spacing) else from
         cancel()
-        when {
-            drop == null -> Unit
-            drop.onto != null -> onNest?.invoke(from, drop.onto)
-            drop.to != from -> onMove(from, drop.to)
-        }
+        if (to != from) onMove(from, to)
     }
 
     fun cancel() {
