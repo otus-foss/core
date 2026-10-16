@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add `Modifier.actionBarInset`. `ActionBarHost` uses it to keep its bar as far from the screen's
+  sides as from its bottom edge, which includes the navigation bar's height.
 - Add `HtmlView`, which shows an HTML document such as a message body in a platform web view.
   Scripts never run. A Content Security Policy blocks frames, forms, and every outside resource
   except remote images, styles, and fonts, which load only with `loadRemote`. Tapped web, mail,
