@@ -30,7 +30,7 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   `PickerSearch`, `PreviewCard`, `PullToRefresh`, `ReorderableColumn`, `ReorderableTree`, `SelectionSheet`, `SheetFrame`, `SettingRow`,
   `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarHeader`, `SidebarMailboxGrid`, `ScopeSheet`, `ScopeRow` and `ScopeChildRow` (with `ScopeOption`), `ScopePicker`, `AccountGroupRow`,
   `RuleChip`, `RuleChipGroup`, and `AddRuleChip` (with `RuleChipLine`, `RuleChipValue`, `RuleSegment`, and
-  `RuleSegmentStyle`), `FolderSettingRow` with `FolderRuleSummary` and `FolderOwnerLine`, `SummaryCard` and `PersonText` (with `NamedAvatar`), `ValueToken`, `ValuePicker`, `Collapsible`, `CollapsibleTree`, `AvatarStack`, `ContextMenu` (with `MenuAction`),
+  `RuleSegmentStyle`), `FolderSettingRow` with `FolderRuleSummary` and `FolderOwnerLine`, `SummaryCard` and `PersonText` (with `NamedAvatar`), `ValueToken`, `ValuePicker`, `Collapsible`, `CollapsibleTree`, `AvatarStack`, `ContextMenu` and `QuickActionBar` (with `MenuAction`),
   `SidebarSwipeArea`, `SlidingOverlay`, `SlidingPages`, `SwipeActions`, and `ThemeCard`.
 - Settings rows follow Notion's settings pages: flat rows with a title and `text2` description
   beside the control, `bgLight` hairlines between them, and large section titles. The whole row is
@@ -144,11 +144,18 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   of" rule: one outline, a small `text3` title such as "ALL OF", and hairlines between its
   conditions, on the same grid. `AddRuleChip` is a dashed chip of the same height with its plus in
   the slot column and its label in the value column. A chip or group with `onClick` is one button.
+- `QuickActionBar` is a small pill of icon buttons that opens just above where the user
+  long-pressed, centered on the point and kept inside the screen, or below the point when there
+  is no room above. It takes the same `MenuAction`s as `ContextMenu`, each with an `icon`; screen
+  readers hear the label. It sits on the menus' `bgDark` surface with a `bgLight` outline and
+  opens with the same fade and grow. Choosing an action closes it first.
 - `FolderSettingRow` is one folder on a folder settings page: the folder icon, the name in 17 sp,
   an optional detail line, a `text2` settings icon, since tapping opens the folder's settings, and
   an optional `handle` after it, at least 56 dp tall and indented 20 dp per level. A 1 dp
   `bgLight` guide runs down the row under the icon of each level above it, so consecutive rows
-  draw a tree. The
+  draw a tree. A long press calls `onLongClick` with the pressed point, for a `QuickActionBar`.
+  Inside a `ReorderableTree` or `ReorderableColumn`, the `ReorderableScope.FolderSettingRow`
+  overload adds the row's drag handle after the settings icon. The
   icon expands and collapses subfolders like `SidebarFolderEntry`'s, shares its code, and takes
   `LocalIconTint`. `SidebarFolder.icon` replaces the closed folder, such as `symbol_folder_shared`. The detail
   is a slot: `FolderRuleSummary` shows the first rule as a compact chip and a `text3` count such as

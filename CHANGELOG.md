@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Add `QuickActionBar`, a small bar of icon `MenuAction`s that opens above a long-pressed point.
+  `MenuAction` takes an optional `icon` before `onClick`. `FolderSettingRow` takes `onLongClick`
+  with the pressed point, and its drag handle now comes from the `ReorderableScope` overload
+  instead of a `handle` parameter.
 - `FolderSettingRow` ends in a settings icon instead of a chevron.
 - `FolderSettingRow` draws tree guide lines under the icons of the levels above it, and
   `AccountGroupRow` takes an `action`, such as a New folder button, before its chevron.
