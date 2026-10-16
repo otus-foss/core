@@ -50,7 +50,8 @@ built-in themes never change. The first change on a built-in theme creates a cus
 built-in cards. Later changes edit the selected custom theme. A custom theme stays, even with
 every color put back, until the user deletes it.
 
-A long press on a theme card, or the more button on the selected card, opens the theme's actions.
+A long press on a theme card, or the more button on the selected card, opens the theme's actions
+in a small menu at the press point that leaves the page undimmed.
 Every theme can be duplicated into a new custom theme, such as "Ink copy". A custom theme can also
 be renamed or deleted; deleting the theme in use switches to the theme it was made from. Names are
 unique, ignoring case, and at most 30 characters. "Reset to Otus" selects Otus and Otus blue and keeps custom themes.
