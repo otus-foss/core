@@ -31,7 +31,7 @@ class ThemeBaseScreenshotTest(
     @Test
     fun textAndChips() {
         val palette = ThemeChoice(base).palette
-        compose.screenshot("theme_${base.name.lowercase()}", palette) {
+        compose.screenshot("theme_${base.name.lowercase()}", palette = palette) {
             Column(Modifier.background(palette.bgRegular).padding(8.dp)) {
                 Text(base.name, style = panelTextStyle())
                 Text("Secondary", style = panelTextStyle().copy(color = palette.text2))

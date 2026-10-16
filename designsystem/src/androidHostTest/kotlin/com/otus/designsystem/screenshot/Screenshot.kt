@@ -28,8 +28,8 @@ private fun shotPath(name: String) = "src/androidHostTest/screenshots/$name.png"
  */
 fun ComposeContentTestRule.screenshot(
     name: String,
-    palette: OtusPalette = OtusPalette.Otus,
     act: ComposeContentTestRule.() -> Unit = {},
+    palette: OtusPalette = OtusPalette.Otus,
     content: @Composable () -> Unit,
 ) {
     setContent {
@@ -56,18 +56,4 @@ fun ComposeContentTestRule.screenScreenshot(
     setContent { OtusTheme(content = content) }
     waitForIdle()
     captureScreenRoboImage(shotPath(name))
-}
-
-/**
- * Renders [content] full screen and captures every window, so dialogs, sheets, and popups show over
- * the page. Compares with `src/androidHostTest/screenshots/<name>.png` like [screenshot].
- */
-@OptIn(ExperimentalRoborazziApi::class)
-fun ComposeContentTestRule.screenScreenshot(
-    name: String,
-    content: @Composable () -> Unit,
-) {
-    setContent { OtusTheme { content() } }
-    waitForIdle()
-    captureScreenRoboImage("src/androidHostTest/screenshots/$name.png")
 }
