@@ -169,6 +169,51 @@ class PushSubscriptionsTest {
         }
 
     @Test
+    fun aPlainHttpEndpointIsRefusedWithoutAskingTheServer() =
+        runTest {
+            val server = Server { error("unexpected call: $it") }
+            subscriptions(server, Store()).run {
+                setEndpoint("ada", endpoint.copy(url = "http://ntfy.lan/upA"))
+                sync()
+                assertEquals(mapOf("ada" to PushStatus.Refused), status())
+            }
+            assertTrue(server.sent.isEmpty())
+        }
+
+    @Test
+    fun aRefusedVerificationCodeStartsANewSubscription() =
+        runTest {
+            val store = Store()
+            subscriptions(Server { if ("PushSubscription/get" in it) noSubscriptions else created() }, store).run {
+                setEndpoint("ada", endpoint)
+                sync()
+                receive("ada", PushMessage.Verification("ps1", "wrong"))
+            }
+            val server =
+                Server {
+                    when {
+                        "verificationCode" in it -> {
+                            """{"methodResponses": [["PushSubscription/set",
+                               {"notUpdated": {"ps1": {"type": "invalidProperties"}}}, "c0"]]}"""
+                        }
+
+                        "PushSubscription/get" in it -> {
+                            noSubscriptions
+                        }
+
+                        else -> {
+                            created().replace("ps1", "ps2")
+                        }
+                    }
+                }
+            subscriptions(server, store).run {
+                sync()
+                assertEquals(mapOf("ada" to PushStatus.Waiting), status())
+            }
+            assertTrue("\"create\"" in server.sent.last(), server.sent.last())
+        }
+
+    @Test
     fun clearingTheEndpointDeletesTheSubscription() =
         runTest {
             val store = Store()

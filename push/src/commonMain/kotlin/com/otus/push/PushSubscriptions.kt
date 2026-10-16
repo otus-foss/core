@@ -33,10 +33,7 @@ public class PushSubscriptions(
 
     /** Each login's push status, keyed by login id. Logins without a record are [PushStatus.Off]. */
     public suspend fun status(): Map<String, PushStatus> =
-        edit { records ->
-            records to
-                records.mapValues { it.value.status }
-        }
+        edit { records -> records to records.mapValues { it.value.status } }
 
     /** Saves where pushes for [loginId] should go. Call [sync] to tell the server. */
     public suspend fun setEndpoint(
@@ -52,14 +49,11 @@ public class PushSubscriptions(
         loginId: String,
         verification: PushMessage.Verification,
     ): Unit =
-        change(loginId) {
-            if (it.subscriptionId ==
-                verification.pushSubscriptionId
-            ) {
-                it.copy(verificationCode = verification.verificationCode)
-            } else {
-                it
-            }
+        change(loginId) { record ->
+            record
+                .takeIf { it.subscriptionId == verification.pushSubscriptionId }
+                ?.copy(verificationCode = verification.verificationCode)
+                ?: record
         }
 
     /**
