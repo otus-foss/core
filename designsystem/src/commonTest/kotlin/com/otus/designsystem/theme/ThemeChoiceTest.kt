@@ -62,6 +62,32 @@ class ThemeChoiceTest {
     }
 
     @Test
+    fun aCustomThemeCanBeRenamedAndANameCanBeCleared() {
+        val custom = ThemeChoice().withColor(ThemeColor.Page, Color.Black)
+        assertEquals("Night", custom.withName(1, "  Night ").customTheme?.name)
+        assertEquals(
+            null,
+            custom
+                .withName(1, "Night")
+                .withName(1, " ")
+                .customTheme
+                ?.name,
+        )
+    }
+
+    @Test
+    fun duplicatingCopiesTheSelectedThemeIntoANewCustomTheme() {
+        val builtIn = ThemeChoice(ThemeBase.Black).withCopy("Black copy")
+        assertEquals(CustomTheme(1, ThemeBase.Black, name = "Black copy"), builtIn.customTheme)
+        val custom = builtIn.withColor(ThemeColor.Text, Color.White).withCopy("Second")
+        assertEquals(
+            CustomTheme(2, ThemeBase.Black, mapOf(ThemeColor.Text to Color.White), "Second"),
+            custom.customTheme,
+        )
+        assertEquals(2, custom.customThemes.size)
+    }
+
+    @Test
     fun theAccentShadesFollowChangedSurfaces() {
         val choice = ThemeChoice(ThemeBase.Otus, AccentPreset.Violet.color)
         val brighter = choice.withColor(ThemeColor.Page, Color(0xFF6A6A6A))

@@ -6,11 +6,13 @@ import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextReplacement
+import androidx.compose.ui.test.performTouchInput
 import androidx.navigationevent.NavigationEventDispatcher
 import androidx.navigationevent.NavigationEventDispatcherOwner
 import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
@@ -59,9 +61,31 @@ class ThemeSettingsScreenTest {
     fun deletingTheCustomThemeGoesBackToTheThemeItWasMadeFrom() {
         state.select(ThemeChoice(ThemeBase.Ink).withColor(ThemeColor.Page, Color(0xFF101828)))
         showScreen()
-        compose.onNodeWithText("Delete Custom").performScrollTo().performClick()
+        compose.onNodeWithContentDescription("Actions for Custom").performScrollTo().performClick()
+        compose.onNode(hasText("Delete") and hasClickAction()).performClick()
         compose.onNode(hasText("Delete") and hasClickAction()).performClick()
         assertEquals(ThemeChoice(ThemeBase.Ink), state.choice)
+    }
+
+    @Test
+    fun renamingACustomThemeShowsItsNewName() {
+        state.select(ThemeChoice().withColor(ThemeColor.Page, Color(0xFF101828)))
+        showScreen()
+        compose.onNodeWithContentDescription("Actions for Custom").performScrollTo().performClick()
+        compose.onNodeWithText("Rename").performClick()
+        compose.onNode(hasSetTextAction()).performTextReplacement("Night")
+        compose.onNode(hasText("Rename") and hasClickAction()).performClick()
+        assertEquals("Night", state.choice.customTheme?.name)
+        compose.onNodeWithText("Night").assertExists()
+    }
+
+    @Test
+    fun aLongPressDuplicatesABuiltInTheme() {
+        showScreen()
+        compose.onNodeWithText("Graphite").performScrollTo().performTouchInput { longClick() }
+        compose.onNodeWithText("Duplicate").performClick()
+        assertEquals(CustomTheme(1, ThemeBase.Graphite, name = "Graphite copy"), state.choice.customTheme)
+        compose.onNodeWithText("Graphite copy").assertExists()
     }
 
     @Test

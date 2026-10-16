@@ -87,6 +87,16 @@ public data class ThemeChoice(
         }
     }
 
+    /** Names the custom theme [id] [name]; a blank name puts back the name the app gives it. */
+    public fun withName(
+        id: Int,
+        name: String,
+    ): ThemeChoice =
+        copy(customThemes = customThemes.map { if (it.id == id) it.copy(name = name.trim().ifBlank { null }) else it })
+
+    /** Copies the selected theme, built-in or custom, into a new custom theme called [name] and selects it. */
+    public fun withCopy(name: String): ThemeChoice = withTheme(CustomTheme(nextId, origin, customColors, name))
+
     /** Deletes the custom theme [id]; if it was selected, the theme it was made from is selected. */
     public fun withoutCustomTheme(id: Int): ThemeChoice {
         val deleted = customThemes.firstOrNull { it.id == id } ?: return this

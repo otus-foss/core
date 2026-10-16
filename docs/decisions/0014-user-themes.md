@@ -48,11 +48,16 @@ and the three accent shades) can be changed one by one under Colors on the theme
 built-in themes never change. The first change on a built-in theme creates a custom theme
 (`CustomTheme`) made from it and selects it; it shows as "Custom", "Custom 2", and so on, after the
 built-in cards. Later changes edit the selected custom theme. A custom theme stays, even with
-every color put back, until the user deletes it from the theme page; the app then switches to the
-theme it was made from. "Reset to Otus" selects Otus and Otus blue and keeps custom themes.
+every color put back, until the user deletes it.
+
+A long press on a theme card, or the more button on the selected card, opens the theme's actions.
+Every theme can be duplicated into a new custom theme, such as "Ink copy". A custom theme can also
+be renamed or deleted; deleting the theme in use switches to the theme it was made from. Names are
+unique, ignoring case, and at most 30 characters. "Reset to Otus" selects Otus and Otus blue and keeps custom themes.
 
 The derived accent shades follow a changed page, raised surface, or text color. Picking a new
 accent drops the accent shades set by hand in the selected custom theme. The saved preference
-adds the selected custom theme, each custom theme and its source theme, and each changed color
-after the theme and accent, such as `light #2383E2 custom=1 1:ink 1:page=#101011`. Older saved
+adds the selected custom theme, each custom theme and its source theme, its name with spaces
+escaped, and each changed color after the theme and accent, such as
+`light #2383E2 custom=1 1:ink 1:name=Night%20ink 1:page=#101011`. Older saved
 values still read.
