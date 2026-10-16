@@ -10,7 +10,7 @@ internal object ReorderTreeTokens {
 
     /** Where a top-level line starts: the start of the folder icon centered in its touch target. */
     val lineStart: Dp = (PanelTokens.touchTarget - PanelTokens.iconSize) / 2
-    val lineEnd: Dp = FolderRowTokens.endPadding
+    val lineEnd: Dp = PageTokens.textInset
     val lineThickness: Dp = 2.dp
 
     /** The dragged row lets the row it is over, and the line, show through. */

@@ -49,5 +49,7 @@ internal object FolderRowTokens {
     val nestIndent: Dp = 20.dp
     val nameGap: Dp = PanelTokens.iconGap
     val lineGap: Dp = 6.dp
-    val endPadding: Dp = PageTokens.textInset
+
+    /** The trailing icons' 48 dp slots already keep them clear of the screen edge. */
+    val endPadding: Dp = 0.dp
 }
