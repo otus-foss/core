@@ -2,20 +2,17 @@ package com.otus.designsystem.theme
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
-import kotlin.math.abs
 import kotlin.math.min
 
 /**
  * The three roles one accent color plays in a theme: [fill] behind selected items, [regular] for
- * outlines, and [text] for accent text and rings. [adjusted] is true when [text] had to move away
- * from the picked color to stay readable.
+ * outlines, and [text] for accent text and rings.
  */
 @Immutable
 public data class AccentShades(
     public val fill: Color,
     public val regular: Color,
     public val text: Color,
-    public val adjusted: Boolean,
 )
 
 /**
@@ -24,8 +21,22 @@ public data class AccentShades(
  * more. A light theme gets a pale fill under its dark text. Otus blue on [ThemeBase.Otus] keeps
  * the original hand-tuned shades.
  */
-public fun ThemeBase.accentShades(accent: Color): AccentShades {
-    if (this == ThemeBase.Otus && accent == AccentPreset.OtusBlue.color) return otusBlueShades
+public fun ThemeBase.accentShades(accent: Color): AccentShades = accentShades(accent, page, raised, text1)
+
+/** [ThemeBase.accentShades] on surfaces the user may have changed. */
+internal fun accentShades(
+    accent: Color,
+    page: Color,
+    raised: Color,
+    text1: Color,
+): AccentShades {
+    val otus = ThemeBase.Otus
+    if (listOf(accent, page, raised, text1) ==
+        listOf(AccentPreset.OtusBlue.color, otus.page, otus.raised, otus.text1)
+    ) {
+        return otusBlueShades
+    }
+    val isLight = page.isLightPage
     val (hue, saturation, lightness) = accent.toHsl()
     val readable = { shade: Color -> contrast(shade, raised) >= MIN_CONTRAST && contrast(shade, page) >= MIN_CONTRAST }
     val text =
@@ -45,7 +56,6 @@ public fun ThemeBase.accentShades(accent: Color): AccentShades {
         fill = hslColor(hue, fillSaturation, fill),
         regular = accent,
         text = hslColor(hue, saturation, text),
-        adjusted = abs(text - lightness) > ADJUSTED,
     )
 }
 
@@ -62,7 +72,6 @@ private val otusBlueShades =
         fill = OtusPalette.Otus.accentDark,
         regular = OtusPalette.Otus.accentRegular,
         text = OtusPalette.Otus.accentLight,
-        adjusted = false,
     )
 
 private const val MIN_CONTRAST = 4.5f
@@ -74,4 +83,3 @@ private const val LIGHT_FILL_LIGHTNESS = 0.88f
 private const val LIGHT_FILL_STEPS = 20
 private const val LIGHT_FILL_MAX_SATURATION = 0.7f
 private const val LIGHT_FILL_CONTRAST = 7f
-private const val ADJUSTED = 0.005f
