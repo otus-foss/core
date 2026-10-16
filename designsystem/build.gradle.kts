@@ -49,6 +49,8 @@ kotlin {
             implementation(libs.robolectric)
             implementation(libs.androidx.compose.ui.test)
             implementation(libs.androidx.compose.ui.test.manifest)
+            implementation(libs.roborazzi)
+            implementation(libs.roborazzi.compose)
         }
     }
 }
@@ -56,6 +58,15 @@ kotlin {
 compose.resources {
     publicResClass = true
     packageOfResClass = "com.otus.designsystem.resources"
+}
+
+// Screenshot tests compare against the PNGs in src/androidHostTest/screenshots. Pass
+// -Proborazzi.record to write new ones instead; see docs/designsystem.md#screenshot-tests.
+val screenshots = layout.projectDirectory.dir("src/androidHostTest/screenshots")
+val recordScreenshots = providers.gradleProperty("roborazzi.record").isPresent
+tasks.withType<Test>().configureEach {
+    inputs.dir(screenshots).withPropertyName("screenshots").optional()
+    systemProperty(if (recordScreenshots) "roborazzi.test.record" else "roborazzi.test.verify", "true")
 }
 
 // The published iOS metadata sees JetBrains' and Google's Compose klibs together and warns about
