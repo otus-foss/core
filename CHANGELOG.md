@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Add `ToastHost` with `ToastState`, `ToastMessage`, and the `Toast` element with `ToastAction`.
+  Toasts stack with the newest in front, merge by `group`, fan out on tap, and swipe away in
+  either direction. A toast with an action shows a countdown ring. See
+  [the design system guide](docs/designsystem.md).
 - Add the brand assets: source SVGs in `designsystem/brand/`, the `brand_otus_logo` and
   `brand_owl` drawables, and Mail's adaptive launcher icon `otus_mail_icon` as an Android
   resource.
