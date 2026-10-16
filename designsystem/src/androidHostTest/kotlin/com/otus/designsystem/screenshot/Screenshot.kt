@@ -10,18 +10,24 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.unit.dp
+import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.captureRoboImage
+import com.github.takahirom.roborazzi.captureScreenRoboImage
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.OtusTheme
 
 private const val SHOT_TAG = "screenshot"
 
+private fun shotPath(name: String) = "src/androidHostTest/screenshots/$name.png"
+
 /**
  * Renders [content] on the page background and compares it with
  * `src/androidHostTest/screenshots/<name>.png`, or records that file with `-Proborazzi.record`.
+ * [act] runs between composing and capturing, for example to drag a row or advance a paused clock.
  */
 fun ComposeContentTestRule.screenshot(
     name: String,
+    act: ComposeContentTestRule.() -> Unit = {},
     content: @Composable () -> Unit,
 ) {
     setContent {
@@ -32,5 +38,20 @@ fun ComposeContentTestRule.screenshot(
             }
         }
     }
-    onNodeWithTag(SHOT_TAG).captureRoboImage("src/androidHostTest/screenshots/$name.png")
+    act()
+    onNodeWithTag(SHOT_TAG).captureRoboImage(shotPath(name))
+}
+
+/**
+ * Like [screenshot], but captures the whole screen, so content in its own window, such as a sheet
+ * or a dialog, is in the image too.
+ */
+@OptIn(ExperimentalRoborazziApi::class)
+fun ComposeContentTestRule.screenScreenshot(
+    name: String,
+    content: @Composable () -> Unit,
+) {
+    setContent { OtusTheme(content = content) }
+    waitForIdle()
+    captureScreenRoboImage(shotPath(name))
 }
