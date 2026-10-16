@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- `ReorderableColumn` fills the row being dragged with `bgLight`. `FolderSettingRow` takes a
+  `handle`, such as `ReorderableScope.DragHandle`, after its chevron, and `SidebarFolder` takes the
+  `icon` that `FolderSettingRow` took before.
 - Add `Modifier.mutedRule()`, which fades a `RuleChip` or `RuleChipGroup` shown only for context,
   such as a parent folder's rule.
 - Add `Modifier.nestIndent(step, depth)`, which indents a nested row by at most four steps
