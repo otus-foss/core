@@ -28,7 +28,7 @@ palette recorded in [mail design foundations](suite/mail-design.md). See
   `MonthNavigation`, `MonthYearPicker`, `PageScaffold`, `Subpage`, `PageSection`, `PanelSurface`,
   `PickerSearch`, `PreviewCard`, `PullToRefresh`, `ReorderableColumn`, `SelectionSheet`, `SheetFrame`, `SettingRow`,
   `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarRail`, `SummaryCard` and `PersonText` (with `NamedAvatar`), `ValueToken`, `ValuePicker`, `Collapsible`, `CollapsibleTree`, `AvatarStack`,
-  `SidebarSwipeArea`, `SwipeActions`, and `ThemeCard`.
+  `SidebarSwipeArea`, `SlidingOverlay`, `SlidingPages`, `SwipeActions`, and `ThemeCard`.
 - Settings rows follow Notion's settings pages: flat rows with a title and `text2` description
   beside the control, `bgLight` hairlines between them, and large section titles. The whole row is
   the control; `ToggleSwitch` and `ValueButton` only show its state. A long picker, such as Mail's
@@ -133,7 +133,7 @@ Every animation in the design system and in Mail takes its duration and curve fr
 | --- | --- | --- | --- |
 | `Quick` | 2 | 120 ms | Press feedback, the refresh indicator |
 | `Fast` | 1.5 | 160 ms | Toggle switch, reorder shift, action bar collapse, outgoing text |
-| `Normal` | 1 | 240 ms | Panel modes, sheets, row selection, swipe flash, incoming text |
+| `Normal` | 1 | 240 ms | Panel modes, sheets, pages sliding, row selection, swipe flash, incoming text |
 | `Relaxed` | 0.8 | 300 ms | Sidebar opening, a swiped row settling |
 
 A duration is `240 ms / (factor × scale)`, rounded to the nearest millisecond. The scale comes
@@ -141,6 +141,10 @@ from `LocalMotionScale`, which defaults to 1. Providing 2 runs every animation t
 0.5 runs it at half speed. Android's animator duration scale, set in the developer options or by
 the system's remove animations setting, applies on top of the result, because Compose reads it
 for every animation.
+
+Apps provide the user's `AnimationSpeed` as the scale. The Animations row on the shared
+appearance page sets it through `AnimationSettingsState`: Slow is 0.75, Regular 1, Fast 1.5, and
+Instant is infinite, so every duration rounds to 0 ms.
 
 A composable reads the scale for you:
 
