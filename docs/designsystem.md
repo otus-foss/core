@@ -14,7 +14,8 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   `parseHexColor`), `FolderColor`, `ThemeTokens`, `Motion` (with `MotionSpeed`, `MotionCurve`, and
   `LocalMotionScale`), and tokens for avatars, calendars, control
   feedback, pages, panels, refresh, sheets, the sidebar, the action bar (`ActionBarTokens`), and
-  compose fields (`ComposeTokens`).
+  compose fields (`ComposeTokens`), and rule chips and folder settings rows (`RuleChipTokens`,
+  `FolderRowTokens`).
   `panelTextStyle()` uses Figtree.
 - `elements`: `ActionButton`, `ActionRow`, `AnimatedText`, `Avatar`, `AvatarImage`, `BarIconButton`, `CalendarDay`,
   `ComposeBody`, `ComposeField`, `ComposeValueField`,
@@ -27,7 +28,9 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
 - `components`: `ActionBar`, `ActionBarHost`, `BarAction`, `BarContext`, `BarToken`, `ActionDialog`, `ChoiceDialog`, `ChoiceSheet` (with `ChoiceRow`), `ConfirmDialog`, `InputDialog`, `ContextPanel`, `DatePickerDialog`,
   `MonthNavigation`, `MonthYearPicker`, `PageScaffold`, `Subpage`, `PageSection`, `PanelSurface`,
   `PickerSearch`, `PreviewCard`, `PullToRefresh`, `ReorderableColumn`, `SelectionSheet`, `SheetFrame`, `SettingRow`,
-  `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarHeader`, `SidebarMailboxGrid`, `ScopeSheet`, `ScopeRow` and `ScopeChildRow` (with `ScopeOption`), `SummaryCard` and `PersonText` (with `NamedAvatar`), `ValueToken`, `ValuePicker`, `Collapsible`, `CollapsibleTree`, `AvatarStack`, `ContextMenu` (with `MenuAction`),
+  `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarHeader`, `SidebarMailboxGrid`, `ScopeSheet`, `ScopeRow` and `ScopeChildRow` (with `ScopeOption`), `ScopePicker`,
+  `RuleChip`, `RuleChipGroup`, and `AddRuleChip` (with `RuleChipLine`, `RuleChipValue`, `RuleSegment`, and
+  `RuleSegmentStyle`), `FolderSettingRow` with `FolderRuleSummary` and `FolderOwnerLine`, `SummaryCard` and `PersonText` (with `NamedAvatar`), `ValueToken`, `ValuePicker`, `Collapsible`, `CollapsibleTree`, `AvatarStack`, `ContextMenu` (with `MenuAction`),
   `SidebarSwipeArea`, `SlidingOverlay`, `SlidingPages`, `SwipeActions`, and `ThemeCard`.
 - Settings rows follow Notion's settings pages: flat rows with a title and `text2` description
   beside the control, `bgLight` hairlines between them, and large section titles. The whole row is
@@ -105,6 +108,38 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   and owns the order. Each handle names its row for accessibility services and offers Move up and
   Move down. Give every row a unique, stable key. Changing the row order cancels an active drag.
   Every row is composed, so it suits settings lists, not message lists.
+  A row without a handle passes `Modifier.dragOnLongPress()` from its `ReorderableScope`: a long
+  press anywhere on the row starts the drag, and a tap still reaches the row's click. The gesture
+  reads the initial pointer pass and consumes the rest of a long press, so lifting the finger does
+  not click the row or scroll the list. The overload with `onNest` also takes drops onto a row,
+  such as a folder dropped onto another folder. While the dragged row's leading edge, its bottom
+  edge moving down or its top edge moving up, is in the middle half of another row, that row gets
+  an `accentDark` fill and a drop calls `onNest(from, onto)`. In the outer quarters the drag
+  reorders and calls `onMove`, and a row steps aside only once the leading edge passes its middle
+  half. Screen readers get Move up and Move down but no way to nest; the app offers that elsewhere,
+  such as in a folder's settings.
+- `RuleChip` shows one condition of a mail rule in a `bgLight` outline, like `ValueToken`. Its
+  grid is fixed so stacked chips line up: a 52 dp label column (12 sp SemiBold `text2`), a 20 dp
+  slot, and the value (15 sp, one line, ellipsis). The slot holds a 20 dp avatar for people and
+  domains, or an 18 dp `text2` icon for every other kind of condition. The app passes a
+  `RuleChipLine` with a `RuleChipValue` made of `RuleSegment`s: `Dim` (`text3`) for how it matches,
+  such as "starts with", `Bright` (`text1`) for what it matches, and `Accent` (`accentLight`) for a
+  wildcard `*`. The app writes the words and quotes; the chip draws them as given. A full chip is
+  36 dp tall. `RowDensity.Compact` makes a 24 dp chip for a folder row: its label takes only the
+  width it needs, its avatar is 16 dp, and it leaves out the icon. `RuleChipGroup` draws an "All
+  of" rule: one outline, a small `text3` title such as "ALL OF", and hairlines between its
+  conditions, on the same grid. `AddRuleChip` is a dashed chip of the same height with its plus in
+  the slot column and its label in the value column. A chip or group with `onClick` is one button.
+- `FolderSettingRow` is one folder on a folder settings page: the folder icon, the name in 17 sp,
+  an optional detail line, and a chevron, at least 56 dp tall and indented 20 dp per level. The
+  icon expands and collapses subfolders like `SidebarFolderEntry`'s, shares its code, and takes
+  `LocalIconTint`. `icon` replaces the closed folder, such as `symbol_folder_shared`. The detail
+  is a slot: `FolderRuleSummary` shows the first rule as a compact chip and a `text3` count such as
+  "+1", and `FolderOwnerLine` shows the owner's 16 dp avatar before text such as "Shared by
+  Florian · can read". `ScopePicker` is a `bgDark` card with stacked avatars, a SemiBold title, a
+  `text2` subtitle, and an unfold icon, such as "All accounts" over "2 accounts · 11 folders". The
+  whole card is one button that opens the app's picker. It shares its avatars and text with
+  `SidebarHeader`.
 - `ActionBar` is a page's bottom bar: up to three icon-only secondary actions in a group, and the
   primary action in a shell beside it. Each secondary action is a 48 dp `BarIconButton` that
   shows its label on long press. A disabled action stays in its slot with a `text3` icon, so the

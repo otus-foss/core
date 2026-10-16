@@ -93,7 +93,7 @@ public fun AddSwatch(
                 drawCircle(
                     outline,
                     radius = (size.minDimension - width) / 2,
-                    style = Stroke(width, pathEffect = PathEffect.dashPathEffect(floatArrayOf(DASH, DASH))),
+                    style = Stroke(width, pathEffect = outlineDash()),
                 )
             },
             contentAlignment = Alignment.Center,
@@ -104,5 +104,8 @@ public fun AddSwatch(
         }
     }
 }
+
+/** The dash pattern of an outline around an "add" control, such as [AddSwatch]. */
+internal fun outlineDash(): PathEffect = PathEffect.dashPathEffect(floatArrayOf(DASH, DASH))
 
 private const val DASH = 6f

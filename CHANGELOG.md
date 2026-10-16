@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+- Add `RuleChip`, `RuleChipGroup`, and `AddRuleChip` for mail rules, with the value types
+  `RuleChipLine`, `RuleChipValue`, `RuleSegment`, and `RuleSegmentStyle`. A chip is 36 dp tall, or
+  24 dp with `RowDensity.Compact`.
+- Add `FolderSettingRow` for a folder settings page, with the detail lines `FolderRuleSummary` and
+  `FolderOwnerLine`, and `ScopePicker`, a card that opens an account picker.
+- `ReorderableColumn` has an overload with `onNest` that also takes drops onto a row.
+  `ReorderableScope` adds `Modifier.dragOnLongPress()`, which drags a row after a long press
+  without a handle. Apps that implement `ReorderableScope` themselves must add it; the design
+  system is the only implementer today.
+- Add the `symbol_short_text`, `symbol_code`, `symbol_forum`, `symbol_notes`, `symbol_schedule`,
+  `symbol_filter_alt`, and `symbol_folder_shared` symbols.
 - **Breaking:** `Sidebar` has no account rail. It takes a `header` slot in place of `subtitle` and
   `rail`, and `title` now only names the pane for screen readers. `SidebarRail`,
   `SidebarRailAccount`, `SidebarRailIcon`, `SidebarRailAdd`, and `SidebarRailDivider` are gone.
