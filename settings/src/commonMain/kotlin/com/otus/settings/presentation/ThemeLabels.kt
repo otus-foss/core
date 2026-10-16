@@ -10,9 +10,9 @@ import com.otus.designsystem.theme.ThemeColor
 public val ThemeChoice.themeTitle: String
     get() = customTheme?.title ?: base.title
 
-/** A custom theme's name: the first is "Custom", later ones are numbered. */
+/** A custom theme's name: the user's, else "Custom" for the first and a number for later ones. */
 internal val CustomTheme.title: String
-    get() = if (id == 1) "Custom" else "Custom $id"
+    get() = name ?: if (id == 1) "Custom" else "Custom $id"
 
 internal val ThemeBase.title: String
     get() =

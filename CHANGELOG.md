@@ -5,16 +5,19 @@
 - Add the Ink theme, darker than Otus with surfaces closer together, and custom themes (decision
   0014). `ThemeColor` names the ten colors a user can change. `ThemeChoice` keeps a list of
   `CustomTheme`s, and `withColor` on a built-in theme creates and selects a new custom theme, so
-  built-in themes never change. `withBase`, `withCustomTheme`, `withAccent`, and
-  `withoutCustomTheme` select, edit, and delete themes.
+  built-in themes never change. `withBase`, `withCustomTheme`, `withAccent`, `withName`,
+  `withCopy`, and `withoutCustomTheme` select, edit, rename, duplicate, and delete themes.
 - **Breaking:** `AccentShades.adjusted` is gone, and so are the accent card tokens
   `accentCardPadding`, `accentCardGap`, `rolePillHeight`, and `roleLabelSize`.
 - **Breaking:** `ThemeBase.title` in `settings` is now internal. Use `ThemeChoice.themeTitle`,
   which also names custom themes.
 - Add `SwatchStack`, overlapping color circles like `AvatarStack`. `ValueButton` takes an
   optional `fill` color with readable text on it. `SheetHeaderAction` is now public.
-- The theme page drops the accent shade examples, lists every color under Customize colors, and
-  deletes a selected custom theme after asking. "Reset to Otus" keeps custom themes.
+- `ThemeCard` takes an optional `onActions`, run by a long press or the selected card's more
+  button.
+- The theme page drops the accent shade examples and lists every color under Customize colors. A
+  theme's actions duplicate it, and rename or delete a custom theme. "Reset to Otus" keeps custom
+  themes.
 - The color sheets now close after Done or Reset. Before, the closed sheet stayed on screen,
   dimmed the page, and blocked taps.
 

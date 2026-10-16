@@ -2,6 +2,7 @@ package com.otus.designsystem.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,8 +11,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.LocalContentColor
@@ -23,11 +24,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import com.otus.designsystem.elements.IconButton
 import com.otus.designsystem.elements.Symbol
 import com.otus.designsystem.elements.controlPressFeedback
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_check_circle
+import com.otus.designsystem.resources.symbol_more_horiz
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.OtusPalette
 import com.otus.designsystem.theme.PanelTokens
@@ -36,6 +42,8 @@ import com.otus.designsystem.theme.ThemeTokens
 /**
  * A theme to pick: a small sketch of a page drawn in [sketch]'s colors above [title] and
  * [description]. The selected card has an accent ring and a check; the card is one radio button.
+ * With [onActions], a long press runs it, and the selected card shows a more button for it in
+ * place of the check.
  */
 @Composable
 public fun ThemeCard(
@@ -45,13 +53,21 @@ public fun ThemeCard(
     selected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    onActions: (() -> Unit)? = null,
 ) {
     val shape = RoundedCornerShape(ThemeTokens.cardRadius)
     val interactions = remember { MutableInteractionSource() }
     Column(
         modifier
-            .selectable(selected, interactions, indication = null, role = Role.RadioButton, onClick = onClick)
-            .controlPressFeedback(interactions, shape)
+            .semantics { this.selected = selected }
+            .combinedClickable(
+                interactions,
+                indication = null,
+                role = Role.RadioButton,
+                onLongClickLabel = onActions?.let { "Theme actions" },
+                onLongClick = onActions,
+                onClick = onClick,
+            ).controlPressFeedback(interactions, shape)
             .background(OtusColors.bgDark, shape)
             .border(
                 if (selected) PanelTokens.borderWidth * 2 else PanelTokens.borderWidth,
@@ -69,6 +85,8 @@ public fun ThemeCard(
             Column(Modifier.weight(1f)) {
                 Text(
                     title,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     fontSize = ThemeTokens.cardTitleSize,
                     lineHeight = ThemeTokens.cardTitleLineHeight,
                     fontWeight = FontWeight.SemiBold,
@@ -80,11 +98,30 @@ public fun ThemeCard(
                     lineHeight = ThemeTokens.cardDetailLineHeight,
                 )
             }
-            if (selected) {
-                CompositionLocalProvider(LocalContentColor provides OtusColors.accentLight) {
-                    Symbol(Res.drawable.symbol_check_circle)
+            when {
+                selected && onActions != null -> {
+                    MoreButton(title, onActions)
+                }
+
+                selected -> {
+                    CompositionLocalProvider(LocalContentColor provides OtusColors.accentLight) {
+                        Symbol(Res.drawable.symbol_check_circle)
+                    }
                 }
             }
+        }
+    }
+}
+
+/** A more button the size of the check it replaces, so the card keeps its height; its touch target overflows. */
+@Composable
+private fun MoreButton(
+    title: String,
+    onClick: () -> Unit,
+) {
+    Box(Modifier.size(PanelTokens.iconSize), contentAlignment = Alignment.Center) {
+        IconButton("Actions for $title", onClick, Modifier.requiredSize(PanelTokens.touchTarget), outlined = false) {
+            Symbol(Res.drawable.symbol_more_horiz)
         }
     }
 }

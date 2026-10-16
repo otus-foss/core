@@ -30,6 +30,7 @@ class ThemeSettingsStateTest {
                 .withBase(ThemeBase.Light)
                 .withColor(ThemeColor.AccentText, Color(0xFF123456))
                 .withColor(ThemeColor.AccentText, null)
+                .withName(2, "Night 100%20 ink")
         ThemeSettingsState(store).select(choice)
         assertEquals(choice, ThemeSettingsState(store).choice)
     }
