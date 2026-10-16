@@ -1,6 +1,6 @@
 package com.otus.designsystem.components
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,7 +13,10 @@ import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -41,12 +44,12 @@ import org.jetbrains.compose.resources.DrawableResource
 
 /**
  * A folder on a folder settings page, indented by its [SidebarFolder.depth]: the folder icon, the
- * name with an optional [detail] line under it, the optional count, and a settings icon. Tapping the row
- * calls [onClick], which opens the folder. With subfolders, [expanded] is non-null and the icon is
- * a toggle, an open folder while expanded. [SidebarFolder.icon] replaces the closed folder icon,
- * such as for a shared folder. The icon takes [com.otus.designsystem.elements.LocalIconTint].
- * Inside a [ReorderableColumn], pass [ReorderableScope.dragOnLongPress] in [modifier] so a long
- * press drags it, and [ReorderableScope.DragHandle] as [handle], which sits after the settings icon.
+ * name with an optional [detail] line under it, the optional count, and a settings icon. Tapping
+ * the row calls [onClick], which opens the folder; a long press calls [onLongClick] with the
+ * pressed point, such as to open a [QuickActionBar] there. With subfolders, [expanded] is non-null
+ * and the icon is a toggle, an open folder while expanded. [SidebarFolder.icon] replaces the closed
+ * folder icon, such as for a shared folder. The icon takes
+ * [com.otus.designsystem.elements.LocalIconTint].
  */
 @Composable
 public fun FolderSettingRow(
@@ -55,16 +58,65 @@ public fun FolderSettingRow(
     onExpandedChange: (Boolean) -> Unit,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    onLongClick: ((Offset) -> Unit)? = null,
     detail: (@Composable () -> Unit)? = null,
-    handle: (@Composable () -> Unit)? = null,
+) {
+    FolderRowLayout(folder, expanded, onExpandedChange, modifier, FolderRowSlots(onClick, onLongClick, detail))
+}
+
+/**
+ * A [FolderSettingRow] in a [ReorderableTree] or [ReorderableColumn], with the row's drag handle
+ * after its settings icon.
+ */
+@Composable
+public fun ReorderableScope.FolderSettingRow(
+    folder: SidebarFolder,
+    expanded: Boolean?,
+    onExpandedChange: (Boolean) -> Unit,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    onLongClick: ((Offset) -> Unit)? = null,
+    detail: (@Composable () -> Unit)? = null,
+) {
+    FolderRowLayout(
+        folder,
+        expanded,
+        onExpandedChange,
+        modifier,
+        FolderRowSlots(onClick, onLongClick, detail) { DragHandle(folder.label) },
+    )
+}
+
+/** What a folder row does when pressed, and the parts a caller adds to it. */
+private class FolderRowSlots(
+    val onClick: () -> Unit,
+    val onLongClick: ((Offset) -> Unit)?,
+    val detail: (@Composable () -> Unit)?,
+    val handle: (@Composable () -> Unit)? = null,
+)
+
+@Composable
+private fun FolderRowLayout(
+    folder: SidebarFolder,
+    expanded: Boolean?,
+    onExpandedChange: (Boolean) -> Unit,
+    modifier: Modifier,
+    slots: FolderRowSlots,
 ) {
     val interactions = remember { MutableInteractionSource() }
+    var pressedAt by remember { mutableStateOf(Offset.Zero) }
     Row(
         modifier
             .fillMaxWidth()
             .heightIn(min = FolderRowTokens.minHeight)
-            .clickable(interactions, indication = null, role = Role.Button, onClick = onClick)
-            .controlPressFeedback(interactions, RoundedCornerShape(SheetTokens.rowRadius))
+            .onPressDown { pressedAt = it }
+            .combinedClickable(
+                interactions,
+                indication = null,
+                role = Role.Button,
+                onLongClick = slots.onLongClick?.let { { it(pressedAt) } },
+                onClick = slots.onClick,
+            ).controlPressFeedback(interactions, RoundedCornerShape(SheetTokens.rowRadius))
             .treeGuides(folder.depth)
             .nestIndent(FolderRowTokens.nestIndent, folder.depth)
             .padding(
@@ -84,13 +136,13 @@ public fun FolderSettingRow(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
-            detail?.invoke()
+            slots.detail?.invoke()
         }
         folder.count?.let { SidebarCount(it) }
         CompositionLocalProvider(LocalContentColor provides OtusColors.text2) {
             Symbol(Res.drawable.symbol_settings)
         }
-        handle?.invoke()
+        slots.handle?.invoke()
     }
 }
 
