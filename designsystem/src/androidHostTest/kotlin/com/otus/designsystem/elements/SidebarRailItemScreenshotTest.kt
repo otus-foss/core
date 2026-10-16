@@ -51,7 +51,7 @@ class SidebarRailItemScreenshotTest {
 
     @Test
     fun rail() =
-        compose.screenshot("sidebar_rail") {
+        compose.screenshot("sidebar_rail_items") {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 SidebarRailIcon(Res.drawable.symbol_all_inbox, "All", "All accounts", false, {})
                 SidebarRailDivider()
