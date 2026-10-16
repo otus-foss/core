@@ -19,6 +19,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.semantics
@@ -63,6 +64,9 @@ public fun RuleChip(
             .padding(horizontal = if (compact) RuleChipTokens.compactPadding else RuleChipTokens.padding),
     )
 }
+
+/** Fades a [RuleChip] or [RuleChipGroup] shown only for context, such as a parent folder's rule. */
+public fun Modifier.mutedRule(): Modifier = alpha(RuleChipTokens.MUTED_ALPHA)
 
 /**
  * Several conditions that must all match, such as an "All of" rule: one outline around [lines],

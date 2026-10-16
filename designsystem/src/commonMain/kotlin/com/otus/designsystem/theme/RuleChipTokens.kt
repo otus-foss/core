@@ -14,6 +14,9 @@ internal object RuleChipTokens {
 
     /** Every label column is this wide, so the slots and values of stacked chips line up. */
     val labelWidth: Dp = 52.dp
+
+    /** How opaque a rule shown only for context is, such as a parent folder's. */
+    const val MUTED_ALPHA: Float = 0.6f
     val labelSize: TextUnit = 12.sp
     val labelLineHeight: TextUnit = 16.sp
     val slot: Dp = PanelTokens.iconSize
