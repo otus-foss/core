@@ -46,7 +46,12 @@ public data class NewPushSubscription(
     val types: List<String>? = null,
 ) {
     init {
-        require(url.startsWith("https://")) { "push URLs must use https" }
+        require(allows(url)) { "push URLs must use https" }
+    }
+
+    public companion object {
+        /** Whether a server may push to [url]; RFC 8620, section 7.2 allows only https. */
+        public fun allows(url: String): Boolean = url.startsWith("https://")
     }
 }
 

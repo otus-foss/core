@@ -8,7 +8,8 @@
 - Add the `push` module (decision 0015). `PushSubscriptions` keeps one JMAP push subscription per
   login pointed at the app's push endpoint: it creates, verifies, renews, replaces, and deletes
   subscriptions, and reports a `PushStatus` per login. Apps store records through
-  `PushStateStore`. See [push](docs/push.md).
+  `PushStateStore`. `forget` deletes a login's subscription before the login is removed, and
+  `JmapAccountRepository` takes a `beforeRemove` hook to call it. See [push](docs/push.md).
 - Add JMAP push wire types (RFC 8620, section 7, and decision 0015): `PushSubscriptionGetMethod`,
   `PushSubscriptionSetMethod`, `PushSubscription`, `NewPushSubscription`, `PushKeys`, and
   `PushMessage` with `StateChange` and `Verification`. `JmapCapability.WEBPUSH_VAPID` and
