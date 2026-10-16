@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Add `Modifier.nestIndent(step, depth)`, which indents a nested row by at most four steps
+  (`MAX_INDENT_STEPS`). `SidebarEntry`, `SidebarFolderEntry`, `DetailRow`, and `FolderSettingRow`
+  use it, so rows deeper than the fifth level stop moving right.
 - Add `RuleChip`, `RuleChipGroup`, and `AddRuleChip` for mail rules, with the value types
   `RuleChipLine`, `RuleChipValue`, `RuleSegment`, and `RuleSegmentStyle`. A chip is 36 dp tall, or
   24 dp with `RowDensity.Compact`.

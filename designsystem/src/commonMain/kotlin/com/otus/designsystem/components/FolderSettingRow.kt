@@ -23,6 +23,7 @@ import com.otus.designsystem.elements.SidebarCount
 import com.otus.designsystem.elements.SidebarFolder
 import com.otus.designsystem.elements.Symbol
 import com.otus.designsystem.elements.controlPressFeedback
+import com.otus.designsystem.elements.nestIndent
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_chevron_right
 import com.otus.designsystem.resources.symbol_folder
@@ -58,8 +59,8 @@ public fun FolderSettingRow(
             .heightIn(min = FolderRowTokens.minHeight)
             .clickable(interactions, indication = null, role = Role.Button, onClick = onClick)
             .controlPressFeedback(interactions, RoundedCornerShape(SheetTokens.rowRadius))
+            .nestIndent(FolderRowTokens.nestIndent, folder.depth)
             .padding(
-                start = FolderRowTokens.nestIndent * folder.depth,
                 end = FolderRowTokens.endPadding,
                 top = FolderRowTokens.verticalPadding,
                 bottom = FolderRowTokens.verticalPadding,

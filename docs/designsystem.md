@@ -37,7 +37,9 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   the control; `ToggleSwitch` and `ValueButton` only show its state. A long picker, such as Mail's
   folder lists, uses `RowDensity.Compact`: 36 dp per row and no hairlines. Folder lists, including
   `SidebarEntry` and `SidebarFolderEntry` rows, use `PanelTokens.compactRowHeight`, below the
-  48 dp touch target by the user's choice. A row without a click is
+  48 dp touch target by the user's choice. Nested rows indent with `Modifier.nestIndent`, which
+  stops after four steps (`MAX_INDENT_STEPS`), so a row at the fifth level or deeper keeps room
+  for its name. A row without a click is
   static, and a `RowButton` at its end acts on its own. Settings choices open a `ChoiceSheet`,
   which lists a `ChoiceOptions` default in its own group first, optionally with an icon per
   option, applies a choice at once, and closes with Done. Sheets are as tall as their content, up
