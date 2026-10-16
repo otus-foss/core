@@ -27,7 +27,7 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   `controlPressFeedback` modifier.
 - `components`: `ActionBar`, `ActionBarHost`, `BarAction`, `BarContext`, `BarToken`, `ActionDialog`, `ChoiceDialog`, `ChoiceSheet` (with `ChoiceRow`), `ConfirmDialog`, `InputDialog`, `ContextPanel`, `DatePickerDialog`,
   `MonthNavigation`, `MonthYearPicker`, `PageScaffold`, `Subpage`, `PageSection`, `PanelSurface`,
-  `PickerSearch`, `PreviewCard`, `PullToRefresh`, `ReorderableColumn`, `SelectionSheet`, `SheetFrame`, `SettingRow`,
+  `PickerSearch`, `PreviewCard`, `PullToRefresh`, `ReorderableColumn`, `ReorderableTree`, `SelectionSheet`, `SheetFrame`, `SettingRow`,
   `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarHeader`, `SidebarMailboxGrid`, `ScopeSheet`, `ScopeRow` and `ScopeChildRow` (with `ScopeOption`), `ScopePicker`,
   `RuleChip`, `RuleChipGroup`, and `AddRuleChip` (with `RuleChipLine`, `RuleChipValue`, `RuleSegment`, and
   `RuleSegmentStyle`), `FolderSettingRow` with `FolderRuleSummary` and `FolderOwnerLine`, `SummaryCard` and `PersonText` (with `NamedAvatar`), `ValueToken`, `ValuePicker`, `Collapsible`, `CollapsibleTree`, `AvatarStack`, `ContextMenu` (with `MenuAction`),
@@ -113,8 +113,25 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   A row without a handle passes `Modifier.dragOnLongPress()` from its `ReorderableScope`: a long
   press anywhere on the row starts the drag, and a tap still reaches the row's click. The gesture
   reads the initial pointer pass and consumes the rest of a long press, so lifting the finger does
-  not click the row or scroll the list. The dragged row gets a `bgLight` fill, and the other rows
-  step aside into the places they would take.
+  not click the row or scroll the list. The dragged row gets a `bgLight` fill, and in a
+  `ReorderableColumn` the other rows step aside into the places they would take.
+- `ReorderableTree` rearranges a short tree, such as folders, flattened into rows that each know
+  their depth. Its rows use the same `ReorderableScope` as `ReorderableColumn`. The other rows stay
+  in place while the dragged row follows the finger with its `bgLight` fill at 75% opacity, so
+  the row under it and the line show through. The tree judges the target by the dragged row's center. Over the middle half of a row, the folder goes inside that
+  row as its first child. Over the upper or lower quarter, it goes into the gap above or below.
+  The dragged row can reach half its height past either end, so the first and last gaps are
+  reachable. A 2 dp `accentLight` line with round ends and a small ring at its start marks the
+  target. For a gap, the line sits in the gap at the depth of the row below it, or of the last row
+  at the end. For a drop inside a row, it sits under that row one level deeper. The line starts
+  where a `FolderSettingRow` at that depth starts its icon, steps 20 dp per level, and stops at
+  four steps like `nestIndent`. It is drawn over the rows and does not move them. The dragged row,
+  and the gaps on either side of it, show no line and drop nothing. The app's `canDrop` hides the
+  line for targets it would refuse, and a haptic marks each new target. On release the app gets
+  `onDrop(from, target)` with a `TreeDropTarget`: `Before(index)` for the gap above that row, where
+  an index equal to the row count means after the last row, or `Into(index)`. Move up and Move
+  down drop a row into the gap above the previous row or below the next one, and only appear when
+  `canDrop` allows that.
 - `RuleChip` shows one condition of a mail rule in a `bgLight` outline, like `ValueToken`. Its
   grid is fixed so stacked chips line up: a 52 dp label column (12 sp SemiBold `text2`), a 20 dp
   slot, and the value (15 sp, one line, ellipsis). The slot holds a 20 dp avatar for people and

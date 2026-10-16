@@ -2,11 +2,9 @@ package com.otus.designsystem.components
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.snap
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -15,17 +13,13 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import com.otus.designsystem.theme.MotionSpeed
 import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.SheetTokens
 import com.otus.designsystem.theme.motionTween
 
 /**
@@ -64,7 +58,12 @@ private fun <T> ReorderableLayout(
     val keys = items.map(key)
     val spacingPx = with(LocalDensity.current) { spacing.toPx() }
     val drag = remember { ReorderDrag() }
-    SideEffect { drag.layout(keys, spacingPx, onMove) }
+    SideEffect {
+        drag.layout(keys, spacingPx) { from, offset ->
+            val to = reorderTarget(drag.rowHeights, from, offset, spacingPx)
+            if (to != from) onMove(from, to)
+        }
+    }
     val heights = keys.map { drag.heights[it] ?: 0 }
     val from = keys.indexOf(drag.key)
     val drop = if (from >= 0) reorderTarget(heights, from, drag.offset, spacingPx) else null
@@ -90,18 +89,8 @@ private fun <T> ReorderableLayout(
                         up = { onMove(index, index - 1) }.takeIf { index > 0 },
                         down = { onMove(index, index + 1) }.takeIf { index < items.lastIndex },
                     )
-                Box(
-                    Modifier
-                        .zIndex(if (dragged) 1f else 0f)
-                        .graphicsLayer { translationY = if (dragged) drag.offset else shift }
-                        .background(background)
-                        .then(if (dragged) Modifier.draggedFill() else Modifier)
-                        .onSizeChanged { drag.heights[itemKey] = it.height },
-                ) { scope.row(item) }
+                Box(Modifier.reorderSlot(drag, itemKey, dragged, background, shift)) { scope.row(item) }
             }
         }
     }
 }
-
-/** Lifts the row being dragged off the rows around it. */
-private fun Modifier.draggedFill(): Modifier = background(OtusColors.bgLight, RoundedCornerShape(SheetTokens.rowRadius))

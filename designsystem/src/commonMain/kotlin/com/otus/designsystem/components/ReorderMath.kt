@@ -6,16 +6,21 @@ internal fun rowTops(
     spacing: Float,
 ): List<Float> = heights.runningFold(0f) { top, height -> top + height + spacing }.dropLast(1)
 
-/** [offset] limited so the row dragged from [from] stays within the column. */
+/**
+ * [offset] limited so the row dragged from [from] stays within the column, or reaches past either
+ * end by [overhang] of its own height.
+ */
 internal fun clampDrag(
     heights: List<Int>,
     from: Int,
     offset: Float,
     spacing: Float,
+    overhang: Float = 0f,
 ): Float {
     val tops = rowTops(heights, spacing)
     val end = tops.last() + heights.last()
-    return offset.coerceIn(-tops[from], end - tops[from] - heights[from])
+    val slack = heights[from] * overhang
+    return offset.coerceIn(-tops[from] - slack, end - tops[from] - heights[from] + slack)
 }
 
 /**
@@ -37,7 +42,7 @@ internal fun reorderTarget(
     return from + passedBelow - passedAbove
 }
 
-private const val HALF = 0.5f
+internal const val HALF: Float = 0.5f
 
 /** How far the row at [index] steps aside while the row dragged from [from] hovers over [target]. */
 internal fun reorderShift(

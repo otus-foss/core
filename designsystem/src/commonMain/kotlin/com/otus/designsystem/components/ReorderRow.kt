@@ -21,7 +21,7 @@ import com.otus.designsystem.resources.symbol_drag_indicator
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PanelTokens
 
-/** One row of a [ReorderableColumn]: its drag gestures and its Move up and Move down actions. */
+/** One row of a [ReorderableColumn] or [ReorderableTree]: its drag gestures and its Move up and Move down actions. */
 internal class ReorderRow(
     private val drag: ReorderDrag,
     private val key: Any,
