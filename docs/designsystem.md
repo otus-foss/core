@@ -25,7 +25,7 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   `SidebarFolderEntry` (with `SidebarFolder`), `SidebarDivider`, `SectionCaption`, `Symbol`,
   `ToggleSwitch`, `ValueButton`, and the
   `controlPressFeedback` modifier.
-- `components`: `ActionBar`, `ActionBarHost`, `BarAction`, `BarContext`, `BarToken`, `ActionDialog`, `ChoiceDialog`, `ChoiceSheet` (with `ChoiceRow`), `ConfirmDialog`, `InputDialog`, `ContextPanel`, `DatePickerDialog`,
+- `components`: `ActionBar`, `ActionBarHost`, `BarAction`, `BarContext`, `BarToken`, `ActionDialog`, `ChoiceDialog`, `ChoiceSheet` (with `ChoiceRow`), `ConfirmDialog`, `InputDialog`, `InputSheet`, `ContextPanel`, `DatePickerDialog`,
   `MonthNavigation`, `MonthYearPicker`, `PageScaffold`, `Subpage`, `PageSection`, `PanelSurface`,
   `PickerSearch`, `PreviewCard`, `PullToRefresh`, `ReorderableColumn`, `ReorderableTree`, `SelectionSheet`, `SheetFrame`, `SettingRow`,
   `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarHeader`, `SidebarMailboxGrid`, `ScopeSheet`, `ScopeRow` and `ScopeChildRow` (with `ScopeOption`), `ScopePicker`, `AccountGroupRow`,
@@ -144,6 +144,9 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   of" rule: one outline, a small `text3` title such as "ALL OF", and hairlines between its
   conditions, on the same grid. `AddRuleChip` is a dashed chip of the same height with its plus in
   the slot column and its label in the value column. A chip or group with `onClick` is one button.
+- `InputSheet` asks for one line of text, such as a new name, in a `SheetFrame`: the field is
+  focused when it opens, the header button confirms, and `problem` disables it while the text
+  can't be used. `InputDialog` asks the same in a popup.
 - `QuickActionBar` is a small pill of icon buttons that opens just above where the user
   long-pressed, centered on the point and kept inside the screen, or below the point when there
   is no room above. It takes the same `MenuAction`s as `ContextMenu`, each with an `icon`; screen
