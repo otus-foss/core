@@ -7,6 +7,54 @@
   except remote images, styles, and fonts, which load only with `loadRemote`. Tapped web, mail,
   and phone links go to `onOpenLink`; the view never navigates. On Android 13 and later, pages
   without their own dark colors are darkened to match the theme.
+- Add `TrailingIcons`, two touch-target-wide slots at a row's end. `FolderSettingRow` and
+  `AccountGroupRow` use it, so their icons line up in the same two columns.
+- Add `InputSheet`, `InputDialog`'s text field in a `SheetFrame`.
+- Add `QuickActionBar`, a small bar of icon `MenuAction`s that opens above a long-pressed point.
+  `MenuAction` takes an optional `icon` before `onClick`. `FolderSettingRow` takes `onLongClick`
+  with the pressed point, and its drag handle now comes from the `ReorderableScope` overload
+  instead of a `handle` parameter.
+- `FolderSettingRow` ends in a settings icon instead of a chevron.
+- `FolderSettingRow` draws tree guide lines under the icons of the levels above it, and
+  `AccountGroupRow` takes an `action`, such as a New folder button, before its chevron.
+- Add `ReorderableTree` and `TreeDropTarget`. A dragged row stays over the rows without moving
+  them, and an `accentLight` line shows whether it lands in a gap, at the depth of the row below,
+  or inside a row as its first child. The app's `canDrop` hides targets it would refuse.
+- `ReorderableColumn` fills the row being dragged with `bgLight`; the other rows step aside. `FolderSettingRow` takes a
+  `handle`, such as `ReorderableScope.DragHandle`, after its chevron, and `SidebarFolder` takes the
+  `icon` that `FolderSettingRow` took before.
+- Add `Modifier.mutedRule()`, which fades a `RuleChip` or `RuleChipGroup` shown only for context,
+  such as a parent folder's rule.
+- Add `Modifier.nestIndent(step, depth)`, which indents a nested row by at most four steps
+  (`MAX_INDENT_STEPS`). `SidebarEntry`, `SidebarFolderEntry`, `DetailRow`, and `FolderSettingRow`
+  use it, so rows deeper than the fifth level stop moving right.
+- Add `RuleChip`, `RuleChipGroup`, and `AddRuleChip` for mail rules, with the value types
+  `RuleChipLine`, `RuleChipValue`, `RuleSegment`, and `RuleSegmentStyle`. A chip is 36 dp tall, or
+  24 dp with `RowDensity.Compact`.
+- Add `FolderSettingRow` for a folder settings page, with the detail lines `FolderRuleSummary` and
+  `FolderOwnerLine`, and `PickerChip`, a header chip with avatars, a label, and a down chevron
+  that opens a picker. `Subpage` and `PageScaffold` take optional `chips` for the header's chip row.
+- `ReorderableScope` adds `Modifier.dragOnLongPress()`, which drags a row after a long press
+  without a handle. Apps that implement `ReorderableScope` themselves must add it; the design
+  system is the only implementer today.
+- Add the `symbol_short_text`, `symbol_code`, `symbol_forum`, `symbol_notes`, `symbol_schedule`,
+  `symbol_filter_alt`, and `symbol_folder_shared` symbols.
+- **Breaking:** `Sidebar` has no account rail. It takes a `header` slot in place of `subtitle` and
+  `rail`, and `title` now only names the pane for screen readers. `SidebarRail`,
+  `SidebarRailAccount`, `SidebarRailIcon`, `SidebarRailAdd`, and `SidebarRailDivider` are gone.
+  Apps pass a `SidebarHeader` and offer the account choice in a sheet such as `ScopeSheet`.
+- Add the sidebar pieces `SidebarHeader`, `SidebarInboxEntry`, `SidebarMailboxTile` with
+  `SidebarMailboxGrid`, `SidebarFolderEntry` with `SidebarFolder`, `SidebarDivider`, and
+  `SectionCaption`. Add `ScopeSheet`, `ScopeRow`, `ScopeChildRow`, and `ScopeOption` for a
+  "Show mail from" style picker with pinned choices and expandable groups. `AvatarStack` takes an
+  optional `size`. Add the `symbol_folder_open` and `symbol_keep` symbols.
+- Add `FolderColor`: `Default` and eight colors a user can give a folder, stored by `name` and
+  read back with `FolderColor.named`. `tint` and `tintIn(palette)` give the icon color for dark or
+  light themes, at 3:1 or more on `bgDark`, `bgRegular`, and `accentDark`.
+- Add `LocalIconTint`, which colors the leading icon of `SidebarEntry`, `ActionRow`, `SettingRow`,
+  `SettingToggleRow`, `ValuePicker`, and `ValueToken`, but not a disabled picker's icon.
+  `ChoiceRow` takes `iconTint` and a `swatch`, drawn by the new `FolderColorSwatch`, and
+  `ThemeTokens.folderSwatch` sizes it.
 - Add `ToastHost` with `ToastState`, `ToastMessage`, and the `Toast` element with `ToastAction`.
   Toasts stack with the newest in front, merge by `group`, fan out on tap, and swipe away in
   either direction. A toast with an action shows a countdown ring, and running the action closes

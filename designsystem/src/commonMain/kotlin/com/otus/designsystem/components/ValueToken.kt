@@ -10,9 +10,10 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import com.otus.designsystem.elements.Symbol
+import com.otus.designsystem.elements.LeadingSymbol
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PanelTokens
 import com.otus.designsystem.theme.SettingTokens
@@ -44,13 +45,16 @@ internal fun ValueOutline(
 ) {
     Row(
         modifier
-            .border(PanelTokens.borderWidth, OtusColors.bgLight, RoundedCornerShape(SettingTokens.valueRadius))
+            .valueOutline(RoundedCornerShape(SettingTokens.valueRadius))
             .padding(horizontal = SettingTokens.valuePaddingHorizontal, vertical = SettingTokens.valuePaddingVertical),
         horizontalArrangement = Arrangement.spacedBy(SummaryTokens.avatarGap),
         verticalAlignment = Alignment.CenterVertically,
         content = content,
     )
 }
+
+/** The `bgLight` stroke around a [ValueToken], [ValuePicker], or [RuleChip]. */
+internal fun Modifier.valueOutline(shape: Shape): Modifier = border(PanelTokens.borderWidth, OtusColors.bgLight, shape)
 
 /**
  * The keyword, avatar or icon, and value inside a [ValueOutline]. A disabled label dims its
@@ -75,7 +79,7 @@ internal fun RowScope.ValueLabel(
         )
     }
     avatar?.let { SmallAvatar(it) }
-    icon?.let { Symbol(it, size = SummaryTokens.avatarSize) }
+    icon?.let { LeadingSymbol(it, SummaryTokens.avatarSize, enabled) }
     Text(
         value,
         Modifier.weight(1f, fill = fill),
