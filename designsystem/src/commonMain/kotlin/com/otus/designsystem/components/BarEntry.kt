@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
+import com.otus.designsystem.theme.MotionCurve
 import com.otus.designsystem.theme.MotionSpeed
 import com.otus.designsystem.theme.motionTween
 
@@ -45,6 +46,11 @@ internal class BarEntry(
     private var start: BarGeometry? = null
     private var inFront = false
     private var kept: DrawnContext? = null
+    private var wasInFront = false
+
+    /** Whether this bar is coming back to the front, such as when the page over it closes. */
+    var returns: Boolean = false
+        private set
 
     /** Whether this bar has a bar to move in from, read once when it is created. */
     val movesIn: Boolean = hosted && Snapshot.withoutReadObservation { FrontGeometry.last } != null
@@ -60,14 +66,16 @@ internal class BarEntry(
 
     /**
      * The context to draw: [own] under [title], or while that fades out, the last one drawn. A bar
-     * that moves in fades out the context of the bar it started from, under that bar's title.
+     * that moves in fades out the context of the bar it started from, under that bar's title. A
+     * covered bar draws the front bar's context, as it draws its shape, so the frame in which a
+     * closing page uncovers it matches the bar that just left.
      */
     fun shownContext(
         own: BarContext?,
         title: String,
     ): DrawnContext? {
         if (own != null) kept = DrawnContext(title, own)
-        return kept
+        return if (hosted && !inFront) FrontGeometry.last?.context ?: kept else kept
     }
 
     /** Keeps where this bar is drawn while it is in front, for the next bar to start from. */
@@ -90,6 +98,8 @@ internal class BarEntry(
         }
         start = Snapshot.withoutReadObservation { FrontGeometry.last }
         kept = start?.context
+        returns = wasInFront
+        wasInFront = true
     }
 
     suspend fun moveIn(spec: AnimationSpec<Float>) {
@@ -103,7 +113,9 @@ internal fun rememberBarEntry(front: FrontBar): BarEntry {
     val entry = remember { BarEntry(hosted) }
     entry.follow(front.inFront)
     val move = motionTween<Float>(MotionSpeed.Fast)
-    LaunchedEffect(front.inFront) { if (front.inFront) entry.moveIn(move) }
+    // A bar coming back retraces the move that covered it, so closing a page mirrors opening it.
+    val moveBack = motionTween<Float>(MotionSpeed.Fast, MotionCurve.Reverse)
+    LaunchedEffect(front.inFront) { if (front.inFront) entry.moveIn(if (entry.returns) moveBack else move) }
     return entry
 }
 

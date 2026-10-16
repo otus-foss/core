@@ -45,6 +45,7 @@ import com.otus.designsystem.elements.textEnterSpec
 import com.otus.designsystem.elements.textExitSpec
 import com.otus.designsystem.theme.ActionBarTokens
 import com.otus.designsystem.theme.LocalMotionScale
+import com.otus.designsystem.theme.MotionCurve
 import com.otus.designsystem.theme.MotionSpeed
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PanelTokens
@@ -136,7 +137,8 @@ private fun PrimaryLabel(
 
 /**
  * How far the action has collapsed toward [collapsed]. A bar moving in from another starts
- * collapsed if it should be, since the move itself narrows the action.
+ * collapsed if it should be, since the move itself narrows the action. Expanding retraces the
+ * collapse, so a context leaves the way it arrived.
  */
 @Composable
 private fun rememberCollapse(
@@ -145,7 +147,8 @@ private fun rememberCollapse(
 ): Animatable<Float, AnimationVector1D> {
     val animation = remember { Animatable(if (entry.movesIn && collapsed) 1f else 0f) }
     val collapse = motionTween<Float>(MotionSpeed.Fast)
-    LaunchedEffect(collapsed) { animation.animateTo(if (collapsed) 1f else 0f, collapse) }
+    val expand = motionTween<Float>(MotionSpeed.Fast, MotionCurve.Reverse)
+    LaunchedEffect(collapsed) { animation.animateTo(if (collapsed) 1f else 0f, if (collapsed) collapse else expand) }
     return animation
 }
 
