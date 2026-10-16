@@ -22,7 +22,7 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   `CalendarMonthBackground`, `Chip`, `ColorSlider`, `ColorSwatch`, `AddSwatch`, `SwatchStack`, `IconButton`, `IconPill`, `InputField`, `LabelPill`, `RefreshIndicator`,
   `FolderColorSwatch`, `LocalIconTint`, `RowButton`, `SearchField`, `SearchPrompt`, `SelectionRow`, `SidebarEntry`, `SidebarHeading`,
   `SidebarCount`, `SidebarExpandButton`, `SidebarPill`, `SidebarInboxEntry`, `SidebarMailboxTile`,
-  `SidebarFolderEntry` (with `SidebarFolder`), `SidebarDivider`, `SectionCaption`, `Symbol`,
+  `SidebarFolderEntry` (with `SidebarFolder`), `SidebarDivider`, `SectionCaption`, `Symbol`, `Toast` (with `ToastAction`),
   `ToggleSwitch`, `ValueButton`, and the
   `controlPressFeedback` modifier.
 - `components`: `ActionBar`, `ActionBarHost`, `BarAction`, `BarContext`, `BarToken`, `ActionDialog`, `ChoiceDialog`, `ChoiceSheet` (with `ChoiceRow`), `ConfirmDialog`, `InputDialog`, `InputSheet`, `ContextPanel`, `DatePickerDialog`,
@@ -31,7 +31,8 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarHeader`, `SidebarMailboxGrid`, `ScopeSheet`, `ScopeRow` and `ScopeChildRow` (with `ScopeOption`), `PickerChip`, `AccountGroupRow`,
   `RuleChip`, `RuleChipGroup`, and `AddRuleChip` (with `RuleChipLine`, `RuleChipValue`, `RuleSegment`, and
   `RuleSegmentStyle`), `FolderSettingRow` with `FolderRuleSummary` and `FolderOwnerLine`, `SummaryCard` and `PersonText` (with `NamedAvatar`), `ValueToken`, `ValuePicker`, `Collapsible`, `CollapsibleTree`, `AvatarStack`, `ContextMenu` and `QuickActionBar` (with `MenuAction`),
-  `SidebarSwipeArea`, `SlidingOverlay`, `SlidingPages`, `SwipeActions`, and `ThemeCard`.
+  `SidebarSwipeArea`, `SlidingOverlay`, `SlidingPages`, `SwipeActions`, `ThemeCard`, and `ToastHost`
+  (with `ToastState` and `ToastMessage`).
 - Settings rows follow Notion's settings pages: flat rows with a title and `text2` description
   beside the control, `bgLight` hairlines between them, and large section titles. The whole row is
   the control; `ToggleSwitch` and `ValueButton` only show its state. A long picker, such as Mail's
@@ -101,6 +102,19 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   from the context panel. A release runs an action only when no other action of that row is
   running. A dismissing action leaves the row at the edge for its list to remove; if the row is
   still there one second later, for example because removal failed, it returns to rest.
+- `ToastHost` shows short messages from a `ToastState` in a pill above the page's bottom bar. A
+  `ToastMessage` may carry a `ToastAction`, such as Undo, with a ring that counts down its time:
+  5 seconds with an action, 3 without, longer when a screen reader is on. A message with the same
+  `group` as one on screen replaces it and restarts its timer, so the app can count up to
+  "3 emails deleted"; `isShowing(group)` tells the app whether to keep counting. Tapping the
+  action runs it and closes the toast. Other messages stack with the newest in front and up to two older ones
+  peeking out behind it, each on its own timer. Tapping the stack fans it out and pauses every
+  timer; tapping again or system back stacks it again. The group is as wide as its widest toast.
+  A toast can be dragged sideways in either direction: it lifts a shade lighter, its timer
+  pauses, and a darker `bgDark` end with a close symbol opens on the side it left. Past a third
+  of its width the symbol brightens and a haptic marks it, and "Dismiss" fades in once it is fully
+  uncovered. Releasing there removes the toast without running its action; shorter drags spring
+  back. Colors are `bgDark` at rest and `bgRegular` lifted, with `strokeBgDark` outlines.
 - `ReorderableColumn` lets the user reorder a short list by dragging each row's handle. Only the
   handle starts a drag, so rows keep their own taps and the list around them still scrolls. The
   dragged row draws above the others and stays within the column. Each row is filled with
@@ -214,7 +228,7 @@ Every animation in the design system and in Mail takes its duration and curve fr
 `theme/Motion.kt`. The rules for picking a speed and a curve are in
 [mail design foundations](suite/mail-design.md#motion).
 
-`MotionCurve` holds four cubic Bézier curves:
+`MotionCurve` holds five cubic Bézier curves:
 
 | Curve | Bézier | Use |
 | --- | --- | --- |
@@ -222,6 +236,7 @@ Every animation in the design system and in Mail takes its duration and curve fr
 | `Reverse` | (0.8, 0, 0.6, 1) | `Standard` played backward, for undoing a change so it retraces its steps |
 | `Enter` | (0.2, 0, 0, 1) | Decelerates, for sheets, the sidebar, and text that arrive |
 | `Exit` | (0.4, 0, 1, 1) | Accelerates, for the same things as they leave |
+| `Rise` | (0.2, 0.8, 0.25, 1) | Jumps off at once and settles slowly, for the launch animation only |
 
 `MotionSpeed` divides the 240 ms base duration (`Motion.BASE_MILLIS`) by its factor:
 
@@ -280,6 +295,30 @@ variation loaded first. The variable file it replaces defaulted to Light 300. It
 used by Mail, accounts, and settings with their Apache 2.0 license. The generated public `Res`
 class lives in `com.otus.designsystem.resources`. Apps select icons from this bundle and pass
 them to `Symbol` as `DrawableResource` values.
+
+## Brand
+
+`designsystem/brand/` keeps the source SVGs: the Otus logo, the owl on its own, the Mail app icon,
+and Mail's launch animation in a play-once and a looping version. The drawables are converted
+from these files, so change the SVG first and convert again.
+
+- `brand_otus_logo` and `brand_owl` are Compose drawables of the logo and the owl. Nothing uses
+  them yet.
+- `brand_mail_owl`, `brand_mail_eye_left`, `brand_mail_eye_right`, and `brand_mail_envelope` are
+  the launch animation's layers, each on the same 128 unit canvas so they line up when stacked.
+- `otus_mail_icon` is an Android launcher icon in `androidMain/res`, which merges into the app. It
+  is adaptive from Android 8 on, with the owl and envelope scaled into the 66 dp safe circle, and
+  the full square icon before that. Its background, `otus_brand_background`, matches
+  `BrandTokens.background`.
+
+`MailLaunch` plays the launch animation on the brand background. It starts with the play-once
+version. While the app reports `loading`, it continues with the loop, starting from the loop's
+settled pose, which matches where the intro ends. Once the owl has arrived and loading has
+finished, or on a tap, the mark shrinks to `BrandTokens.LAUNCH_EXIT_SCALE` and the whole screen
+fades out at `Relaxed` speed on the `Exit` curve. `MailLaunchTimeline` holds both runs' keyframes
+as fractions of `Motion.LAUNCH_MILLIS` (3 s) and `Motion.LAUNCH_LOOP_MILLIS` (4.2 s), and
+`KeyframeTrack` eases between them like a CSS keyframes rule. The tilt and the blink use
+`Standard` where the SVGs use ease-in-out and linear timing. `LocalMotionScale` scales all of it.
 
 ## Behavior guides
 

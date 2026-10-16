@@ -27,6 +27,9 @@ public enum class MotionCurve(
 
     /** Accelerates, so leaving content gets out of the way. */
     Exit(CubicBezierEasing(0.4f, 0f, 1f, 1f)),
+
+    /** Leaps off at once and settles slowly, for the brand mark rising into place at launch. */
+    Rise(CubicBezierEasing(0.2f, 0.8f, 0.25f, 1f)),
 }
 
 /** How fast an animation runs, relative to [Motion.BASE_MILLIS]. A higher [factor] is shorter. */
@@ -66,13 +69,25 @@ public enum class AnimationSpeed(
 public object Motion {
     public const val BASE_MILLIS: Int = 240
 
+    /** Mail's launch animation as it first plays. Its keyframes are fractions of this length. */
+    public const val LAUNCH_MILLIS: Int = 3000
+
+    /** One round of the launch animation's loop, which repeats while the app loads. */
+    public const val LAUNCH_LOOP_MILLIS: Int = 4200
+
     /** The duration of an animation at [speed], with the global [scale] applied. */
     public fun millis(
         speed: MotionSpeed,
         scale: Float = 1f,
+    ): Int = scaled(BASE_MILLIS / speed.factor, scale)
+
+    /** A designed length, such as part of [LAUNCH_MILLIS], with the global [scale] applied. */
+    public fun scaled(
+        millis: Float,
+        scale: Float,
     ): Int {
         require(scale > 0f) { "Motion scale must be positive, was $scale" }
-        return (BASE_MILLIS / (speed.factor * scale)).roundToInt()
+        return (millis / scale).roundToInt()
     }
 
     /** A tween for code outside composition, such as state holders. Pass [scale] from [LocalMotionScale]. */
