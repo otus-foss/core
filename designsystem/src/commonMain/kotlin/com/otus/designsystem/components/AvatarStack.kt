@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import com.otus.designsystem.elements.Avatar
 import com.otus.designsystem.elements.rememberAvatarImage
 import com.otus.designsystem.theme.OtusColors
@@ -20,7 +21,8 @@ import com.otus.designsystem.theme.panelTextStyle
 /**
  * Up to [PanelTokens.CHIP_AVATAR_LIMIT] overlapping avatars, each outlined in [ring] so the one
  * below shows where it starts, then an optional 14 sp `text2` [label], such as a first name or
- * "+3". With a [description], screen readers read it in place of the avatars and label.
+ * "+3". With a [description], screen readers read it in place of the avatars and label. Larger
+ * avatars of [size] overlap in proportion.
  */
 @Composable
 public fun AvatarStack(
@@ -29,19 +31,21 @@ public fun AvatarStack(
     label: String? = null,
     description: String? = null,
     ring: Color = OtusColors.bgRegular,
+    size: Dp = PanelTokens.iconSize,
 ) {
+    val overlap = PanelTokens.chipAvatarOverlap * (size / PanelTokens.iconSize)
     Row(
         description?.let { modifier.semantics(mergeDescendants = true) { contentDescription = it } } ?: modifier,
         horizontalArrangement = Arrangement.spacedBy(PanelTokens.iconGap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Row(horizontalArrangement = Arrangement.spacedBy(-PanelTokens.chipAvatarOverlap)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(-overlap)) {
             avatars.take(PanelTokens.CHIP_AVATAR_LIMIT).forEach { avatar ->
                 Avatar(
                     avatar.initials,
                     image = rememberAvatarImage(avatar.imageBytes),
                     colorIndex = avatar.colorIndex,
-                    size = PanelTokens.iconSize,
+                    size = size,
                     ring = BorderStroke(PanelTokens.borderWidth, ring),
                 )
             }

@@ -10,6 +10,9 @@ public object MenuTokens {
     public val inset: Dp = 4.dp
     public val rowPadding: Dp = 16.dp
 
+    /** How far a [com.otus.designsystem.components.QuickActionBar] sits from the pressed point. */
+    public val barGap: Dp = 12.dp
+
     /** The space the menu keeps from the screen edges. */
     public val edge: Dp = 8.dp
 }
