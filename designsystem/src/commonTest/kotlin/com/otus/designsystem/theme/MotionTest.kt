@@ -26,6 +26,19 @@ class MotionTest {
     }
 
     @Test
+    fun eachAnimationSpeedScalesTheDuration() {
+        assertEquals(
+            mapOf(
+                AnimationSpeed.Instant to 0,
+                AnimationSpeed.Slow to 320,
+                AnimationSpeed.Regular to 240,
+                AnimationSpeed.Fast to 160,
+            ),
+            AnimationSpeed.entries.associateWith { Motion.millis(MotionSpeed.Normal, it.scale) },
+        )
+    }
+
+    @Test
     fun durationsRoundToTheNearestMillisecond() {
         assertEquals(107, Motion.millis(MotionSpeed.Fast, scale = 1.5f))
     }

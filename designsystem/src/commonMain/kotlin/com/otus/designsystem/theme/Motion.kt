@@ -52,6 +52,16 @@ public enum class MotionSpeed(
  */
 public val LocalMotionScale: ProvidableCompositionLocal<Float> = staticCompositionLocalOf { 1f }
 
+/** The user's choice of animation speed, provided as [LocalMotionScale]. [Instant] skips animations. */
+public enum class AnimationSpeed(
+    public val scale: Float,
+) {
+    Instant(Float.POSITIVE_INFINITY),
+    Slow(0.75f),
+    Regular(1f),
+    Fast(1.5f),
+}
+
 /** Durations and animation specs for every Otus animation. */
 public object Motion {
     public const val BASE_MILLIS: Int = 240
