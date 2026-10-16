@@ -48,12 +48,13 @@ class ToastHostTest {
     private fun settle() = compose.mainClock.advanceTimeBy(1_000)
 
     @Test
-    fun tappingTheActionRunsIt() {
+    fun tappingTheActionRunsItAndClosesTheToast() {
         var undone = 0
         state.show(ToastMessage("Email deleted", ToastAction("Undo") { undone++ }))
         showHost()
         compose.onNodeWithText("Undo").performClick()
         assertEquals(1, undone)
+        assertTrue(state.entries.isEmpty())
     }
 
     @Test

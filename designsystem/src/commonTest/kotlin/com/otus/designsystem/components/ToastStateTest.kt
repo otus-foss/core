@@ -34,6 +34,17 @@ class ToastStateTest {
     }
 
     @Test
+    fun aGroupIsShowingUntilItsToastLeaves() {
+        val state = ToastState()
+        state.show(ToastMessage("Email deleted", undo, group = "delete"))
+        assertTrue(state.isShowing("delete"))
+        assertFalse(state.isShowing("archive"))
+        state.advance(5_000)
+        assertFalse(state.isShowing("delete"))
+        assertTrue(state.messages.isEmpty())
+    }
+
+    @Test
     fun ungroupedToastsNeverMerge() {
         val state = ToastState()
         state.show(ToastMessage("Link copied"))

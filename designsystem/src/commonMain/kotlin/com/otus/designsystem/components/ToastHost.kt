@@ -35,6 +35,7 @@ import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
 import com.otus.designsystem.elements.Toast
+import com.otus.designsystem.elements.ToastAction
 import com.otus.designsystem.theme.MotionCurve
 import com.otus.designsystem.theme.MotionSpeed
 import com.otus.designsystem.theme.ToastTokens
@@ -46,8 +47,8 @@ import kotlinx.coroutines.flow.collectLatest
  * out behind it, each with its own timer. Tapping the stack fans it out into a list and pauses
  * every timer; tapping again or system back stacks it again. Any toast in front, or any toast in
  * the list, can be swiped away in either direction; dismissing one with an action leaves the action
- * done. The group is as wide as its widest toast. Place it above the page's bottom bar and limit
- * its width with [modifier].
+ * done, and running the action closes its toast. The group is as wide as its widest toast. Place it
+ * above the page's bottom bar and limit its width with [modifier].
  */
 @Composable
 public fun ToastHost(
@@ -119,7 +120,6 @@ private fun ToastItem(
             presence.animateTo(1f, enter)
         }
     }
-    val message = entry.message
     ToastSwipe(
         enabled = reachable,
         onHeld = { entry.held = it },
@@ -140,12 +140,28 @@ private fun ToastItem(
                     enabled = state.entries.size > 1,
                     onClickLabel = if (expanded) "Stack toasts" else "Show all toasts",
                 ) { state.expanded = !expanded },
-    ) { lifted ->
-        Box {
-            Toast(message.text, message.action, entry.remaining, lifted = lifted)
-            // A toast behind the front one only fans the group out; its action stays out of reach.
-            if (!reachable) Box(Modifier.matchParentSize().clickable(null, indication = null) { state.expanded = true })
+    ) { lifted -> ToastContent(state, entry, reachable, lifted) }
+}
+
+/** The toast itself. A toast behind the front one only fans the group out; its action stays out of reach. */
+@Composable
+private fun ToastContent(
+    state: ToastState,
+    entry: ToastEntry,
+    reachable: Boolean,
+    lifted: Boolean,
+) {
+    // Running the action is the toast's purpose, so it leaves with it.
+    val action =
+        entry.message.action?.let { shown ->
+            ToastAction(shown.label) {
+                shown.onAction()
+                state.remove(entry)
+            }
         }
+    Box {
+        Toast(entry.message.text, action, entry.remaining, lifted = lifted)
+        if (!reachable) Box(Modifier.matchParentSize().clickable(null, indication = null) { state.expanded = true })
     }
 }
 
