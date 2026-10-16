@@ -36,13 +36,13 @@ public object ThemeTokens {
     public val swatchAddIcon: Dp = 18.dp
     public val swatchGap: Dp = 2.dp
 
-    /** The accent card: its swatches, the three accent roles, and a note. */
-    public val accentCardPadding: Dp = 12.dp
-    public val accentCardGap: Dp = 14.dp
-    public val rolePillHeight: Dp = 36.dp
+    /** Small captions, such as a theme's name over its accent preview. */
     public val roleCaptionSize: TextUnit = 12.sp
     public val roleCaptionLineHeight: TextUnit = 16.sp
-    public val roleLabelSize: TextUnit = 13.sp
+
+    /** The overlapping theme colors on the row that opens them. */
+    public val stackSwatch: Dp = 24.dp
+    public val stackOverlap: Dp = 8.dp
 
     /** The live preview above the theme cards, and the small message rows an app sketches in it. */
     public val previewPadding: Dp = 10.dp

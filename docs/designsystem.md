@@ -3,13 +3,13 @@
 The `designsystem` module (`com.otus.designsystem`, artifact `com.otus:designsystem`) holds the
 Otus theme, elements, and components. It moved here from otus-mail in version 0.2.0. Elements and
 components take values and callbacks; they own no ViewModels, navigation, networking, or storage.
-The user picks one of four themes and an accent color; the Otus theme with Otus blue is the
-palette recorded in [mail design foundations](suite/mail-design.md). See
+The user picks one of four themes and an accent color. Changing any single color saves a custom
+theme. The Otus theme with Otus blue is the palette recorded in [mail design foundations](suite/mail-design.md). See
 [decision 0014](decisions/0014-user-themes.md).
 
 ## Contents
 
-- `theme`: `OtusColors`, `OtusTheme`, `OtusPalette`, `ThemeBase`, `ThemeChoice`, `AccentPreset`,
+- `theme`: `OtusColors`, `OtusTheme`, `OtusPalette`, `ThemeBase`, `ThemeChoice`, `ThemeColor`, `CustomTheme`, `AccentPreset`,
   `accentShades` (with `AccentShades`), color helpers (`hslColor`, `toHsl`, `contrast`, `toHex`,
   `parseHexColor`), `ThemeTokens`, `Motion` (with `MotionSpeed`, `MotionCurve`, and
   `LocalMotionScale`), and tokens for avatars, calendars, control
@@ -18,7 +18,7 @@ palette recorded in [mail design foundations](suite/mail-design.md). See
   `panelTextStyle()` uses Figtree.
 - `elements`: `ActionButton`, `ActionRow`, `AnimatedText`, `Avatar`, `AvatarImage`, `BarIconButton`, `CalendarDay`,
   `ComposeBody`, `ComposeField`, `ComposeValueField`,
-  `CalendarMonthBackground`, `Chip`, `ColorSlider`, `ColorSwatch`, `AddSwatch`, `IconButton`, `IconPill`, `InputField`, `LabelPill`, `RefreshIndicator`,
+  `CalendarMonthBackground`, `Chip`, `ColorSlider`, `ColorSwatch`, `AddSwatch`, `SwatchStack`, `IconButton`, `IconPill`, `InputField`, `LabelPill`, `RefreshIndicator`,
   `RowButton`, `SearchField`, `SearchPrompt`, `SelectionRow`, `SidebarEntry`, `SidebarHeading`,
   `SidebarCount`, `SidebarExpandButton`, `SidebarPill`, `SidebarRailAccount`, `SidebarRailAdd`, `SidebarRailDivider`,
   `SidebarRailIcon`, `Symbol`,
@@ -27,7 +27,7 @@ palette recorded in [mail design foundations](suite/mail-design.md). See
 - `components`: `ActionBar`, `ActionBarHost`, `BarAction`, `BarContext`, `BarToken`, `ActionDialog`, `ChoiceDialog`, `ChoiceSheet` (with `ChoiceRow`), `ConfirmDialog`, `InputDialog`, `ContextPanel`, `DatePickerDialog`,
   `MonthNavigation`, `MonthYearPicker`, `PageScaffold`, `Subpage`, `PageSection`, `PanelSurface`,
   `PickerSearch`, `PreviewCard`, `PullToRefresh`, `ReorderableColumn`, `SelectionSheet`, `SheetFrame`, `SettingRow`,
-  `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarRail`, `SummaryCard` and `PersonText` (with `NamedAvatar`), `ValueToken`, `ValuePicker`, `Collapsible`, `CollapsibleTree`, `AvatarStack`,
+  `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarRail`, `SummaryCard` and `PersonText` (with `NamedAvatar`), `ValueToken`, `ValuePicker`, `Collapsible`, `CollapsibleTree`, `AvatarStack`, `ContextMenu` (with `MenuAction`),
   `SidebarSwipeArea`, `SwipeActions`, and `ThemeCard`.
 - Settings rows follow Notion's settings pages: flat rows with a title and `text2` description
   beside the control, `bgLight` hairlines between them, and large section titles. The whole row is

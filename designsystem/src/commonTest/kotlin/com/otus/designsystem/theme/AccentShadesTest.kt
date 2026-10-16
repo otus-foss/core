@@ -33,7 +33,6 @@ class AccentShadesTest {
         val shades = ThemeBase.Light.accentShades(orange)
         assertTrue(shades.fill.toHsl().lightness > orange.toHsl().lightness)
         assertTrue(shades.text.toHsl().lightness < orange.toHsl().lightness)
-        assertTrue(shades.adjusted)
     }
 
     @Test
@@ -41,23 +40,21 @@ class AccentShadesTest {
         val navy = Color(0xFF1A2B6D)
         val shades = ThemeBase.Black.accentShades(navy)
         assertTrue(shades.text.toHsl().lightness > navy.toHsl().lightness)
-        assertTrue(shades.adjusted)
     }
 
     @Test
     fun aReadableColorIsLeftAsPicked() {
         val sky = AccentPreset.Sky.color
         val shades = ThemeBase.Black.accentShades(sky)
-        assertFalse(shades.adjusted)
         assertEquals(sky, shades.text)
     }
 
     @Test
     fun thePaletteTakesTheThemeSurfacesAndTheAccentShades() {
-        val choice = ThemeChoice(ThemeBase.Graphite, AccentPreset.Green.color)
+        val choice = ThemeChoice(ThemeBase.Ink, AccentPreset.Green.color)
         val palette = choice.palette
-        assertEquals(ThemeBase.Graphite.page, palette.bgRegular)
-        assertEquals(ThemeBase.Graphite.raised, palette.bgDark)
+        assertEquals(ThemeBase.Ink.page, palette.bgRegular)
+        assertEquals(ThemeBase.Ink.raised, palette.bgDark)
         assertEquals(choice.shades.fill, palette.accentDark)
         assertEquals(choice.shades.text, palette.accentLight)
         assertFalse(palette.isLight)

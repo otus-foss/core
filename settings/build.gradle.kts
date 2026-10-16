@@ -27,7 +27,7 @@ kotlin {
                 .toInt()
         compilerOptions { jvmTarget = JvmTarget.JVM_11 }
         androidResources { enable = true }
-        withHostTest {}
+        withHostTest { isIncludeAndroidResources = true }
     }
     sourceSets {
         commonMain.dependencies {
@@ -37,6 +37,12 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
+        }
+        getByName("androidHostTest").dependencies {
+            implementation(libs.robolectric)
+            implementation(libs.androidx.compose.ui.test)
+            implementation(libs.androidx.compose.ui.test.manifest)
+            implementation(libs.navigation.event.compose)
         }
     }
 }
