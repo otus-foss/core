@@ -28,7 +28,7 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
 - `components`: `ActionBar`, `ActionBarHost`, `BarAction`, `BarContext`, `BarToken`, `ActionDialog`, `ChoiceDialog`, `ChoiceSheet` (with `ChoiceRow`), `ConfirmDialog`, `InputDialog`, `InputSheet`, `ContextPanel`, `DatePickerDialog`,
   `MonthNavigation`, `MonthYearPicker`, `PageScaffold`, `Subpage`, `PageSection`, `PanelSurface`,
   `PickerSearch`, `PreviewCard`, `PullToRefresh`, `ReorderableColumn`, `ReorderableTree`, `SelectionSheet`, `SheetFrame`, `SettingRow`,
-  `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarHeader`, `SidebarMailboxGrid`, `ScopeSheet`, `ScopeRow` and `ScopeChildRow` (with `ScopeOption`), `ScopePicker`, `AccountGroupRow`,
+  `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarHeader`, `SidebarMailboxGrid`, `ScopeSheet`, `ScopeRow` and `ScopeChildRow` (with `ScopeOption`), `PickerChip`, `AccountGroupRow`,
   `RuleChip`, `RuleChipGroup`, and `AddRuleChip` (with `RuleChipLine`, `RuleChipValue`, `RuleSegment`, and
   `RuleSegmentStyle`), `FolderSettingRow` with `FolderRuleSummary` and `FolderOwnerLine`, `SummaryCard` and `PersonText` (with `NamedAvatar`), `ValueToken`, `ValuePicker`, `Collapsible`, `CollapsibleTree`, `AvatarStack`, `ContextMenu` and `QuickActionBar` (with `MenuAction`),
   `SidebarSwipeArea`, `SlidingOverlay`, `SlidingPages`, `SwipeActions`, and `ThemeCard`.
@@ -165,10 +165,10 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   `LocalIconTint`. `SidebarFolder.icon` replaces the closed folder, such as `symbol_folder_shared`. The detail
   is a slot: `FolderRuleSummary` shows the first rule as a compact chip and a `text3` count such as
   "+1", and `FolderOwnerLine` shows the owner's 16 dp avatar before text such as "Shared by
-  Florian · can read". `ScopePicker` is a compact button for a page header's action slot:
-  the stacked avatars of whoever the page covers and a `text2` unfold icon. It reads its label,
-  such as "Showing folders of All accounts", and opens the app's picker. `Subpage` and
-  `PageScaffold` take it as `action`, which puts the header in its no-chip-rail layout.
+  Florian · can read". `PickerChip` is a pill with the current choice's avatars,
+  its label, and a down chevron, such as which account a page shows; it opens the app's picker
+  and reads as one button. `Subpage` and `PageScaffold` take `chips` for the header's chip row and
+  then lay the panel out like search, with the pills overlapping its bottom edge.
 - `ActionBar` is a page's bottom bar: up to three icon-only secondary actions in a group, and the
   primary action in a shell beside it. Each secondary action is a 48 dp `BarIconButton` that
   shows its label on long press. A disabled action stays in its slot with a `text3` icon, so the
