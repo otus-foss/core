@@ -120,6 +120,7 @@ private fun <T> ReorderableLayout(
                         .zIndex(if (dragged) 1f else 0f)
                         .graphicsLayer { translationY = if (dragged) drag.offset else shift }
                         .background(background)
+                        .then(if (dragged) Modifier.draggedFill() else Modifier)
                         .then(if (index == drop?.onto) Modifier.nestHighlight() else Modifier)
                         .onSizeChanged { drag.heights[itemKey] = it.height },
                 ) { scope.row(item) }
@@ -127,6 +128,9 @@ private fun <T> ReorderableLayout(
         }
     }
 }
+
+/** Lifts the row being dragged off the rows around it. */
+private fun Modifier.draggedFill(): Modifier = background(OtusColors.bgLight, RoundedCornerShape(SheetTokens.rowRadius))
 
 /** Marks the row a dragged row would drop onto. */
 private fun Modifier.nestHighlight(): Modifier =

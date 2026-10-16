@@ -38,9 +38,10 @@ import org.jetbrains.compose.resources.DrawableResource
  * A folder on a folder settings page, indented by its [SidebarFolder.depth]: the folder icon, the
  * name with an optional [detail] line under it, the optional count, and a chevron. Tapping the row
  * calls [onClick], which opens the folder. With subfolders, [expanded] is non-null and the icon is
- * a toggle, an open folder while expanded. [icon] replaces the closed folder icon, such as for a
- * shared folder. The icon takes [com.otus.designsystem.elements.LocalIconTint]. Inside a
- * [ReorderableColumn], pass [ReorderableScope.dragOnLongPress] in [modifier] so a long press drags it.
+ * a toggle, an open folder while expanded. [SidebarFolder.icon] replaces the closed folder icon,
+ * such as for a shared folder. The icon takes [com.otus.designsystem.elements.LocalIconTint].
+ * Inside a [ReorderableColumn], pass [ReorderableScope.dragOnLongPress] in [modifier] so a long
+ * press drags it, and [ReorderableScope.DragHandle] as [handle], which sits after the chevron.
  */
 @Composable
 public fun FolderSettingRow(
@@ -49,8 +50,8 @@ public fun FolderSettingRow(
     onExpandedChange: (Boolean) -> Unit,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    icon: DrawableResource? = null,
     detail: (@Composable () -> Unit)? = null,
+    handle: (@Composable () -> Unit)? = null,
 ) {
     val interactions = remember { MutableInteractionSource() }
     Row(
@@ -68,7 +69,7 @@ public fun FolderSettingRow(
         horizontalArrangement = Arrangement.spacedBy(FolderRowTokens.nameGap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        FolderToggle(folder.label, expanded, onExpandedChange, icon ?: Res.drawable.symbol_folder)
+        FolderToggle(folder.label, expanded, onExpandedChange, folder.icon ?: Res.drawable.symbol_folder)
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(FolderRowTokens.lineGap)) {
             Text(
                 folder.label,
@@ -83,6 +84,7 @@ public fun FolderSettingRow(
         CompositionLocalProvider(LocalContentColor provides OtusColors.text2) {
             Symbol(Res.drawable.symbol_chevron_right, mirrorInRtl = true)
         }
+        handle?.invoke()
     }
 }
 
