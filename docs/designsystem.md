@@ -255,11 +255,34 @@ The continuous calendar layout and gestures remain unchanged.
 
 ## Tests
 
-Common tests cover the continuous calendar week model, decoded-avatar cache, motion durations, reorder behavior,
-and sheet animation interruption and completion. An Android host test covers image decoding. The
-Compose UI tests for panels, pickers, motion, and press feedback still run in Mail's `androidApp`,
-because they need an Android activity. Moving them here needs a host-test setup with an activity
-and is open work.
+Common tests cover the continuous calendar week model, decoded-avatar cache, motion durations,
+reorder behavior, theme choices, and sheet animation interruption and completion. Android host
+tests cover image decoding, `ValuePicker` behavior, and the screenshots below. Some Compose UI
+tests for panels, pickers, motion, and press feedback still run in Mail's `androidApp`.
+
+### Screenshot tests
+
+Each element and component has Roborazzi screenshot tests in `src/androidHostTest`. A test
+renders the composable with Robolectric's native graphics at 360 × 640 dp and xhdpi, and
+compares the image with a PNG in `src/androidHostTest/screenshots/`. Any changed pixel fails the
+test, and Roborazzi writes the comparison image to `build/outputs/roborazzi/`.
+
+Write a test with the `screenshot` helper in `screenshot/Screenshot.kt`:
+
+```kotlin
+@Test
+fun selected() = compose.screenshot("chip_selected") { Chip("Work", {}, selected = true) }
+```
+
+The helper draws the content on `bgDark` in `OtusTheme`; pass a palette to draw it in another
+theme. Use fixed dates and demo data, so an image changes only when the drawing does.
+
+After an intended visual change, record the new images, look at each changed PNG, and commit
+them with the change:
+
+```sh
+./gradlew :designsystem:testAndroidHostTest -Proborazzi.record
+```
 
 ## Central UI ownership
 
