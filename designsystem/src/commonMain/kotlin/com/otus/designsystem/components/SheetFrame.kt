@@ -177,9 +177,12 @@ internal fun SheetHeader(
     }
 }
 
-/** A text button in the sheet header, with a full touch target and the shared press feedback. */
+/**
+ * A text button in the sheet header, with a full touch target and the shared press feedback, such
+ * as a [SheetFrame] leading action.
+ */
 @Composable
-internal fun SheetHeaderAction(
+public fun SheetHeaderAction(
     label: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,

@@ -23,7 +23,7 @@ import com.otus.designsystem.resources.symbol_palette
 import com.otus.settings.presentation.DateFormatSettingsState
 import com.otus.settings.presentation.ThemeSettingsState
 import com.otus.settings.presentation.dateFormatExample
-import com.otus.settings.presentation.title
+import com.otus.settings.presentation.themeTitle
 
 /**
  * Shared appearance settings. The Look section opens the theme page with [onTheme] and shows the
@@ -49,7 +49,7 @@ public fun AppearanceSettingsScreen(
                 onTheme,
                 description = "Colors across the whole app",
                 icon = Res.drawable.symbol_palette,
-            ) { ValueButton(theme.choice.base.title, swatch = theme.choice.accent) }
+            ) { ValueButton(theme.choice.themeTitle, swatch = theme.choice.accent) }
             look()
             SettingRow(
                 "Date format",

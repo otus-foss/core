@@ -20,16 +20,24 @@ import com.otus.designsystem.elements.ActionButton
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PanelTokens
 import com.otus.designsystem.theme.SheetTokens
+import com.otus.designsystem.theme.ThemeBase
 import com.otus.designsystem.theme.ThemeChoice
+import com.otus.designsystem.theme.ThemeColor
 import com.otus.designsystem.theme.ThemeTokens
+import com.otus.designsystem.theme.get
 import com.otus.settings.presentation.ThemeSettingsState
 import com.otus.settings.presentation.components.AccentPicker
+import com.otus.settings.presentation.components.ColorSheet
 import com.otus.settings.presentation.components.CustomAccentSheet
+import com.otus.settings.presentation.components.DeleteThemeButton
 import com.otus.settings.presentation.components.ThemeCards
+import com.otus.settings.presentation.components.ThemeColorRows
+import com.otus.settings.presentation.title
 
 /**
- * Picks the theme and accent the whole app uses; a choice applies at once. [preview] shows a
- * sketch of the app's main screen, such as a mail list, in the current colors.
+ * Picks the theme and accent the whole app uses. Changing a single color makes a custom theme,
+ * which stays until the user deletes it; a choice applies at once. [preview] shows a sketch of the
+ * app's main screen, such as a mail list, in the current colors.
  */
 @Composable
 public fun ThemeSettingsScreen(
@@ -39,6 +47,8 @@ public fun ThemeSettingsScreen(
 ) {
     val choice = state.choice
     var customizing by rememberSaveable { mutableStateOf(false) }
+    var colorsShown by rememberSaveable { mutableStateOf(choice.customTheme != null) }
+    var editing by rememberSaveable { mutableStateOf<ThemeColor?>(null) }
     Subpage("Theme", onBack) {
         val shape = RoundedCornerShape(SheetTokens.radius)
         Box(
@@ -50,22 +60,38 @@ public fun ThemeSettingsScreen(
                 .padding(ThemeTokens.previewPadding),
         ) { preview() }
         PageSection("Theme") {
-            ThemeCards(choice) { state.select(choice.copy(base = it)) }
+            ThemeCards(choice, state::select)
         }
         PageSection("Accent color") {
             AccentPicker(
-                choice,
-                onSelect = { state.select(choice.copy(accent = it)) },
+                choice.accent,
+                onSelect = { state.select(choice.withAccent(it)) },
                 onCustom = { customizing = true },
             )
         }
-        ActionButton("Reset to Otus", { state.select(ThemeChoice()) })
+        PageSection("Colors") {
+            ThemeColorRows(choice, colorsShown, { colorsShown = !colorsShown }, { editing = it })
+        }
+        choice.customTheme?.let { DeleteThemeButton(it) { state.select(state.choice.withoutCustomTheme(it.id)) } }
+        ActionButton(
+            "Reset to Otus",
+            { state.select(choice.withBase(ThemeBase.Otus).withAccent(ThemeChoice().accent)) },
+        )
     }
     if (customizing) {
         CustomAccentSheet(
-            choice.accent,
-            onPick = { state.select(state.choice.copy(accent = it)) },
+            choice,
+            onPick = { state.select(state.choice.withAccent(it)) },
             onDismiss = { customizing = false },
+        )
+    }
+    editing?.let { color ->
+        ColorSheet(
+            color.title,
+            choice.palette[color],
+            onPick = { state.select(state.choice.withColor(color, it)) },
+            onDismiss = { editing = null },
+            onReset = { state.select(state.choice.withColor(color, null)) }.takeIf { color in choice.customColors },
         )
     }
 }
