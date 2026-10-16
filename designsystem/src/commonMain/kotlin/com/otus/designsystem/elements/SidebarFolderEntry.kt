@@ -57,7 +57,8 @@ public fun SidebarFolderEntry(
             ).clip(shape)
             .background(if (selected) OtusColors.accentDark else Color.Transparent)
             .controlPressFeedback(interactions, shape)
-            .padding(start = SidebarTokens.nestIndent * folder.depth, end = SidebarTokens.entryPadding),
+            .nestIndent(SidebarTokens.nestIndent, folder.depth)
+            .padding(end = SidebarTokens.entryPadding),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         FolderToggle(folder.label, expanded, onExpandedChange)
