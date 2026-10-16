@@ -27,7 +27,8 @@
   `RuleChipLine`, `RuleChipValue`, `RuleSegment`, and `RuleSegmentStyle`. A chip is 36 dp tall, or
   24 dp with `RowDensity.Compact`.
 - Add `FolderSettingRow` for a folder settings page, with the detail lines `FolderRuleSummary` and
-  `FolderOwnerLine`, and `ScopePicker`, a card that opens an account picker.
+  `FolderOwnerLine`, and `ScopePicker`, a compact header button that opens an account picker.
+  `Subpage` and `PageScaffold` take an optional `action` at the header's end.
 - `ReorderableScope` adds `Modifier.dragOnLongPress()`, which drags a row after a long press
   without a handle. Apps that implement `ReorderableScope` themselves must add it; the design
   system is the only implementer today.

@@ -92,8 +92,8 @@ private fun HeaderTitle(
 }
 
 /**
- * [avatars], then a SemiBold [title] over an optional `text2` [subtitle], as in the [SidebarHeader]
- * and a [ScopePicker]. Place it in a row spaced by [SidebarTokens.entryPadding].
+ * [avatars], then a SemiBold [title] over an optional `text2` [subtitle], as in the [SidebarHeader].
+ * Place it in a row spaced by [SidebarTokens.entryPadding].
  */
 @Composable
 internal fun RowScope.ScopeTitle(
