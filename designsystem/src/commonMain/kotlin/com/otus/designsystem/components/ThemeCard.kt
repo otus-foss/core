@@ -2,6 +2,7 @@ package com.otus.designsystem.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,24 +11,33 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import com.otus.designsystem.elements.IconButton
 import com.otus.designsystem.elements.Symbol
 import com.otus.designsystem.elements.controlPressFeedback
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_check_circle
+import com.otus.designsystem.resources.symbol_more_horiz
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.OtusPalette
 import com.otus.designsystem.theme.PanelTokens
@@ -36,6 +46,8 @@ import com.otus.designsystem.theme.ThemeTokens
 /**
  * A theme to pick: a small sketch of a page drawn in [sketch]'s colors above [title] and
  * [description]. The selected card has an accent ring and a check; the card is one radio button.
+ * With [actions], a long press opens them in a [ContextMenu] where the finger is, and the selected
+ * card shows a more button that opens them in place of the check.
  */
 @Composable
 public fun ThemeCard(
@@ -45,46 +57,93 @@ public fun ThemeCard(
     selected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    actions: List<MenuAction> = emptyList(),
 ) {
+    var press by remember { mutableStateOf(Offset.Zero) }
+    var menuAt by remember { mutableStateOf<Offset?>(null) }
+    val openMenu = { menuAt = press }.takeIf { actions.isNotEmpty() }
     val shape = RoundedCornerShape(ThemeTokens.cardRadius)
     val interactions = remember { MutableInteractionSource() }
-    Column(
-        modifier
-            .selectable(selected, interactions, indication = null, role = Role.RadioButton, onClick = onClick)
-            .controlPressFeedback(interactions, shape)
-            .background(OtusColors.bgDark, shape)
-            .border(
-                if (selected) PanelTokens.borderWidth * 2 else PanelTokens.borderWidth,
-                if (selected) OtusColors.accentLight else OtusColors.strokeBgDark,
-                shape,
-            ).padding(ThemeTokens.cardPadding),
-        verticalArrangement = Arrangement.spacedBy(ThemeTokens.cardGap),
-    ) {
-        ThemeSketch(sketch)
-        Row(
-            Modifier.padding(horizontal = PanelTokens.iconGap).padding(bottom = PanelTokens.iconGap),
-            horizontalArrangement = Arrangement.spacedBy(PanelTokens.chipGap),
-            verticalAlignment = Alignment.CenterVertically,
+    // The menu opens in this box, which has no padding, so a press point maps onto it directly.
+    Box(modifier.onPressDown { press = it }) {
+        Column(
+            Modifier
+                .semantics { this.selected = selected }
+                .combinedClickable(
+                    interactions,
+                    indication = null,
+                    role = Role.RadioButton,
+                    onLongClickLabel = openMenu?.let { "Theme actions" },
+                    onLongClick = openMenu,
+                    onClick = onClick,
+                ).controlPressFeedback(interactions, shape)
+                .background(OtusColors.bgDark, shape)
+                .border(
+                    if (selected) PanelTokens.borderWidth * 2 else PanelTokens.borderWidth,
+                    if (selected) OtusColors.accentLight else OtusColors.strokeBgDark,
+                    shape,
+                ).padding(ThemeTokens.cardPadding),
+            verticalArrangement = Arrangement.spacedBy(ThemeTokens.cardGap),
         ) {
-            Column(Modifier.weight(1f)) {
-                Text(
-                    title,
-                    fontSize = ThemeTokens.cardTitleSize,
-                    lineHeight = ThemeTokens.cardTitleLineHeight,
-                    fontWeight = FontWeight.SemiBold,
-                )
-                Text(
-                    description,
-                    color = OtusColors.text2,
-                    fontSize = ThemeTokens.cardDetailSize,
-                    lineHeight = ThemeTokens.cardDetailLineHeight,
-                )
+            ThemeSketch(sketch)
+            CardLabel(title, description, selected, openMenu)
+        }
+        menuAt?.let { ContextMenu(actions, it) { menuAt = null } }
+    }
+}
+
+/** The title and description, then the check or, with [onMenu], the more button on a selected card. */
+@Composable
+private fun CardLabel(
+    title: String,
+    description: String,
+    selected: Boolean,
+    onMenu: (() -> Unit)?,
+) {
+    Row(
+        Modifier.padding(horizontal = PanelTokens.iconGap).padding(bottom = PanelTokens.iconGap),
+        horizontalArrangement = Arrangement.spacedBy(PanelTokens.chipGap),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f)) {
+            Text(
+                title,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                fontSize = ThemeTokens.cardTitleSize,
+                lineHeight = ThemeTokens.cardTitleLineHeight,
+                fontWeight = FontWeight.SemiBold,
+            )
+            Text(
+                description,
+                color = OtusColors.text2,
+                fontSize = ThemeTokens.cardDetailSize,
+                lineHeight = ThemeTokens.cardDetailLineHeight,
+            )
+        }
+        when {
+            selected && onMenu != null -> {
+                MoreButton(title, onMenu)
             }
-            if (selected) {
+
+            selected -> {
                 CompositionLocalProvider(LocalContentColor provides OtusColors.accentLight) {
                     Symbol(Res.drawable.symbol_check_circle)
                 }
             }
+        }
+    }
+}
+
+/** A more button the size of the check it replaces, so the card keeps its height; its touch target overflows. */
+@Composable
+private fun MoreButton(
+    title: String,
+    onClick: () -> Unit,
+) {
+    Box(Modifier.size(PanelTokens.iconSize), contentAlignment = Alignment.Center) {
+        IconButton("Actions for $title", onClick, Modifier.requiredSize(PanelTokens.touchTarget), outlined = false) {
+            Symbol(Res.drawable.symbol_more_horiz)
         }
     }
 }

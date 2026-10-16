@@ -5,10 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.otus.designsystem.theme.OtusPalette
-import com.otus.designsystem.theme.ThemeBase
 import com.otus.designsystem.theme.ThemeChoice
-import com.otus.designsystem.theme.parseHexColor
-import com.otus.designsystem.theme.toHex
 
 /** Keeps the encoded [ThemeChoice] between launches, such as in platform preferences. */
 public interface ThemePreferenceStore {
@@ -35,17 +32,4 @@ public class ThemeSettingsState(
         store?.write(choice.encode())
         this.choice = choice
     }
-}
-
-/** Stores a choice as its theme and accent, such as `light #2383E2`. */
-internal fun ThemeChoice.encode(): String = "${base.name.lowercase()} ${accent.toHex()}"
-
-/** Reads [encode]'s format; an unknown theme or color falls back to the default for that part. */
-internal fun decodeThemeChoice(value: String): ThemeChoice {
-    val parts = value.trim().split(' ')
-    val default = ThemeChoice()
-    return ThemeChoice(
-        base = ThemeBase.entries.firstOrNull { it.name.equals(parts.first(), ignoreCase = true) } ?: default.base,
-        accent = parts.getOrNull(1)?.let(::parseHexColor) ?: default.accent,
-    )
 }
