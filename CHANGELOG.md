@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Add `ReorderableTree` and `TreeDropTarget`. A dragged row stays over the rows without moving
+  them, and an `accentLight` line shows whether it lands in a gap, at the depth of the row below,
+  or inside a row as its first child. The app's `canDrop` hides targets it would refuse.
 - `ReorderableColumn` fills the row being dragged with `bgLight`; the other rows step aside. `FolderSettingRow` takes a
   `handle`, such as `ReorderableScope.DragHandle`, after its chevron, and `SidebarFolder` takes the
   `icon` that `FolderSettingRow` took before.

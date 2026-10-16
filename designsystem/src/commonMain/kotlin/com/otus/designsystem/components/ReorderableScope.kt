@@ -3,7 +3,7 @@ package com.otus.designsystem.components
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
-/** What a [ReorderableColumn] row can place. */
+/** What a [ReorderableColumn] or [ReorderableTree] row can place. */
 public interface ReorderableScope {
     /**
      * The handle that drags this row. [label] names the row for accessibility services, which also
