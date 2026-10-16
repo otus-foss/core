@@ -39,6 +39,8 @@ public class JmapAccountRepository(
     private val connections: JmapConnections,
     private val logins: LoginStore,
     private val service: AccountService,
+    /** Runs while the login's credentials still exist, such as to delete its server-side state. */
+    private val beforeRemove: suspend (String) -> Unit = {},
     private val onAccountChanged: suspend (String) -> Unit = {},
 ) : AccountRepository {
     /** Asks every login's server at once, so the list waits for the slowest server, not for each in turn. */
@@ -75,6 +77,7 @@ public class JmapAccountRepository(
     }
 
     override suspend fun remove(id: String) {
+        beforeRemove(id)
         storage { logins.remove(id) }
         connections.forget(id)
         onAccountChanged(id)
