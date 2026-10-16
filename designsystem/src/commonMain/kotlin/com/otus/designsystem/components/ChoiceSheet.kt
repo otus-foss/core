@@ -17,16 +17,22 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
+import com.otus.designsystem.elements.FolderColorSwatch
+import com.otus.designsystem.elements.LeadingSymbol
+import com.otus.designsystem.elements.LocalIconTint
 import com.otus.designsystem.elements.Symbol
 import com.otus.designsystem.elements.controlPressFeedback
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_check
 import com.otus.designsystem.theme.ChoiceSheetTokens
+import com.otus.designsystem.theme.FolderColor
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PanelTokens
 import com.otus.designsystem.theme.SettingTokens
@@ -82,7 +88,9 @@ public fun <T> ChoiceSheet(
 /**
  * How one [ChoiceSheet] option reads: [label] over an optional `text2` [detail], after [icon]. A
  * [person] named in the label gets their avatar before the name, as in [PersonText]. With a
- * [keyword], the label is a [ValueToken] instead, such as "From" before an address.
+ * [keyword], the label is a [ValueToken] instead, such as "From" before an address. [iconTint]
+ * colors the icon, such as a folder's color. A [swatch] shows a folder color before the label;
+ * screen readers hear only the label.
  */
 public data class ChoiceRow(
     val label: String,
@@ -90,6 +98,8 @@ public data class ChoiceRow(
     val icon: DrawableResource? = null,
     val person: NamedAvatar? = null,
     val keyword: String? = null,
+    val iconTint: Color? = null,
+    val swatch: FolderColor? = null,
 )
 
 @Composable
@@ -111,7 +121,8 @@ private fun ChoiceOption(
         horizontalArrangement = Arrangement.spacedBy(ChoiceSheetTokens.optionGap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        row.icon?.let { Symbol(it) }
+        row.icon?.let { CompositionLocalProvider(LocalIconTint provides row.iconTint) { LeadingSymbol(it) } }
+        row.swatch?.let { FolderColorSwatch(it) }
         Column(
             Modifier.weight(1f),
             verticalArrangement =
