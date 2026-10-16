@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add `Modifier.mutedRule()`, which fades a `RuleChip` or `RuleChipGroup` shown only for context,
+  such as a parent folder's rule.
 - Add `Modifier.nestIndent(step, depth)`, which indents a nested row by at most four steps
   (`MAX_INDENT_STEPS`). `SidebarEntry`, `SidebarFolderEntry`, `DetailRow`, and `FolderSettingRow`
   use it, so rows deeper than the fifth level stop moving right.
