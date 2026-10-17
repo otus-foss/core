@@ -30,6 +30,9 @@ public enum class MotionCurve(
 
     /** Leaps off at once and settles slowly, for the brand mark rising into place at launch. */
     Rise(CubicBezierEasing(0.2f, 0.8f, 0.25f, 1f)),
+
+    /** Overshoots and springs back, for the sidebar owl's hop. */
+    Hop(CubicBezierEasing(0.3f, 1.4f, 0.5f, 1f)),
 }
 
 /** How fast an animation runs, relative to [Motion.BASE_MILLIS]. A higher [factor] is shorter. */
@@ -74,6 +77,12 @@ public object Motion {
 
     /** One round of the launch animation's loop, which repeats while the app loads. */
     public const val LAUNCH_LOOP_MILLIS: Int = 4200
+
+    /** One round of the sidebar owl's idle animation: a glance aside, then a tilt. */
+    public const val OWL_IDLE_MILLIS: Int = 30_000
+
+    /** The sidebar owl's hop and smile after a tap. */
+    public const val OWL_SMILE_MILLIS: Int = 1400
 
     /** The duration of an animation at [speed], with the global [scale] applied. */
     public fun millis(
