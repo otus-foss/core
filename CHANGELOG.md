@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- A `SettingRow` at the top of its parent, such as the first row on a page, no longer draws
+  a hairline above it.
 - Add `HtmlView`, which shows an HTML document such as a message body in a platform web view.
   Scripts never run. A Content Security Policy blocks frames, forms, and every outside resource
   except remote images, styles, and fonts, which load only with `loadRemote`. Tapped web, mail,
