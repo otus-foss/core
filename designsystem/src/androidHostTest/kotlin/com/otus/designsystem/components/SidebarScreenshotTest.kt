@@ -1,8 +1,12 @@
 package com.otus.designsystem.components
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.unit.dp
 import com.otus.designsystem.elements.SidebarCount
 import com.otus.designsystem.elements.SidebarEntry
 import com.otus.designsystem.elements.SidebarHeading
@@ -39,6 +43,9 @@ class SidebarScreenshotTest {
             PageWithSidebar(remember { SidebarState() })
         }
 
+    @Test
+    fun header() = compose.screenshot("sidebar_header") { Box(Modifier.height(80.dp)) { Header() } }
+
     @Composable
     private fun PageWithSidebar(state: SidebarState) =
         WithBackDispatcher {
@@ -52,8 +59,8 @@ class SidebarScreenshotTest {
     private fun Header() =
         SidebarHeader(
             "Work",
-            listOf(DemoPeople.ada),
-            pickLabel = "Choose account",
+            listOf(ChipAvatar("WK", colorIndex = 0)),
+            pickLabel = "Show mail from",
             onPick = {},
             onSettings = {},
             subtitle = "work@example.com",
