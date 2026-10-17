@@ -50,7 +50,7 @@ public fun SidebarMailboxTile(
 ) {
     val interactions = remember { MutableInteractionSource() }
     val shape = RoundedCornerShape(SidebarTokens.entryRadius)
-    val fill = if (selected) OtusColors.accentDark else OtusColors.bgDark
+    val fill = if (selected) OtusColors.accentDark else OtusColors.bgRegular
     Column(
         modifier
             .fillMaxWidth()

@@ -1,6 +1,7 @@
 package com.otus.settings.presentation
 
 import com.otus.designsystem.theme.AnimationSpeed
+import com.otus.settings.domain.AnimationPreferenceStore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

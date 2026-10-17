@@ -52,7 +52,12 @@ class SidebarScreenshotTest {
             SidebarSwipeArea(state) {
                 PageScaffold("Inbox", navigationLabel = "Open navigation", onNavigation = {}) {}
             }
-            Sidebar(state, title = "Work", header = { Header() }) { Entries() }
+            Sidebar(
+                state,
+                title = "Work",
+                header = { Header() },
+                footer = { SidebarFooter("Nightly", "Build 412") },
+            ) { Entries() }
         }
 
     @Composable

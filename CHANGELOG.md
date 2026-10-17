@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- A `SheetFrame` never gets shorter than it has been, so its top stays put when the keyboard
+  closes. A sheet opened from another sheet's content starts at least as tall.
+- A row dragged in a `ReorderableTree` takes its nested rows along. Before, a parent hovering over
+  its own nested rows showed no drop line.
 - `JmapClient.download` and `upload` refuse a `.` or `..` template value, which would move the
   request to another path on the server. A `.` or `..` file name falls back to `download`.
 - `HtmlView` without `loadRemote` turns off DNS prefetching and makes the document's `<link>`
@@ -24,11 +28,23 @@
   sides as from its bottom edge, which includes the navigation bar's height.
 - A `SettingRow` at the top of its parent, such as the first row on a page, no longer draws
   a hairline above it.
+- Add `AndroidAnimationPreferenceStore` and `IosAnimationPreferenceStore` in `com.otus.settings.data`,
+  platform stores for `AnimationSettingsState`, so both apps share them.
+- **Breaking:** `AnimationPreferenceStore` moves to `com.otus.settings.domain`, so the data-layer
+  stores do not depend on presentation.
+- `PushSubscriptions` never subscribes an endpoint without encryption keys; such a login shows
+  `PushStatus.Refused`. Without keys a server would push readable state changes through the push
+  provider, and the app could not tell forged pushes from real ones.
+- `PushSubscriptions.sync` keeps every record as it is when the saved logins cannot be read, and
+  keeps a login's record when its secret cannot be read, instead of throwing `LoginStoreException`.
+- `PushSubscriptions.forget` gives up after ten seconds, including time waiting for a running
+  `sync`, so removing an account never hangs on a slow or unreachable server.
 - Add `HtmlView`, which shows an HTML document such as a message body in a platform web view.
   Scripts never run. A Content Security Policy blocks frames, forms, and every outside resource
   except remote images, styles, and fonts, which load only with `loadRemote`. Tapped web, mail,
-  and phone links go to `onOpenLink`; the view never navigates. On Android 13 and later, pages
-  without their own dark colors are darkened to match the theme.
+  and phone links go to `onOpenLink`; the view never navigates. Colors follow the theme the user
+  picked: a document without its own colors takes the theme's text and link colors, and one with
+  its own colors keeps a white page, darkened under a dark theme on Android 13 and later.
 - Add `TrailingIcons`, two touch-target-wide slots at a row's end. `FolderSettingRow` and
   `AccountGroupRow` use it, so their icons line up in the same two columns.
 - Add `InputSheet`, `InputDialog`'s text field in a `SheetFrame`.
