@@ -2,6 +2,7 @@ package com.otus.designsystem.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -10,21 +11,25 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.unit.dp
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.ReorderTreeTokens
+import com.otus.designsystem.theme.SheetTokens
 
 /**
  * A tree of rows, flattened in display order with each row's [depth], that the user rearranges by
  * dragging a row's [ReorderableScope.DragHandle], or the row itself after a long press when it
- * uses [ReorderableScope.dragOnLongPress]. The other rows stay in place while the dragged row
- * follows the finger with a `bgLight` fill. An `accentLight` line shows where it would land: in
- * the gap between two rows, indented to the row below, or under a row, one level deeper, to drop
- * it inside that row. [canDrop] hides the line for a target the caller would refuse, and a
- * haptic marks each new target. [onDrop] gets the row's index and the target once it is released
- * over one; the caller owns the tree. [key] must return a unique, stable key for each row. Every
- * row is composed, so keep the tree short. Changing the rows cancels an active drag.
+ * uses [ReorderableScope.dragOnLongPress]. The other rows stay in place while the dragged row and
+ * its nested rows follow the finger as one `bgLight` block, rounded only at its ends like a run of
+ * selected inbox rows. An `accentLight` line shows where it would land: in the gap between two
+ * rows, indented to the row below, or under a row, one level deeper, to drop it inside that row.
+ * [canDrop] hides the line for a target the caller would refuse, and a haptic marks each new
+ * target. [onDrop] gets the row's index and the target once it is released over one; the caller
+ * owns the tree. [key] must return a unique, stable key for each row. Every row is composed, so
+ * keep the tree short. Changing the rows cancels an active drag.
  */
 @Composable
 public fun <T> ReorderableTree(
@@ -37,20 +42,24 @@ public fun <T> ReorderableTree(
     row: @Composable ReorderableScope.(T) -> Unit,
 ) {
     val keys = items.map(key)
+    val depths = items.map(depth)
     val drag = remember { ReorderDrag(overhang = HALF) }
     SideEffect {
         drag.layout(keys, 0f) { from, offset ->
-            treeDropTarget(drag.rowHeights, from, offset)?.takeIf { canDrop(from, it) }?.let { onDrop(from, it) }
+            treeDropTarget(drag.rowHeights, from, offset, nestedSpan(depths, from))
+                ?.takeIf { canDrop(from, it) }
+                ?.let { onDrop(from, it) }
         }
     }
     val heights = keys.map { drag.heights[it] ?: 0 }
     val from = keys.indexOf(drag.key)
-    val target = if (from >= 0) treeDropTarget(heights, from, drag.offset) else null
+    val span = if (from >= 0) nestedSpan(depths, from) else 0
+    val target = if (from >= 0) treeDropTarget(heights, from, drag.offset, span) else null
     val shown = remember(items, from, target) { target?.takeIf { canDrop(from, it) } }
     val haptics = LocalHapticFeedback.current
     LaunchedEffect(shown) { if (shown != null) haptics.performHapticFeedback(HapticFeedbackType.SegmentTick) }
     val moves = rememberTreeMoves(items, canDrop, onDrop)
-    val lineDepth = shown?.let { dropLineDepth(items.map(depth), it) } ?: 0
+    val lineDepth = shown?.let { dropLineDepth(depths, it) } ?: 0
     Column(modifier.dropLine(shown?.let { dropLineY(heights, it) }, lineDepth)) {
         items.forEachIndexed { index, item ->
             val itemKey = keys[index]
@@ -60,9 +69,10 @@ public fun <T> ReorderableTree(
                     Modifier.reorderSlot(
                         drag,
                         itemKey,
-                        index == from,
+                        dragged = index in from..from + span,
                         OtusColors.bgRegular,
                         draggedAlpha = ReorderTreeTokens.DRAGGED_ALPHA,
+                        draggedShape = blockRowShape(joinedAbove = index > from, joinedBelow = index < from + span),
                     ),
                 ) { scope.row(item) }
             }
@@ -93,6 +103,16 @@ private fun <T> rememberTreeMoves(
             TreeMoves(moves[0], moves[1])
         }
     }
+}
+
+/** One row of the dragged block: its corners are square where it meets the block's next row. */
+private fun blockRowShape(
+    joinedAbove: Boolean,
+    joinedBelow: Boolean,
+): Shape {
+    val top = if (joinedAbove) 0.dp else SheetTokens.rowRadius
+    val bottom = if (joinedBelow) 0.dp else SheetTokens.rowRadius
+    return RoundedCornerShape(top, top, bottom, bottom)
 }
 
 private data class TreeMoves(

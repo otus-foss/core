@@ -157,7 +157,7 @@ public fun SidebarExpandButton(
 }
 
 @Composable
-private fun SidebarDetail(
+internal fun SidebarDetail(
     text: String,
     modifier: Modifier = Modifier,
 ) {

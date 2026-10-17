@@ -41,6 +41,16 @@ class ReorderTreeMathTest {
     }
 
     @Test
+    fun nestedRowsMoveWithTheirParentSoTheirSpotsDropNowhere() {
+        // Row 0 holds rows 1 and 2; dragged down by one row, its center is over its own row 1.
+        assertEquals(2, nestedSpan(listOf(0, 1, 2, 0), from = 0))
+        assertNull(treeDropTarget(heights, from = 0, offset = 40f, span = 2))
+        assertNull(treeDropTarget(heights, from = 0, offset = 95f, span = 2))
+        assertEquals(Into(3), treeDropTarget(heights, from = 0, offset = 120f, span = 2))
+        assertEquals(Before(0), treeDropTarget(heights, from = 1, offset = -55f, span = 1))
+    }
+
+    @Test
     fun theLineSitsInTheGapOrUnderTheRowItGoesInto() {
         assertEquals(80f, dropLineY(heights, Before(2)))
         assertEquals(160f, dropLineY(heights, Before(4)))

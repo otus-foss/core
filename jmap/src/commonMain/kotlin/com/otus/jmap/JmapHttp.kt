@@ -112,7 +112,7 @@ internal fun expandUriTemplate(
     return expanded
 }
 
-/** [name]'s value from [values], encoded; an unknown name or a dot segment throws. */
+/** [name]'s value, encoded for a URI template; refused when unknown or a dot segment. */
 private fun templateValue(
     values: Map<String, String>,
     name: String,

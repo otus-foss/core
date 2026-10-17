@@ -7,6 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.UIKitView
+import com.otus.designsystem.theme.OtusColors
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.readValue
 import platform.CoreGraphics.CGRectZero
@@ -29,7 +30,8 @@ public actual fun HtmlView(
     modifier: Modifier,
 ) {
     val openLink by rememberUpdatedState(onOpenLink)
-    val document = remember(html, loadRemote) { sandboxedHtml(html, loadRemote) }
+    val palette = OtusColors.palette
+    val document = remember(html, loadRemote, palette) { sandboxedHtml(html, loadRemote, palette) }
     // WebKit keeps only a weak reference to its delegate.
     val delegate = remember { LinkDelegate { openLink(it) } }
     key(document) {
