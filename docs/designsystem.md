@@ -90,7 +90,8 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   timer; tapping again or system back stacks it again. The group is as wide as its widest toast.
   A toast can be dragged sideways in either direction: it lifts a shade lighter, its timer
   pauses, and a darker `bgDark` end opens on the side it left. The end stretches outward, away
-  from the drag, by a quarter of the drag up to 16 dp. Its close symbol and "Dismiss" sit at its
+  from the drag, by a quarter of the drag up to 16 dp, and always reaches under the toast's round
+  end, so the two never part; only its outer end is round. Its close symbol and "Dismiss" sit at its
   outer edge and are always drawn, so the toast uncovers as much of the label as the drag allows.
   Past a third of its width both brighten and a haptic marks it. Releasing there removes the toast without running its action; shorter drags spring
   back. Colors are `bgDark` at rest and `bgRegular` lifted, with `strokeBgDark` outlines.

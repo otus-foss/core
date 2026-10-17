@@ -28,8 +28,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.RoundRect
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
@@ -163,24 +164,33 @@ private fun DismissEnd(
 }
 
 /**
- * Fills a pill from the side the toast left, [stretch] past that edge, reaching a toast's height
- * past [offset] so it tucks under it.
+ * Fills a pill from the side the toast left, [stretch] past that edge. It always reaches half a
+ * toast's height past [offset], to the middle of the toast's round end, so the two stay joined.
+ * Only its outer end is round; the square inner end stays under the toast.
  */
 private fun Modifier.dismissPill(
     offset: Float,
     stretch: Float,
 ): Modifier =
     drawBehind {
-        val reach = minOf(abs(offset) + size.height, size.width) + stretch
-        val left = if (offset > 0f) -stretch else size.width + stretch - reach
-        val radius = CornerRadius(size.height / 2f)
+        val fromLeft = offset > 0f
+        val reach = abs(offset) + stretch + size.height / 2f
+        val left = if (fromLeft) -stretch else size.width + stretch - reach
+        val round = CornerRadius(size.height / 2f)
         val border = PanelTokens.borderWidth.toPx()
-        drawRoundRect(OtusColors.bgDark, Offset(left, 0f), Size(reach, size.height), radius)
-        drawRoundRect(
-            OtusColors.strokeBgDark,
-            Offset(left + border / 2f, border / 2f),
-            Size(reach - border, size.height - border),
-            radius,
-            style = Stroke(border),
-        )
+
+        fun pill(inset: Float) =
+            Path().apply {
+                val rect = Rect(left + inset, inset, left + reach - inset, size.height - inset)
+                val outer = CornerRadius(round.x - inset)
+                addRoundRect(
+                    if (fromLeft) {
+                        RoundRect(rect, topLeft = outer, bottomLeft = outer)
+                    } else {
+                        RoundRect(rect, topRight = outer, bottomRight = outer)
+                    },
+                )
+            }
+        drawPath(pill(0f), OtusColors.bgDark)
+        drawPath(pill(border / 2f), OtusColors.strokeBgDark, style = Stroke(border))
     }
