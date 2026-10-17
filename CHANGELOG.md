@@ -15,7 +15,9 @@
 - A `SettingRow` at the top of its parent, such as the first row on a page, no longer draws
   a hairline above it.
 - Add `AndroidAnimationPreferenceStore` and `IosAnimationPreferenceStore` in `com.otus.settings.data`,
-  platform stores for `AnimationSettingsState` next to the date-format ones, so both apps share them.
+  platform stores for `AnimationSettingsState`, so both apps share them.
+- **Breaking:** `AnimationPreferenceStore` moves to `com.otus.settings.domain`, so the data-layer
+  stores do not depend on presentation.
 - `PushSubscriptions` never subscribes an endpoint without encryption keys; such a login shows
   `PushStatus.Refused`. Without keys a server would push readable state changes through the push
   provider, and the app could not tell forged pushes from real ones.

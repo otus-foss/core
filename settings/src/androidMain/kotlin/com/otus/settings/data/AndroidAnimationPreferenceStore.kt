@@ -1,7 +1,7 @@
 package com.otus.settings.data
 
 import android.content.Context
-import com.otus.settings.presentation.AnimationPreferenceStore
+import com.otus.settings.domain.AnimationPreferenceStore
 
 /** Keeps the animation speed in the app's private shared preferences. */
 public class AndroidAnimationPreferenceStore(

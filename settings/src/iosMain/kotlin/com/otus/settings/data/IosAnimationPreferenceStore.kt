@@ -1,6 +1,6 @@
 package com.otus.settings.data
 
-import com.otus.settings.presentation.AnimationPreferenceStore
+import com.otus.settings.domain.AnimationPreferenceStore
 import platform.Foundation.NSUserDefaults
 
 /** Keeps the animation speed in the app's user defaults. */
