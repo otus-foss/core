@@ -9,6 +9,7 @@ import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.role
 import com.otus.designsystem.elements.ChipFrame
 import com.otus.designsystem.elements.ChipText
+import com.otus.designsystem.elements.ChipWidth
 import com.otus.designsystem.elements.Symbol
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_expand_more
@@ -17,7 +18,8 @@ import com.otus.designsystem.theme.OtusColors
 /**
  * A pill with the current choice, its [avatars] and [label], and a down chevron, such as which
  * account a page shows or which address a draft is sent from. It calls [onClick], which opens a
- * picker; screen readers hear it as one button named [label].
+ * picker; screen readers hear it as one button named [label]. Given a width, such as by
+ * [ContextPanelScope.fillRail], it fills it and puts the chevron at the end.
  */
 @Composable
 public fun PickerChip(
@@ -39,6 +41,7 @@ public fun PickerChip(
         selected = false,
         enabled = true,
         fill = OtusColors.bgDark,
+        width = ChipWidth.Fill,
     ) {
         AvatarStack(avatars, ring = OtusColors.bgLight)
         ChipText(label)
