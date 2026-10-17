@@ -154,6 +154,7 @@ public fun ActionBarHost(
             Box(
                 Modifier
                     .align(Alignment.BottomCenter)
+                    .pinnedChrome(PageChrome.ActionBar)
                     .onSizeChanged { barHeight = it.height }
                     .actionBarInset(),
             ) { CompositionLocalProvider(LocalHostedBar provides true) { it() } }

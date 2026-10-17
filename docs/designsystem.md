@@ -265,6 +265,12 @@ Apps provide the user's `AnimationSpeed` as the scale. The Animations row on the
 appearance page sets it through `AnimationSettingsState`: Slow is 0.75, Regular 1, Fast 1.5, and
 Instant is infinite, so every duration rounds to 0 ms.
 
+`SlidingPages` and `SlidingOverlay` slide whole pages, but chrome that both pages draw stays
+still. When the page that leaves and the page that arrives both have a `ContextPanel`, or both
+have a bar in an `ActionBarHost`, that chrome keeps its place while the rest of each page slides
+under it. The arriving page's chrome draws on top, and the leaving page's copy fades out under it.
+Chrome that only one of the pages has slides with its page.
+
 A composable reads the scale for you:
 
 ```kotlin
