@@ -17,6 +17,8 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.otus.designsystem.theme.ActionBarTokens
@@ -63,7 +65,8 @@ internal fun ReportClearance(height: Dp) {
 /**
  * Places a floating part as low as it can go: [ActionBarTokens.barInset] above the frontmost bar
  * in [LocalBottomClearance], or above the navigation bar and keyboard when no bar is on screen.
- * It moves between the two at the normal speed.
+ * It moves between the two at the normal speed. Over a bar, anything it draws below the bar's top
+ * edge is hidden, as if behind the bar. Use it on a part aligned to the window's bottom.
  */
 @Composable
 public fun Modifier.aboveBottomBars(): Modifier {
@@ -77,5 +80,12 @@ public fun Modifier.aboveBottomBars(): Modifier {
             .union(WindowInsets.ime)
             .asPaddingValues()
             .calculateBottomPadding() + ActionBarTokens.barInset
-    return padding(bottom = maxOf(bars, edge))
+    val bottom = maxOf(bars, edge)
+    if (bars == 0.dp) return padding(bottom = bottom)
+    // What sinks past the bar's top edge, such as a leaving toast, goes behind the bar.
+    return drawWithContent {
+        clipRect(-size.width, -size.height, size.width * 2, size.height - (bars - ActionBarTokens.barInset).toPx()) {
+            this@drawWithContent.drawContent()
+        }
+    }.padding(bottom = bottom)
 }

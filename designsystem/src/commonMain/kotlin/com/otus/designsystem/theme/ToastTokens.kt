@@ -28,6 +28,9 @@ internal object ToastTokens {
     /** Toasts behind the front one that still peek out while stacked; older ones hide until it clears. */
     const val PEEK_LIMIT = 2
 
+    /** How small a toast draws as it arrives from, or leaves to, below the group. */
+    const val AWAY_SCALE = 0.9f
+
     /** Share of its width a toast must be dragged for release to dismiss it. */
     const val DISMISS_FRACTION = 1f / 3f
 

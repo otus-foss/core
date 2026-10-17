@@ -36,6 +36,7 @@ import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
 import com.otus.designsystem.elements.Toast
 import com.otus.designsystem.elements.ToastAction
+import com.otus.designsystem.theme.ActionBarTokens
 import com.otus.designsystem.theme.MotionCurve
 import com.otus.designsystem.theme.MotionSpeed
 import com.otus.designsystem.theme.ToastTokens
@@ -47,8 +48,10 @@ import kotlinx.coroutines.flow.collectLatest
  * out behind it, each with its own timer. Tapping the stack fans it out into a list and pauses
  * every timer; tapping again or system back stacks it again. Any toast in front, or any toast in
  * the list, can be swiped away in either direction; dismissing one with an action leaves the action
- * done, and running the action closes its toast. The group is as wide as its widest toast. Align it
- * to the bottom of the window with [modifier]; it rises above any bar in [LocalBottomClearance].
+ * done. A toast whose time is up or whose action ran sinks, shrinks, and fades on the exit curve,
+ * behind the bar when there is one; a new one rises the same way on the enter curve. The group
+ * is as wide as its widest toast. Align it to the bottom of the window with [modifier]; it rises
+ * above any bar in [LocalBottomClearance].
  */
 @Composable
 public fun ToastHost(
@@ -110,12 +113,13 @@ private fun ToastItem(
         label = "Toast peek",
     )
     val presence = remember { Animatable(0f) }
+    val sink = ActionBarTokens.barInset
     val enter = motionTween<Float>(MotionSpeed.Normal, MotionCurve.Enter)
     val exit = motionTween<Float>(MotionSpeed.Normal, MotionCurve.Exit)
     LaunchedEffect(entry.leaving) {
         if (entry.leaving) {
             presence.animateTo(0f, exit)
-            state.remove(entry)
+            state.remove(entry, entry.acted)
         } else {
             presence.animateTo(1f, enter)
         }
@@ -129,9 +133,12 @@ private fun ToastItem(
                 .fillMaxWidth()
                 .graphicsLayer {
                     // Scaled about its center, so it moves up by the height it loses to keep its top edge at the peek.
-                    translationY = -lift - size.height * (1f - scale) / 2f + (1f - presence.value) * size.height / 2f
-                    scaleX = scale
-                    scaleY = scale
+                    // Arriving and leaving, it rises from or sinks below the group's bottom, behind any bar.
+                    val away = 1f - presence.value
+                    val shown = scale * (1f - (1f - ToastTokens.AWAY_SCALE) * away)
+                    translationY = -lift - size.height * (1f - scale) / 2f + away * (size.height + sink.toPx())
+                    scaleX = shown
+                    scaleY = shown
                     alpha = peeking * presence.value
                 }.then(if (reachable) Modifier.liveToast { state.remove(entry) } else Modifier.clearAndSetSemantics {})
                 .clickable(
@@ -156,7 +163,7 @@ private fun ToastContent(
         entry.message.action?.let { shown ->
             ToastAction(shown.label) {
                 shown.onAction()
-                state.remove(entry, acted = true)
+                state.leave(entry, acted = true)
             }
         }
     Box {
