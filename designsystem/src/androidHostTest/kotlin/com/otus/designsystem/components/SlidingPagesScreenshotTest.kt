@@ -1,6 +1,5 @@
 package com.otus.designsystem.components
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
@@ -8,6 +7,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.unit.dp
+import com.otus.designsystem.resources.Res
+import com.otus.designsystem.resources.symbol_edit
 import com.otus.designsystem.screenshot.screenshot
 import org.junit.Rule
 import org.junit.runner.RunWith
@@ -48,9 +49,23 @@ class SlidingPagesScreenshotTest {
         compose.mainClock.advanceTimeBy(HALFWAY_MILLIS)
     }
 
+    /** A page whose panel and bar stay still during a slide to another page; only its row moves. */
     @Composable
     private fun Page(depth: Int) =
-        Box {
+        ActionBarHost(bar = {
+            ActionBar(
+                BarAction(
+                    if (depth ==
+                        0
+                    ) {
+                        "Write"
+                    } else {
+                        "Save"
+                    },
+                    Res.drawable.symbol_edit,
+                ) {},
+            )
+        }) {
             PageScaffold(if (depth == 0) "Inbox" else "Settings", navigationLabel = "Back", onNavigation = {}) {
                 SettingRow(if (depth == 0) "Lunch on Friday?" else "Notifications", {})
             }

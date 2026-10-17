@@ -54,6 +54,7 @@ public fun ContextPanel(
     val railShown = placement != ChipPlacement.None
     Box(
         modifier
+            .pinnedChrome(PageChrome.ContextPanel)
             .fillMaxWidth()
             .sidebarOpenZone()
             .onGloballyPositioned(geometry::trackPanel)
