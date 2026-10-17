@@ -13,10 +13,15 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.layout.onPlaced
+import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
@@ -35,7 +40,8 @@ import kotlin.math.min
 /**
  * A flat settings row: [title] and an optional [description] beside [trailing], such as a
  * [com.otus.designsystem.elements.ValueButton], a chevron, or a
- * [com.otus.designsystem.elements.RowButton]. A hairline separates it from the row above. With
+ * [com.otus.designsystem.elements.RowButton]. A hairline separates it from what is above it, so
+ * the first row in its parent, such as at the top of a page, has none. With
  * [onClick] the whole row is one button; without it, only its trailing controls act. A
  * [RowDensity.Compact] row drops the hairline and fits one line in
  * [PanelTokens.compactRowHeight]; a taller trailing control reaches into its padding instead of
@@ -128,6 +134,7 @@ private fun SettingRowLayout(
     modifier: Modifier,
 ) {
     val compact = density == RowDensity.Compact
+    var first by remember { mutableStateOf(false) }
     Row(
         modifier
             .fillMaxWidth()
@@ -135,7 +142,9 @@ private fun SettingRowLayout(
                 if (compact) {
                     Modifier.heightIn(min = PanelTokens.compactRowHeight)
                 } else {
-                    Modifier.topHairline(OtusColors.bgLight, PageTokens.textInset)
+                    Modifier
+                        .onPlaced { first = it.positionInParent().y < 1f }
+                        .topHairline(OtusColors.bgLight, PageTokens.textInset) { !first }
                 },
             ).padding(
                 horizontal = PageTokens.textInset,
