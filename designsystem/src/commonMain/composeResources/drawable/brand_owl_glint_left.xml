@@ -1,0 +1,12 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="132dp"
+    android:viewportWidth="120"
+    android:viewportHeight="132">
+  <!-- The art's view box starts at 4, 26, as in brand/otus-sidebar-owl-idle.svg. -->
+  <group android:translateX="-4" android:translateY="-26">
+    <path
+        android:pathData="M50.2293 95.7484C52.5177 95.262 53.9785 93.0126 53.4921 90.7241C53.0057 88.4357 50.7562 86.9749 48.4678 87.4613C46.1794 87.9477 44.7185 90.1972 45.205 92.4856C45.6914 94.774 47.9408 96.2349 50.2293 95.7484Z"
+        android:fillColor="#EBECED" />
+  </group>
+</vector>

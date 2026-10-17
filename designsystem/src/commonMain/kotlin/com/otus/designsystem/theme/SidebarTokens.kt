@@ -44,6 +44,22 @@ internal object SidebarTokens {
     val badgeRing = 2.dp
     val badgeSize = 10.sp
 
+    /** The gap between mailbox tiles, and between the tiles and the row above them. */
+    val tileGap = 8.dp
+
+    /** The owl in the footer, at the sidebar's bottom edge. */
+    val owlHeight = 48.dp
+
+    /**
+     * Space under the footer owl. The art leaves more room below the owl's feet than beside its
+     * body, so this is less than the leading inset, and the owl's body sits as far from the bottom
+     * as from the leading edge.
+     */
+    val owlBottomGap = 5.dp
+
+    /** The arrow before the version in the footer when a newer build is out. */
+    val updateIcon = 16.dp
+
     /** A swipe released faster than this, per second, opens or closes the sidebar regardless of position. */
     val flingVelocity = 400.dp
 

@@ -52,8 +52,9 @@ import kotlinx.coroutines.launch
 
 /**
  * App-independent navigation sidebar: a [header], such as [SidebarHeader], over the scrolling
- * [content]. [title] names the pane for screen readers. It is 336 dp wide, or narrower when that
- * would leave less than 56 dp of the page visible. It half-opens from the leading edge over the
+ * [content], over a [footer], such as [SidebarFooter], that stays at the bottom. [title] names
+ * the pane for screen readers. It is 336 dp wide, or narrower when that would leave less than
+ * 56 dp of the page visible. It half-opens from the leading edge over the
  * current page, and a swipe back toward that edge closes it. Wrap the page in [SidebarSwipeArea]
  * to open it by swiping.
  */
@@ -63,6 +64,7 @@ public fun Sidebar(
     title: String,
     header: @Composable () -> Unit,
     modifier: Modifier = Modifier,
+    footer: @Composable () -> Unit = {},
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -121,7 +123,7 @@ public fun Sidebar(
                     translationX = -sign * size.width * (1f - state.progress)
                 },
         ) {
-            SidebarSurface(title, header, content)
+            SidebarSurface(title, header, footer, content)
         }
     }
 }
@@ -142,6 +144,7 @@ private val sidebarInsetSides = WindowInsetsSides.Top + WindowInsetsSides.Bottom
 private fun SidebarSurface(
     title: String,
     header: @Composable () -> Unit,
+    footer: @Composable () -> Unit,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Surface(
@@ -159,6 +162,7 @@ private fun SidebarSurface(
                     .padding(bottom = SidebarTokens.inset),
                 content = content,
             )
+            Box(Modifier.padding(horizontal = SidebarTokens.inset)) { footer() }
         }
     }
 }
