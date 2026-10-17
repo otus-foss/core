@@ -8,16 +8,22 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.otus.designsystem.theme.SettingTokens
 
-/** A hairline along the top of this element, [inset] from both sides, separating it from the one above. */
+/**
+ * A hairline along the top of this element, [inset] from both sides, separating it from the one
+ * above. It is drawn only while [shown] is true.
+ */
 internal fun Modifier.topHairline(
     color: Color,
     inset: Dp = 0.dp,
+    shown: () -> Boolean = { true },
 ): Modifier =
     drawBehind {
-        drawLine(
-            color,
-            Offset(inset.toPx(), 0f),
-            Offset(size.width - inset.toPx(), 0f),
-            SettingTokens.dividerWidth.toPx(),
-        )
+        if (shown()) {
+            drawLine(
+                color,
+                Offset(inset.toPx(), 0f),
+                Offset(size.width - inset.toPx(), 0f),
+                SettingTokens.dividerWidth.toPx(),
+            )
+        }
     }
