@@ -143,7 +143,7 @@ public fun ListCaption(text: String) {
     )
 }
 
-/** Puts the popup under the anchor, or above it when it does not fit, [edge] pixels inside the window. */
+/** Puts the popup under the anchor, or above it when only that fits, [edge] pixels inside the window's sides. */
 private class BelowAnchor(
     private val alignEnd: Boolean,
     private val gap: Int,
@@ -158,11 +158,11 @@ private class BelowAnchor(
         val atEnd = alignEnd != (layoutDirection == LayoutDirection.Rtl)
         val x = if (atEnd) anchorBounds.right - popupContentSize.width else anchorBounds.left
         val below = anchorBounds.bottom + gap
+        val above = anchorBounds.top - gap - popupContentSize.height
         val fitsBelow = below + popupContentSize.height <= windowSize.height - edge
-        val y = if (fitsBelow) below else anchorBounds.top - gap - popupContentSize.height
-        return IntOffset(
-            x.coerceIn(edge, maxOf(edge, windowSize.width - popupContentSize.width - edge)),
-            y.coerceIn(edge, maxOf(edge, windowSize.height - popupContentSize.height - edge)),
-        )
+        // Never over the anchor: with room on neither side, such as while the keyboard is up, it
+        // opens below and moves once the window grows again.
+        val y = if (fitsBelow || above < edge) below else above
+        return IntOffset(x.coerceIn(edge, maxOf(edge, windowSize.width - popupContentSize.width - edge)), y)
     }
 }
