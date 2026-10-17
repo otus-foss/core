@@ -29,13 +29,15 @@ import com.otus.designsystem.theme.panelTextStyle
 
 /**
  * A page with a context panel header and a scrolling body. The leading chevron runs [onNavigation],
- * for example to open the sidebar on a top-level page.
+ * for example to open the sidebar on a top-level page. [chips], such as a [PickerChip], fill the
+ * header's chip row.
  */
 @Composable
 public fun PageScaffold(
     title: String,
     navigationLabel: String,
     onNavigation: () -> Unit,
+    chips: (@Composable ContextPanelScope.() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     ProvideTextStyle(panelTextStyle()) {
@@ -47,6 +49,8 @@ public fun PageScaffold(
                 .padding(PageTokens.pageInset),
         ) {
             ContextPanel(
+                // Chips sit inside the panel, as on a draft's header; a page without them keeps its plain header.
+                placement = if (chips != null) ChipPlacement.Overlapping else ChipPlacement.Below,
                 navigation = {
                     IconButton(navigationLabel, onNavigation, outlined = false) {
                         Symbol(
@@ -56,6 +60,7 @@ public fun PageScaffold(
                         )
                     }
                 },
+                chips = chips ?: {},
             ) { Text(title, Modifier.semantics { heading() }) }
             Column(
                 Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(vertical = PageTokens.contentInset),
@@ -66,18 +71,22 @@ public fun PageScaffold(
     }
 }
 
-/** A child page. The chevron and the system back gesture both return to its parent. */
+/**
+ * A child page. The chevron and the system back gesture both return to its parent. [chips] fill the
+ * header's chip row.
+ */
 @Composable
 public fun Subpage(
     title: String,
     onBack: () -> Unit,
+    chips: (@Composable ContextPanelScope.() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     NavigationBackHandler(
         state = rememberNavigationEventState(currentInfo = NavigationEventInfo.None),
         onBackCompleted = onBack,
     )
-    PageScaffold(title, navigationLabel = "Back", onNavigation = onBack, content = content)
+    PageScaffold(title, navigationLabel = "Back", onNavigation = onBack, chips = chips, content = content)
 }
 
 /** A titled group of rows on a page. */

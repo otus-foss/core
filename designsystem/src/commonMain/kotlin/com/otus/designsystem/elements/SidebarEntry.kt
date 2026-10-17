@@ -69,7 +69,7 @@ public fun SidebarEntry(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(SidebarTokens.entryPadding),
     ) {
-        Box(Modifier.padding(start = SidebarTokens.nestIndent * depth)) { Symbol(icon) }
+        Box(Modifier.nestIndent(SidebarTokens.nestIndent, depth)) { LeadingSymbol(icon) }
         Text(
             label,
             Modifier.weight(1f),
@@ -157,7 +157,7 @@ public fun SidebarExpandButton(
 }
 
 @Composable
-private fun SidebarDetail(
+internal fun SidebarDetail(
     text: String,
     modifier: Modifier = Modifier,
 ) {

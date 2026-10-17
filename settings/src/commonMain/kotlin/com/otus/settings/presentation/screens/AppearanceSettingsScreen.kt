@@ -13,6 +13,7 @@ import com.otus.dateformat.currentLocalDate
 import com.otus.designsystem.components.ChoiceOptions
 import com.otus.designsystem.components.ChoiceRow
 import com.otus.designsystem.components.ChoiceSheet
+import com.otus.designsystem.components.SettingPageRow
 import com.otus.designsystem.components.SettingRow
 import com.otus.designsystem.components.SettingsSection
 import com.otus.designsystem.components.Subpage
@@ -29,9 +30,9 @@ import com.otus.settings.presentation.dateFormatExample
 import com.otus.settings.presentation.themeTitle
 
 /**
- * Shared appearance settings. The Look section opens the theme page with [onTheme] and shows the
- * date format and animation speed; an app adds its own rows to it in [look], such as the sidebar, and its own sections,
- * such as gestures, below it in [content].
+ * Shared appearance settings. The Look section opens the theme page with [onTheme], named by the
+ * current theme, and shows the date format and animation speed; an app adds its own rows to it in
+ * [look], such as the sidebar. Behavior, such as gestures, belongs on a page of the app's own.
  */
 @Composable
 public fun AppearanceSettingsScreen(
@@ -41,20 +42,19 @@ public fun AppearanceSettingsScreen(
     onTheme: () -> Unit,
     onBack: () -> Unit,
     look: @Composable ColumnScope.() -> Unit = {},
-    content: @Composable ColumnScope.() -> Unit = {},
 ) {
     val locale = currentDateLocaleIdentifier()
     val today = remember { currentLocalDate() }
     var choosing by rememberSaveable { mutableStateOf(false) }
     var choosingSpeed by rememberSaveable { mutableStateOf(false) }
-    Subpage("Appearance & behavior", onBack) {
+    Subpage("Appearance", onBack) {
         SettingsSection("Look") {
-            SettingRow(
+            SettingPageRow(
                 "Theme",
                 onTheme,
-                description = "Colors across the whole app",
+                description = theme.choice.themeTitle,
                 icon = Res.drawable.symbol_palette,
-            ) { ValueButton(theme.choice.themeTitle, swatch = theme.choice.accent) }
+            )
             look()
             SettingRow(
                 "Date format",
@@ -68,7 +68,6 @@ public fun AppearanceSettingsScreen(
                 icon = Res.drawable.symbol_speed,
             ) { ValueButton(animation.speed.label) }
         }
-        content()
     }
     if (choosing) {
         ChoiceSheet(

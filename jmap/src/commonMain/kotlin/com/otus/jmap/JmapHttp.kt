@@ -96,17 +96,33 @@ internal suspend fun HttpResponse.limitedText(limit: Long): String {
     return bytes.decodeToString()
 }
 
-/** RFC 6570 level 1. Encode each value before substitution, including slashes and URI delimiters. */
+/**
+ * RFC 6570 level 1. Encode each value before substitution, including slashes and URI delimiters.
+ * Encoding leaves dots alone, and resolution and HTTP clients remove "." and ".." path segments,
+ * so such a value would move the request to another path; it is refused instead.
+ */
 internal fun expandUriTemplate(
     template: String,
     values: Map<String, String>,
 ): String {
     val expanded =
         // Android's ICU regex engine rejects an unescaped "}", which the JVM accepts.
-        Regex("\\{([^{}]+)\\}").replace(template) { match ->
-            values[match.groupValues[1]]?.encodeURLParameter()
-                ?: throw JmapException.NotJmap("unknown URI template variable")
-        }
+        Regex("\\{([^{}]+)\\}").replace(template) { match -> templateValue(values, match.groupValues[1]) }
     if ('{' in expanded || '}' in expanded) throw JmapException.NotJmap("invalid URI template")
     return expanded
 }
+
+/** [name]'s value, encoded for a URI template; refused when unknown or a dot segment. */
+private fun templateValue(
+    values: Map<String, String>,
+    name: String,
+): String {
+    val value = values[name] ?: throw JmapException.NotJmap("unknown URI template variable")
+    if (value.isDotSegment()) throw JmapException.NotJmap("invalid URI template value")
+    return value.encodeURLParameter()
+}
+
+/** Whether [this] is a "." or ".." path segment; any "%" is encoded, so only plain dots count. */
+internal fun String.isDotSegment(): Boolean = this in DOT_SEGMENTS
+
+private val DOT_SEGMENTS = setOf(".", "..")

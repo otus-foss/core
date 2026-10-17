@@ -95,7 +95,7 @@ rows, and the setup screen. The app supplies a login store, transport, coroutine
 callbacks, and the required `AccountService`. Mail chooses the RFC 8621 mail capability and
 `Mailbox/get`; the library does not assume that another service is advertised.
 
-`settings` owns the settings list, Appearance & behavior screen, date-format state, and examples.
+`settings` owns the settings list, Appearance screen, date-format state, and examples.
 The app supplies `SettingsEntry` values and callbacks, the date-format preference store, and
 navigation. Shared settings do not embed Mail folder or rule destinations.
 

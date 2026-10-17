@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
@@ -46,8 +47,9 @@ import kotlin.math.roundToInt
  * The whole shell then runs the primary. A bar that takes over from another, such as a page's bar
  * opening over the list's, moves its shell and action from where the other drew them in one motion;
  * see [BarEntry]. A [minimized] bar shows only the primary's icon, in a circle at the bar's end;
- * see [MinimizedBar]. A minimized bar that is [hidden], such as while a search field is about to
- * take the keyboard, scales out in place; a full bar ignores [hidden].
+ * see [MinimizedBar]. A minimized bar puts [more] behind a round button at its start, which opens
+ * them in a [ContextMenu]. A minimized bar that is [hidden], such as while a search field is about
+ * to take the keyboard, scales out in place; a full bar ignores [more] and [hidden].
  */
 @Composable
 public fun ActionBar(
@@ -57,10 +59,11 @@ public fun ActionBar(
     context: BarContext? = null,
     minimized: Boolean = false,
     hidden: Boolean = false,
+    more: List<MenuAction> = emptyList(),
 ) {
     require(secondary.size <= MAX_SECONDARY) { "An action bar holds at most $MAX_SECONDARY secondary actions" }
     if (minimized) {
-        MinimizedBar(primary, context, hidden, modifier)
+        MinimizedBar(primary, context, hidden, more, modifier)
         return
     }
     val front = rememberFrontBar(primary, context)
@@ -137,10 +140,9 @@ private fun SecondaryGroup(actions: List<BarAction>) {
 }
 
 /**
- * Places [bar] over the bottom of [content], [ActionBarTokens.barInset] from the edges and above
- * the navigation bar and keyboard. [content] receives bottom padding that lets its last item
- * scroll above the bar; a null [bar] leaves the page as it is. The bar's height goes to
- * [LocalBottomClearance], so toasts float above it.
+ * Places [bar] over the bottom of [content] at [actionBarInset]. [content] receives bottom padding
+ * that lets its last item scroll above the bar; a null [bar] leaves the page as it is. How high
+ * the bar reaches goes to [LocalBottomClearance], so toasts float above it.
  */
 @Composable
 public fun ActionBarHost(
@@ -164,9 +166,20 @@ public fun ActionBarHost(
                     .onSizeChanged { barHeight = it.height }
                     .onGloballyPositioned {
                         reach = (it.findRootCoordinates().size.height - it.boundsInRoot().top).roundToInt()
-                    }.windowInsetsPadding(WindowInsets.navigationBars.union(WindowInsets.ime))
-                    .padding(ActionBarTokens.barInset),
+                    }.actionBarInset(),
             ) { CompositionLocalProvider(LocalHostedBar provides true) { it() } }
         }
     }
+}
+
+/**
+ * Keeps a hosted bar, or what floats above it, [ActionBarTokens.barInset] above the navigation bar
+ * and keyboard, and as far from the sides as it sits from the bottom of the screen.
+ */
+@Composable
+public fun Modifier.actionBarInset(): Modifier {
+    val navigation = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+    return windowInsetsPadding(WindowInsets.navigationBars.union(WindowInsets.ime))
+        .padding(ActionBarTokens.barInset)
+        .padding(horizontal = navigation)
 }

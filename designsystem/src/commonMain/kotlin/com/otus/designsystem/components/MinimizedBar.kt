@@ -1,6 +1,7 @@
 package com.otus.designsystem.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -36,12 +37,14 @@ import com.otus.designsystem.theme.motionTween
  * from its bottom edge. It stays in place while the keyboard moves. It fades and scales out like
  * [PickerSearch]'s clear button once [hidden] or when the keyboard starts opening, and back in once
  * the closing keyboard drops below it. A new primary's icon swaps in place; see [rememberFrontBar].
+ * With [more], a [BarMoreButton] at the bar's start opens them; it scales in when they arrive.
  */
 @Composable
 internal fun MinimizedBar(
     primary: BarAction,
     context: BarContext?,
     hidden: Boolean,
+    more: List<MenuAction>,
     modifier: Modifier = Modifier,
 ) {
     val ime = WindowInsets.ime
@@ -56,24 +59,45 @@ internal fun MinimizedBar(
             last = lift
         }
     }
-    val arrive = motionTween<Float>(MotionSpeed.Quick, MotionCurve.Enter)
-    val leave = motionTween<Float>(MotionSpeed.Quick, MotionCurve.Exit)
+    val shown = keyboardAway && !hidden
     Box(
         modifier
             .fillMaxWidth()
-            // ActionBarHost lifts its bar onto the keyboard; the button keeps its place instead.
+            // ActionBarHost lifts its bar onto the keyboard; the buttons keep their places instead.
             .graphicsLayer { translationY = keyboardLift(ime, navigation, this).toFloat() },
-        contentAlignment = Alignment.CenterEnd,
     ) {
-        AnimatedVisibility(
-            keyboardAway && !hidden,
-            Modifier.padding(end = navigationBalance()),
-            enter = fadeIn(arrive) + scaleIn(arrive),
-            exit = fadeOut(leave) + scaleOut(leave),
-        ) {
+        Appearing(
+            shown && more.isNotEmpty(),
+            Modifier.align(Alignment.CenterStart).padding(start = navigationBalance(end = false)),
+            scaleInFirst = true,
+        ) { BarMoreButton(more) }
+        Appearing(shown, Modifier.align(Alignment.CenterEnd).padding(end = navigationBalance(end = true))) {
             RoundPrimary(primary, context)
         }
     }
+}
+
+/**
+ * Fades and scales [content] in and out like [PickerSearch]'s clear button. With [scaleInFirst] it
+ * also scales in when it first appears, such as when a selection's bar replaces the list's.
+ */
+@Composable
+private fun Appearing(
+    visible: Boolean,
+    modifier: Modifier,
+    scaleInFirst: Boolean = false,
+    content: @Composable () -> Unit,
+) {
+    val state = remember { MutableTransitionState(visible && !scaleInFirst) }
+    state.targetState = visible
+    val arrive = motionTween<Float>(MotionSpeed.Quick, MotionCurve.Enter)
+    val leave = motionTween<Float>(MotionSpeed.Quick, MotionCurve.Exit)
+    AnimatedVisibility(
+        state,
+        modifier,
+        enter = fadeIn(arrive) + scaleIn(arrive),
+        exit = fadeOut(leave) + scaleOut(leave),
+    ) { content() }
 }
 
 /** How far the keyboard reaches above the navigation bar, in pixels. */
@@ -83,17 +107,16 @@ private fun keyboardLift(
     density: Density,
 ): Int = (ime.getBottom(density) - navigation.getBottom(density)).coerceAtLeast(0)
 
-/** How much farther the bar sits from the bottom edge than from the end edge: the navigation bar below it. */
+/**
+ * How much farther the bar sits from the bottom edge than from the [end] or start edge: the
+ * navigation bar below it.
+ */
 @Composable
-private fun navigationBalance(): Dp {
+private fun navigationBalance(end: Boolean): Dp {
     val density = LocalDensity.current
     val direction = LocalLayoutDirection.current
     val navigation = WindowInsets.navigationBars
-    val end =
-        if (direction == LayoutDirection.Ltr) {
-            navigation.getRight(density, direction)
-        } else {
-            navigation.getLeft(density, direction)
-        }
-    return with(density) { (navigation.getBottom(density) - end).coerceAtLeast(0).toDp() }
+    val right = end == (direction == LayoutDirection.Ltr)
+    val side = if (right) navigation.getRight(density, direction) else navigation.getLeft(density, direction)
+    return with(density) { (navigation.getBottom(density) - side).coerceAtLeast(0).toDp() }
 }

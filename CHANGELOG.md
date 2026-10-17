@@ -2,23 +2,110 @@
 
 ## Unreleased
 
+- A `SheetFrame` never gets shorter than it has been, so its top stays put when the keyboard
+  closes. A sheet opened from another sheet's content starts at least as tall.
+- A row dragged in a `ReorderableTree` takes its nested rows along. Before, a parent hovering over
+  its own nested rows showed no drop line.
+- `JmapClient.download` and `upload` refuse a `.` or `..` template value, which would move the
+  request to another path on the server. A `.` or `..` file name falls back to `download`.
+- `HtmlView` without `loadRemote` turns off DNS prefetching and makes the document's `<link>`
+  elements inert, since the Content Security Policy does not stop `dns-prefetch` or `preconnect`
+  hints from reaching the sender's server.
+- `ConnectOutcome.ConfirmHost.host` includes the port when it is not the scheme's default, so the
+  user sees which port approving it trusts.
+- Add `SettingPageRow`, a `SettingRow` that opens a page and ends in a chevron, with the page's
+  value as its description. `SettingsScreen` uses it, and so does the Theme row on
+  `AppearanceSettingsScreen`, which names the theme there instead of in a value button.
+- Add the `symbol_content_copy` icon.
+- **Breaking:** `AppearanceSettingsScreen` is titled "Appearance" and drops its `content` slot.
+  Apps put behavior settings on a page of their own.
+- Add `ContextPanelScope.fillRail`, which stretches a chip across the chip rail. A `PickerChip`
+  given a width fills it and puts its chevron at the end.
+- Add `Modifier.actionBarInset`. `ActionBarHost` uses it to keep its bar as far from the screen's
+  sides as from its bottom edge, which includes the navigation bar's height.
+- A `SettingRow` at the top of its parent, such as the first row on a page, no longer draws
+  a hairline above it.
+- Add `AndroidAnimationPreferenceStore` and `IosAnimationPreferenceStore` in `com.otus.settings.data`,
+  platform stores for `AnimationSettingsState`, so both apps share them.
+- **Breaking:** `AnimationPreferenceStore` moves to `com.otus.settings.domain`, so the data-layer
+  stores do not depend on presentation.
+- `PushSubscriptions` never subscribes an endpoint without encryption keys; such a login shows
+  `PushStatus.Refused`. Without keys a server would push readable state changes through the push
+  provider, and the app could not tell forged pushes from real ones.
+- `PushSubscriptions.sync` keeps every record as it is when the saved logins cannot be read, and
+  keeps a login's record when its secret cannot be read, instead of throwing `LoginStoreException`.
+- `PushSubscriptions.forget` gives up after ten seconds, including time waiting for a running
+  `sync`, so removing an account never hangs on a slow or unreachable server.
 - Add `HtmlView`, which shows an HTML document such as a message body in a platform web view.
   Scripts never run. A Content Security Policy blocks frames, forms, and every outside resource
   except remote images, styles, and fonts, which load only with `loadRemote`. Tapped web, mail,
-  and phone links go to `onOpenLink`; the view never navigates. On Android 13 and later, pages
-  without their own dark colors are darkened to match the theme.
+  and phone links go to `onOpenLink`; the view never navigates. Colors follow the theme the user
+  picked: a document without its own colors takes the theme's text and link colors, and one with
+  its own colors keeps a white page, darkened under a dark theme on Android 13 and later.
+- Add `TrailingIcons`, two touch-target-wide slots at a row's end. `FolderSettingRow` and
+  `AccountGroupRow` use it, so their icons line up in the same two columns.
+- Add `InputSheet`, `InputDialog`'s text field in a `SheetFrame`.
+- Add `QuickActionBar`, a small bar of icon `MenuAction`s that opens above a long-pressed point.
+  `MenuAction` takes an optional `icon` before `onClick`. `FolderSettingRow` takes `onLongClick`
+  with the pressed point, and its drag handle now comes from the `ReorderableScope` overload
+  instead of a `handle` parameter.
+- `FolderSettingRow` ends in a settings icon instead of a chevron.
+- `FolderSettingRow` draws tree guide lines under the icons of the levels above it, and
+  `AccountGroupRow` takes an `action`, such as a New folder button, before its chevron.
+- Add `ReorderableTree` and `TreeDropTarget`. A dragged row stays over the rows without moving
+  them, and an `accentLight` line shows whether it lands in a gap, at the depth of the row below,
+  or inside a row as its first child. The app's `canDrop` hides targets it would refuse.
+- `ReorderableColumn` fills the row being dragged with `bgLight`; the other rows step aside. `FolderSettingRow` takes a
+  `handle`, such as `ReorderableScope.DragHandle`, after its chevron, and `SidebarFolder` takes the
+  `icon` that `FolderSettingRow` took before.
+- Add `Modifier.mutedRule()`, which fades a `RuleChip` or `RuleChipGroup` shown only for context,
+  such as a parent folder's rule.
+- Add `Modifier.nestIndent(step, depth)`, which indents a nested row by at most four steps
+  (`MAX_INDENT_STEPS`). `SidebarEntry`, `SidebarFolderEntry`, `DetailRow`, and `FolderSettingRow`
+  use it, so rows deeper than the fifth level stop moving right.
+- Add `RuleChip`, `RuleChipGroup`, and `AddRuleChip` for mail rules, with the value types
+  `RuleChipLine`, `RuleChipValue`, `RuleSegment`, and `RuleSegmentStyle`. A chip is 36 dp tall, or
+  24 dp with `RowDensity.Compact`.
+- Add `FolderSettingRow` for a folder settings page, with the detail lines `FolderRuleSummary` and
+  `FolderOwnerLine`, and `PickerChip`, a header chip with avatars, a label, and a down chevron
+  that opens a picker. `Subpage` and `PageScaffold` take optional `chips` for the header's chip row.
+- `ReorderableScope` adds `Modifier.dragOnLongPress()`, which drags a row after a long press
+  without a handle. Apps that implement `ReorderableScope` themselves must add it; the design
+  system is the only implementer today.
+- Add the `symbol_short_text`, `symbol_code`, `symbol_forum`, `symbol_notes`, `symbol_schedule`,
+  `symbol_filter_alt`, and `symbol_folder_shared` symbols.
+- **Breaking:** `Sidebar` has no account rail. It takes a `header` slot in place of `subtitle` and
+  `rail`, and `title` now only names the pane for screen readers. `SidebarRail`,
+  `SidebarRailAccount`, `SidebarRailIcon`, `SidebarRailAdd`, and `SidebarRailDivider` are gone.
+  Apps pass a `SidebarHeader` and offer the account choice in a sheet such as `ScopeSheet`.
+- Add the sidebar pieces `SidebarHeader`, `SidebarInboxEntry`, `SidebarMailboxTile` with
+  `SidebarMailboxGrid`, `SidebarFolderEntry` with `SidebarFolder`, `SidebarDivider`, and
+  `SectionCaption`. Add `ScopeSheet`, `ScopeRow`, `ScopeChildRow`, and `ScopeOption` for a
+  "Show mail from" style picker with pinned choices and expandable groups. `AvatarStack` takes an
+  optional `size`. Add the `symbol_folder_open` and `symbol_keep` symbols.
+- Add `FolderColor`: `Default` and eight colors a user can give a folder, stored by `name` and
+  read back with `FolderColor.named`. `tint` and `tintIn(palette)` give the icon color for dark or
+  light themes, at 3:1 or more on `bgDark`, `bgRegular`, and `accentDark`.
+- Add `LocalIconTint`, which colors the leading icon of `SidebarEntry`, `ActionRow`, `SettingRow`,
+  `SettingToggleRow`, `ValuePicker`, and `ValueToken`, but not a disabled picker's icon.
+  `ChoiceRow` takes `iconTint` and a `swatch`, drawn by the new `FolderColorSwatch`, and
+  `ThemeTokens.folderSwatch` sizes it.
 - Add `ToastHost` with `ToastState`, `ToastMessage`, and the `Toast` element with `ToastAction`.
   Toasts stack with the newest in front, merge by `group`, fan out on tap, and swipe away in
   either direction. A toast with an action shows a countdown ring, and running the action closes
   the toast. `ToastState.isShowing(group)` tells whether a group's toast is still up, and
   `ToastState.messages` lists the messages on screen. See
   [the design system guide](docs/designsystem.md).
-- Add the brand assets: source SVGs in `designsystem/brand/`, the `brand_otus_logo` and
-  `brand_owl` drawables, and Mail's adaptive launcher icon `otus_mail_icon` as an Android
-  resource.
-- Add `MailLaunch`, Mail's launch animation, which loops while the app loads and shrinks and
-  fades out once it is done. It comes with `BrandTokens`, `MotionCurve.Rise`,
-  `Motion.LAUNCH_MILLIS`, `Motion.LAUNCH_LOOP_MILLIS`, and `Motion.scaled(millis, scale)`.
+- Add the brand assets: source SVGs in `designsystem/brand/`, `tools/brand_drawables.py`, the
+  `brand_otus_logo`, `brand_owl`, and `symbol_owl` drawables, and Mail's launcher icons
+  `otus_mail_icon_<name>` in Monochrome and each preset accent as Android resources.
+- Add `MailLaunch`, Mail's launch animation in the current theme's colors, which loops while the
+  app loads and shrinks and fades out once it is done. It comes with `AppIconStyle`,
+  `BrandTokens`, `MotionCurve.Rise`, `Motion.LAUNCH_MILLIS`, `Motion.LAUNCH_LOOP_MILLIS`, and
+  `Motion.scaled(millis, scale)`.
+- Add `AccentPreset.closest`.
+- Add `AppIconSettingsState` and `AppIconSetting`, the App icon row an app that can switch its
+  launcher icon adds to the appearance page's Look section.
 - Add the Ink theme, darker than Otus with surfaces closer together, and custom themes (decision
   0014). `ThemeColor` names the ten colors a user can change. `ThemeChoice` keeps a list of
   `CustomTheme`s, and `withColor` on a built-in theme creates and selects a new custom theme, so
