@@ -74,7 +74,8 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
 - The `Sidebar` is one panel, 336 dp wide, with a `header` slot over its scrolling content.
   `SidebarHeader` shows avatars, a title, and an optional subtitle, then an unfold button and
   Settings. Tapping the title or the unfold button calls `onPick`. Below it, `SidebarInboxEntry`
-  is a 52 dp row for the main mailbox. `SidebarMailboxGrid` puts `SidebarMailboxTile`s in three
+  is a 52 dp row for the main mailbox, inset to line up with the grid or, with `inset = false`,
+  as wide as `SidebarEntry` rows. `SidebarMailboxGrid` puts `SidebarMailboxTile`s in three
   equal columns; a tile shows a count badge on its icon's corner, and the caller shortens large
   counts. `SidebarDivider` separates groups, and `SectionCaption` titles a group that does not
   collapse, with an optional action at its end. A `SidebarFolderEntry` row is 36 dp tall, like
