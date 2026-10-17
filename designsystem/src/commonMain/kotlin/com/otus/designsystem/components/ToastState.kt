@@ -13,13 +13,17 @@ import com.otus.designsystem.theme.ToastTokens
 /**
  * A message for [ToastHost]. A new message with the same non-null [group] as one on screen
  * replaces it instead of stacking, and its timer starts over, so repeating an action can update
- * "Email deleted" to "3 emails deleted".
+ * "Email deleted" to "3 emails deleted". A [sticky] toast has no timer and stays until its action
+ * runs or it is swiped away, such as a failure with Retry. [onClose] runs when the toast leaves
+ * without its action, by its timer or a swipe, such as to finish what Undo would have reverted.
  */
 @Immutable
 public data class ToastMessage(
     val text: String,
     val action: ToastAction? = null,
     val group: Any? = null,
+    val sticky: Boolean = false,
+    val onClose: (() -> Unit)? = null,
 )
 
 /** The toasts on screen, newest last. Create it with `remember` and pass it to [ToastHost]. */
@@ -56,7 +60,7 @@ public class ToastState {
     ) {
         if (expanded) return
         entries
-            .filterNot { it.leaving || it.held }
+            .filterNot { it.leaving || it.held || it.message.sticky }
             .forEach { entry ->
                 entry.durationMillis = timeout(entry.message)
                 entry.elapsedMillis += deltaMillis
@@ -64,9 +68,16 @@ public class ToastState {
             }
     }
 
-    /** Removes a toast once it has left the screen; a single toast left has nothing to fan out. */
-    internal fun remove(entry: ToastEntry) {
-        entries.remove(entry)
+    /**
+     * Removes a toast once it has left the screen; a single toast left has nothing to fan out. One
+     * that leaves without its action having [acted] runs its close callback.
+     */
+    internal fun remove(
+        entry: ToastEntry,
+        acted: Boolean = false,
+    ) {
+        if (!entries.remove(entry)) return
+        if (!acted) entry.message.onClose?.invoke()
         if (entries.size <= 1) expanded = false
     }
 }

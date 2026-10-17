@@ -19,7 +19,7 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   compose fields (`ComposeTokens`).
   `panelTextStyle()` uses Figtree.
 - `elements`: `ActionButton`, `ActionRow`, `AnimatedText`, `Avatar`, `AvatarImage`, `BarIconButton`, `CalendarDay`,
-  `ComposeBody`, `ComposeField`, `ComposeValueField`, `HtmlView`,
+  `AddressPill`, `ButtonPill`, `ComposeField`, `HtmlView`, `QuoteChip`, `RichTextBody` (with `RichText` and `TextFormat`),
   `CalendarMonthBackground`, `Chip`, `ColorSlider`, `ColorSwatch`, `AddSwatch`, `SwatchStack`, `IconButton`, `IconPill`, `InputField`, `LabelPill`, `RefreshIndicator`,
   `RowButton`, `SearchField`, `SearchPrompt`, `SelectionRow`, `SidebarEntry`, `SidebarHeading`,
   `SidebarCount`, `SidebarExpandButton`, `SidebarPill`, `SidebarRailAccount`, `SidebarRailAdd`, `SidebarRailDivider`,
@@ -30,6 +30,9 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   `MonthNavigation`, `MonthYearPicker`, `PageScaffold`, `Subpage`, `PageSection`, `PanelSurface`,
   `PickerSearch`, `PreviewCard`, `PullToRefresh`, `ReorderableColumn`, `SelectionSheet`, `SheetFrame`, `SettingRow`,
   `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarRail`, `SummaryCard` and `PersonText` (with `NamedAvatar`), `ValueToken`, `ValuePicker`, `Collapsible`, `CollapsibleTree`, `AvatarStack`, `ContextMenu` (with `MenuAction`),
+  `Dropdown` (with `DropdownRow` and `DropdownCaption`), `OptionsMenu` (with `OptionsItem`), `FormattingBar` (with
+  `FormatButton` and `CompactSendButton`), `RecipientLine` (with `Recipient`, `AddressInput`, and `RecipientChip`),
+  `PersonAvatar`,
   `SidebarSwipeArea`, `SlidingOverlay`, `SlidingPages`, `SwipeActions`, `ThemeCard`, and `ToastHost`
   (with `ToastState` and `ToastMessage`).
 - Settings rows follow Notion's settings pages: flat rows with a title and `text2` description
@@ -72,7 +75,9 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   5 seconds with an action, 3 without, longer when a screen reader is on. A message with the same
   `group` as one on screen replaces it and restarts its timer, so the app can count up to
   "3 emails deleted"; `isShowing(group)` tells the app whether to keep counting. Tapping the
-  action runs it and closes the toast. Other messages stack with the newest in front and up to two older ones
+  action runs it and closes the toast. A `sticky` message has no timer and stays until its action
+  runs or it is swiped away, such as a failed send with Retry. `onClose` runs when a toast leaves
+  without its action, so the app can finish what Undo would have reverted. Other messages stack with the newest in front and up to two older ones
   peeking out behind it, each on its own timer. Tapping the stack fans it out and pauses every
   timer; tapping again or system back stacks it again. The group is as wide as its widest toast.
   A toast can be dragged sideways in either direction: it lifts a shade lighter, its timer
@@ -118,11 +123,29 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   the navigation bar and keyboard, and pads the page's content so it can scroll clear of the bar.
   Mail uses it for an open message and for selected messages; see
   [Mail's action bar guide](https://github.com/reazndev/otus-mail/blob/main/docs/action-bar.md).
-- `ComposeField` and `ComposeBody` lay out a message being written. Each header line, such as
-  To or Subject, puts a `text2` label beside a borderless field with a `bgLight` hairline below,
-  like Gmail's and Apple Mail's compose headers. `ComposeValueField` shows a chosen value, such
-  as the From address, and opens the choice when tapped. The body has no border and fills the
-  rest of the page. The app owns the draft, parsing, and saving.
+- The Write page's parts follow Mail's "Write" boards. `ComposeField` is a header line, such as
+  Subject: a `text2` label in a 56 dp column beside a borderless field with a `text3` placeholder
+  and a `bgLight` hairline below. `RecipientLine` uses the same column for To, Cc, and Bcc: a
+  `RecipientChip` for each person, with a 22 dp avatar in an 8 dp outlined box, wrapping as
+  needed, and a field for the next address. Next or losing focus commits the typed text, and
+  Backspace in an empty field removes the last chip. `RichTextBody` edits the formatted body,
+  built on the compose-rich-editor library, which stays an implementation detail behind
+  `RichText`: it reads and writes HTML and plain text. `QuoteChip` stands for the collapsed
+  original at the end of a reply.
+- `FormattingBar` docks above the keyboard: a `bgDark` 56 dp row with an optional leading button,
+  such as Attach, behind a divider, then Bold, Italic, Bulleted list, Numbered list, Link, and
+  Clear formatting. The buttons scroll sideways with faded edges, and a trailing slot, such as
+  `CompactSendButton`, stays pinned. An active format gets a `bgLight` fill, never the accent.
+- `Dropdown` opens a `bgDark` list with a 22 dp radius under the element it is called from, the
+  window's width unless given one, and above the element when there is no room below.
+  `DropdownRow` marks the selected row with a `bgRegular` fill and no checkmark; `DropdownCaption`
+  heads a group in `text3`. A non-focusable dropdown leaves the keyboard to a field, for
+  suggestions while typing. `OptionsMenu` is the 286 dp menu under a ⋯ button: icon rows that
+  act, open more with a chevron, or switch an option, with dividers between groups.
+- `ButtonPill` is a pill that acts, such as "+ Cc", and `AddressPill` shows the address a message
+  is sent from, avatar first and a chevron last, with long addresses ending in an ellipsis.
+- `BarContext.lead` puts a small line in place of the primary's label, so Send reads "Send to"
+  above "Grace".
 
 All visual tokens live here, including `InboxTokens`. New elements and reusable components
 belong here even when only Mail currently uses them. Their APIs use values and callbacks,

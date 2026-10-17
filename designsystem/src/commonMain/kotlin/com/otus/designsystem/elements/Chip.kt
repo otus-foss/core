@@ -2,6 +2,7 @@ package com.otus.designsystem.elements
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -51,51 +52,69 @@ public fun Chip(
     }
 }
 
+/** How a [ChipFrame] lays out its content. */
+internal enum class ChipLayout {
+    /** Padded text and icons. */
+    Regular,
+
+    /** As wide as it is tall, like an [IconButton]. */
+    Circle,
+
+    /** A round avatar first, close to the start edge. */
+    Avatar,
+}
+
 /**
- * The pill and its 48 dp touch target, shared by [Chip], [SidebarPill], and [IconPill]; [fill]
- * fills it while unselected. A [circle] is as wide as it is tall, like an [IconButton].
+ * The pill and its 48 dp touch target, shared by [Chip], [SidebarPill], [IconPill], and the
+ * button pills; [fill] fills it while unselected. A chip with a [selected] state reads as a
+ * checkbox; one without, a null, is a button.
  */
 @Composable
 internal fun ChipFrame(
     onClick: () -> Unit,
     modifier: Modifier,
-    selected: Boolean,
+    selected: Boolean?,
     enabled: Boolean,
     fill: Color,
-    circle: Boolean = false,
+    layout: ChipLayout = ChipLayout.Regular,
     content: @Composable RowScope.() -> Unit,
 ) {
     val interactions = remember { MutableInteractionSource() }
     Box(
         modifier
             .sizeIn(minWidth = PanelTokens.touchTarget, minHeight = PanelTokens.touchTarget)
-            .toggleable(
-                value = selected,
-                enabled = enabled,
-                role = Role.Checkbox,
-                interactionSource = interactions,
-                indication = null,
-            ) { onClick() },
+            .then(
+                if (selected == null) {
+                    Modifier.clickable(interactions, null, enabled, role = Role.Button, onClick = onClick)
+                } else {
+                    Modifier.toggleable(selected, interactions, null, enabled, Role.Checkbox) { onClick() }
+                },
+            ),
         contentAlignment = Alignment.Center,
     ) {
         Surface(
             modifier = Modifier.reportControlVisualBounds().controlPressFeedback(interactions),
             shape = CircleShape,
-            color = if (selected) OtusColors.accentDark else fill,
+            color = if (selected == true) OtusColors.accentDark else fill,
             contentColor = if (enabled) OtusColors.text1 else OtusColors.text3,
             border =
                 BorderStroke(
                     PanelTokens.borderWidth,
-                    if (selected) OtusColors.accentLight else OtusColors.strokeBgDark,
+                    if (selected == true) OtusColors.accentLight else OtusColors.strokeBgDark,
                 ),
         ) {
             Row(
-                if (circle) {
+                if (layout == ChipLayout.Circle) {
                     Modifier.size(PanelTokens.chipHeight)
                 } else {
                     Modifier
                         .heightIn(min = PanelTokens.chipHeight)
-                        .padding(horizontal = PanelTokens.chipPadding, vertical = PanelTokens.iconGap)
+                        .padding(
+                            start = if (layout == ChipLayout.Avatar) PanelTokens.iconGap else PanelTokens.chipPadding,
+                            end = PanelTokens.chipPadding,
+                            top = PanelTokens.iconGap,
+                            bottom = PanelTokens.iconGap,
+                        )
                 },
                 horizontalArrangement = Arrangement.spacedBy(PanelTokens.iconGap, Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically,

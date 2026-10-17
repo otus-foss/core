@@ -126,6 +126,7 @@ private fun PrimaryLabel(
     ) {
         Text(
             it.label,
+            color = LocalContentColor.current,
             fontSize = ActionBarTokens.titleSize,
             lineHeight = ActionBarTokens.titleLineHeight,
             fontWeight = FontWeight.SemiBold,
@@ -220,8 +221,14 @@ internal fun ContextContent(
             BarTokenView(it)
         }
         Column {
-            FadingText(title, ActionBarTokens.titleSize, FontWeight.SemiBold, LocalContentColor.current)
-            FadingText(context.subtitle, ActionBarTokens.subtitleSize, FontWeight.Normal, subtitleColor)
+            val lead = context.lead
+            if (lead == null) {
+                FadingText(title, ActionBarTokens.titleSize, FontWeight.SemiBold, LocalContentColor.current)
+                FadingText(context.subtitle, ActionBarTokens.subtitleSize, FontWeight.Normal, subtitleColor)
+            } else {
+                FadingText(lead, ActionBarTokens.subtitleSize, FontWeight.Normal, subtitleColor)
+                FadingText(context.subtitle, ActionBarTokens.titleSize, FontWeight.Normal, LocalContentColor.current)
+            }
         }
     }
 }

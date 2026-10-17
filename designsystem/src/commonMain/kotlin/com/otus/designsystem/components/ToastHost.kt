@@ -156,7 +156,7 @@ private fun ToastContent(
         entry.message.action?.let { shown ->
             ToastAction(shown.label) {
                 shown.onAction()
-                state.remove(entry)
+                state.remove(entry, acted = true)
             }
         }
     Box {

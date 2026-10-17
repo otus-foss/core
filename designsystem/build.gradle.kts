@@ -39,6 +39,11 @@ kotlin {
             api(projects.dateformat)
             api(libs.kotlinx.datetime)
             implementation(libs.navigation.event.compose)
+            // Only the editor's foundation parts are used. Its Material 3 variants would put a second
+            // design library on the apps' classpath, which Android lint rejects beside Material.
+            implementation("${libs.richeditor.get().module}:${libs.versions.richeditor.get()}") {
+                exclude(group = "org.jetbrains.compose.material3")
+            }
             implementation(libs.kotlinx.coroutines.core)
         }
         commonTest.dependencies {

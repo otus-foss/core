@@ -130,7 +130,7 @@ internal fun PanelChipRail(
     }
 }
 
-private fun DrawScope.drawEdgeFade(
+internal fun DrawScope.drawEdgeFade(
     strength: Float,
     fade: Float,
     atEnd: Boolean,
