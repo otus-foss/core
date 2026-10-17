@@ -74,7 +74,8 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
 - The `Sidebar` is one panel, 336 dp wide, with a `header` slot over its scrolling content.
   `SidebarHeader` shows avatars, a title, and an optional subtitle, then an unfold button and
   Settings. Tapping the title or the unfold button calls `onPick`. Below it, `SidebarInboxEntry`
-  is a 52 dp row for the main mailbox. `SidebarMailboxGrid` puts `SidebarMailboxTile`s in three
+  is a 52 dp row for the main mailbox, inset to line up with the grid or, with `inset = false`,
+  as wide as `SidebarEntry` rows. `SidebarMailboxGrid` puts `SidebarMailboxTile`s in three
   equal columns; a tile shows a count badge on its icon's corner, and the caller shortens large
   counts. `SidebarDivider` separates groups, and `SectionCaption` titles a group that does not
   collapse, with an optional action at its end. A `SidebarFolderEntry` row is 36 dp tall, like
@@ -133,8 +134,9 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   `ReorderableColumn` the other rows step aside into the places they would take.
 - `ReorderableTree` rearranges a short tree, such as folders, flattened into rows that each know
   their depth. Its rows use the same `ReorderableScope` as `ReorderableColumn`. The other rows stay
-  in place while the dragged row follows the finger with its `bgLight` fill at 75% opacity, so
-  the row under it and the line show through. The tree judges the target by the dragged row's center. Over the middle half of a row, the folder goes inside that
+  in place while the dragged row and its nested rows follow the finger with their `bgLight` fill
+  at 75% opacity, so the row under them and the line show through. The nested rows are never
+  targets, so a parent always shows a line once it leaves its own spot. The tree judges the target by the dragged row's center. Over the middle half of a row, the folder goes inside that
   row as its first child. Over the upper or lower quarter, it goes into the gap above or below.
   The dragged row can reach half its height past either end, so the first and last gaps are
   reachable. A 2 dp `accentLight` line with round ends and a small ring at its start marks the
