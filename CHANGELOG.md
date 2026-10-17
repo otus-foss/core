@@ -9,6 +9,9 @@
   hints from reaching the sender's server.
 - `ConnectOutcome.ConfirmHost.host` includes the port when it is not the scheme's default, so the
   user sees which port approving it trusts.
+- `SlidingPages` and `SlidingOverlay` keep a `ContextPanel` or an `ActionBarHost` bar still
+  when the pages on both sides of a slide have one. During the slide the slider draws that
+  chrome above both pages, so only the content under it moves.
 - Add `SettingPageRow`, a `SettingRow` that opens a page and ends in a chevron, with the page's
   value as its description. `SettingsScreen` uses it, and so does the Theme row on
   `AppearanceSettingsScreen`, which names the theme there instead of in a value button.
