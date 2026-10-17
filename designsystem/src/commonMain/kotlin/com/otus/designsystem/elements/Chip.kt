@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -21,6 +22,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PanelTokens
 import com.otus.designsystem.theme.panelTextStyle
@@ -53,7 +56,7 @@ public fun Chip(
 
 /**
  * The pill and its 48 dp touch target, shared by [Chip], [SidebarPill], and [IconPill]; [fill]
- * fills it while unselected. A [circle] is as wide as it is tall, like an [IconButton].
+ * fills it while unselected. [width] sets how wide the pill is.
  */
 @Composable
 internal fun ChipFrame(
@@ -62,7 +65,7 @@ internal fun ChipFrame(
     selected: Boolean,
     enabled: Boolean,
     fill: Color,
-    circle: Boolean = false,
+    width: ChipWidth = ChipWidth.Content,
     content: @Composable RowScope.() -> Unit,
 ) {
     val interactions = remember { MutableInteractionSource() }
@@ -79,7 +82,11 @@ internal fun ChipFrame(
         contentAlignment = Alignment.Center,
     ) {
         Surface(
-            modifier = Modifier.reportControlVisualBounds().controlPressFeedback(interactions),
+            modifier =
+                Modifier
+                    .then(if (width == ChipWidth.Fill) Modifier.fillMaxWidth() else Modifier)
+                    .reportControlVisualBounds()
+                    .controlPressFeedback(interactions),
             shape = CircleShape,
             color = if (selected) OtusColors.accentDark else fill,
             contentColor = if (enabled) OtusColors.text1 else OtusColors.text3,
@@ -90,14 +97,22 @@ internal fun ChipFrame(
                 ),
         ) {
             Row(
-                if (circle) {
+                if (width == ChipWidth.Circle) {
                     Modifier.size(PanelTokens.chipHeight)
                 } else {
                     Modifier
+                        .then(if (width == ChipWidth.Fill) Modifier.fillMaxWidth() else Modifier)
                         .heightIn(min = PanelTokens.chipHeight)
                         .padding(horizontal = PanelTokens.chipPadding, vertical = PanelTokens.iconGap)
                 },
-                horizontalArrangement = Arrangement.spacedBy(PanelTokens.iconGap, Alignment.CenterHorizontally),
+                horizontalArrangement =
+                    if (width ==
+                        ChipWidth.Fill
+                    ) {
+                        LastAtEnd
+                    } else {
+                        Arrangement.spacedBy(PanelTokens.iconGap, Alignment.CenterHorizontally)
+                    },
                 verticalAlignment = Alignment.CenterVertically,
                 content = content,
             )
@@ -119,4 +134,36 @@ private fun ChipDivider(selected: Boolean) {
             .size(PanelTokens.borderWidth, PanelTokens.chipDividerHeight)
             .background(if (selected) OtusColors.accentLight else OtusColors.bgLight),
     )
+}
+
+/** How wide a [ChipFrame] is. */
+internal enum class ChipWidth {
+    /** As wide as its content. */
+    Content,
+
+    /** As wide as it is tall, like an [IconButton]. */
+    Circle,
+
+    /** The width its modifier gives it, with its last item at the end. */
+    Fill,
+}
+
+/** Packs items from the start [PanelTokens.iconGap] apart, except the last, which sits at the end. */
+private object LastAtEnd : Arrangement.Horizontal {
+    override val spacing = PanelTokens.iconGap
+
+    override fun Density.arrange(
+        totalSize: Int,
+        sizes: IntArray,
+        layoutDirection: LayoutDirection,
+        outPositions: IntArray,
+    ) {
+        val gap = spacing.roundToPx()
+        var start = 0
+        sizes.forEachIndexed { index, size ->
+            val position = if (index == sizes.lastIndex) totalSize - size else start
+            outPositions[index] = if (layoutDirection == LayoutDirection.Ltr) position else totalSize - position - size
+            start += size + gap
+        }
+    }
 }
