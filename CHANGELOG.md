@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add `Modifier.actionBarInset`. `ActionBarHost` uses it to keep its bar as far from the screen's
+  sides as from its bottom edge, which includes the navigation bar's height.
 - A `SettingRow` at the top of its parent, such as the first row on a page, no longer draws
   a hairline above it.
 - Add `HtmlView`, which shows an HTML document such as a message body in a platform web view.
