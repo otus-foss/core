@@ -17,8 +17,6 @@ import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.TextUnit
-import com.otus.designsystem.elements.Avatar
-import com.otus.designsystem.elements.rememberAvatarImage
 import com.otus.designsystem.theme.SummaryTokens
 
 /**
@@ -65,12 +63,7 @@ public fun PersonText(
 /** The avatar a [SummaryCard] or [PersonText] shows before a person's name. */
 @Composable
 internal fun SmallAvatar(avatar: ChipAvatar) {
-    Avatar(
-        avatar.initials,
-        image = rememberAvatarImage(avatar.imageBytes),
-        colorIndex = avatar.colorIndex,
-        size = SummaryTokens.avatarSize,
-    )
+    PersonAvatar(avatar, SummaryTokens.avatarSize)
 }
 
 private const val AVATAR = "avatar"

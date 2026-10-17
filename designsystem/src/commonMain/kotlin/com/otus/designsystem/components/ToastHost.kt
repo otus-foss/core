@@ -7,8 +7,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -20,6 +24,8 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.withFrameMillis
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.AccessibilityManager
 import androidx.compose.ui.platform.LocalAccessibilityManager
@@ -30,12 +36,14 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
 import com.otus.designsystem.elements.Toast
 import com.otus.designsystem.elements.ToastAction
+import com.otus.designsystem.theme.ActionBarTokens
 import com.otus.designsystem.theme.MotionCurve
 import com.otus.designsystem.theme.MotionSpeed
 import com.otus.designsystem.theme.ToastTokens
@@ -47,8 +55,11 @@ import kotlinx.coroutines.flow.collectLatest
  * out behind it, each with its own timer. Tapping the stack fans it out into a list and pauses
  * every timer; tapping again or system back stacks it again. Any toast in front, or any toast in
  * the list, can be swiped away in either direction; dismissing one with an action leaves the action
- * done, and running the action closes its toast. The group is as wide as its widest toast. Place it
- * above the page's bottom bar and limit its width with [modifier].
+ * done. A toast whose time is up or whose action ran sinks, shrinks, and fades on the exit curve,
+ * behind the bar when there is one; a new one rises the same way on the enter curve. A swiped
+ * toast slides off the screen and fades out over the bar inset at the screen's sides. The group
+ * is as wide as its widest toast. Align the host to the bottom of the window with [modifier]; it
+ * spans the window's width and rises above any bar in [LocalBottomClearance].
  */
 @Composable
 public fun ToastHost(
@@ -73,7 +84,26 @@ public fun ToastHost(
         motionTween(MotionSpeed.Normal),
         label = "Toast group height",
     )
-    Box(modifier.width(IntrinsicSize.Max).height(height)) {
+    Box(modifier.fillMaxWidth().screenEdgeFade().aboveBottomBars(), contentAlignment = Alignment.BottomCenter) {
+        ToastGroup(state, height)
+    }
+}
+
+/** The toasts themselves, as wide as the widest one, as far from the screen's sides as the bar. */
+@Composable
+private fun ToastGroup(
+    state: ToastState,
+    height: Dp,
+) {
+    val count = state.entries.size
+    // As far from the sides as the action bar, which matches its gap to the bottom of the screen.
+    val navigation = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+    Box(
+        Modifier
+            .padding(horizontal = ActionBarTokens.barInset + navigation)
+            .width(IntrinsicSize.Max)
+            .height(height),
+    ) {
         state.entries.forEachIndexed { index, entry ->
             key(entry.id) {
                 ToastItem(state, entry, depth = count - 1 - index, Modifier.align(Alignment.BottomCenter))
@@ -110,12 +140,13 @@ private fun ToastItem(
         label = "Toast peek",
     )
     val presence = remember { Animatable(0f) }
+    val sink = ActionBarTokens.barInset
     val enter = motionTween<Float>(MotionSpeed.Normal, MotionCurve.Enter)
     val exit = motionTween<Float>(MotionSpeed.Normal, MotionCurve.Exit)
     LaunchedEffect(entry.leaving) {
         if (entry.leaving) {
             presence.animateTo(0f, exit)
-            state.remove(entry)
+            state.remove(entry, entry.acted)
         } else {
             presence.animateTo(1f, enter)
         }
@@ -129,9 +160,12 @@ private fun ToastItem(
                 .fillMaxWidth()
                 .graphicsLayer {
                     // Scaled about its center, so it moves up by the height it loses to keep its top edge at the peek.
-                    translationY = -lift - size.height * (1f - scale) / 2f + (1f - presence.value) * size.height / 2f
-                    scaleX = scale
-                    scaleY = scale
+                    // Arriving and leaving, it rises from or sinks below the group's bottom, behind any bar.
+                    val away = 1f - presence.value
+                    val shown = scale * (1f - (1f - ToastTokens.AWAY_SCALE) * away)
+                    translationY = -lift - size.height * (1f - scale) / 2f + away * (size.height + sink.toPx())
+                    scaleX = shown
+                    scaleY = shown
                     alpha = peeking * presence.value
                 }.then(if (reachable) Modifier.liveToast { state.remove(entry) } else Modifier.clearAndSetSemantics {})
                 .clickable(
@@ -156,7 +190,7 @@ private fun ToastContent(
         entry.message.action?.let { shown ->
             ToastAction(shown.label) {
                 shown.onAction()
-                state.remove(entry)
+                state.leave(entry, acted = true)
             }
         }
     Box {
@@ -205,3 +239,12 @@ private fun AccessibilityManager?.timeout(message: ToastMessage): Long =
         containsText = true,
         containsControls = message.action != null,
     ) ?: baseTimeout(message)
+
+/** Fades whatever moves into the outer bar inset at either side, such as a toast swiped away. */
+private fun Modifier.screenEdgeFade(): Modifier =
+    graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }.drawWithContent {
+        drawContent()
+        val fade = ActionBarTokens.barInset.toPx()
+        drawEdgeFade(1f, fade, atEnd = false)
+        drawEdgeFade(1f, fade, atEnd = true)
+    }

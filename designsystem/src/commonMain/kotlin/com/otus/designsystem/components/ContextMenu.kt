@@ -30,6 +30,7 @@ import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntRect
 import androidx.compose.ui.unit.IntSize
@@ -78,15 +79,16 @@ public fun ContextMenu(
     }
 }
 
-/** A focusable popup at [position] that fades and grows in, as menus open. */
+/** A popup at [position] that fades and grows in, as menus open; it takes focus while [focusable]. */
 @Composable
 internal fun MenuPopup(
     position: PopupPositionProvider,
     onDismiss: () -> Unit,
+    focusable: Boolean = true,
     content: @Composable () -> Unit,
 ) {
     val shown = remember { MutableTransitionState(false).apply { targetState = true } }
-    Popup(position, onDismissRequest = onDismiss, properties = PopupProperties(focusable = true)) {
+    Popup(position, onDismissRequest = onDismiss, properties = PopupProperties(focusable = focusable)) {
         AnimatedVisibility(
             shown,
             enter =
@@ -97,8 +99,8 @@ internal fun MenuPopup(
 }
 
 /** The raised `bgDark` surface with a `bgLight` outline that every menu sits on. */
-internal fun Modifier.menuSurface(): Modifier {
-    val shape = RoundedCornerShape(MenuTokens.radius)
+internal fun Modifier.menuSurface(radius: Dp = MenuTokens.radius): Modifier {
+    val shape = RoundedCornerShape(radius)
     return background(OtusColors.bgDark, shape).border(PanelTokens.borderWidth, OtusColors.bgLight, shape)
 }
 

@@ -25,6 +25,6 @@ public fun IconPill(
         selected,
         enabled = true,
         fill = OtusColors.bgRegular,
-        width = ChipWidth.Circle,
+        layout = ChipLayout(ChipWidth.Circle),
     ) { Symbol(icon) }
 }

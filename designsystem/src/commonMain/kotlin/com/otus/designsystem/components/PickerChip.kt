@@ -8,6 +8,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.role
 import com.otus.designsystem.elements.ChipFrame
+import com.otus.designsystem.elements.ChipLayout
 import com.otus.designsystem.elements.ChipText
 import com.otus.designsystem.elements.ChipWidth
 import com.otus.designsystem.elements.Symbol
@@ -41,7 +42,7 @@ public fun PickerChip(
         selected = false,
         enabled = true,
         fill = OtusColors.bgDark,
-        width = ChipWidth.Fill,
+        layout = ChipLayout(ChipWidth.Fill),
     ) {
         AvatarStack(avatars, ring = OtusColors.bgLight)
         ChipText(label)

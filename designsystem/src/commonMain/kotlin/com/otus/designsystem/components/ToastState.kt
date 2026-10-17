@@ -13,13 +13,20 @@ import com.otus.designsystem.theme.ToastTokens
 /**
  * A message for [ToastHost]. A new message with the same non-null [group] as one on screen
  * replaces it instead of stacking, and its timer starts over, so repeating an action can update
- * "Email deleted" to "3 emails deleted".
+ * "Email deleted" to "3 emails deleted". A [sticky] toast has no timer and stays until its action
+ * runs or it is swiped away, such as a failure with Retry. [onClose] runs when the toast leaves
+ * without its action, by its timer or a swipe, such as to finish what Undo would have reverted.
+ * [durationMillis] sets how long it stays in place of the default, such as an Undo window the user
+ * chose; screen readers may still lengthen it.
  */
 @Immutable
 public data class ToastMessage(
     val text: String,
     val action: ToastAction? = null,
     val group: Any? = null,
+    val sticky: Boolean = false,
+    val onClose: (() -> Unit)? = null,
+    val durationMillis: Long? = null,
 )
 
 /** The toasts on screen, newest last. Create it with `remember` and pass it to [ToastHost]. */
@@ -56,17 +63,33 @@ public class ToastState {
     ) {
         if (expanded) return
         entries
-            .filterNot { it.leaving || it.held }
+            .filterNot { it.leaving || it.held || it.message.sticky }
             .forEach { entry ->
                 entry.durationMillis = timeout(entry.message)
                 entry.elapsedMillis += deltaMillis
-                if (entry.elapsedMillis >= entry.durationMillis) entry.leaving = true
+                if (entry.elapsedMillis >= entry.durationMillis) leave(entry)
             }
     }
 
-    /** Removes a toast once it has left the screen; a single toast left has nothing to fan out. */
-    internal fun remove(entry: ToastEntry) {
-        entries.remove(entry)
+    /** Starts [entry] leaving, as when its time is up; one whose action [acted] skips its close callback. */
+    internal fun leave(
+        entry: ToastEntry,
+        acted: Boolean = false,
+    ) {
+        entry.acted = acted
+        entry.leaving = true
+    }
+
+    /**
+     * Removes a toast once it has left the screen; a single toast left has nothing to fan out. One
+     * that leaves without its action having [acted] runs its close callback.
+     */
+    internal fun remove(
+        entry: ToastEntry,
+        acted: Boolean = false,
+    ) {
+        if (!entries.remove(entry)) return
+        if (!acted) entry.message.onClose?.invoke()
         if (entries.size <= 1) expanded = false
     }
 }
@@ -87,10 +110,13 @@ internal class ToastEntry(
     /** Paused while the user drags it. */
     var held by mutableStateOf(false)
 
-    /** Its time is up and it is fading out. */
+    /** Its time is up or its action ran, and it is leaving. */
     var leaving by mutableStateOf(false)
+
+    /** It leaves because its action ran. */
+    var acted = false
 }
 
 /** How long [message] stays on screen before it fades, before accessibility adjustments. */
 internal fun baseTimeout(message: ToastMessage): Long =
-    if (message.action != null) ToastTokens.ACTION_MILLIS else ToastTokens.PLAIN_MILLIS
+    message.durationMillis ?: if (message.action != null) ToastTokens.ACTION_MILLIS else ToastTokens.PLAIN_MILLIS

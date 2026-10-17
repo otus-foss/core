@@ -16,11 +16,11 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   `parseHexColor`), `FolderColor`, `ThemeTokens`, `Motion` (with `MotionSpeed`, `MotionCurve`, and
   `LocalMotionScale`), and tokens for avatars, calendars, control
   feedback, pages, panels, refresh, sheets, the sidebar, the action bar (`ActionBarTokens`), and
-  compose fields (`ComposeTokens`), and rule chips and folder settings rows (`RuleChipTokens`,
-  `FolderRowTokens`).
+  compose fields (`ComposeTokens`), reply threads (`ThreadTokens`), and rule chips and folder
+  settings rows (`RuleChipTokens`, `FolderRowTokens`).
   `panelTextStyle()` uses Figtree.
 - `elements`: `ActionButton`, `ActionRow`, `AnimatedText`, `Avatar`, `AvatarImage`, `BarIconButton`, `CalendarDay`,
-  `ComposeBody`, `ComposeField`, `ComposeValueField`, `HtmlView`,
+  `AddressPill`, `ButtonPill`, `ComposeField`, `HtmlView`, `QuoteChip`, `RichTextBody` (with `RichText` and `TextFormat`),
   `CalendarMonthBackground`, `Chip`, `ColorSlider`, `ColorSwatch`, `AddSwatch`, `SwatchStack`, `IconButton`, `IconPill`, `InputField`, `LabelPill`, `RefreshIndicator`,
   `FolderColorSwatch`, `LocalIconTint`, `RowButton`, `SearchField`, `SearchPrompt`, `SelectionRow`, `SidebarEntry`, `SidebarHeading`,
   `SidebarCount`, `SidebarExpandButton`, `SidebarPill`, `SidebarInboxEntry`, `SidebarMailboxTile`,
@@ -33,6 +33,10 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarHeader`, `SidebarMailboxGrid`, `ScopeSheet`, `ScopeRow` and `ScopeChildRow` (with `ScopeOption`), `PickerChip`, `AccountGroupRow`,
   `RuleChip`, `RuleChipGroup`, and `AddRuleChip` (with `RuleChipLine`, `RuleChipValue`, `RuleSegment`, and
   `RuleSegmentStyle`), `FolderSettingRow` with `FolderRuleSummary` and `FolderOwnerLine`, `SummaryCard` and `PersonText` (with `NamedAvatar`), `ValueToken`, `ValuePicker`, `Collapsible`, `CollapsibleTree`, `AvatarStack`, `ContextMenu` and `QuickActionBar` (with `MenuAction`),
+  `Dropdown` (with `DropdownRow`), `OptionsMenu` (with `OptionsItem`), `FormattingBar` (with
+  `FormatButton` and `CompactSendButton`), `RecipientLine` (with `Recipient`, `AddressInput`, and `RecipientChip`), `ThreadStrip` (with `ThreadEntry` and `ThreadMessageRow`),
+  `PersonAvatar`, `BarNotice`, `ClosableSheet` (with `SheetConfirm`), `SegmentedToggle`, `PickRow` (with `PickMark`), `PersonRow`, `RowGroup` (with `GroupRow`), `TimeWheelPicker`,
+  `ResizableImage` (with `ImageSizing` and `ImagePreset`), `ListCaption`,
   `SidebarSwipeArea`, `SlidingOverlay`, `SlidingPages`, `SwipeActions`, `ThemeCard`, and `ToastHost`
   (with `ToastState` and `ToastMessage`).
 - Settings rows follow Notion's settings pages: flat rows with a title and `text2` description
@@ -105,19 +109,33 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   from the context panel. A release runs an action only when no other action of that row is
   running. A dismissing action leaves the row at the edge for its list to remove; if the row is
   still there one second later, for example because removal failed, it returns to rest.
-- `ToastHost` shows short messages from a `ToastState` in a pill above the page's bottom bar. A
+- `ToastHost` shows short messages from a `ToastState` in a pill as low on the screen as it can
+  go. Each `ActionBarHost` with a bar reports its height to `LocalBottomClearance`, and the toast
+  sits one bar inset above the highest bar on screen, or one inset above the navigation bar and
+  keyboard on a page without one, such as Settings. It moves between the two at the normal speed.
+  A toast rises in from below on the enter curve. When its time is up or its action runs, it
+  sinks, shrinks to 90 %, and fades on the exit curve, 240 ms each. Over a bar it is clipped at
+  the bar's top edge, so it passes behind the bar. A
   `ToastMessage` may carry a `ToastAction`, such as Undo, with a ring that counts down its time:
-  5 seconds with an action, 3 without, longer when a screen reader is on. A message with the same
+  6 seconds with an action, 4 without, longer when a screen reader is on. A message with the same
   `group` as one on screen replaces it and restarts its timer, so the app can count up to
   "3 emails deleted"; `isShowing(group)` tells the app whether to keep counting. Tapping the
-  action runs it and closes the toast. Other messages stack with the newest in front and up to two older ones
+  action runs it and closes the toast. A `sticky` message has no timer and stays until its action
+  runs or it is swiped away, such as a failed send with Retry. `onClose` runs when a toast leaves
+  without its action, so the app can finish what Undo would have reverted. `durationMillis`
+  replaces the default time, such as an Undo window the user chose. Other messages stack with the newest in front and up to two older ones
   peeking out behind it, each on its own timer. Tapping the stack fans it out and pauses every
   timer; tapping again or system back stacks it again. The group is as wide as its widest toast.
   A toast can be dragged sideways in either direction: it lifts a shade lighter, its timer
-  pauses, and a darker `bgDark` end with a close symbol opens on the side it left. Past a third
-  of its width the symbol brightens and a haptic marks it, and "Dismiss" fades in once it is fully
-  uncovered. Releasing there removes the toast without running its action; shorter drags spring
-  back. Colors are `bgDark` at rest and `bgRegular` lifted, with `strokeBgDark` outlines.
+  pauses, and a darker `bgDark` end opens on the side it left. The end stretches outward, away
+  from the drag, by a quarter of the drag up to 16 dp, and always reaches under the toast's round
+  end, so the two never part; only its outer end is round. Its close symbol and "Dismiss" sit at its
+  outer edge and are always drawn, so the toast uncovers as much of the label as the drag allows.
+  Past a third of its width both brighten and a haptic marks it. Releasing there slides the
+  toast off the screen on the exit curve while the end fades; the host spans the window and fades
+  anything within a bar inset of its sides, so the toast blurs out at the screen's edge. The
+  swipe removes the toast without running its action; shorter drags spring back. Colors are `bgDark` at rest and `bgRegular` lifted, changing over 240 ms, with `strokeBgDark`
+  outlines.
 - `ReorderableColumn` lets the user reorder a short list by dragging each row's handle. Only the
   handle starts a drag, so rows keep their own taps and the list around them still scrolls. The
   dragged row draws above the others and stays within the column. Each row is filled with
@@ -220,11 +238,48 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   the navigation bar and keyboard, and pads the page's content so it can scroll clear of the bar.
   Mail uses it for an open message and for selected messages; see
   [Mail's action bar guide](https://github.com/reazndev/otus-mail/blob/main/docs/action-bar.md).
-- `ComposeField` and `ComposeBody` lay out a message being written. Each header line, such as
-  To or Subject, puts a `text2` label beside a borderless field with a `bgLight` hairline below,
-  like Gmail's and Apple Mail's compose headers. `ComposeValueField` shows a chosen value, such
-  as the From address, and opens the choice when tapped. The body has no border and fills the
-  rest of the page. The app owns the draft, parsing, and saving.
+- The Write page's parts follow Mail's "Write" boards. `ComposeField` is a header line, such as
+  Subject: a `text2` label in a 56 dp column beside a borderless field with a `text3` placeholder
+  and a `bgLight` hairline below. `RecipientLine` uses the same column for To, Cc, and Bcc: a
+  `RecipientChip` for each person, with a 22 dp avatar in an 8 dp outlined box, wrapping as
+  needed, and a field for the next address. Next or losing focus commits the typed text, and
+  Backspace in an empty field removes the last chip. `RichTextBody` edits the formatted body,
+  built on the compose-rich-editor library, which stays an implementation detail behind
+  `RichText`: it reads and writes HTML and plain text. `QuoteChip` stands for the collapsed
+  original at the end of a forward. With `collapsedAfter`, a `RecipientLine` holding more people
+  shows that many and a "+N more" chip, without its field, until the chip is tapped; its label
+  then stays beside the first row (`ComposeLine` with `topAligned`).
+- `ThreadStrip` shows a reply's thread above the action bar in a `bgDark` panel. Up to three
+  `ThreadEntry` items show as 40 dp rows with a 22 dp avatar, the name, and the date, divided by
+  hairlines. More than three fold into one 56 dp row: an `AvatarStack`, the caller's summary and
+  `text3` detail, and an unfold symbol. The whole strip is one button. `ThreadMessageRow` is a
+  message in the thread's sheet: a 32 dp avatar, name, date, and a one-line preview.
+- `BarToken.People` takes an optional second avatar, drawn overlapping the first by
+  `ActionBarTokens.pairOverlap` with a ring, for mail to several people.
+- `FormattingBar` docks above the keyboard: a `bgDark` 56 dp row with an optional leading button,
+  such as Attach, behind a divider, then Bold, Italic, Bulleted list, Numbered list, Link, and
+  Clear formatting. The buttons scroll sideways with faded edges, and a trailing slot, such as
+  `CompactSendButton`, stays pinned. An active format gets a `bgLight` fill, never the accent.
+- `Dropdown` opens a `bgDark` list with a 22 dp radius under the element it is called from, the
+  window's width unless given one, and above the element when there is no room below.
+  `DropdownRow` marks the selected row with a `bgRegular` fill and no checkmark; `ListCaption`
+  heads a group in `text3`. A non-focusable dropdown leaves the keyboard to a field, for
+  suggestions while typing. `OptionsMenu` is the 286 dp menu under a ⋯ button: icon rows that
+  act, open more with a chevron, or switch an option, with dividers between groups.
+- `ClosableSheet` is a sheet titled at its start with a ✕ at its end and an optional full-width
+  `SheetConfirm` button at the bottom; `SheetFrame` shares its surface. `SegmentedToggle` picks one
+  of a few options with a `bgLight` fill. `RowGroup` puts `GroupRow`s, with an icon, a label, and a value or a chevron, on one
+  `bgRegular` card. `TimeWheelPicker` picks a time like the date chooser. `PickRow` is a sheet choice with a `text1` radio or
+  checkbox, never the accent, and dims without an action. `PersonRow` opens an address's page,
+  with an avatar, a `text2` or muted `text3` line, and a chevron. `ResizableImage` shows a
+  signature image with a selection outline, a ✕, a corner handle that snaps to `ImagePreset`s, and
+  a size pill under it. `ListCaption` heads a group of rows in `text3`.
+- `ButtonPill` is a pill that acts, such as "+ Cc", and `AddressPill` shows the address a message
+  is sent from, avatar first and a chevron last, with long addresses ending in an ellipsis.
+- `BarNotice` sits just above a page's action bar and says what its main action will do
+  differently, such as "Scheduled for Mon 19 Oct, 8:00", with a button such as Change.
+- `BarContext.lead` puts a small line in place of the primary's label, so Send reads "Send to"
+  above "Grace".
 
 All visual tokens live here, including `InboxTokens`. New elements and reusable components
 belong here even when only Mail currently uses them. Their APIs use values and callbacks,

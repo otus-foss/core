@@ -2,6 +2,7 @@ package com.otus.designsystem.elements
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -55,60 +56,65 @@ public fun Chip(
 }
 
 /**
- * The pill and its 48 dp touch target, shared by [Chip], [SidebarPill], and [IconPill]; [fill]
- * fills it while unselected. [width] sets how wide the pill is.
+ * The pill and its 48 dp touch target, shared by [Chip], [SidebarPill], [IconPill], and the
+ * button pills; [fill] fills it while unselected. [layout] sets how wide the pill is and where
+ * its content starts. A chip with a [selected]
+ * state reads as a checkbox; one without, a null, is a button.
  */
 @Composable
 internal fun ChipFrame(
     onClick: () -> Unit,
     modifier: Modifier,
-    selected: Boolean,
+    selected: Boolean?,
     enabled: Boolean,
     fill: Color,
-    width: ChipWidth = ChipWidth.Content,
+    layout: ChipLayout = ChipLayout(),
     content: @Composable RowScope.() -> Unit,
 ) {
     val interactions = remember { MutableInteractionSource() }
     Box(
         modifier
             .sizeIn(minWidth = PanelTokens.touchTarget, minHeight = PanelTokens.touchTarget)
-            .toggleable(
-                value = selected,
-                enabled = enabled,
-                role = Role.Checkbox,
-                interactionSource = interactions,
-                indication = null,
-            ) { onClick() },
+            .then(
+                if (selected == null) {
+                    Modifier.clickable(interactions, null, enabled, role = Role.Button, onClick = onClick)
+                } else {
+                    Modifier.toggleable(selected, interactions, null, enabled, Role.Checkbox) { onClick() }
+                },
+            ),
         contentAlignment = Alignment.Center,
     ) {
         Surface(
             modifier =
                 Modifier
-                    .then(if (width == ChipWidth.Fill) Modifier.fillMaxWidth() else Modifier)
+                    .then(if (layout.width == ChipWidth.Fill) Modifier.fillMaxWidth() else Modifier)
                     .reportControlVisualBounds()
                     .controlPressFeedback(interactions),
             shape = CircleShape,
-            color = if (selected) OtusColors.accentDark else fill,
+            color = if (selected == true) OtusColors.accentDark else fill,
             contentColor = if (enabled) OtusColors.text1 else OtusColors.text3,
             border =
                 BorderStroke(
                     PanelTokens.borderWidth,
-                    if (selected) OtusColors.accentLight else OtusColors.strokeBgDark,
+                    if (selected == true) OtusColors.accentLight else OtusColors.strokeBgDark,
                 ),
         ) {
             Row(
-                if (width == ChipWidth.Circle) {
+                if (layout.width == ChipWidth.Circle) {
                     Modifier.size(PanelTokens.chipHeight)
                 } else {
                     Modifier
-                        .then(if (width == ChipWidth.Fill) Modifier.fillMaxWidth() else Modifier)
+                        .then(if (layout.width == ChipWidth.Fill) Modifier.fillMaxWidth() else Modifier)
                         .heightIn(min = PanelTokens.chipHeight)
-                        .padding(horizontal = PanelTokens.chipPadding, vertical = PanelTokens.iconGap)
+                        .padding(
+                            start = if (layout.avatarFirst) PanelTokens.iconGap else PanelTokens.chipPadding,
+                            end = PanelTokens.chipPadding,
+                            top = PanelTokens.iconGap,
+                            bottom = PanelTokens.iconGap,
+                        )
                 },
                 horizontalArrangement =
-                    if (width ==
-                        ChipWidth.Fill
-                    ) {
+                    if (layout.width == ChipWidth.Fill) {
                         LastAtEnd
                     } else {
                         Arrangement.spacedBy(PanelTokens.iconGap, Alignment.CenterHorizontally)
@@ -135,6 +141,12 @@ private fun ChipDivider(selected: Boolean) {
             .background(if (selected) OtusColors.accentLight else OtusColors.bgLight),
     )
 }
+
+/** How a [ChipFrame] is laid out: its [width], and whether a round avatar comes first, close to the start edge. */
+internal data class ChipLayout(
+    val width: ChipWidth = ChipWidth.Content,
+    val avatarFirst: Boolean = false,
+)
 
 /** How wide a [ChipFrame] is. */
 internal enum class ChipWidth {

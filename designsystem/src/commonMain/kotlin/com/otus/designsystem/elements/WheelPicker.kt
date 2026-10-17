@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -82,7 +83,13 @@ internal fun WheelPicker(
             flingBehavior = rememberSnapFlingBehavior(scroll),
         ) {
             items(options.size, key = { options[it] }) { index ->
-                WheelOption(options[index], index, selected, { choose(index) }, Modifier.height(rowHeight))
+                WheelOption(
+                    options[index],
+                    selected = index == selected,
+                    distance = { scroll.rowsFromCenter(index) },
+                    onSelect = { choose(index) },
+                    modifier = Modifier.height(rowHeight),
+                )
             }
         }
     }
@@ -94,19 +101,38 @@ private fun LazyListState.centeredIndex(): Int? {
     return layout.visibleItemsInfo.minByOrNull { abs(it.offset + it.size / 2 - center) }?.index
 }
 
+/**
+ * How many rows [index] sits from the wheel's center right now, also mid-scroll; far for a row
+ * off screen.
+ */
+private fun LazyListState.rowsFromCenter(index: Int): Float {
+    val layout = layoutInfo
+    val item = layout.visibleItemsInfo.firstOrNull { it.index == index } ?: return FAR
+    val center = (layout.viewportStartOffset + layout.viewportEndOffset) / 2f
+    return abs(item.offset + item.size / 2f - center) / item.size
+}
+
+/**
+ * One option, colored by its live [distance] from the center: `text1` there, `text2` a row away,
+ * and `text3` from two rows, blending in between. The color is read while drawing, so scrolling
+ * only redraws it.
+ */
 @Composable
 private fun WheelOption(
     label: String,
-    index: Int,
-    selected: Int,
+    selected: Boolean,
+    distance: () -> Float,
     onSelect: () -> Unit,
     modifier: Modifier,
 ) {
+    val near = OtusColors.text1
+    val middle = OtusColors.text2
+    val far = OtusColors.text3
     val interactions = remember { MutableInteractionSource() }
     Box(
         modifier
             .fillMaxWidth()
-            .selectable(index == selected, interactions, indication = null, role = Role.RadioButton, onClick = onSelect)
+            .selectable(selected, interactions, indication = null, role = Role.RadioButton, onClick = onSelect)
             .controlPressFeedback(interactions),
         contentAlignment = Alignment.Center,
     ) {
@@ -114,17 +140,15 @@ private fun WheelOption(
             label,
             style =
                 LocalTextStyle.current.copy(
-                    color =
-                        when (abs(index - selected)) {
-                            0 -> OtusColors.text1
-                            1 -> OtusColors.text2
-                            else -> OtusColors.text3
-                        },
                     fontSize = WheelTokens.textSize,
                     lineHeight = WheelTokens.lineHeight,
                     textAlign = TextAlign.Center,
                 ),
             maxLines = 1,
+            color = {
+                val rows = distance()
+                if (rows <= 1f) lerp(near, middle, rows) else lerp(middle, far, (rows - 1f).coerceAtMost(1f))
+            },
             autoSize =
                 TextAutoSize.StepBased(
                     minFontSize = WheelTokens.minTextSize,
@@ -156,3 +180,6 @@ private fun Modifier.wheelGuides(rowHeight: Float): Modifier =
             )
         }
     }
+
+/** Beyond two rows, where every option is already `text3`. */
+private const val FAR = 2f

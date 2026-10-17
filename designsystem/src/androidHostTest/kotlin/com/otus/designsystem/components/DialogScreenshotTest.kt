@@ -92,9 +92,13 @@ class DialogScreenshotTest {
     fun confirmRunsAfterClosing() {
         val calls = mutableListOf<String>()
         compose.setContent {
-            ConfirmDialog("Delete folder?", "Its messages move to Trash.", "Delete", { calls += "confirm" }) {
-                calls += "dismiss"
-            }
+            ConfirmDialog(
+                "Delete folder?",
+                "Its messages move to Trash.",
+                "Delete",
+                onConfirm = { calls += "confirm" },
+                onDismiss = { calls += "dismiss" },
+            )
         }
         compose.onNode(isDialog()).assertExists()
         compose.onNodeWithText("Delete").performClick()
