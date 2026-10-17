@@ -45,7 +45,11 @@ public fun BarNotice(
             .fillMaxWidth()
             .background(OtusColors.bgDark, shape)
             .border(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape)
-            .padding(start = ActionBarTokens.contextInset, end = PanelTokens.iconGap),
+            // The button's pill sits centered in its 48 dp touch area, so the same gap closes the end.
+            .padding(
+                start = ActionBarTokens.contextInset,
+                end = (PanelTokens.touchTarget - PanelTokens.chipHeight) / 2,
+            ),
         horizontalArrangement = Arrangement.spacedBy(ActionBarTokens.tokenGap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
