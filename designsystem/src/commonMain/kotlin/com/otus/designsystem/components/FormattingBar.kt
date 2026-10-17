@@ -123,12 +123,13 @@ public fun FormatButton(
     }
 }
 
-/** The small Send at the end of a [FormattingBar]: the send symbol on the accent. */
+/** The small Send at the end of a [FormattingBar]: the [icon], the send symbol by default, on the accent. */
 @Composable
 public fun CompactSendButton(
     description: String,
     onClick: () -> Unit,
     enabled: Boolean,
+    icon: DrawableResource = Res.drawable.symbol_send,
 ) {
     val interactions = remember { MutableInteractionSource() }
     val shape = RoundedCornerShape(ComposeTokens.formatButtonRadius)
@@ -152,7 +153,7 @@ public fun CompactSendButton(
                     PanelTokens.borderWidth,
                     if (enabled) OtusColors.accentRegular else OtusColors.strokeBgDark,
                 ),
-        ) { Box(contentAlignment = Alignment.Center) { Symbol(Res.drawable.symbol_send, mirrorInRtl = true) } }
+        ) { Box(contentAlignment = Alignment.Center) { Symbol(icon, mirrorInRtl = true) } }
     }
 }
 

@@ -19,7 +19,7 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   compose fields (`ComposeTokens`).
   `panelTextStyle()` uses Figtree.
 - `elements`: `ActionButton`, `ActionRow`, `AnimatedText`, `Avatar`, `AvatarImage`, `BarIconButton`, `CalendarDay`,
-  `AddressPill`, `ButtonPill`, `ComposeField`, `HtmlView`, `QuoteChip`, `RichTextBody` (with `RichText` and `TextFormat`),
+  `AddressPill`, `ButtonPill`, `ComposeChoiceField`, `ComposeField`, `HtmlView`, `QuoteChip`, `RichTextBody` (with `RichText` and `TextFormat`),
   `CalendarMonthBackground`, `Chip`, `ColorSlider`, `ColorSwatch`, `AddSwatch`, `SwatchStack`, `IconButton`, `IconPill`, `InputField`, `LabelPill`, `RefreshIndicator`,
   `RowButton`, `SearchField`, `SearchPrompt`, `SelectionRow`, `SidebarEntry`, `SidebarHeading`,
   `SidebarCount`, `SidebarExpandButton`, `SidebarPill`, `SidebarRailAccount`, `SidebarRailAdd`, `SidebarRailDivider`,
@@ -133,7 +133,8 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   Backspace in an empty field removes the last chip. `RichTextBody` edits the formatted body,
   built on the compose-rich-editor library, which stays an implementation detail behind
   `RichText`: it reads and writes HTML and plain text. `QuoteChip` stands for the collapsed
-  original at the end of a reply.
+  original at the end of a reply. `ComposeChoiceField` is a header line that shows a choice made
+  elsewhere, such as when the message sends, with a ✕ to clear it.
 - `FormattingBar` docks above the keyboard: a `bgDark` 56 dp row with an optional leading button,
   such as Attach, behind a divider, then Bold, Italic, Bulleted list, Numbered list, Link, and
   Clear formatting. The buttons scroll sideways with faded edges, and a trailing slot, such as
