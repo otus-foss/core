@@ -136,7 +136,8 @@ private fun SecondaryGroup(actions: List<BarAction>) {
 /**
  * Places [bar] over the bottom of [content], [ActionBarTokens.barInset] from the edges and above
  * the navigation bar and keyboard. [content] receives bottom padding that lets its last item
- * scroll above the bar; a null [bar] leaves the page as it is.
+ * scroll above the bar; a null [bar] leaves the page as it is. The bar's height goes to
+ * [LocalBottomClearance], so toasts float above it.
  */
 @Composable
 public fun ActionBarHost(
@@ -147,8 +148,10 @@ public fun ActionBarHost(
     var barHeight by remember { mutableIntStateOf(0) }
     Box(modifier) {
         val bottom = if (bar == null) 0 else barHeight
-        content(PaddingValues(bottom = with(LocalDensity.current) { bottom.toDp() }))
+        val bottomDp = with(LocalDensity.current) { bottom.toDp() }
+        content(PaddingValues(bottom = bottomDp))
         bar?.let {
+            ReportClearance(bottomDp)
             Box(
                 Modifier
                     .align(Alignment.BottomCenter)

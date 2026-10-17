@@ -47,8 +47,8 @@ import kotlinx.coroutines.flow.collectLatest
  * out behind it, each with its own timer. Tapping the stack fans it out into a list and pauses
  * every timer; tapping again or system back stacks it again. Any toast in front, or any toast in
  * the list, can be swiped away in either direction; dismissing one with an action leaves the action
- * done, and running the action closes its toast. The group is as wide as its widest toast. Place it
- * above the page's bottom bar and limit its width with [modifier].
+ * done, and running the action closes its toast. The group is as wide as its widest toast. Align it
+ * to the bottom of the window with [modifier]; it rises above any bar in [LocalBottomClearance].
  */
 @Composable
 public fun ToastHost(
@@ -73,7 +73,7 @@ public fun ToastHost(
         motionTween(MotionSpeed.Normal),
         label = "Toast group height",
     )
-    Box(modifier.width(IntrinsicSize.Max).height(height)) {
+    Box(modifier.aboveBottomBars().width(IntrinsicSize.Max).height(height)) {
         state.entries.forEachIndexed { index, entry ->
             key(entry.id) {
                 ToastItem(state, entry, depth = count - 1 - index, Modifier.align(Alignment.BottomCenter))

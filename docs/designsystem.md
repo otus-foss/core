@@ -71,7 +71,10 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   from the context panel. A release runs an action only when no other action of that row is
   running. A dismissing action leaves the row at the edge for its list to remove; if the row is
   still there one second later, for example because removal failed, it returns to rest.
-- `ToastHost` shows short messages from a `ToastState` in a pill above the page's bottom bar. A
+- `ToastHost` shows short messages from a `ToastState` in a pill as low on the screen as it can
+  go. Each `ActionBarHost` with a bar reports its height to `LocalBottomClearance`, and the toast
+  sits one bar inset above the highest bar on screen, or one inset above the navigation bar and
+  keyboard on a page without one, such as Settings. It moves between the two at the normal speed. A
   `ToastMessage` may carry a `ToastAction`, such as Undo, with a ring that counts down its time:
   6 seconds with an action, 4 without, longer when a screen reader is on. A message with the same
   `group` as one on screen replaces it and restarts its timer, so the app can count up to
