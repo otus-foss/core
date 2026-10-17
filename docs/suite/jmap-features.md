@@ -124,7 +124,7 @@ app sees Read later as an ordinary folder.
 
 | Type | Status | Notes |
 | --- | --- | --- |
-| `Thread/get`, `threadId` | Planned | Mail #25. Threads stay inside one account. |
+| `Thread/get`, `threadId` | Partial | Mail's compose page loads a reply's thread with `Email/get` and `Thread/get` (on `feat/send`). The inbox does not group by thread yet (Mail #25). Threads stay inside one account. |
 | `SearchSnippet/get` | No plan | Search is local today. |
 
 ### Identity and EmailSubmission

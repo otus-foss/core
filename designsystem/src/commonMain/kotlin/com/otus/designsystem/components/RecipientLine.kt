@@ -3,6 +3,7 @@ package com.otus.designsystem.components
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -16,6 +17,10 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
@@ -40,7 +45,8 @@ import com.otus.designsystem.theme.panelTextStyle
 /**
  * A line of people a message goes to, such as To: [label] in its column, then a chip for each of
  * [recipients], wrapping as needed, and the [input] field for the next address. Tapping a chip runs
- * [onChipClick] with its index.
+ * [onChipClick] with its index. Past [collapsedAfter] people, only that many show, then a
+ * "+3 more" chip that shows the rest.
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -50,16 +56,29 @@ public fun RecipientLine(
     input: AddressInput,
     onChipClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
+    collapsedAfter: Int = Int.MAX_VALUE,
 ) {
-    ComposeLine(label, modifier) {
+    var expanded by rememberSaveable { mutableStateOf(false) }
+    // One more person fits in place of a "+1 more" chip.
+    val folded = !expanded && recipients.size > collapsedAfter + 1
+    val shown = if (folded) recipients.take(collapsedAfter) else recipients
+    ComposeLine(label, modifier, topAligned = true) {
         FlowRow(
-            Modifier.weight(1f).padding(vertical = PanelTokens.iconGap),
+            // Centers a single row of chips in the 48 dp line, beside the label.
+            Modifier.weight(1f).padding(vertical = (PanelTokens.touchTarget - ComposeTokens.recipientHeight) / 2),
             horizontalArrangement = Arrangement.spacedBy(ComposeTokens.recipientGap),
             verticalArrangement = Arrangement.spacedBy(ComposeTokens.recipientGap),
             itemVerticalAlignment = Alignment.CenterVertically,
         ) {
-            recipients.forEachIndexed { index, recipient -> RecipientChip(recipient, { onChipClick(index) }) }
-            AddressField(label, input, Modifier.weight(1f))
+            shown.forEachIndexed { index, recipient -> RecipientChip(recipient, { onChipClick(index) }) }
+            // A folded line shows no field: "+3 more" opens it, so the line keeps to its chips.
+            if (folded) {
+                MoreChip(recipients.size - shown.size) {
+                    expanded = true
+                }
+            } else {
+                AddressField(label, input, Modifier.weight(1f))
+            }
         }
     }
 }
@@ -85,6 +104,23 @@ public fun RecipientChip(
         PersonAvatar(recipient.avatar, ComposeTokens.recipientAvatarSize)
         Text(recipient.name, style = panelTextStyle(), maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
+}
+
+/** The count of people a folded line hides, such as "+3 more"; tapping it shows them. */
+@Composable
+private fun MoreChip(
+    hidden: Int,
+    onClick: () -> Unit,
+) {
+    val shape = RoundedCornerShape(ComposeTokens.recipientRadius)
+    Box(
+        Modifier
+            .height(ComposeTokens.recipientHeight)
+            .border(PanelTokens.borderWidth, OtusColors.bgLight, shape)
+            .clickable(onClickLabel = "Show everyone", role = Role.Button, onClick = onClick)
+            .padding(horizontal = PanelTokens.chipPadding),
+        contentAlignment = Alignment.Center,
+    ) { Text("+$hidden more", style = panelTextStyle(), color = OtusColors.text2, fontSize = ComposeTokens.detailSize) }
 }
 
 @Composable
