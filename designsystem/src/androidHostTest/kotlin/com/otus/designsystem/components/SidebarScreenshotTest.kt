@@ -1,19 +1,12 @@
 package com.otus.designsystem.components
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.v2.createComposeRule
-import androidx.compose.ui.unit.dp
 import com.otus.designsystem.elements.SidebarCount
 import com.otus.designsystem.elements.SidebarEntry
 import com.otus.designsystem.elements.SidebarHeading
-import com.otus.designsystem.elements.SidebarRailAccount
-import com.otus.designsystem.elements.SidebarRailIcon
 import com.otus.designsystem.resources.Res
-import com.otus.designsystem.resources.symbol_all_inbox
 import com.otus.designsystem.resources.symbol_archive
 import com.otus.designsystem.resources.symbol_draft
 import com.otus.designsystem.resources.symbol_folder
@@ -46,25 +39,25 @@ class SidebarScreenshotTest {
             PageWithSidebar(remember { SidebarState() })
         }
 
-    @Test
-    fun rail() = compose.screenshot("sidebar_rail") { Box(Modifier.height(320.dp)) { Rail() } }
-
     @Composable
     private fun PageWithSidebar(state: SidebarState) =
         WithBackDispatcher {
             SidebarSwipeArea(state) {
                 PageScaffold("Inbox", navigationLabel = "Open navigation", onNavigation = {}) {}
             }
-            Sidebar(state, title = "Work", subtitle = "work@example.com", rail = { Rail() }) { Entries() }
+            Sidebar(state, title = "Work", header = { Header() }) { Entries() }
         }
 
     @Composable
-    private fun Rail() =
-        SidebarRail(onSettings = {}) {
-            SidebarRailIcon(Res.drawable.symbol_all_inbox, "All", "All accounts", selected = false, {})
-            SidebarRailAccount("WK", "Work account", selected = true, {}, badge = "4")
-            SidebarRailAccount("HM", "Home account", selected = false, {})
-        }
+    private fun Header() =
+        SidebarHeader(
+            "Work",
+            listOf(DemoPeople.ada),
+            pickLabel = "Choose account",
+            onPick = {},
+            onSettings = {},
+            subtitle = "work@example.com",
+        )
 
     @Composable
     private fun Entries() {

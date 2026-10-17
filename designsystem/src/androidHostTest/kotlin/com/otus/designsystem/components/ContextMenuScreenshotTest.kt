@@ -24,7 +24,7 @@ class ContextMenuScreenshotTest {
     @get:Rule
     val compose = createComposeRule()
 
-    private val actions = listOf(MenuAction("Rename", {}), MenuAction("Duplicate", {}), MenuAction("Delete theme", {}))
+    private val actions = listOf(MenuAction("Rename") {}, MenuAction("Duplicate") {}, MenuAction("Delete theme") {})
 
     @Test
     fun atPoint() = compose.screenScreenshot("context_menu") { Page(Offset(120f, 300f)) }
