@@ -29,7 +29,7 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   `controlPressFeedback` modifier.
 - `components`: `ActionBar`, `ActionBarHost`, `BarAction`, `BarContext`, `BarToken`, `ActionDialog`, `ChoiceDialog`, `ChoiceSheet` (with `ChoiceRow`), `ConfirmDialog`, `InputDialog`, `InputSheet`, `ContextPanel`, `DatePickerDialog`,
   `MonthNavigation`, `MonthYearPicker`, `PageScaffold`, `Subpage`, `PageSection`, `PanelSurface`,
-  `PickerSearch`, `PreviewCard`, `PullToRefresh`, `ReorderableColumn`, `ReorderableTree`, `SelectionSheet`, `SheetFrame`, `SettingRow`,
+  `PickerSearch`, `PreviewCard`, `PullToRefresh`, `ReorderableColumn`, `ReorderableTree`, `SelectionSheet`, `SheetFrame`, `SettingRow`, `SettingPageRow`,
   `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarHeader`, `SidebarMailboxGrid`, `ScopeSheet`, `ScopeRow` and `ScopeChildRow` (with `ScopeOption`), `PickerChip`, `AccountGroupRow`,
   `RuleChip`, `RuleChipGroup`, and `AddRuleChip` (with `RuleChipLine`, `RuleChipValue`, `RuleSegment`, and
   `RuleSegmentStyle`), `FolderSettingRow` with `FolderRuleSummary` and `FolderOwnerLine`, `SummaryCard` and `PersonText` (with `NamedAvatar`), `ValueToken`, `ValuePicker`, `Collapsible`, `CollapsibleTree`, `AvatarStack`, `ContextMenu` and `QuickActionBar` (with `MenuAction`),
@@ -209,7 +209,11 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   the keyboard, because the keyboard otherwise covers the button within a few frames. When its primary changes, including when a page opens over another or closes
   back to it, or when a selection's bar replaces a list's, the old icon fades and scales out while the new one fades and scales in inside
   the circle, which stays, at the same speed and curves and read as "label, description"; the
-  secondary actions are not drawn. The app chooses the actions and the context; the component only
+  secondary actions are not drawn. With `more`, a 62 dp `bgDark` circle with a `strokeBgDark` ring
+  and a ⋯ icon sits at the bar's start, balanced against the navigation bar like the primary. It
+  scales in when it first appears and hides with the primary. Tapping it opens the `MenuAction`s
+  in a `ContextMenu` 8 dp above it, lined up with its start edge, which leaves the screen behind
+  it undimmed. A full bar ignores `more`. The app chooses the actions and the context; the component only
   draws them and reports clicks. `ActionBarHost` places the bar over the bottom of a page, above
   the navigation bar and keyboard, and pads the page's content so it can scroll clear of the bar.
   Mail uses it for an open message and for selected messages; see
@@ -301,26 +305,31 @@ them to `Symbol` as `DrawableResource` values.
 ## Brand
 
 `designsystem/brand/` keeps the source SVGs: the Otus logo, the owl on its own, the Mail app icon,
-and Mail's launch animation in a play-once and a looping version. The drawables are converted
-from these files, so change the SVG first and convert again.
+and Mail's launch animation in a play-once and a looping version. `tools/brand_drawables.py`
+converts them into drawables. Change the SVG, or an `AccentPreset` color, and run it again.
 
 - `brand_otus_logo` and `brand_owl` are Compose drawables of the logo and the owl. Nothing uses
-  them yet.
-- `brand_mail_owl`, `brand_mail_eye_left`, `brand_mail_eye_right`, and `brand_mail_envelope` are
-  the launch animation's layers, each on the same 128 unit canvas so they line up when stacked.
-- `otus_mail_icon` is an Android launcher icon in `androidMain/res`, which merges into the app. It
-  is adaptive from Android 8 on, with the owl and envelope scaled into the 66 dp safe circle, and
-  the full square icon before that. Its background, `otus_brand_background`, matches
-  `BrandTokens.background`.
+  them yet. `symbol_owl` is a one-color owl for symbol slots, such as the App icon setting.
+- The launch animation's layers each hold one color, so `MailLaunch` tints them from the theme.
+  They share a 128 unit canvas so they line up when stacked.
+- `otus_mail_icon_<name>` are Mail's launcher icons in `androidMain/res`, which merge into the
+  app: `monochrome` and one per `AccentPreset`, such as `otus_mail_icon_otus_blue`. Each is
+  adaptive from Android 8 on, with the owl and envelope scaled into the 66 dp safe circle, and
+  the full square icon before that. A launcher icon cannot follow the theme, so all of them sit on
+  `otus_brand_background`, the Otus theme's `bgDark`. A host test checks every preset has one.
 
-`MailLaunch` plays the launch animation on the brand background. It starts with the play-once
-version. While the app reports `loading`, it continues with the loop, starting from the loop's
-settled pose, which matches where the intro ends. Once the owl has arrived and loading has
-finished, or on a tap, the mark shrinks to `BrandTokens.LAUNCH_EXIT_SCALE` and the whole screen
-fades out at `Relaxed` speed on the `Exit` curve. `MailLaunchTimeline` holds both runs' keyframes
-as fractions of `Motion.LAUNCH_MILLIS` (3 s) and `Motion.LAUNCH_LOOP_MILLIS` (4.2 s), and
-`KeyframeTrack` eases between them like a CSS keyframes rule. The tilt and the blink use
-`Standard` where the SVGs use ease-in-out and linear timing. `LocalMotionScale` scales all of it.
+`AppIconStyle` picks how the owl is colored: `Accent` uses `accentRegular` and `Monochrome` uses
+`text1`. `AccentPreset.closest` picks the icon for a custom accent.
+
+`MailLaunch` plays the launch animation in the current theme: the owl and envelope in the style's
+color, and the background and dark details in `bgDark`. It starts with the play-once version.
+While the app reports `loading`, it continues with the loop, starting from the loop's settled
+pose, which matches where the intro ends. Once the owl has arrived and loading has finished, or on
+a tap, the mark shrinks to `BrandTokens.LAUNCH_EXIT_SCALE` and the whole screen fades out at
+`Relaxed` speed on the `Exit` curve. `MailLaunchTimeline` holds both runs' keyframes as fractions
+of `Motion.LAUNCH_MILLIS` (3 s) and `Motion.LAUNCH_LOOP_MILLIS` (4.2 s), and `KeyframeTrack` eases
+between them like a CSS keyframes rule. The tilt and the blink use `Standard` where the SVGs use
+ease-in-out and linear timing. `LocalMotionScale` scales all of it.
 
 ## Behavior guides
 
