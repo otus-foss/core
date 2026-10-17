@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- A row dragged in a `ReorderableTree` takes its nested rows along. Before, a parent hovering over
+  its own nested rows showed no drop line.
 - `JmapClient.download` and `upload` refuse a `.` or `..` template value, which would move the
   request to another path on the server. A `.` or `..` file name falls back to `download`.
 - `HtmlView` without `loadRemote` turns off DNS prefetching and makes the document's `<link>`

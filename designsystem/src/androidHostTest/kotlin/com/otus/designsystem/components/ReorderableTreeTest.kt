@@ -37,8 +37,17 @@ class ReorderableTreeTest {
     @Test
     fun droppingNearTheEdgeOfARowDropsInTheGap() {
         showTree()
-        drag("Receipts", rows = -1.6f)
-        assertEquals(listOf<Pair<Int, TreeDropTarget>>(2 to Before(1)), drops)
+        drag("Receipts", rows = -2.6f)
+        assertEquals(listOf<Pair<Int, TreeDropTarget>>(3 to Before(1)), drops)
+    }
+
+    @Test
+    fun nestedRowsMoveWithTheirParentSoOnlyRowsOutsideItAreTargets() {
+        showTree()
+        drag("Projects", rows = 1f)
+        assertTrue(drops.isEmpty())
+        drag("Projects", rows = 2f)
+        assertEquals(listOf<Pair<Int, TreeDropTarget>>(1 to Into(3)), drops)
     }
 
     @Test
@@ -64,7 +73,8 @@ class ReorderableTreeTest {
     }
 
     private fun showTree(canDrop: (Int, TreeDropTarget) -> Boolean = { _, _ -> true }) {
-        val rows = listOf("Clients" to 0, "Projects" to 1, "Receipts" to 0)
+        // Old is nested in Projects.
+        val rows = listOf("Clients" to 0, "Projects" to 0, "Old" to 1, "Receipts" to 0)
         compose.setContent {
             ReorderableTree(
                 rows,
