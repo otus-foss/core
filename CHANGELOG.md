@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Add `SettingPageRow`, a `SettingRow` that opens a page and ends in a chevron, with the page's
+  value as its description. `SettingsScreen` uses it, and so does the Theme row on
+  `AppearanceSettingsScreen`, which names the theme there instead of in a value button.
+- Add the `symbol_content_copy` icon.
+- **Breaking:** `AppearanceSettingsScreen` is titled "Appearance" and drops its `content` slot.
+  Apps put behavior settings on a page of their own.
 - Add `ContextPanelScope.fillRail`, which stretches a chip across the chip rail. A `PickerChip`
   given a width fills it and puts its chevron at the end.
 - Add `Modifier.actionBarInset`. `ActionBarHost` uses it to keep its bar as far from the screen's

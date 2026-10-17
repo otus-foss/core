@@ -49,13 +49,13 @@ be created, renamed, nested, and deleted; messages can be moved between them. Ru
 arriving mail into folders run on the server as one Sieve script (RFC 9661) where the server
 supports it; see the [Mail folders guide](https://github.com/reazndev/otus-mail/blob/main/docs/folders.md).
 Messages can be marked read or unread, flagged, archived, trashed, filed as spam, and moved, from
-an open message, a selection, or by swiping a row; Appearance & behavior chooses each swipe and whether opening a
+an open message, a selection, or by swiping a row; Mail behavior chooses each swipe and whether opening a
 message marks it read. An optional Read later switch, off by default, gives each account whose
 server allows it an ordinary folder named Read later, with a button and swipe that add mail to it
 while it stays in the inbox. Message rows name the other folders a message is in as label pills.
 An open message is a page over the list, with an action bar at the bottom and a menu for the
 other actions. Long-pressing rows selects them, and the same bar acts on the selection.
-Appearance & behavior chooses each bar's buttons; see the
+Mail behavior › Action bar chooses each bar's buttons; see the
 [Mail action bar guide](https://github.com/reazndev/otus-mail/blob/main/docs/action-bar.md).
 Settings pages use flat rows, choice sheets, and confirmation dialogs from
 Meta's design system. Sync and sending are not
@@ -68,8 +68,8 @@ generated initials always available.
 Mail colors are supplied in [mail design foundations](mail-design.md). That palette is the default theme; users can pick Ink, Light, or Black, any accent, and make custom themes (decision 0014). text-1 is the default text color. Detailed interaction designs remain open.
 
 Both apps include reusable date-format choices, locale-aware formatting, and app-private preference
-adapters. Mail uses them for displayed inbox dates and date-filter summaries. Its Settings and
-Appearance & behavior pages let users choose the saved date format. Calendar settings remain
+adapters. Mail uses them for displayed inbox dates and date-filter summaries. Its Settings ›
+Appearance page lets users choose the saved date format. Calendar settings remain
 unimplemented. See the repository-local [Mail guide](https://github.com/reazndev/otus-mail/blob/main/docs/date-formatting.md) and
 [Calendar guide](https://github.com/reazndev/otus-calendar/blob/main/docs/date-formatting.md).
 
