@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Add `SettingPageRow`, a `SettingRow` that opens a page and ends in a chevron, with the page's
+  value as its description. `SettingsScreen` uses it, and so does the Theme row on
+  `AppearanceSettingsScreen`, which names the theme there instead of in a value button.
+- Add the `symbol_content_copy` icon.
+- **Breaking:** `AppearanceSettingsScreen` is titled "Appearance" and drops its `content` slot.
+  Apps put behavior settings on a page of their own.
 - Add `Modifier.actionBarInset`. `ActionBarHost` uses it to keep its bar as far from the screen's
   sides as from its bottom edge, which includes the navigation bar's height.
 - A `SettingRow` at the top of its parent, such as the first row on a page, no longer draws
