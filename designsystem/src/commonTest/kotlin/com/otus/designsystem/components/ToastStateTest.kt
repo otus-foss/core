@@ -81,6 +81,16 @@ class ToastStateTest {
     }
 
     @Test
+    fun aToastCanStayForItsOwnDuration() {
+        val state = ToastState()
+        state.show(ToastMessage("Sending…", undo, durationMillis = 30_000))
+        state.advance(29_000)
+        assertFalse(state.entries.single().leaving)
+        state.advance(1_000)
+        assertTrue(state.entries.single().leaving)
+    }
+
+    @Test
     fun fanningOutPausesEveryTimer() {
         val state = ToastState()
         state.show(ToastMessage("Draft saved"))

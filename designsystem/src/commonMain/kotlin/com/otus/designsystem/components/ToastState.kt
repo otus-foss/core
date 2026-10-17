@@ -16,6 +16,8 @@ import com.otus.designsystem.theme.ToastTokens
  * "Email deleted" to "3 emails deleted". A [sticky] toast has no timer and stays until its action
  * runs or it is swiped away, such as a failure with Retry. [onClose] runs when the toast leaves
  * without its action, by its timer or a swipe, such as to finish what Undo would have reverted.
+ * [durationMillis] sets how long it stays in place of the default, such as an Undo window the user
+ * chose; screen readers may still lengthen it.
  */
 @Immutable
 public data class ToastMessage(
@@ -24,6 +26,7 @@ public data class ToastMessage(
     val group: Any? = null,
     val sticky: Boolean = false,
     val onClose: (() -> Unit)? = null,
+    val durationMillis: Long? = null,
 )
 
 /** The toasts on screen, newest last. Create it with `remember` and pass it to [ToastHost]. */
@@ -104,4 +107,4 @@ internal class ToastEntry(
 
 /** How long [message] stays on screen before it fades, before accessibility adjustments. */
 internal fun baseTimeout(message: ToastMessage): Long =
-    if (message.action != null) ToastTokens.ACTION_MILLIS else ToastTokens.PLAIN_MILLIS
+    message.durationMillis ?: if (message.action != null) ToastTokens.ACTION_MILLIS else ToastTokens.PLAIN_MILLIS
