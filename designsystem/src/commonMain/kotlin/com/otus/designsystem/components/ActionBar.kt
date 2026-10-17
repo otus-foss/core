@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
@@ -136,9 +137,8 @@ private fun SecondaryGroup(actions: List<BarAction>) {
 }
 
 /**
- * Places [bar] over the bottom of [content], [ActionBarTokens.barInset] from the edges and above
- * the navigation bar and keyboard. [content] receives bottom padding that lets its last item
- * scroll above the bar; a null [bar] leaves the page as it is.
+ * Places [bar] over the bottom of [content] at [actionBarInset]. [content] receives bottom padding
+ * that lets its last item scroll above the bar; a null [bar] leaves the page as it is.
  */
 @Composable
 public fun ActionBarHost(
@@ -155,9 +155,20 @@ public fun ActionBarHost(
                 Modifier
                     .align(Alignment.BottomCenter)
                     .onSizeChanged { barHeight = it.height }
-                    .windowInsetsPadding(WindowInsets.navigationBars.union(WindowInsets.ime))
-                    .padding(ActionBarTokens.barInset),
+                    .actionBarInset(),
             ) { CompositionLocalProvider(LocalHostedBar provides true) { it() } }
         }
     }
+}
+
+/**
+ * Keeps a hosted bar, or what floats above it, [ActionBarTokens.barInset] above the navigation bar
+ * and keyboard, and as far from the sides as it sits from the bottom of the screen.
+ */
+@Composable
+public fun Modifier.actionBarInset(): Modifier {
+    val navigation = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+    return windowInsetsPadding(WindowInsets.navigationBars.union(WindowInsets.ime))
+        .padding(ActionBarTokens.barInset)
+        .padding(horizontal = navigation)
 }
