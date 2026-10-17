@@ -107,13 +107,19 @@ internal fun expandUriTemplate(
 ): String {
     val expanded =
         // Android's ICU regex engine rejects an unescaped "}", which the JVM accepts.
-        Regex("\\{([^{}]+)\\}").replace(template) { match ->
-            val value = values[match.groupValues[1]] ?: throw JmapException.NotJmap("unknown URI template variable")
-            if (value.isDotSegment()) throw JmapException.NotJmap("invalid URI template value")
-            value.encodeURLParameter()
-        }
+        Regex("\\{([^{}]+)\\}").replace(template) { match -> templateValue(values, match.groupValues[1]) }
     if ('{' in expanded || '}' in expanded) throw JmapException.NotJmap("invalid URI template")
     return expanded
+}
+
+/** [name]'s value, encoded for a URI template; refused when unknown or a dot segment. */
+private fun templateValue(
+    values: Map<String, String>,
+    name: String,
+): String {
+    val value = values[name] ?: throw JmapException.NotJmap("unknown URI template variable")
+    if (value.isDotSegment()) throw JmapException.NotJmap("invalid URI template value")
+    return value.encodeURLParameter()
 }
 
 /** Whether [this] is a "." or ".." path segment; any "%" is encoded, so only plain dots count. */

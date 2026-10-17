@@ -4,13 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.otus.designsystem.theme.AnimationSpeed
-
-/** Keeps the chosen [AnimationSpeed]'s name between launches, such as in platform preferences. */
-public interface AnimationPreferenceStore {
-    public fun read(): String?
-
-    public fun write(value: String)
-}
+import com.otus.settings.domain.AnimationPreferenceStore
 
 /**
  * The user's animation speed. Provide its [speed]'s scale as `LocalMotionScale` so every animation

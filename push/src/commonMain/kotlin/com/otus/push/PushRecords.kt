@@ -23,7 +23,10 @@ public enum class PushStatus {
     /** The server verified the subscription, so it pushes changes. */
     Active,
 
-    /** The server refused the subscription; changes arrive only through periodic checks. */
+    /**
+     * The server refused the subscription, or the endpoint has no encryption keys; changes arrive
+     * only through periodic checks.
+     */
     Refused,
 }
 
