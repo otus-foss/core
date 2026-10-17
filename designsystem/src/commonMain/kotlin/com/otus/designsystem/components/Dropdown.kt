@@ -76,8 +76,9 @@ public fun Dropdown(
 }
 
 /**
- * A choice in a [Dropdown]: an optional [leading] avatar, the [title], and a smaller `text3`
- * [subtitle] under it. The [selected] row is filled with `bgRegular`, without a mark.
+ * A choice in a [Dropdown]: an optional [leading] avatar, the [title], a smaller `text3`
+ * [subtitle] under it, and a `text3` [detail] at its end, such as a size. The [selected] row is
+ * filled with `bgRegular`, without a mark.
  */
 @Composable
 public fun DropdownRow(
@@ -86,6 +87,7 @@ public fun DropdownRow(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     subtitle: String? = null,
+    detail: String? = null,
     leading: (@Composable () -> Unit)? = null,
 ) {
     val shape = RoundedCornerShape(PanelTokens.panelRadius - MenuTokens.inset)
@@ -113,12 +115,20 @@ public fun DropdownRow(
                 )
             }
         }
+        detail?.let {
+            Text(
+                it,
+                style = panelTextStyle(),
+                color = OtusColors.text3,
+                fontSize = ComposeTokens.detailSize,
+            )
+        }
     }
 }
 
-/** A small `text3` heading over a group of [DropdownRow]s, such as an account's name. */
+/** A small `text3` heading over a group of rows in a dropdown or a list, such as an account's name. */
 @Composable
-public fun DropdownCaption(text: String) {
+public fun ListCaption(text: String) {
     Text(
         text,
         Modifier

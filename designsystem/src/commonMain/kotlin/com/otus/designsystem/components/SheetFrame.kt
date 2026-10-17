@@ -75,6 +75,30 @@ public fun SheetFrame(
     leadingAction: (@Composable (done: () -> Unit) -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
+    SheetSurface(title, onDismiss, onDone) { close, done, closing ->
+        SheetHeader(
+            title,
+            onDone = done,
+            doneLabel = doneLabel,
+            doneEnabled = doneEnabled && !closing,
+            leadingAction = leadingAction?.let { action -> { action(done) } },
+        )
+        content()
+    }
+}
+
+/**
+ * The modal sheet every sheet shares: the scrim, the sliding `bgDark` surface, and swiping down.
+ * [content] gets `close`, which slides the sheet away and runs [onDismiss], `done`, which slides
+ * it away and runs [onDone], and whether it is already closing.
+ */
+@Composable
+internal fun SheetSurface(
+    title: String,
+    onDismiss: () -> Unit,
+    onDone: () -> Unit,
+    content: @Composable ColumnScope.(close: () -> Unit, done: () -> Unit, closing: Boolean) -> Unit,
+) {
     val density = LocalDensity.current
     val scope = rememberCoroutineScope()
     val motionScale = LocalMotionScale.current
@@ -107,16 +131,7 @@ public fun SheetFrame(
                             Modifier
                                 .swipeToDismiss(position, close)
                                 .windowInsetsPadding(WindowInsets.safeDrawing.only(BottomAndSides)),
-                        ) {
-                            SheetHeader(
-                                title,
-                                onDone = done,
-                                doneLabel = doneLabel,
-                                doneEnabled = doneEnabled && !position.closing,
-                                leadingAction = leadingAction?.let { action -> { action(done) } },
-                            )
-                            content()
-                        }
+                        ) { content(close, done, position.closing) }
                     }
                 }
             }

@@ -30,9 +30,10 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   `MonthNavigation`, `MonthYearPicker`, `PageScaffold`, `Subpage`, `PageSection`, `PanelSurface`,
   `PickerSearch`, `PreviewCard`, `PullToRefresh`, `ReorderableColumn`, `SelectionSheet`, `SheetFrame`, `SettingRow`,
   `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarRail`, `SummaryCard` and `PersonText` (with `NamedAvatar`), `ValueToken`, `ValuePicker`, `Collapsible`, `CollapsibleTree`, `AvatarStack`, `ContextMenu` (with `MenuAction`),
-  `Dropdown` (with `DropdownRow` and `DropdownCaption`), `OptionsMenu` (with `OptionsItem`), `FormattingBar` (with
+  `Dropdown` (with `DropdownRow`), `OptionsMenu` (with `OptionsItem`), `FormattingBar` (with
   `FormatButton` and `CompactSendButton`), `RecipientLine` (with `Recipient`, `AddressInput`, and `RecipientChip`),
-  `PersonAvatar`,
+  `PersonAvatar`, `ClosableSheet` (with `SheetConfirm`), `SegmentedToggle`, `PickRow` (with `PickMark`), `PersonRow`,
+  `ResizableImage` (with `ImageSizing` and `ImagePreset`), `ListCaption`,
   `SidebarSwipeArea`, `SlidingOverlay`, `SlidingPages`, `SwipeActions`, `ThemeCard`, and `ToastHost`
   (with `ToastState` and `ToastMessage`).
 - Settings rows follow Notion's settings pages: flat rows with a title and `text2` description
@@ -138,10 +139,17 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   `CompactSendButton`, stays pinned. An active format gets a `bgLight` fill, never the accent.
 - `Dropdown` opens a `bgDark` list with a 22 dp radius under the element it is called from, the
   window's width unless given one, and above the element when there is no room below.
-  `DropdownRow` marks the selected row with a `bgRegular` fill and no checkmark; `DropdownCaption`
+  `DropdownRow` marks the selected row with a `bgRegular` fill and no checkmark; `ListCaption`
   heads a group in `text3`. A non-focusable dropdown leaves the keyboard to a field, for
   suggestions while typing. `OptionsMenu` is the 286 dp menu under a ⋯ button: icon rows that
   act, open more with a chevron, or switch an option, with dividers between groups.
+- `ClosableSheet` is a sheet titled at its start with a ✕ at its end and an optional full-width
+  `SheetConfirm` button at the bottom; `SheetFrame` shares its surface. `SegmentedToggle` picks one
+  of a few options with a `bgLight` fill. `PickRow` is a sheet choice with a `text1` radio or
+  checkbox, never the accent, and dims without an action. `PersonRow` opens an address's page,
+  with an avatar, a `text2` or muted `text3` line, and a chevron. `ResizableImage` shows a
+  signature image with a selection outline, a ✕, a corner handle that snaps to `ImagePreset`s, and
+  a size pill under it. `ListCaption` heads a group of rows in `text3`.
 - `ButtonPill` is a pill that acts, such as "+ Cc", and `AddressPill` shows the address a message
   is sent from, avatar first and a chevron last, with long addresses ending in an ellipsis.
 - `BarContext.lead` puts a small line in place of the primary's label, so Send reads "Send to"

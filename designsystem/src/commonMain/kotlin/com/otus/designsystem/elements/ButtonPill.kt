@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_expand_more
 import com.otus.designsystem.theme.ComposeTokens
@@ -31,8 +32,8 @@ public fun ButtonPill(
 
 /**
  * The address a message is sent from as a pill: its [avatar], the [address], which ends with an
- * ellipsis when long, and a down chevron, since tapping it opens the choice. Screen readers read
- * [description].
+ * ellipsis past [labelMaxWidth], and a down chevron, since tapping it opens the choice. Screen
+ * readers read [description].
  */
 @Composable
 public fun AddressPill(
@@ -40,6 +41,7 @@ public fun AddressPill(
     description: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    labelMaxWidth: Dp = ComposeTokens.fromLabelMaxWidth,
     avatar: @Composable () -> Unit,
 ) {
     ChipFrame(
@@ -53,7 +55,7 @@ public fun AddressPill(
         avatar()
         Text(
             address,
-            Modifier.widthIn(max = ComposeTokens.fromLabelMaxWidth),
+            Modifier.widthIn(max = labelMaxWidth),
             style = panelTextStyle().copy(color = Color.Unspecified),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
