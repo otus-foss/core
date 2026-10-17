@@ -78,7 +78,8 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   "3 emails deleted"; `isShowing(group)` tells the app whether to keep counting. Tapping the
   action runs it and closes the toast. A `sticky` message has no timer and stays until its action
   runs or it is swiped away, such as a failed send with Retry. `onClose` runs when a toast leaves
-  without its action, so the app can finish what Undo would have reverted. Other messages stack with the newest in front and up to two older ones
+  without its action, so the app can finish what Undo would have reverted. `durationMillis`
+  replaces the default time, such as an Undo window the user chose. Other messages stack with the newest in front and up to two older ones
   peeking out behind it, each on its own timer. Tapping the stack fans it out and pauses every
   timer; tapping again or system back stacks it again. The group is as wide as its widest toast.
   A toast can be dragged sideways in either direction: it lifts a shade lighter, its timer
