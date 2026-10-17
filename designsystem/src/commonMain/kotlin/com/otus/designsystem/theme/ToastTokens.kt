@@ -32,6 +32,6 @@ internal object ToastTokens {
     const val DISMISS_FRACTION = 1f / 3f
 
     /** How long a toast stays on screen; one with an action stays longer to leave time to tap it. */
-    const val ACTION_MILLIS = 5_000L
-    const val PLAIN_MILLIS = 3_000L
+    const val ACTION_MILLIS = 6_000L
+    const val PLAIN_MILLIS = 4_000L
 }

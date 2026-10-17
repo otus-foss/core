@@ -73,7 +73,7 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   still there one second later, for example because removal failed, it returns to rest.
 - `ToastHost` shows short messages from a `ToastState` in a pill above the page's bottom bar. A
   `ToastMessage` may carry a `ToastAction`, such as Undo, with a ring that counts down its time:
-  5 seconds with an action, 3 without, longer when a screen reader is on. A message with the same
+  6 seconds with an action, 4 without, longer when a screen reader is on. A message with the same
   `group` as one on screen replaces it and restarts its timer, so the app can count up to
   "3 emails deleted"; `isShowing(group)` tells the app whether to keep counting. Tapping the
   action runs it and closes the toast. A `sticky` message has no timer and stays until its action
