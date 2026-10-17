@@ -58,7 +58,9 @@ internal class JmapDownloads(
         name: String,
     ): Url {
         val template = session.downloadUrl ?: throw JmapException.NotJmap("no blob download endpoint")
-        val values = mapOf("accountId" to accountId, "blobId" to blobId, "type" to mediaType, "name" to name)
+        // A file name comes from the message's sender, so "." or ".." falls back to the default.
+        val fileName = name.takeUnless(String::isDotSegment) ?: DEFAULT_DOWNLOAD_NAME
+        val values = mapOf("accountId" to accountId, "blobId" to blobId, "type" to mediaType, "name" to fileName)
         return urls.trustedTarget(session, expandUriTemplate(template, values))
     }
 }
