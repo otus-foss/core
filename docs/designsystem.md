@@ -74,7 +74,10 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
 - `ToastHost` shows short messages from a `ToastState` in a pill as low on the screen as it can
   go. Each `ActionBarHost` with a bar reports its height to `LocalBottomClearance`, and the toast
   sits one bar inset above the highest bar on screen, or one inset above the navigation bar and
-  keyboard on a page without one, such as Settings. It moves between the two at the normal speed. A
+  keyboard on a page without one, such as Settings. It moves between the two at the normal speed.
+  A toast rises in from below on the enter curve. When its time is up or its action runs, it
+  sinks, shrinks to 90 %, and fades on the exit curve, 240 ms each. Over a bar it is clipped at
+  the bar's top edge, so it passes behind the bar. A
   `ToastMessage` may carry a `ToastAction`, such as Undo, with a ring that counts down its time:
   6 seconds with an action, 4 without, longer when a screen reader is on. A message with the same
   `group` as one on screen replaces it and restarts its timer, so the app can count up to

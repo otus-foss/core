@@ -67,8 +67,17 @@ public class ToastState {
             .forEach { entry ->
                 entry.durationMillis = timeout(entry.message)
                 entry.elapsedMillis += deltaMillis
-                if (entry.elapsedMillis >= entry.durationMillis) entry.leaving = true
+                if (entry.elapsedMillis >= entry.durationMillis) leave(entry)
             }
+    }
+
+    /** Starts [entry] leaving, as when its time is up; one whose action [acted] skips its close callback. */
+    internal fun leave(
+        entry: ToastEntry,
+        acted: Boolean = false,
+    ) {
+        entry.acted = acted
+        entry.leaving = true
     }
 
     /**
@@ -101,8 +110,11 @@ internal class ToastEntry(
     /** Paused while the user drags it. */
     var held by mutableStateOf(false)
 
-    /** Its time is up and it is fading out. */
+    /** Its time is up or its action ran, and it is leaving. */
     var leaving by mutableStateOf(false)
+
+    /** It leaves because its action ran. */
+    var acted = false
 }
 
 /** How long [message] stays on screen before it fades, before accessibility adjustments. */

@@ -54,6 +54,9 @@ class ToastHostTest {
         showHost()
         compose.onNodeWithText("Undo").performClick()
         assertEquals(1, undone)
+        // It sinks away before it is gone.
+        assertTrue(state.messages.isEmpty())
+        settle()
         assertTrue(state.entries.isEmpty())
     }
 
