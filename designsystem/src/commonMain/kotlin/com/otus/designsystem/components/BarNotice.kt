@@ -45,11 +45,7 @@ public fun BarNotice(
             .fillMaxWidth()
             .background(OtusColors.bgDark, shape)
             .border(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape)
-            // The button's pill sits centered in its 48 dp touch area, so the same gap closes the end.
-            .padding(
-                start = ActionBarTokens.contextInset,
-                end = (PanelTokens.touchTarget - PanelTokens.chipHeight) / 2,
-            ),
+            .padding(start = ActionBarTokens.contextInset, end = buttonInset),
         horizontalArrangement = Arrangement.spacedBy(ActionBarTokens.tokenGap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -73,7 +69,8 @@ private fun NoticeButton(
     onClick: () -> Unit,
 ) {
     val interactions = remember { MutableInteractionSource() }
-    val shape = RoundedCornerShape(ActionBarTokens.radius - PanelTokens.iconGap * 2)
+    // Concentric with the notice: its corners, less the gap around the button.
+    val shape = RoundedCornerShape(ActionBarTokens.radius - buttonInset)
     Box(
         Modifier
             .heightIn(min = PanelTokens.touchTarget)
@@ -90,3 +87,9 @@ private fun NoticeButton(
         ) { Text(label, style = panelTextStyle(), fontSize = ActionBarTokens.subtitleSize) }
     }
 }
+
+/**
+ * The gap around the notice's button on every side: its pill sits centered in a 48 dp touch area
+ * that fills the notice's height, so the end padding matches the space above and below.
+ */
+private val buttonInset = (PanelTokens.touchTarget - PanelTokens.chipHeight) / 2
