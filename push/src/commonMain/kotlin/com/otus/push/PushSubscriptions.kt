@@ -14,7 +14,10 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.time.Clock
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Keeps one JMAP push subscription (RFC 8620, section 7.2) per login, pointed at the endpoint the
@@ -66,13 +69,14 @@ public class PushSubscriptions(
     /**
      * Creates, replaces, verifies, renews, or deletes each login's subscription so the server
      * matches the saved endpoints. Servers are asked in parallel. A login whose server cannot be
-     * reached keeps its record and is tried again on the next sync. Records of removed logins are
+     * reached, or whose credentials cannot be read, keeps its record and is tried again on the next
+     * sync. When the saved logins cannot be read, nothing changes. Records of removed logins are
      * dropped; call [forget] before removing a login to delete its subscription too.
      */
     public suspend fun sync(): Unit =
         lock.withLock {
             val saved = withContext(Dispatchers.IO) { store.records() }
-            val current = withContext(Dispatchers.IO) { logins.logins() }
+            val current = savedLogins() ?: return@withLock
             val next =
                 coroutineScope {
                     current
@@ -85,15 +89,21 @@ public class PushSubscriptions(
 
     /**
      * Deletes [loginId]'s subscription on its server and drops its record. Call it while the
-     * login's credentials still exist. An unreachable server keeps the subscription until it expires.
+     * login's credentials still exist. It gives up after ten seconds, including time spent
+     * waiting for a running [sync], so removing an account never hangs on a slow server. A server
+     * that is not reached keeps the subscription until it expires, and the next [sync] drops the
+     * record once the login is gone.
      */
-    public suspend fun forget(loginId: String): Unit =
-        lock.withLock {
-            val saved = withContext(Dispatchers.IO) { store.records() }
-            val record = saved[loginId] ?: return@withLock
-            loginOrNull(loginId)?.let { synced(it, record.copy(endpoint = null)) }
-            withContext(Dispatchers.IO) { store.save(saved - loginId) }
+    public suspend fun forget(loginId: String) {
+        withTimeoutOrNull(FORGET_WITHIN) {
+            lock.withLock {
+                val saved = withContext(Dispatchers.IO) { store.records() }
+                val record = saved[loginId] ?: return@withLock
+                savedLogins()?.find { it.id == loginId }?.let { synced(it, record.copy(endpoint = null)) }
+                withContext(Dispatchers.IO) { store.save(saved - loginId) }
+            }
         }
+    }
 
     private suspend fun synced(
         login: JmapLogin,
@@ -103,13 +113,16 @@ public class PushSubscriptions(
             ServerSubscription(connections.connection(login), deviceClientId, types, clock).synced(record)
         } catch (_: JmapException) {
             record
+        } catch (_: LoginStoreException) {
+            // Reading the secret failed; try again on the next sync.
+            record
         }
 
-    /** Null when storage cannot be read, so removing an account never fails here. */
-    private suspend fun loginOrNull(loginId: String): JmapLogin? =
+    /** Null when storage cannot be read, so neither a sync nor removing an account fails here. */
+    private suspend fun savedLogins(): List<JmapLogin>? =
         withContext(Dispatchers.IO) {
             try {
-                logins.logins().find { it.id == loginId }
+                logins.logins()
             } catch (_: LoginStoreException) {
                 null
             }
@@ -126,4 +139,9 @@ public class PushSubscriptions(
                 if (next != records) store.save(next)
             }
         }
+
+    private companion object {
+        /** How long [forget] may take before the account is removed without reaching its server. */
+        val FORGET_WITHIN: Duration = 10.seconds
+    }
 }

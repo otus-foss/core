@@ -6,6 +6,7 @@ import com.otus.jmap.PushKeys
 import com.otus.jmap.PushMessage
 import com.otus.jmap.login.InMemoryLoginStore
 import com.otus.jmap.login.JmapLogin
+import com.otus.jmap.login.LoginStore
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.http.HttpHeaders
@@ -51,8 +52,8 @@ internal fun subscriptions(
     server: Server,
     store: Store,
     at: Instant = now,
+    logins: LoginStore = InMemoryLoginStore().apply { save(login, "secret") },
 ): PushSubscriptions {
-    val logins = InMemoryLoginStore().apply { save(login, "secret") }
     val clock =
         object : Clock {
             override fun now() = at

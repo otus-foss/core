@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+- Add `AndroidAnimationPreferenceStore` and `IosAnimationPreferenceStore` in `com.otus.settings.data`,
+  platform stores for `AnimationSettingsState` next to the date-format ones, so both apps share them.
+- `PushSubscriptions` never subscribes an endpoint without encryption keys; such a login shows
+  `PushStatus.Refused`. Without keys a server would push readable state changes through the push
+  provider, and the app could not tell forged pushes from real ones.
+- `PushSubscriptions.sync` keeps every record as it is when the saved logins cannot be read, and
+  keeps a login's record when its secret cannot be read, instead of throwing `LoginStoreException`.
+- `PushSubscriptions.forget` gives up after ten seconds, including time waiting for a running
+  `sync`, so removing an account never hangs on a slow or unreachable server.
+
 - Add `TrailingIcons`, two touch-target-wide slots at a row's end. `FolderSettingRow` and
   `AccountGroupRow` use it, so their icons line up in the same two columns.
 - Add `InputSheet`, `InputDialog`'s text field in a `SheetFrame`.
