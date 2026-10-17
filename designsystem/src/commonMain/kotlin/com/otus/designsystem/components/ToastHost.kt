@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -20,6 +21,8 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.withFrameMillis
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.AccessibilityManager
 import androidx.compose.ui.platform.LocalAccessibilityManager
@@ -30,6 +33,7 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
@@ -49,9 +53,10 @@ import kotlinx.coroutines.flow.collectLatest
  * every timer; tapping again or system back stacks it again. Any toast in front, or any toast in
  * the list, can be swiped away in either direction; dismissing one with an action leaves the action
  * done. A toast whose time is up or whose action ran sinks, shrinks, and fades on the exit curve,
- * behind the bar when there is one; a new one rises the same way on the enter curve. The group
- * is as wide as its widest toast. Align it to the bottom of the window with [modifier]; it rises
- * above any bar in [LocalBottomClearance].
+ * behind the bar when there is one; a new one rises the same way on the enter curve. A swiped
+ * toast slides off the screen and fades out over the bar inset at the screen's sides. The group
+ * is as wide as its widest toast. Align the host to the bottom of the window with [modifier]; it
+ * spans the window's width and rises above any bar in [LocalBottomClearance].
  */
 @Composable
 public fun ToastHost(
@@ -76,7 +81,19 @@ public fun ToastHost(
         motionTween(MotionSpeed.Normal),
         label = "Toast group height",
     )
-    Box(modifier.aboveBottomBars().width(IntrinsicSize.Max).height(height)) {
+    Box(modifier.fillMaxWidth().screenEdgeFade().aboveBottomBars(), contentAlignment = Alignment.BottomCenter) {
+        ToastGroup(state, height)
+    }
+}
+
+/** The toasts themselves, as wide as the widest one, one bar inset from the screen's sides. */
+@Composable
+private fun ToastGroup(
+    state: ToastState,
+    height: Dp,
+) {
+    val count = state.entries.size
+    Box(Modifier.padding(horizontal = ActionBarTokens.barInset).width(IntrinsicSize.Max).height(height)) {
         state.entries.forEachIndexed { index, entry ->
             key(entry.id) {
                 ToastItem(state, entry, depth = count - 1 - index, Modifier.align(Alignment.BottomCenter))
@@ -212,3 +229,12 @@ private fun AccessibilityManager?.timeout(message: ToastMessage): Long =
         containsText = true,
         containsControls = message.action != null,
     ) ?: baseTimeout(message)
+
+/** Fades whatever moves into the outer bar inset at either side, such as a toast swiped away. */
+private fun Modifier.screenEdgeFade(): Modifier =
+    graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }.drawWithContent {
+        drawContent()
+        val fade = ActionBarTokens.barInset.toPx()
+        drawEdgeFade(1f, fade, atEnd = false)
+        drawEdgeFade(1f, fade, atEnd = true)
+    }

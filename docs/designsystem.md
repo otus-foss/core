@@ -93,8 +93,11 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   from the drag, by a quarter of the drag up to 16 dp, and always reaches under the toast's round
   end, so the two never part; only its outer end is round. Its close symbol and "Dismiss" sit at its
   outer edge and are always drawn, so the toast uncovers as much of the label as the drag allows.
-  Past a third of its width both brighten and a haptic marks it. Releasing there removes the toast without running its action; shorter drags spring
-  back. Colors are `bgDark` at rest and `bgRegular` lifted, with `strokeBgDark` outlines.
+  Past a third of its width both brighten and a haptic marks it. Releasing there slides the
+  toast off the screen on the exit curve while the end fades; the host spans the window and fades
+  anything within a bar inset of its sides, so the toast blurs out at the screen's edge. The
+  swipe removes the toast without running its action; shorter drags spring back. Colors are `bgDark` at rest and `bgRegular` lifted, changing over 240 ms, with `strokeBgDark`
+  outlines.
 - `ReorderableColumn` lets the user reorder a short list by dragging each row's handle. Only the
   handle starts a drag, so rows keep their own taps and the list around them still scrolls. The
   dragged row draws above the others and stays within the column. Each row is filled with

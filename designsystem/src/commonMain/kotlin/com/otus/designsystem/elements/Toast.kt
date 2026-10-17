@@ -50,7 +50,8 @@ public fun Toast(
 ) {
     val fill by animateColorAsState(
         if (lifted) OtusColors.bgRegular else OtusColors.bgDark,
-        motionTween(MotionSpeed.Quick),
+        // Slow enough that lifting the whole toast reads as a gentle change, not a flash.
+        motionTween(MotionSpeed.Normal),
         label = "Toast fill",
     )
     Row(
