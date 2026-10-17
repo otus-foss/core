@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
@@ -29,6 +28,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -37,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
@@ -63,7 +64,9 @@ import kotlin.math.roundToInt
  * the scrim, Back, and swiping down anywhere on it all slide it away. Then Done runs [onDone] and
  * the others run [onDismiss]. [leadingAction] sits opposite Done and gets the same
  * slide-away-then-done path, so it can finish the sheet too. The sheet is as tall as its content,
- * up to most of the screen; content with a weighted child fills that height.
+ * up to most of the screen; content with a weighted child fills that height. The keyboard lifts the
+ * content, and the sheet never gets shorter than it has been, so its top stays put when the keyboard
+ * closes. A sheet opened from this one's content starts at least as tall.
  */
 @Composable
 public fun SheetFrame(
@@ -103,6 +106,8 @@ internal fun SheetSurface(
     val scope = rememberCoroutineScope()
     val motionScale = LocalMotionScale.current
     val position = remember { SheetPosition(motionScale) }
+    val parent = LocalSheetHeight.current
+    val held = remember { HeldHeight(parent?.px ?: 0) }
     // Read when the slide ends, so a draft changed during the animation is the one finished.
     val currentOnDismiss by rememberUpdatedState(onDismiss)
     val currentOnDone by rememberUpdatedState(onDone)
@@ -111,7 +116,7 @@ internal fun SheetSurface(
     LaunchedEffect(Unit) { position.show(MotionCurve.Enter) }
     Dialog(close, properties = selectionSheetDialogProperties()) {
         CompositionLocalProvider(LocalDensity provides density) {
-            BoxWithConstraints(Modifier.fillMaxSize().imePadding()) {
+            BoxWithConstraints(Modifier.fillMaxSize()) {
                 SheetScrim(title, visible = 1f - position.hidden, onClick = close)
                 Surface(
                     Modifier
@@ -119,6 +124,7 @@ internal fun SheetSurface(
                         .widthIn(max = SheetTokens.maxWidth)
                         .fillMaxWidth()
                         .heightIn(max = maxHeight * SheetTokens.HEIGHT_FRACTION)
+                        .holdHeight(held)
                         .onSizeChanged { position.height = it.height }
                         .offset { IntOffset(0, (position.hidden * position.height).roundToInt()) }
                         .semantics { paneTitle = title },
@@ -131,7 +137,11 @@ internal fun SheetSurface(
                             Modifier
                                 .swipeToDismiss(position, close)
                                 .windowInsetsPadding(WindowInsets.safeDrawing.only(BottomAndSides)),
-                        ) { content(close, done, position.closing) }
+                        ) {
+                            CompositionLocalProvider(
+                                LocalSheetHeight provides held,
+                            ) { content(close, done, position.closing) }
+                        }
                     }
                 }
             }
@@ -154,7 +164,33 @@ private fun SheetScrim(
     )
 }
 
+/**
+ * Never lets the sheet get shorter than [held], the tallest it has been, so its top stays put when
+ * the keyboard closes and the bottom padding shrinks. It measures in the same pass as that padding,
+ * so the two cannot drift apart for a frame.
+ */
+private fun Modifier.holdHeight(held: HeldHeight): Modifier =
+    layout { measurable, constraints ->
+        val placeable =
+            measurable.measure(
+                constraints.copy(minHeight = held.px.coerceIn(constraints.minHeight, constraints.maxHeight)),
+            )
+        held.px = maxOf(held.px, placeable.height)
+        layout(placeable.width, placeable.height) { placeable.place(0, 0) }
+    }
+
 private val BottomAndSides = WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal
+
+/**
+ * The tallest a sheet has been, in px, starting from the sheet it was opened from. It grows during
+ * layout, which must not write snapshot state.
+ */
+private class HeldHeight(
+    var px: Int,
+)
+
+/** The held height of the sheet whose content is composing, so a sheet opened from it starts as tall. */
+private val LocalSheetHeight = compositionLocalOf<HeldHeight?> { null }
 
 /** The grab handle, the centered [title], [leadingAction] at the start, and [doneLabel] at the end. */
 @Composable

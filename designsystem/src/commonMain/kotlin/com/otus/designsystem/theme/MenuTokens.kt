@@ -13,6 +13,12 @@ public object MenuTokens {
     /** The tallest a dropdown grows before its rows scroll. */
     public val dropdownMaxHeight: Dp = 480.dp
 
+    /** Between a row's icon and its label. */
+    public val iconGap: Dp = 12.dp
+
+    /** How far a [com.otus.designsystem.components.QuickActionBar] sits from the pressed point. */
+    public val barGap: Dp = 12.dp
+
     /** The space the menu keeps from the screen edges. */
     public val edge: Dp = 8.dp
 }

@@ -20,6 +20,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import com.otus.designsystem.elements.controlPressFeedback
+import com.otus.designsystem.elements.nestIndent
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PageTokens
 import com.otus.designsystem.theme.SheetTokens
@@ -49,7 +50,7 @@ public fun DetailRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(SheetTokens.gap),
     ) {
-        Box(Modifier.padding(start = PageTokens.nestIndent * depth)) { leading() }
+        Box(Modifier.nestIndent(PageTokens.nestIndent, depth)) { leading() }
         Column(Modifier.weight(1f)) {
             Text(
                 title,

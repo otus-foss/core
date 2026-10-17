@@ -50,7 +50,7 @@ public fun AddressPill(
         null,
         true,
         OtusColors.bgDark,
-        ChipLayout.Avatar,
+        layout = ChipLayout(avatarFirst = true),
     ) {
         avatar()
         Text(

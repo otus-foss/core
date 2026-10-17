@@ -82,7 +82,9 @@ internal class ServerSubscription(
         endpoint: PushEndpoint,
         replacing: String?,
     ): PushRecord {
-        if (!NewPushSubscription.allows(endpoint.url)) {
+        // Without keys the server would POST readable state changes through the push provider,
+        // and anyone who learns the URL could send pushes the app cannot tell apart from real ones.
+        if (endpoint.keys == null || !NewPushSubscription.allows(endpoint.url)) {
             replacing?.let { destroy(it) }
             return PushRecord(endpoint, refused = true)
         }

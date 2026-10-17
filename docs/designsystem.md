@@ -13,23 +13,26 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
 
 - `theme`: `OtusColors`, `OtusTheme`, `OtusPalette`, `ThemeBase`, `ThemeChoice`, `ThemeColor`, `CustomTheme`, `AccentPreset`,
   `accentShades` (with `AccentShades`), color helpers (`hslColor`, `toHsl`, `contrast`, `toHex`,
-  `parseHexColor`), `ThemeTokens`, `Motion` (with `MotionSpeed`, `MotionCurve`, and
+  `parseHexColor`), `FolderColor`, `ThemeTokens`, `Motion` (with `MotionSpeed`, `MotionCurve`, and
   `LocalMotionScale`), and tokens for avatars, calendars, control
   feedback, pages, panels, refresh, sheets, the sidebar, the action bar (`ActionBarTokens`), and
-  compose fields (`ComposeTokens`), and reply threads (`ThreadTokens`).
+  compose fields (`ComposeTokens`), reply threads (`ThreadTokens`), and rule chips and folder
+  settings rows (`RuleChipTokens`, `FolderRowTokens`).
   `panelTextStyle()` uses Figtree.
 - `elements`: `ActionButton`, `ActionRow`, `AnimatedText`, `Avatar`, `AvatarImage`, `BarIconButton`, `CalendarDay`,
   `AddressPill`, `ButtonPill`, `ComposeField`, `HtmlView`, `QuoteChip`, `RichTextBody` (with `RichText` and `TextFormat`),
   `CalendarMonthBackground`, `Chip`, `ColorSlider`, `ColorSwatch`, `AddSwatch`, `SwatchStack`, `IconButton`, `IconPill`, `InputField`, `LabelPill`, `RefreshIndicator`,
-  `RowButton`, `SearchField`, `SearchPrompt`, `SelectionRow`, `SidebarEntry`, `SidebarHeading`,
-  `SidebarCount`, `SidebarExpandButton`, `SidebarPill`, `SidebarRailAccount`, `SidebarRailAdd`, `SidebarRailDivider`,
-  `SidebarRailIcon`, `Symbol`, `Toast` (with `ToastAction`),
+  `FolderColorSwatch`, `LocalIconTint`, `RowButton`, `SearchField`, `SearchPrompt`, `SelectionRow`, `SidebarEntry`, `SidebarHeading`,
+  `SidebarCount`, `SidebarExpandButton`, `SidebarPill`, `SidebarInboxEntry`, `SidebarMailboxTile`,
+  `SidebarFolderEntry` (with `SidebarFolder`), `SidebarDivider`, `SectionCaption`, `Symbol`, `Toast` (with `ToastAction`),
   `ToggleSwitch`, `ValueButton`, and the
   `controlPressFeedback` modifier.
-- `components`: `ActionBar`, `ActionBarHost`, `BarAction`, `BarContext`, `BarToken`, `ActionDialog`, `ChoiceDialog`, `ChoiceSheet` (with `ChoiceRow`), `ConfirmDialog`, `InputDialog`, `ContextPanel`, `DatePickerDialog`,
+- `components`: `ActionBar`, `ActionBarHost`, `BarAction`, `BarContext`, `BarToken`, `ActionDialog`, `ChoiceDialog`, `ChoiceSheet` (with `ChoiceRow`), `ConfirmDialog`, `InputDialog`, `InputSheet`, `ContextPanel`, `DatePickerDialog`,
   `MonthNavigation`, `MonthYearPicker`, `PageScaffold`, `Subpage`, `PageSection`, `PanelSurface`,
-  `PickerSearch`, `PreviewCard`, `PullToRefresh`, `ReorderableColumn`, `SelectionSheet`, `SheetFrame`, `SettingRow`,
-  `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarRail`, `SummaryCard` and `PersonText` (with `NamedAvatar`), `ValueToken`, `ValuePicker`, `Collapsible`, `CollapsibleTree`, `AvatarStack`, `ContextMenu` (with `MenuAction`),
+  `PickerSearch`, `PreviewCard`, `PullToRefresh`, `ReorderableColumn`, `ReorderableTree`, `SelectionSheet`, `SheetFrame`, `SettingRow`, `SettingPageRow`,
+  `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarHeader`, `SidebarMailboxGrid`, `ScopeSheet`, `ScopeRow` and `ScopeChildRow` (with `ScopeOption`), `PickerChip`, `AccountGroupRow`,
+  `RuleChip`, `RuleChipGroup`, and `AddRuleChip` (with `RuleChipLine`, `RuleChipValue`, `RuleSegment`, and
+  `RuleSegmentStyle`), `FolderSettingRow` with `FolderRuleSummary` and `FolderOwnerLine`, `SummaryCard` and `PersonText` (with `NamedAvatar`), `ValueToken`, `ValuePicker`, `Collapsible`, `CollapsibleTree`, `AvatarStack`, `ContextMenu` and `QuickActionBar` (with `MenuAction`),
   `Dropdown` (with `DropdownRow`), `OptionsMenu` (with `OptionsItem`), `FormattingBar` (with
   `FormatButton` and `CompactSendButton`), `RecipientLine` (with `Recipient`, `AddressInput`, and `RecipientChip`), `ThreadStrip` (with `ThreadEntry` and `ThreadMessageRow`),
   `PersonAvatar`, `BarNotice`, `ClosableSheet` (with `SheetConfirm`), `SegmentedToggle`, `PickRow` (with `PickMark`), `PersonRow`, `RowGroup` (with `GroupRow`), `TimeWheelPicker`,
@@ -39,9 +42,11 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
 - Settings rows follow Notion's settings pages: flat rows with a title and `text2` description
   beside the control, `bgLight` hairlines between them, and large section titles. The whole row is
   the control; `ToggleSwitch` and `ValueButton` only show its state. A long picker, such as Mail's
-  folder lists, uses `RowDensity.Compact`: 36 dp per row and no hairlines. Every folder list, the
-  sidebar's `SidebarEntry` rows included, uses `PanelTokens.compactRowHeight`, so folders sit at
-  the same density everywhere, below the 48 dp touch target by the user's choice. A row without a click is
+  folder lists, uses `RowDensity.Compact`: 36 dp per row and no hairlines. Folder lists, including
+  `SidebarEntry` and `SidebarFolderEntry` rows, use `PanelTokens.compactRowHeight`, below the
+  48 dp touch target by the user's choice. Nested rows indent with `Modifier.nestIndent`, which
+  stops after four steps (`MAX_INDENT_STEPS`), so a row at the fifth level or deeper keeps room
+  for its name. A row without a click is
   static, and a `RowButton` at its end acts on its own. Settings choices open a `ChoiceSheet`,
   which lists a `ChoiceOptions` default in its own group first, optionally with an icon per
   option, applies a choice at once, and closes with Done. Sheets are as tall as their content, up
@@ -56,6 +61,39 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   decision. `ChoiceDialog` and `ActionDialog` remain for one-shot picks
   and menus. Mail's rules pages still use `PageSection`
   and `ActionRow`.
+- `FolderColor` lists the colors a user can give a folder: `Default` and eight named colors.
+  Apps store the enum `name` and read it back with `FolderColor.named`, which returns `Default`
+  for null or unknown names. `tint` is the icon color in the current theme, or null for
+  `Default`. Each color has one shade for dark themes and one for light themes, chosen by
+  `OtusPalette.isLight`, so custom themes use the shades of their kind. `FolderColorTest` checks
+  that every shade reaches 3:1 against `bgDark`, `bgRegular`, and `accentDark` for every theme and
+  accent preset. A new kind of theme adds a shade to each color in `FolderColor.kt`.
+  The color tints only the folder icon. Provide it with `LocalIconTint` around a row:
+  `SidebarEntry`, `ActionRow`, `SettingRow`, `SettingToggleRow`, `ValuePicker`, and `ValueToken`
+  then draw their leading icon in it. A composition local keeps these signatures within the
+  seven-parameter limit. Text, backgrounds, the selected fill, trailing icons, and a disabled
+  picker's icon keep their colors. A `ChoiceRow` takes `iconTint` for its icon, and `swatch` shows
+  a `FolderColorSwatch` before its label: a filled circle in the tint, or an empty `text2` ring for
+  `Default`. The swatch is decoration; screen readers hear the option's label.
+- The `Sidebar` is one panel, 336 dp wide, with a `header` slot over its scrolling content.
+  `SidebarHeader` shows avatars, a title, and an optional subtitle, then an unfold button and
+  Settings. Tapping the title or the unfold button calls `onPick`. Below it, `SidebarInboxEntry`
+  is a 52 dp row for the main mailbox, inset to line up with the grid or, with `inset = false`,
+  as wide as `SidebarEntry` rows. `SidebarMailboxGrid` puts `SidebarMailboxTile`s in three
+  equal columns; a tile shows a count badge on its icon's corner, and the caller shortens large
+  counts. `SidebarDivider` separates groups, and `SectionCaption` titles a group that does not
+  collapse, with an optional action at its end. A `SidebarFolderEntry` row is 36 dp tall, like
+  `SidebarEntry`, and its icon toggle is 48 dp wide. A folder with subfolders uses its icon as the expand toggle, an open folder
+  while expanded, and a long press calls `onLongClick`. Its row callback matches
+  `CollapsibleTree`, and its icon takes `LocalIconTint`.
+- `ScopeSheet` picks what a page shows, such as every account, one account, or one address. It
+  takes an optional search slot, such as `PickerSearch`, and a footnote. `ScopeRow` is a 64 dp
+  choice with 40 dp avatars. A row with a subtitle is a group with a SemiBold title, and passing
+  `expanded` adds a chevron. `ScopeChildRow` is a 52 dp nested choice with 32 dp avatars, indented
+  so its avatar lines up with the group's title. The chosen row gets an `accentDark` fill, and a
+  pinned row shows a pin. A long press calls `onLongClick`, which the row names
+  "Pin" or "Unpin" for screen readers. The caller wraps nested rows in `Collapsible` and owns what
+  is chosen, pinned, and expanded.
 - Version 0.3.0 adds `DateRangePicker` for dates up to today, its continuous week calendar,
   and `AvatarStackChip` with `ChipAvatar` values. `AvatarStack` draws the same avatars without
   the pill, such as the senders a rule files into a folder. The app maps its senders or attendees into
@@ -107,6 +145,66 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   and owns the order. Each handle names its row for accessibility services and offers Move up and
   Move down. Give every row a unique, stable key. Changing the row order cancels an active drag.
   Every row is composed, so it suits settings lists, not message lists.
+  A row without a handle passes `Modifier.dragOnLongPress()` from its `ReorderableScope`: a long
+  press anywhere on the row starts the drag, and a tap still reaches the row's click. The gesture
+  reads the initial pointer pass and consumes the rest of a long press, so lifting the finger does
+  not click the row or scroll the list. The dragged row gets a `bgLight` fill, and in a
+  `ReorderableColumn` the other rows step aside into the places they would take.
+- `ReorderableTree` rearranges a short tree, such as folders, flattened into rows that each know
+  their depth. Its rows use the same `ReorderableScope` as `ReorderableColumn`. The other rows stay
+  in place while the dragged row and its nested rows follow the finger with their `bgLight` fill
+  at 75% opacity, so the row under them and the line show through. The nested rows are never
+  targets, so a parent always shows a line once it leaves its own spot. The tree judges the target by the dragged row's center. Over the middle half of a row, the folder goes inside that
+  row as its first child. Over the upper or lower quarter, it goes into the gap above or below.
+  The dragged row can reach half its height past either end, so the first and last gaps are
+  reachable. A 2 dp `accentLight` line with round ends and a small ring at its start marks the
+  target. For a gap, the line sits in the gap at the depth of the row below it, or of the last row
+  at the end. For a drop inside a row, it sits under that row one level deeper. The line starts
+  where a `FolderSettingRow` at that depth starts its icon, steps 20 dp per level, and stops at
+  four steps like `nestIndent`. It is drawn over the rows and does not move them. The dragged row,
+  and the gaps on either side of it, show no line and drop nothing. The app's `canDrop` hides the
+  line for targets it would refuse, and a haptic marks each new target. On release the app gets
+  `onDrop(from, target)` with a `TreeDropTarget`: `Before(index)` for the gap above that row, where
+  an index equal to the row count means after the last row, or `Into(index)`. Move up and Move
+  down drop a row into the gap above the previous row or below the next one, and only appear when
+  `canDrop` allows that.
+- `RuleChip` shows one condition of a mail rule in a `bgLight` outline, like `ValueToken`. Its
+  grid is fixed so stacked chips line up: a 52 dp label column (12 sp SemiBold `text2`), a 20 dp
+  slot, and the value (15 sp, one line, ellipsis). The slot holds a 20 dp avatar for people and
+  domains, or an 18 dp `text2` icon for every other kind of condition. The app passes a
+  `RuleChipLine` with a `RuleChipValue` made of `RuleSegment`s: `Dim` (`text3`) for how it matches,
+  such as "starts with", `Bright` (`text1`) for what it matches, and `Accent` (`accentLight`) for a
+  wildcard `*`. The app writes the words and quotes; the chip draws them as given. A full chip is
+  36 dp tall. `RowDensity.Compact` makes a 24 dp chip for a folder row: its label takes only the
+  width it needs, its avatar is 16 dp, and it leaves out the icon. `RuleChipGroup` draws an "All
+  of" rule: one outline, a small `text3` title such as "ALL OF", and hairlines between its
+  conditions, on the same grid. `AddRuleChip` is a dashed chip of the same height with its plus in
+  the slot column and its label in the value column. A chip or group with `onClick` is one button.
+- `TrailingIcons` puts up to two icons at a row's end, each centered in a 48 dp slot with no gap,
+  so rows that use it, such as `FolderSettingRow` and `AccountGroupRow`, line them up.
+- `InputSheet` asks for one line of text, such as a new name, in a `SheetFrame`: the field is
+  focused when it opens, the header button confirms, and `problem` disables it while the text
+  can't be used. `InputDialog` asks the same in a popup.
+- `QuickActionBar` is a small pill of icon buttons that opens just above where the user
+  long-pressed, centered on the point and kept inside the screen, or below the point when there
+  is no room above. It takes the same `MenuAction`s as `ContextMenu`, each with an `icon`; screen
+  readers hear the label. It sits on the menus' `bgDark` surface with a `bgLight` outline and
+  opens with the same fade and grow. Choosing an action closes it first.
+- `FolderSettingRow` is one folder on a folder settings page: the folder icon, the name in 17 sp,
+  an optional detail line, a `text2` settings icon, since tapping opens the folder's settings, and
+  an optional `handle` after it, at least 56 dp tall and indented 20 dp per level. A 1 dp
+  `bgLight` guide runs down the row under the icon of each level above it, so consecutive rows
+  draw a tree. A long press calls `onLongClick` with the pressed point, for a `QuickActionBar`.
+  Inside a `ReorderableTree` or `ReorderableColumn`, the `ReorderableScope.FolderSettingRow`
+  overload adds the row's drag handle after the settings icon. The
+  icon expands and collapses subfolders like `SidebarFolderEntry`'s, shares its code, and takes
+  `LocalIconTint`. `SidebarFolder.icon` replaces the closed folder, such as `symbol_folder_shared`. The detail
+  is a slot: `FolderRuleSummary` shows the first rule as a compact chip and a `text3` count such as
+  "+1", and `FolderOwnerLine` shows the owner's 16 dp avatar before text such as "Shared by
+  Florian · can read". `PickerChip` is a pill with the current choice's avatars,
+  its label, and a down chevron, such as which account a page shows; it opens the app's picker
+  and reads as one button. `Subpage` and `PageScaffold` take `chips` for the header's chip row and
+  then lay the panel out like search, with the pills overlapping its bottom edge.
 - `ActionBar` is a page's bottom bar: up to three icon-only secondary actions in a group, and the
   primary action in a shell beside it. Each secondary action is a 48 dp `BarIconButton` that
   shows its label on long press. A disabled action stays in its slot with a `text3` icon, so the
@@ -131,7 +229,11 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   the keyboard, because the keyboard otherwise covers the button within a few frames. When its primary changes, including when a page opens over another or closes
   back to it, or when a selection's bar replaces a list's, the old icon fades and scales out while the new one fades and scales in inside
   the circle, which stays, at the same speed and curves and read as "label, description"; the
-  secondary actions are not drawn. The app chooses the actions and the context; the component only
+  secondary actions are not drawn. With `more`, a 62 dp `bgDark` circle with a `strokeBgDark` ring
+  and a ⋯ icon sits at the bar's start, balanced against the navigation bar like the primary. It
+  scales in when it first appears and hides with the primary. Tapping it opens the `MenuAction`s
+  in a `ContextMenu` 8 dp above it, lined up with its start edge, which leaves the screen behind
+  it undimmed. A full bar ignores `more`. The app chooses the actions and the context; the component only
   draws them and reports clicks. `ActionBarHost` places the bar over the bottom of a page, above
   the navigation bar and keyboard, and pads the page's content so it can scroll clear of the bar.
   Mail uses it for an open message and for selected messages; see
@@ -260,26 +362,31 @@ them to `Symbol` as `DrawableResource` values.
 ## Brand
 
 `designsystem/brand/` keeps the source SVGs: the Otus logo, the owl on its own, the Mail app icon,
-and Mail's launch animation in a play-once and a looping version. The drawables are converted
-from these files, so change the SVG first and convert again.
+and Mail's launch animation in a play-once and a looping version. `tools/brand_drawables.py`
+converts them into drawables. Change the SVG, or an `AccentPreset` color, and run it again.
 
 - `brand_otus_logo` and `brand_owl` are Compose drawables of the logo and the owl. Nothing uses
-  them yet.
-- `brand_mail_owl`, `brand_mail_eye_left`, `brand_mail_eye_right`, and `brand_mail_envelope` are
-  the launch animation's layers, each on the same 128 unit canvas so they line up when stacked.
-- `otus_mail_icon` is an Android launcher icon in `androidMain/res`, which merges into the app. It
-  is adaptive from Android 8 on, with the owl and envelope scaled into the 66 dp safe circle, and
-  the full square icon before that. Its background, `otus_brand_background`, matches
-  `BrandTokens.background`.
+  them yet. `symbol_owl` is a one-color owl for symbol slots, such as the App icon setting.
+- The launch animation's layers each hold one color, so `MailLaunch` tints them from the theme.
+  They share a 128 unit canvas so they line up when stacked.
+- `otus_mail_icon_<name>` are Mail's launcher icons in `androidMain/res`, which merge into the
+  app: `monochrome` and one per `AccentPreset`, such as `otus_mail_icon_otus_blue`. Each is
+  adaptive from Android 8 on, with the owl and envelope scaled into the 66 dp safe circle, and
+  the full square icon before that. A launcher icon cannot follow the theme, so all of them sit on
+  `otus_brand_background`, the Otus theme's `bgDark`. A host test checks every preset has one.
 
-`MailLaunch` plays the launch animation on the brand background. It starts with the play-once
-version. While the app reports `loading`, it continues with the loop, starting from the loop's
-settled pose, which matches where the intro ends. Once the owl has arrived and loading has
-finished, or on a tap, the mark shrinks to `BrandTokens.LAUNCH_EXIT_SCALE` and the whole screen
-fades out at `Relaxed` speed on the `Exit` curve. `MailLaunchTimeline` holds both runs' keyframes
-as fractions of `Motion.LAUNCH_MILLIS` (3 s) and `Motion.LAUNCH_LOOP_MILLIS` (4.2 s), and
-`KeyframeTrack` eases between them like a CSS keyframes rule. The tilt and the blink use
-`Standard` where the SVGs use ease-in-out and linear timing. `LocalMotionScale` scales all of it.
+`AppIconStyle` picks how the owl is colored: `Accent` uses `accentRegular` and `Monochrome` uses
+`text1`. `AccentPreset.closest` picks the icon for a custom accent.
+
+`MailLaunch` plays the launch animation in the current theme: the owl and envelope in the style's
+color, and the background and dark details in `bgDark`. It starts with the play-once version.
+While the app reports `loading`, it continues with the loop, starting from the loop's settled
+pose, which matches where the intro ends. Once the owl has arrived and loading has finished, or on
+a tap, the mark shrinks to `BrandTokens.LAUNCH_EXIT_SCALE` and the whole screen fades out at
+`Relaxed` speed on the `Exit` curve. `MailLaunchTimeline` holds both runs' keyframes as fractions
+of `Motion.LAUNCH_MILLIS` (3 s) and `Motion.LAUNCH_LOOP_MILLIS` (4.2 s), and `KeyframeTrack` eases
+between them like a CSS keyframes rule. The tilt and the blink use `Standard` where the SVGs use
+ease-in-out and linear timing. `LocalMotionScale` scales all of it.
 
 ## Behavior guides
 
@@ -312,11 +419,34 @@ The continuous calendar layout and gestures remain unchanged.
 
 ## Tests
 
-Common tests cover the continuous calendar week model, decoded-avatar cache, motion durations, reorder behavior,
-and sheet animation interruption and completion. An Android host test covers image decoding. The
-Compose UI tests for panels, pickers, motion, and press feedback still run in Mail's `androidApp`,
-because they need an Android activity. Moving them here needs a host-test setup with an activity
-and is open work.
+Common tests cover the continuous calendar week model, decoded-avatar cache, motion durations,
+reorder behavior, theme choices, and sheet animation interruption and completion. Android host
+tests cover image decoding, `ValuePicker` behavior, and the screenshots below. Some Compose UI
+tests for panels, pickers, motion, and press feedback still run in Mail's `androidApp`.
+
+### Screenshot tests
+
+Each element and component has Roborazzi screenshot tests in `src/androidHostTest`. A test
+renders the composable with Robolectric's native graphics at 360 × 640 dp and xhdpi, and
+compares the image with a PNG in `src/androidHostTest/screenshots/`. Any changed pixel fails the
+test, and Roborazzi writes the comparison image to `build/outputs/roborazzi/`.
+
+Write a test with the `screenshot` helper in `screenshot/Screenshot.kt`:
+
+```kotlin
+@Test
+fun selected() = compose.screenshot("chip_selected") { Chip("Work", {}, selected = true) }
+```
+
+The helper draws the content on `bgDark` in `OtusTheme`; pass a palette to draw it in another
+theme. Use fixed dates and demo data, so an image changes only when the drawing does.
+
+After an intended visual change, record the new images, look at each changed PNG, and commit
+them with the change:
+
+```sh
+./gradlew :designsystem:testAndroidHostTest -Proborazzi.record
+```
 
 ## Central UI ownership
 

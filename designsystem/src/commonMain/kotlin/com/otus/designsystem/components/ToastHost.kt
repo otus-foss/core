@@ -7,8 +7,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
@@ -86,14 +89,21 @@ public fun ToastHost(
     }
 }
 
-/** The toasts themselves, as wide as the widest one, one bar inset from the screen's sides. */
+/** The toasts themselves, as wide as the widest one, as far from the screen's sides as the bar. */
 @Composable
 private fun ToastGroup(
     state: ToastState,
     height: Dp,
 ) {
     val count = state.entries.size
-    Box(Modifier.padding(horizontal = ActionBarTokens.barInset).width(IntrinsicSize.Max).height(height)) {
+    // As far from the sides as the action bar, which matches its gap to the bottom of the screen.
+    val navigation = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+    Box(
+        Modifier
+            .padding(horizontal = ActionBarTokens.barInset + navigation)
+            .width(IntrinsicSize.Max)
+            .height(height),
+    ) {
         state.entries.forEachIndexed { index, entry ->
             key(entry.id) {
                 ToastItem(state, entry, depth = count - 1 - index, Modifier.align(Alignment.BottomCenter))

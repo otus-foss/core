@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onGloballyPositioned
 import com.otus.designsystem.elements.LocalControlVisualBounds
 import com.otus.designsystem.theme.LocalMotionScale
@@ -56,6 +57,15 @@ public class ContextPanelScope internal constructor(
             }
         }
     }
+
+    /** Stretches a chip, such as a [PickerChip], across the rail's visible width. */
+    public fun Modifier.fillRail(): Modifier =
+        layout { measurable, constraints ->
+            val width = geometry.railWidth.takeIf { it > 0 }
+            val placeable =
+                measurable.measure(width?.let { constraints.copy(minWidth = it, maxWidth = it) } ?: constraints)
+            layout(placeable.width, placeable.height) { placeable.place(0, 0) }
+        }
 
     /** Crossfade and resize pill groups around one rail anchor. Cutouts stay on their pills. */
     @Composable
