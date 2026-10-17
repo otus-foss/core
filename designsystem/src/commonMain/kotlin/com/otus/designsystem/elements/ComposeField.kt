@@ -1,12 +1,13 @@
 package com.otus.designsystem.elements
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Text
@@ -16,15 +17,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.style.TextOverflow
-import com.otus.designsystem.resources.Res
-import com.otus.designsystem.resources.symbol_expand_more
 import com.otus.designsystem.theme.ComposeTokens
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PageTokens
@@ -34,8 +31,7 @@ import com.otus.designsystem.theme.panelTextStyle
 /**
  * One header line of a message being written, such as To or Subject: [label] in `text2` beside a
  * borderless single-line field, with a hairline below. [kind] picks the keyboard; text fields
- * also capitalize sentences. [trailing] holds a control for the line, such as one that shows
- * more fields.
+ * also capitalize sentences. [placeholder] shows in `text3` while it is empty.
  */
 @Composable
 public fun ComposeField(
@@ -44,11 +40,11 @@ public fun ComposeField(
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     kind: InputKind = InputKind.Text,
-    trailing: (@Composable () -> Unit)? = null,
+    placeholder: String? = null,
 ) {
     val style = panelTextStyle()
     val text = kind == InputKind.Text
-    ComposeLine(label, modifier, trailing) {
+    ComposeLine(label, modifier) {
         BasicTextField(
             value = value,
             onValueChange = onValueChange,
@@ -63,40 +59,28 @@ public fun ComposeField(
                     keyboardType = kind.keyboardType,
                     imeAction = ImeAction.Next,
                 ),
+            decorationBox = { field ->
+                Box(contentAlignment = Alignment.CenterStart) {
+                    if (value.isEmpty() &&
+                        placeholder != null
+                    ) {
+                        Text(placeholder, style = style, color = OtusColors.text3)
+                    }
+                    field()
+                }
+            },
         )
     }
 }
 
 /**
- * A header line that shows a chosen [value], such as the address a message is sent from. With
- * [onClick] the whole line is one button with a down chevron; without it the line is static.
+ * The shared layout: a 48 dp line with the label in its column first and a hairline below, for
+ * these fields and [com.otus.designsystem.components.RecipientLine].
  */
 @Composable
-public fun ComposeValueField(
-    label: String,
-    value: String,
-    onClick: (() -> Unit)?,
-    modifier: Modifier = Modifier,
-) {
-    val line =
-        onClick?.let {
-            modifier.clickable(onClickLabel = label, role = Role.Button, onClick = it)
-        } ?: modifier
-    ComposeLine(
-        label,
-        line.clearAndSetSemantics { contentDescription = "$label, $value" },
-        trailing = onClick?.let { { Symbol(Res.drawable.symbol_expand_more) } },
-    ) {
-        Text(value, Modifier.weight(1f), style = panelTextStyle(), maxLines = 1, overflow = TextOverflow.Ellipsis)
-    }
-}
-
-/** The shared layout: a 48 dp line with the label first and a hairline below. */
-@Composable
-private fun ComposeLine(
+internal fun ComposeLine(
     label: String,
     modifier: Modifier,
-    trailing: (@Composable () -> Unit)?,
     value: @Composable RowScope.() -> Unit,
 ) {
     Row(
@@ -109,9 +93,13 @@ private fun ComposeLine(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         // The field names itself, so the label is not read twice.
-        Text(label, Modifier.clearAndSetSemantics {}, style = panelTextStyle(), color = OtusColors.text2)
+        Text(
+            label,
+            Modifier.widthIn(min = ComposeTokens.labelWidth).clearAndSetSemantics {},
+            style = panelTextStyle(),
+            color = OtusColors.text2,
+        )
         value()
-        trailing?.invoke()
     }
 }
 

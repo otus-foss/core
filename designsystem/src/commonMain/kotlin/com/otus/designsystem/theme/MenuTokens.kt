@@ -10,6 +10,9 @@ public object MenuTokens {
     public val inset: Dp = 4.dp
     public val rowPadding: Dp = 16.dp
 
+    /** The tallest a dropdown grows before its rows scroll. */
+    public val dropdownMaxHeight: Dp = 480.dp
+
     /** The space the menu keeps from the screen edges. */
     public val edge: Dp = 8.dp
 }

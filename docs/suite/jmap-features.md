@@ -53,7 +53,7 @@ uncommitted `feat/action-bar` Mail worktree.
 | --- | --- | --- | --- |
 | `urn:ietf:params:jmap:core` | RFC 8620 | Used | Session discovery, every request, blob upload and download. |
 | `urn:ietf:params:jmap:mail` | RFC 8621 | Used | Account setup check, inbox, folders, message actions. |
-| `urn:ietf:params:jmap:submission` | RFC 8621 | Used for identities only | Sending addresses on the accounts page. Sending is planned. |
+| `urn:ietf:params:jmap:submission` | RFC 8621 | Used | Sending addresses on the accounts page and in compose. Sending is in progress on Mail `feat/send`. |
 | `urn:ietf:params:jmap:sieve` | RFC 9661 | Used | Rules in Mail. |
 | `urn:ietf:params:jmap:contacts` | RFC 9610 | Used, read only | Contact photos for inbox senders. Contact management is planned. |
 | `urn:ietf:params:jmap:calendars` | IETF draft | Planned | Calendar app. The constant exists in `JmapCapability`; no code calls it. |
@@ -114,7 +114,7 @@ app sees Read later as an ordinary folder.
 | Headers beyond From and Subject (`to`, `cc`, `messageId`, `references`) | In progress | Compose reads them for replies on `feat/action-bar`. |
 | Attachment download | Planned | Mail #25. Rows show attachment names only. |
 | Server-side search (`text`, `from`, `subject` filters) | Planned | [Mail #23](https://github.com/reazndev/otus-mail/issues/23) plans local and server evaluation. Today search filters loaded messages on the device. |
-| `$answered`, `$forwarded`, `$draft` keywords | No plan | Expected with sending (Mail #26). |
+| `$answered`, `$forwarded`, `$draft` keywords | In progress | Drafts carry `$draft`. On Mail `feat/send`, sending clears it and sets `$answered` or `$forwarded` on the original. |
 | `$junk` and `$notjunk` keywords | No plan | A Junk action is planned in Mail #25. It may move to the `junk` role folder, set keywords, or both. Decide in that issue. |
 | Custom keywords as labels | No plan | Labels in rows come from folders, not keywords. |
 | `Email/import`, `Email/parse`, `Email/copy` | No plan | |
@@ -132,9 +132,9 @@ app sees Read later as an ordinary folder.
 | Method | Status | Notes |
 | --- | --- | --- |
 | `Identity/get` | Used | Reads `email` only, to list sending addresses under each account. Needs submission on the session and the mail account. Wildcard identities such as `*@example.org` are kept. |
-| `Identity/get` for the From field | In progress | Compose's From sheet on `feat/action-bar`. |
-| `Identity/set` (names, signatures, reply-to) | No plan | Mail #26 plans signatures but does not say whether they live on the server identity or on the device. Decide there before you design a signature setting. |
-| `EmailSubmission/set` | Planned | Mail #26: durable sending, undo-send window, offline queue. Send stays disabled until then. |
+| `Identity/get` for the From field | In progress | On Mail `feat/send`, compose loads every account's identities, with `textSignature` and `htmlSignature`, for the Send-from dropdown. |
+| `Identity/set` (names, signatures, reply-to) | Planned | Signatures live on the server identity: one per identity, as `htmlSignature` and `textSignature`. Settings › Signatures on Mail `feat/send` will edit and copy them. |
+| `EmailSubmission/set` | In progress | Mail `feat/send` sends a draft with no envelope and files it in Sent through `onSuccessUpdateEmail`. Mail #26 still plans the offline queue and the undo-send window. |
 | `EmailSubmission/get`, delayed send | No plan | |
 
 ### Sieve (rules)
@@ -162,6 +162,7 @@ the rules script.
 | --- | --- | --- |
 | `AddressBook/get` | Used | Lists books for the photo lookup. |
 | `ContactCard/query` with `email` filter | Used | Exact address match, per book. |
+| `ContactCard/query` with `text` filter | In progress | Recipient suggestions while typing, on Mail `feat/send`. |
 | `ContactCard/get` | Used | Properties: `id`, `addressBookIds`, `emails`, `media`. Photos come from a blob or a data URI. |
 | `ContactCard/set`, `AddressBook/set` | Planned | [Mail #8](https://github.com/reazndev/otus-mail/issues/8), [Mail #6](https://github.com/reazndev/otus-mail/issues/6), [Mail #19](https://github.com/reazndev/otus-mail/issues/19). |
 | Recipient and attendee suggestions | Planned | Mail #26 and [Calendar #7](https://github.com/reazndev/otus-calendar/issues/7). Compose recipients are plain text today. |

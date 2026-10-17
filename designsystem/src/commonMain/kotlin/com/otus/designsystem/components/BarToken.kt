@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import com.otus.designsystem.elements.Avatar
-import com.otus.designsystem.elements.rememberAvatarImage
 import com.otus.designsystem.theme.ActionBarTokens
 import com.otus.designsystem.theme.OtusColors
 
@@ -81,12 +80,7 @@ internal fun BarTokenView(token: BarToken) {
 
 @Composable
 private fun TokenAvatar(avatar: ChipAvatar) {
-    Avatar(
-        avatar.initials,
-        image = rememberAvatarImage(avatar.imageBytes),
-        colorIndex = avatar.colorIndex,
-        size = ActionBarTokens.tokenSize,
-    )
+    PersonAvatar(avatar, ActionBarTokens.tokenSize)
 }
 
 /** A bgLight circle; [ring] separates it from an avatar it overlaps. */

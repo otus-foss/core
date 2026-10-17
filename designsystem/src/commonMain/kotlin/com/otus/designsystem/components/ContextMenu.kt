@@ -29,6 +29,7 @@ import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntRect
 import androidx.compose.ui.unit.IntSize
@@ -58,32 +59,47 @@ public fun ContextMenu(
 ) {
     val edge = with(LocalDensity.current) { MenuTokens.edge.roundToPx() }
     val position = remember(at, edge) { AtPoint(at.round(), edge) }
+    MenuPopup(position, onDismiss) {
+        Column(
+            Modifier
+                .width(IntrinsicSize.Max)
+                .widthIn(min = MenuTokens.minWidth)
+                .menuSurface()
+                .padding(MenuTokens.inset),
+        ) {
+            actions.forEach { action ->
+                MenuRow(action.label) {
+                    onDismiss()
+                    action.onClick()
+                }
+            }
+        }
+    }
+}
+
+/** A popup at [position] that fades and grows in, as menus open; it takes focus while [focusable]. */
+@Composable
+internal fun MenuPopup(
+    position: PopupPositionProvider,
+    onDismiss: () -> Unit,
+    focusable: Boolean = true,
+    content: @Composable () -> Unit,
+) {
     val shown = remember { MutableTransitionState(false).apply { targetState = true } }
-    val shape = RoundedCornerShape(MenuTokens.radius)
-    Popup(position, onDismissRequest = onDismiss, properties = PopupProperties(focusable = true)) {
+    Popup(position, onDismissRequest = onDismiss, properties = PopupProperties(focusable = focusable)) {
         AnimatedVisibility(
             shown,
             enter =
                 fadeIn(motionTween(MotionSpeed.Fast)) +
                     scaleIn(motionTween(MotionSpeed.Fast), initialScale = START_SCALE),
-        ) {
-            Column(
-                Modifier
-                    .width(IntrinsicSize.Max)
-                    .widthIn(min = MenuTokens.minWidth)
-                    .background(OtusColors.bgDark, shape)
-                    .border(PanelTokens.borderWidth, OtusColors.bgLight, shape)
-                    .padding(MenuTokens.inset),
-            ) {
-                actions.forEach { action ->
-                    MenuRow(action.label) {
-                        onDismiss()
-                        action.onClick()
-                    }
-                }
-            }
-        }
+        ) { content() }
     }
+}
+
+/** The raised `bgDark` surface with a `bgLight` outline that every menu sits on. */
+internal fun Modifier.menuSurface(radius: Dp = MenuTokens.radius): Modifier {
+    val shape = RoundedCornerShape(radius)
+    return background(OtusColors.bgDark, shape).border(PanelTokens.borderWidth, OtusColors.bgLight, shape)
 }
 
 /** Calls [onPress] with the point of every press on the element, without taking the press from it. */
