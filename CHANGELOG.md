@@ -11,12 +11,12 @@
   keeps a login's record when its secret cannot be read, instead of throwing `LoginStoreException`.
 - `PushSubscriptions.forget` gives up after ten seconds, including time waiting for a running
   `sync`, so removing an account never hangs on a slow or unreachable server.
-
 - Add `HtmlView`, which shows an HTML document such as a message body in a platform web view.
   Scripts never run. A Content Security Policy blocks frames, forms, and every outside resource
   except remote images, styles, and fonts, which load only with `loadRemote`. Tapped web, mail,
-  and phone links go to `onOpenLink`; the view never navigates. On Android 13 and later, pages
-  without their own dark colors are darkened to match the theme.
+  and phone links go to `onOpenLink`; the view never navigates. Colors follow the theme the user
+  picked: a document without its own colors takes the theme's text and link colors, and one with
+  its own colors keeps a white page, darkened under a dark theme on Android 13 and later.
 - Add `TrailingIcons`, two touch-target-wide slots at a row's end. `FolderSettingRow` and
   `AccountGroupRow` use it, so their icons line up in the same two columns.
 - Add `InputSheet`, `InputDialog`'s text field in a `SheetFrame`.

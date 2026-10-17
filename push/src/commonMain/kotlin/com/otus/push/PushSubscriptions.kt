@@ -95,6 +95,11 @@ public class PushSubscriptions(
      * record once the login is gone.
      */
     public suspend fun forget(loginId: String) {
+        // On a real dispatcher, so the limit is wall-clock time even under a virtual-time scheduler.
+        withContext(Dispatchers.Default) { forgetWithin(loginId) }
+    }
+
+    private suspend fun forgetWithin(loginId: String) {
         withTimeoutOrNull(FORGET_WITHIN) {
             lock.withLock {
                 val saved = withContext(Dispatchers.IO) { store.records() }
