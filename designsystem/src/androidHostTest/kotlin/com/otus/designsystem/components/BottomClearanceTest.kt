@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -60,7 +61,8 @@ class BottomClearanceTest {
             ) {
                 Box(Modifier.fillMaxSize()) {
                     val bar = @Composable { Box(Modifier.width(200.dp).height(BAR)) }
-                    ActionBarHost(bar.takeIf { withBar }, Modifier.fillMaxSize()) {}
+                    // Padded like a page that keeps clear of the system bars itself.
+                    ActionBarHost(bar.takeIf { withBar }, Modifier.fillMaxSize().padding(bottom = HOST_PADDING)) {}
                     ToastHost(state, Modifier.align(Alignment.BottomCenter))
                 }
             }
@@ -70,7 +72,7 @@ class BottomClearanceTest {
         withBar = false
         compose.mainClock.advanceTimeBy(SETTLE)
         // Over the bar it keeps the bar's inset above it; without one, the same inset from the edge.
-        assertEquals(BAR + ActionBarTokens.barInset, textBottom() - aboveBar)
+        assertEquals(BAR + ActionBarTokens.barInset + HOST_PADDING, textBottom() - aboveBar)
     }
 
     @Test
@@ -135,6 +137,7 @@ class BottomClearanceTest {
 
     private companion object {
         val BAR = 80.dp
+        val HOST_PADDING = 24.dp
         const val SETTLE = 1_000L
         const val FRAME = 100L
     }
