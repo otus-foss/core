@@ -67,7 +67,7 @@ public class JmapAccountRepository(
                 ConnectOutcome.Failed(ConnectFailure.MissingService)
             }
         } catch (error: JmapException.RedirectedElsewhere) {
-            ConnectOutcome.ConfirmHost(error.host, error.origin)
+            ConnectOutcome.ConfirmHost(hostLabel(error.host, error.origin), error.origin)
         } catch (error: JmapException) {
             ConnectOutcome.Failed(error.toFailure())
         } catch (expected: LoginStoreException) {
@@ -158,3 +158,16 @@ private fun JmapLogin.toConnected() =
             Url(sessionUrl).host
         }.getOrDefault(sessionUrl),
     )
+
+/**
+ * [host] as the user should see it before trusting [origin]: with the port when it is not the
+ * scheme's default, since approving trusts that port alone and another port may run another service.
+ */
+internal fun hostLabel(
+    host: String,
+    origin: String,
+): String {
+    val port = origin.substringAfterLast(':')
+    val defaultPort = if (origin.startsWith("http://")) "80" else "443"
+    return if (port == defaultPort) host else "$host:$port"
+}

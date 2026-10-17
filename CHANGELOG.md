@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- `JmapClient.download` and `upload` refuse a `.` or `..` template value, which would move the
+  request to another path on the server. A `.` or `..` file name falls back to `download`.
+- `HtmlView` without `loadRemote` turns off DNS prefetching and makes the document's `<link>`
+  elements inert, since the Content Security Policy does not stop `dns-prefetch` or `preconnect`
+  hints from reaching the sender's server.
+- `ConnectOutcome.ConfirmHost.host` includes the port when it is not the scheme's default, so the
+  user sees which port approving it trusts.
 - Add `SettingPageRow`, a `SettingRow` that opens a page and ends in a chevron, with the page's
   value as its description. `SettingsScreen` uses it, and so does the Theme row on
   `AppearanceSettingsScreen`, which names the theme there instead of in a value button.

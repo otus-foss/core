@@ -95,6 +95,33 @@ class JmapDownloadTest {
         }
 
     @Test
+    fun dotSegmentFileNamesCannotMoveTheDownloadPath() =
+        runTest {
+            val paths = mutableListOf<String>()
+            val client =
+                JmapClient(
+                    MockEngine { request ->
+                        paths += request.url.encodedPath
+                        respond(byteArrayOf(1), headers = pngHeaders)
+                    },
+                )
+            val target = session("/download/{accountId}/{blobId}/{name}?type={type}")
+            listOf("..", ".").forEach { name ->
+                client.download(target, ADA, "contacts", "rules", "application/sieve", 10, name = name)
+            }
+            assertEquals(listOf("/download/contacts/rules/download", "/download/contacts/rules/download"), paths)
+        }
+
+    @Test
+    fun dotSegmentIdsAreRefusedWithoutARequest() =
+        runTest {
+            val client = JmapClient(MockEngine { error("A dot segment must not reach the server") })
+            assertFailsWith<JmapException.NotJmap> {
+                client.download(session("/download/{accountId}/{blobId}/x"), ADA, "contacts", "..", "image/png", 10)
+            }
+        }
+
+    @Test
     fun untrustedDownloadHostReceivesNoRequestOrCredentials() =
         runTest {
             val client = JmapClient(MockEngine { error("Untrusted host must not receive a request") })

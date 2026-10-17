@@ -31,8 +31,10 @@ public enum class PushStatus {
 }
 
 /**
- * Each login's push record as text, keyed by login id. Apps keep it in app-private storage; it
- * holds no credentials.
+ * Each login's push record as text, keyed by login id. It holds no account credentials, but it
+ * does hold each endpoint's Web Push keys, including the `auth` secret, with which anyone who
+ * knows the endpoint URL can send pushes the app accepts. Apps keep it in app-private storage
+ * that is excluded from backups.
  */
 public interface PushStateStore {
     public fun read(): Map<String, String>
