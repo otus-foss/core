@@ -27,6 +27,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.findRootCoordinates
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import com.otus.designsystem.elements.BarIconButton
@@ -148,15 +151,20 @@ public fun ActionBarHost(
     var barHeight by remember { mutableIntStateOf(0) }
     Box(modifier) {
         val bottom = if (bar == null) 0 else barHeight
-        val bottomDp = with(LocalDensity.current) { bottom.toDp() }
-        content(PaddingValues(bottom = bottomDp))
+        val density = LocalDensity.current
+        content(PaddingValues(bottom = with(density) { bottom.toDp() }))
         bar?.let {
-            ReportClearance(bottomDp)
+            // Measured from the window's bottom, since padding around the host, such as for the
+            // system bars, keeps the bar's own size from saying how high it reaches.
+            var reach by remember { mutableIntStateOf(0) }
+            ReportClearance(with(density) { reach.toDp() })
             Box(
                 Modifier
                     .align(Alignment.BottomCenter)
                     .onSizeChanged { barHeight = it.height }
-                    .windowInsetsPadding(WindowInsets.navigationBars.union(WindowInsets.ime))
+                    .onGloballyPositioned {
+                        reach = (it.findRootCoordinates().size.height - it.boundsInRoot().top).roundToInt()
+                    }.windowInsetsPadding(WindowInsets.navigationBars.union(WindowInsets.ime))
                     .padding(ActionBarTokens.barInset),
             ) { CompositionLocalProvider(LocalHostedBar provides true) { it() } }
         }
