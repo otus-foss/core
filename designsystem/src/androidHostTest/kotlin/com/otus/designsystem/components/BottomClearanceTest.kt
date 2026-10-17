@@ -125,12 +125,18 @@ class BottomClearanceTest {
         compose.mainClock.advanceTimeBy(SETTLE)
         val toast = compose.onNodeWithText("Email deleted")
         toast.performTouchInput { down(center) }
-        listOf(40.dp, 40.dp, 40.dp, 40.dp, 80.dp, 80.dp).forEachIndexed { step, by ->
+        listOf(20.dp, 40.dp, 40.dp).forEachIndexed { step, by ->
             toast.performTouchInput { moveBy(Offset(-by.toPx(), 0f)) }
             compose.mainClock.advanceTimeBy(FRAME)
             compose.captureWindow("toast-drag-${step + 1}")
         }
         toast.performTouchInput { up() }
+        repeat(3) { step ->
+            compose.mainClock.advanceTimeBy(FRAME / 2)
+            compose.captureWindow("toast-away-${step + 1}")
+        }
+        compose.mainClock.advanceTimeBy(SETTLE)
+        assertTrue(state.entries.isEmpty())
     }
 
     private fun textBottom() = compose.onNodeWithText("Sent", useUnmergedTree = true).getBoundsInRoot().bottom

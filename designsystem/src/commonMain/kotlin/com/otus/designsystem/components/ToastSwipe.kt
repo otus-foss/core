@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import com.otus.designsystem.elements.Symbol
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_close
@@ -54,10 +55,10 @@ import kotlin.math.sign
 
 /**
  * Lets the user drag [content] sideways in either direction. A darker end opens behind it on the
- * side it leaves, with a dim close symbol and "Dismiss". Past [ToastTokens.DISMISS_FRACTION] of the width the
- * symbol brightens and a haptic marks it; releasing there slides the toast
- * out and calls [onDismiss], and shorter drags spring back. [onHeld] reports whether the toast is
- * away from rest, so its timer can pause. [content] receives whether the toast is lifted.
+ * side it leaves, with a dim close symbol and "Dismiss". Past [ToastTokens.DISMISS_FRACTION] of
+ * the width they brighten and a haptic marks it; releasing there slides the toast off the screen
+ * while the end fades, then calls [onDismiss]. Shorter drags spring back. [onHeld] reports whether
+ * the toast is away from rest, so its timer can pause. [content] receives whether it is lifted.
  */
 @Composable
 internal fun ToastSwipe(
@@ -73,6 +74,7 @@ internal fun ToastSwipe(
     val fade = remember { Animatable(1f) }
     val scope = rememberCoroutineScope()
     val motionScale = LocalMotionScale.current
+    val window = LocalWindowInfo.current.containerSize.width
     val currentOnHeld by rememberUpdatedState(onHeld)
     val currentOnDismiss by rememberUpdatedState(onDismiss)
     val armed = width > 0 && abs(offset) >= width * ToastTokens.DISMISS_FRACTION
@@ -98,16 +100,18 @@ internal fun ToastSwipe(
                                         Motion.tween(MotionSpeed.Normal, MotionCurve.Exit, motionScale),
                                     )
                                 }
-                                slide(offset, offset.sign * width, MotionCurve.Exit, motionScale) { offset = it }
+                                // A whole window's width carries it past the screen's edge from anywhere.
+                                slide(offset, offset.sign * window, MotionCurve.Exit, motionScale) { offset = it }
                                 currentOnDismiss()
                             } else {
                                 slide(offset, 0f, MotionCurve.Standard, motionScale) { offset = it }
                             }
                         }
                 },
-            ).graphicsLayer { alpha = fade.value },
+            ),
     ) {
-        if (held) DismissEnd(offset, armed, Modifier.matchParentSize())
+        // The toast slides away whole; only the end behind it fades as it goes.
+        if (held) DismissEnd(offset, armed, fade.value, Modifier.matchParentSize())
         Box(Modifier.graphicsLayer { translationX = offset }) { content(held) }
     }
 }
@@ -128,12 +132,14 @@ private suspend fun slide(
  * The darker pill behind a dragged toast, from the edge it left to just under it. It stretches
  * outward, away from the drag, by up to [ToastTokens.dismissStretch], so "Dismiss" shows sooner.
  * The close symbol and "Dismiss" sit at its outer edge and stay drawn; the toast covers what it
- * has not yet uncovered. They are dim until [armed]; then they brighten.
+ * has not yet uncovered. They are dim until [armed]; then they brighten. All of it draws at
+ * [alpha], which fades it while a dismissed toast slides away.
  */
 @Composable
 private fun DismissEnd(
     offset: Float,
     armed: Boolean,
+    alpha: Float,
     modifier: Modifier,
 ) {
     val fromLeft = offset > 0f
@@ -146,12 +152,15 @@ private fun DismissEnd(
         motionTween(MotionSpeed.Quick),
         label = "Dismiss color",
     )
-    Box(modifier.dismissPill(offset, stretch)) {
+    // A layer would clip the stretch past the toast's edge, so the pill and its row fade on their own.
+    Box(modifier.dismissPill(offset, stretch, alpha)) {
         Row(
             Modifier
                 .align(if (fromLeft) AbsoluteAlignment.CenterLeft else AbsoluteAlignment.CenterRight)
-                .graphicsLayer { translationX = if (fromLeft) -stretch else stretch }
-                .padding(horizontal = ToastTokens.textInset),
+                .graphicsLayer {
+                    translationX = if (fromLeft) -stretch else stretch
+                    this.alpha = alpha
+                }.padding(horizontal = ToastTokens.textInset),
             horizontalArrangement = Arrangement.Absolute.spacedBy(ToastTokens.actionGap),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -164,13 +173,14 @@ private fun DismissEnd(
 }
 
 /**
- * Fills a pill from the side the toast left, [stretch] past that edge. It always reaches half a
+ * Fills a pill at [alpha] from the side the toast left, [stretch] past that edge. It always reaches half a
  * toast's height past [offset], to the middle of the toast's round end, so the two stay joined.
  * Only its outer end is round; the square inner end stays under the toast.
  */
 private fun Modifier.dismissPill(
     offset: Float,
     stretch: Float,
+    alpha: Float,
 ): Modifier =
     drawBehind {
         val fromLeft = offset > 0f
@@ -191,6 +201,6 @@ private fun Modifier.dismissPill(
                     },
                 )
             }
-        drawPath(pill(0f), OtusColors.bgDark)
-        drawPath(pill(border / 2f), OtusColors.strokeBgDark, style = Stroke(border))
+        drawPath(pill(0f), OtusColors.bgDark, alpha)
+        drawPath(pill(border / 2f), OtusColors.strokeBgDark, alpha, Stroke(border))
     }
