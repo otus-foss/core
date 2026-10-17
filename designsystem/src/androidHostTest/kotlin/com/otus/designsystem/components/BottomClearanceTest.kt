@@ -123,7 +123,7 @@ class BottomClearanceTest {
         compose.mainClock.advanceTimeBy(SETTLE)
         val toast = compose.onNodeWithText("Email deleted")
         toast.performTouchInput { down(center) }
-        listOf(40.dp, 40.dp, 40.dp, 40.dp).forEachIndexed { step, by ->
+        listOf(40.dp, 40.dp, 40.dp, 40.dp, 80.dp, 80.dp).forEachIndexed { step, by ->
             toast.performTouchInput { moveBy(Offset(-by.toPx(), 0f)) }
             compose.mainClock.advanceTimeBy(FRAME)
             compose.captureWindow("toast-drag-${step + 1}")
