@@ -28,10 +28,19 @@ internal object ToastTokens {
     /** Toasts behind the front one that still peek out while stacked; older ones hide until it clears. */
     const val PEEK_LIMIT = 2
 
+    /** How small a toast draws as it arrives from, or leaves to, below the group. */
+    const val AWAY_SCALE = 0.9f
+
+    /** How far a dragged toast's dismiss pill stretches out past the toast's edge, at most. */
+    val dismissStretch = 16.dp
+
+    /** How much of the drag the dismiss pill stretches out by, until [dismissStretch]. */
+    const val STRETCH_RATIO = 0.25f
+
     /** Share of its width a toast must be dragged for release to dismiss it. */
     const val DISMISS_FRACTION = 1f / 3f
 
     /** How long a toast stays on screen; one with an action stays longer to leave time to tap it. */
-    const val ACTION_MILLIS = 5_000L
-    const val PLAIN_MILLIS = 3_000L
+    const val ACTION_MILLIS = 6_000L
+    const val PLAIN_MILLIS = 4_000L
 }

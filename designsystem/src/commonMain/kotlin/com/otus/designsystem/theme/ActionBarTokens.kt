@@ -31,6 +31,9 @@ public object ActionBarTokens {
     public val tokenSize: Dp = 36.dp
     public val tokenGap: Dp = 10.dp
     public val tokenOverlap: Dp = 12.dp
+
+    /** How far two people's avatars overlap, closer than an avatar and a count so the names keep room. */
+    public val pairOverlap: Dp = 20.dp
     public val tokenRing: Dp = 2.dp
     public val dateRadius: Dp = 8.dp
     public val titleSize: TextUnit = 18.sp

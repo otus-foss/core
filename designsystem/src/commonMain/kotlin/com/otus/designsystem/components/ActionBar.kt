@@ -28,6 +28,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.findRootCoordinates
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import com.otus.designsystem.elements.BarIconButton
@@ -138,7 +141,8 @@ private fun SecondaryGroup(actions: List<BarAction>) {
 
 /**
  * Places [bar] over the bottom of [content] at [actionBarInset]. [content] receives bottom padding
- * that lets its last item scroll above the bar; a null [bar] leaves the page as it is.
+ * that lets its last item scroll above the bar; a null [bar] leaves the page as it is. How high
+ * the bar reaches goes to [LocalBottomClearance], so toasts float above it.
  */
 @Composable
 public fun ActionBarHost(
@@ -149,14 +153,21 @@ public fun ActionBarHost(
     var barHeight by remember { mutableIntStateOf(0) }
     Box(modifier) {
         val bottom = if (bar == null) 0 else barHeight
-        content(PaddingValues(bottom = with(LocalDensity.current) { bottom.toDp() }))
+        val density = LocalDensity.current
+        content(PaddingValues(bottom = with(density) { bottom.toDp() }))
         bar?.let {
+            // Measured from the window's bottom, since padding around the host, such as for the
+            // system bars, keeps the bar's own size from saying how high it reaches.
+            var reach by remember { mutableIntStateOf(0) }
+            ReportClearance(with(density) { reach.toDp() })
             Box(
                 Modifier
                     .align(Alignment.BottomCenter)
                     .pinnedChrome(PageChrome.ActionBar)
                     .onSizeChanged { barHeight = it.height }
-                    .actionBarInset(),
+                    .onGloballyPositioned {
+                        reach = (it.findRootCoordinates().size.height - it.boundsInRoot().top).roundToInt()
+                    }.actionBarInset(),
             ) { CompositionLocalProvider(LocalHostedBar provides true) { it() } }
         }
     }

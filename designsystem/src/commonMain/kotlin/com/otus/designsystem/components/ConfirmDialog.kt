@@ -11,7 +11,7 @@ import com.otus.designsystem.theme.PageTokens
 
 /**
  * Asks before a destructive change, such as removing an account or deleting a folder. [message]
- * says what will happen and what is kept. Cancel, Back, and the scrim change nothing;
+ * says what will happen and what is kept. Cancel, or [dismissLabel], Back, and the scrim change nothing;
  * [confirmLabel] closes the popup and then runs [onConfirm].
  */
 @Composable
@@ -21,11 +21,12 @@ public fun ConfirmDialog(
     confirmLabel: String,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
+    dismissLabel: String = "Cancel",
 ) {
     DialogFrame(title, onDismiss, closeButton = false) {
         Text(message, color = OtusColors.text2)
         Row(horizontalArrangement = Arrangement.spacedBy(PageTokens.rowGap)) {
-            ActionButton("Cancel", onDismiss, Modifier.weight(1f))
+            ActionButton(dismissLabel, onDismiss, Modifier.weight(1f))
             ActionButton(
                 confirmLabel,
                 {

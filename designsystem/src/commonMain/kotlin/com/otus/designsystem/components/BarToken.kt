@@ -30,12 +30,13 @@ public sealed interface BarToken {
         override val key: String = "person:${avatar.initials}:${avatar.colorIndex}"
     }
 
-    /** Several people: the [first] one's avatar, then the number of others. */
+    /** Several people: the [first] one's avatar, then the [second] one's, or the number of others without it. */
     public class People(
         public val first: ChipAvatar,
         public val count: Int,
+        public val second: ChipAvatar? = null,
     ) : BarToken {
-        override val key: String = "people:${first.initials}:$count"
+        override val key: String = "people:${first.initials}:${second?.initials}:$count"
     }
 
     /** A number of items, such as selected messages. */
@@ -63,9 +64,10 @@ internal fun BarTokenView(token: BarToken) {
         }
 
         is BarToken.People -> {
-            Row(horizontalArrangement = Arrangement.spacedBy(-ActionBarTokens.tokenOverlap)) {
+            val overlap = if (token.second == null) ActionBarTokens.tokenOverlap else ActionBarTokens.pairOverlap
+            Row(horizontalArrangement = Arrangement.spacedBy(-overlap)) {
                 TokenAvatar(token.first)
-                NumberCircle("+${token.count - 1}", ring = true)
+                token.second?.let { RingedAvatar(it) } ?: NumberCircle("+${token.count - 1}", ring = true)
             }
         }
 
@@ -81,11 +83,18 @@ internal fun BarTokenView(token: BarToken) {
 
 @Composable
 private fun TokenAvatar(avatar: ChipAvatar) {
+    PersonAvatar(avatar, ActionBarTokens.tokenSize)
+}
+
+/** An avatar with a `bgDark` ring, which separates it from the avatar it overlaps. */
+@Composable
+private fun RingedAvatar(avatar: ChipAvatar) {
     Avatar(
         avatar.initials,
         image = rememberAvatarImage(avatar.imageBytes),
         colorIndex = avatar.colorIndex,
         size = ActionBarTokens.tokenSize,
+        ring = BorderStroke(ActionBarTokens.tokenRing, OtusColors.bgDark),
     )
 }
 

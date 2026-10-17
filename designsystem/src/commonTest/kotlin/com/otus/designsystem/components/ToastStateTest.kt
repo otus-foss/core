@@ -39,7 +39,7 @@ class ToastStateTest {
         state.show(ToastMessage("Email deleted", undo, group = "delete"))
         assertTrue(state.isShowing("delete"))
         assertFalse(state.isShowing("archive"))
-        state.advance(5_000)
+        state.advance(6_000)
         assertFalse(state.isShowing("delete"))
         assertTrue(state.messages.isEmpty())
     }
@@ -57,10 +57,37 @@ class ToastStateTest {
         val state = ToastState()
         state.show(ToastMessage("Draft saved"))
         state.show(ToastMessage("Email deleted", undo))
-        state.advance(3_000)
+        state.advance(4_000)
         assertEquals(listOf(true, false), state.entries.map { it.leaving })
         state.advance(2_000)
         assertTrue(state.entries.all { it.leaving })
+    }
+
+    @Test
+    fun aStickyToastWaitsAndOnlyAToastLeftWithoutItsActionReportsClosing() {
+        val state = ToastState()
+        var closed = 0
+        state.show(ToastMessage("Couldn't send", undo, sticky = true))
+        state.advance(60_000)
+        assertFalse(state.entries.single().leaving)
+        state.remove(state.entries.single(), acted = true)
+        state.show(ToastMessage("Draft discarded", undo, onClose = { closed++ }))
+        state.remove(state.entries.single(), acted = true)
+        assertEquals(0, closed, "Undo ran, so nothing is left to finish")
+        state.show(ToastMessage("Draft discarded", undo, onClose = { closed++ }))
+        state.advance(6_000)
+        state.remove(state.entries.single())
+        assertEquals(1, closed)
+    }
+
+    @Test
+    fun aToastCanStayForItsOwnDuration() {
+        val state = ToastState()
+        state.show(ToastMessage("Sending…", undo, durationMillis = 30_000))
+        state.advance(29_000)
+        assertFalse(state.entries.single().leaving)
+        state.advance(1_000)
+        assertTrue(state.entries.single().leaving)
     }
 
     @Test
