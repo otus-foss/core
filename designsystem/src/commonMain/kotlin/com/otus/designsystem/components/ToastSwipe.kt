@@ -3,7 +3,6 @@ package com.otus.designsystem.components
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animate
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
@@ -54,7 +53,7 @@ import kotlin.math.sign
 
 /**
  * Lets the user drag [content] sideways in either direction. A darker end opens behind it on the
- * side it leaves, with a dim close symbol. Past [ToastTokens.DISMISS_FRACTION] of the width the
+ * side it leaves, with a dim close symbol and "Dismiss". Past [ToastTokens.DISMISS_FRACTION] of the width the
  * symbol brightens and a haptic marks it; releasing there slides the toast
  * out and calls [onDismiss], and shorter drags spring back. [onHeld] reports whether the toast is
  * away from rest, so its timer can pause. [content] receives whether the toast is lifted.
@@ -125,9 +124,10 @@ private suspend fun slide(
 ) { value, _ -> onFrame(value) }
 
 /**
- * The darker pill behind a dragged toast, from the edge it left to just under it. A close symbol
- * sits centered in the uncovered strip until it reaches its inset at that edge. It is dim until
- * [armed]; then it brightens, and "Dismiss" fades in beside it once the label is fully uncovered.
+ * The darker pill behind a dragged toast, from the edge it left to just under it. It stretches
+ * outward, away from the drag, by up to [ToastTokens.dismissStretch], so "Dismiss" shows sooner.
+ * The close symbol and "Dismiss" sit at its outer edge and stay drawn; the toast covers what it
+ * has not yet uncovered. They are dim until [armed]; then they brighten.
  */
 @Composable
 private fun DismissEnd(
@@ -136,41 +136,25 @@ private fun DismissEnd(
     modifier: Modifier,
 ) {
     val fromLeft = offset > 0f
-    val reveal = abs(offset)
-    val density = LocalDensity.current
-    var needed by remember { mutableIntStateOf(Int.MAX_VALUE) }
-    val inset =
-        with(density) {
-            ((reveal - PanelTokens.iconSize.toPx()) / 2f).coerceIn(0f, ToastTokens.textInset.toPx()).toDp()
+    val stretch =
+        with(LocalDensity.current) {
+            (abs(offset) * ToastTokens.STRETCH_RATIO).coerceAtMost(ToastTokens.dismissStretch.toPx())
         }
     val color by animateColorAsState(
         if (armed) OtusColors.text1 else OtusColors.text3,
         motionTween(MotionSpeed.Quick),
         label = "Dismiss color",
     )
-    val labelAlpha by animateFloatAsState(
-        if (armed && reveal >= needed) 1f else 0f,
-        motionTween(MotionSpeed.Quick),
-        label = "Dismiss label",
-    )
-    Box(modifier.dismissPill(offset)) {
+    Box(modifier.dismissPill(offset, stretch)) {
         Row(
             Modifier
                 .align(if (fromLeft) AbsoluteAlignment.CenterLeft else AbsoluteAlignment.CenterRight)
-                .onSizeChanged { needed = it.width }
-                .padding(horizontal = inset),
+                .graphicsLayer { translationX = if (fromLeft) -stretch else stretch }
+                .padding(horizontal = ToastTokens.textInset),
             horizontalArrangement = Arrangement.Absolute.spacedBy(ToastTokens.actionGap),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            val label = @Composable {
-                Text(
-                    "Dismiss",
-                    Modifier.graphicsLayer { alpha = labelAlpha },
-                    style = panelTextStyle(),
-                    color = color,
-                    maxLines = 1,
-                )
-            }
+            val label = @Composable { Text("Dismiss", style = panelTextStyle(), color = color, maxLines = 1) }
             if (!fromLeft) label()
             CompositionLocalProvider(LocalContentColor provides color) { Symbol(Res.drawable.symbol_close) }
             if (fromLeft) label()
@@ -178,11 +162,17 @@ private fun DismissEnd(
     }
 }
 
-/** Fills a pill from the side the toast left, reaching a toast's height past [offset] so it tucks under it. */
-private fun Modifier.dismissPill(offset: Float): Modifier =
+/**
+ * Fills a pill from the side the toast left, [stretch] past that edge, reaching a toast's height
+ * past [offset] so it tucks under it.
+ */
+private fun Modifier.dismissPill(
+    offset: Float,
+    stretch: Float,
+): Modifier =
     drawBehind {
-        val reach = minOf(abs(offset) + size.height, size.width)
-        val left = if (offset > 0f) 0f else size.width - reach
+        val reach = minOf(abs(offset) + size.height, size.width) + stretch
+        val left = if (offset > 0f) -stretch else size.width + stretch - reach
         val radius = CornerRadius(size.height / 2f)
         val border = PanelTokens.borderWidth.toPx()
         drawRoundRect(OtusColors.bgDark, Offset(left, 0f), Size(reach, size.height), radius)
