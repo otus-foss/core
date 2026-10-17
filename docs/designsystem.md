@@ -16,7 +16,7 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   `parseHexColor`), `ThemeTokens`, `Motion` (with `MotionSpeed`, `MotionCurve`, and
   `LocalMotionScale`), and tokens for avatars, calendars, control
   feedback, pages, panels, refresh, sheets, the sidebar, the action bar (`ActionBarTokens`), and
-  compose fields (`ComposeTokens`).
+  compose fields (`ComposeTokens`), and reply threads (`ThreadTokens`).
   `panelTextStyle()` uses Figtree.
 - `elements`: `ActionButton`, `ActionRow`, `AnimatedText`, `Avatar`, `AvatarImage`, `BarIconButton`, `CalendarDay`,
   `AddressPill`, `ButtonPill`, `ComposeField`, `HtmlView`, `QuoteChip`, `RichTextBody` (with `RichText` and `TextFormat`),
@@ -31,7 +31,7 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   `PickerSearch`, `PreviewCard`, `PullToRefresh`, `ReorderableColumn`, `SelectionSheet`, `SheetFrame`, `SettingRow`,
   `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarRail`, `SummaryCard` and `PersonText` (with `NamedAvatar`), `ValueToken`, `ValuePicker`, `Collapsible`, `CollapsibleTree`, `AvatarStack`, `ContextMenu` (with `MenuAction`),
   `Dropdown` (with `DropdownRow`), `OptionsMenu` (with `OptionsItem`), `FormattingBar` (with
-  `FormatButton` and `CompactSendButton`), `RecipientLine` (with `Recipient`, `AddressInput`, and `RecipientChip`),
+  `FormatButton` and `CompactSendButton`), `RecipientLine` (with `Recipient`, `AddressInput`, and `RecipientChip`), `ThreadStrip` (with `ThreadEntry` and `ThreadMessageRow`),
   `PersonAvatar`, `BarNotice`, `ClosableSheet` (with `SheetConfirm`), `SegmentedToggle`, `PickRow` (with `PickMark`), `PersonRow`, `RowGroup` (with `GroupRow`), `TimeWheelPicker`,
   `ResizableImage` (with `ImageSizing` and `ImagePreset`), `ListCaption`,
   `SidebarSwipeArea`, `SlidingOverlay`, `SlidingPages`, `SwipeActions`, `ThemeCard`, and `ToastHost`
@@ -133,7 +133,16 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   Backspace in an empty field removes the last chip. `RichTextBody` edits the formatted body,
   built on the compose-rich-editor library, which stays an implementation detail behind
   `RichText`: it reads and writes HTML and plain text. `QuoteChip` stands for the collapsed
-  original at the end of a reply.
+  original at the end of a forward. With `collapsedAfter`, a `RecipientLine` holding more people
+  shows that many and a "+N more" chip, without its field, until the chip is tapped; its label
+  then stays beside the first row (`ComposeLine` with `topAligned`).
+- `ThreadStrip` shows a reply's thread above the action bar in a `bgDark` panel. Up to three
+  `ThreadEntry` items show as 40 dp rows with a 22 dp avatar, the name, and the date, divided by
+  hairlines. More than three fold into one 56 dp row: an `AvatarStack`, the caller's summary and
+  `text3` detail, and an unfold symbol. The whole strip is one button. `ThreadMessageRow` is a
+  message in the thread's sheet: a 32 dp avatar, name, date, and a one-line preview.
+- `BarToken.People` takes an optional second avatar, drawn overlapping the first by
+  `ActionBarTokens.pairOverlap` with a ring, for mail to several people.
 - `FormattingBar` docks above the keyboard: a `bgDark` 56 dp row with an optional leading button,
   such as Attach, behind a divider, then Bold, Italic, Bulleted list, Numbered list, Link, and
   Clear formatting. The buttons scroll sideways with faded edges, and a trailing slot, such as

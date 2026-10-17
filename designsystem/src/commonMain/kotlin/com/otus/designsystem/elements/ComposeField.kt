@@ -75,12 +75,14 @@ public fun ComposeField(
 
 /**
  * The shared layout: a 48 dp line with the label in its column first and a hairline below, for
- * these fields and [com.otus.designsystem.components.RecipientLine].
+ * these fields and [com.otus.designsystem.components.RecipientLine]. A [topAligned] line, one that
+ * wraps, keeps its label beside its first row.
  */
 @Composable
 internal fun ComposeLine(
     label: String,
     modifier: Modifier,
+    topAligned: Boolean = false,
     value: @Composable RowScope.() -> Unit,
 ) {
     Row(
@@ -90,15 +92,18 @@ internal fun ComposeLine(
             .bottomHairline()
             .padding(horizontal = PageTokens.textInset),
         horizontalArrangement = Arrangement.spacedBy(ComposeTokens.labelGap),
-        verticalAlignment = Alignment.CenterVertically,
+        // A line that wraps keeps its label beside its first row.
+        verticalAlignment = if (topAligned) Alignment.Top else Alignment.CenterVertically,
     ) {
         // The field names itself, so the label is not read twice.
-        Text(
-            label,
-            Modifier.widthIn(min = ComposeTokens.labelWidth).clearAndSetSemantics {},
-            style = panelTextStyle(),
-            color = OtusColors.text2,
-        )
+        Box(
+            Modifier
+                .heightIn(
+                    min = PanelTokens.touchTarget,
+                ).widthIn(min = ComposeTokens.labelWidth)
+                .clearAndSetSemantics {},
+            contentAlignment = Alignment.CenterStart,
+        ) { Text(label, style = panelTextStyle(), color = OtusColors.text2) }
         value()
     }
 }
