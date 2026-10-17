@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add `ContextPanelScope.fillRail`, which stretches a chip across the chip rail. A `PickerChip`
+  given a width fills it and puts its chevron at the end.
 - Add `HtmlView`, which shows an HTML document such as a message body in a platform web view.
   Scripts never run. A Content Security Policy blocks frames, forms, and every outside resource
   except remote images, styles, and fonts, which load only with `loadRemote`. Tapped web, mail,

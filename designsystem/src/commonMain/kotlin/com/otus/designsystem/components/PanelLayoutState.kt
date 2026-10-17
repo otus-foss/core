@@ -16,6 +16,10 @@ internal class PanelLayoutState {
     private var viewport: LayoutCoordinates? = null
     private val items = mutableMapOf<Any, PanelHole>()
 
+    /** The chip rail's visible width in pixels, for a chip that fills it. */
+    var railWidth by mutableIntStateOf(0)
+        private set
+
     fun trackPanel(coordinates: LayoutCoordinates) {
         panel = coordinates
         revision++
@@ -33,6 +37,7 @@ internal class PanelLayoutState {
 
     fun trackViewport(coordinates: LayoutCoordinates) {
         viewport = coordinates
+        railWidth = coordinates.size.width
         revision++
     }
 
