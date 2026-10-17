@@ -1,7 +1,5 @@
 package com.otus.designsystem.components
 
-import android.graphics.Bitmap
-import android.graphics.Canvas
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -18,10 +16,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
 import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 import androidx.navigationevent.compose.rememberNavigationEventDispatcherOwner
@@ -34,7 +34,6 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
-import java.io.File
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -96,26 +95,40 @@ class BottomClearanceTest {
             }
         }
         compose.mainClock.advanceTimeBy(SETTLE)
-        capture("toast-shown")
+        compose.captureWindow("toast-shown")
         compose.onNodeWithText("Undo").performClick()
         listOf(60L, 60L, 60L).forEachIndexed { step, millis ->
             compose.mainClock.advanceTimeBy(millis)
-            capture("toast-leaving-${step + 1}")
+            compose.captureWindow("toast-leaving-${step + 1}")
         }
         compose.mainClock.advanceTimeBy(SETTLE)
         assertTrue(state.entries.isEmpty())
     }
 
-    /** Saves the screen to the build's reports, where the toast's steps can be compared by eye. */
-    private fun capture(name: String) {
-        val out = File("build/reports/toasts").apply { mkdirs() }
-        // A paused clock never finishes the redraw captureToImage waits for, so this draws the window itself.
-        compose.runOnUiThread {
-            val view = compose.activity.window.decorView
-            val bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
-            view.draw(Canvas(bitmap))
-            File(out, "$name.png").outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
+    @Test
+    fun draggingUncoversDismissAndStretchesThePill() {
+        val state = ToastState().apply { show(ToastMessage("Email deleted", ToastAction("Undo") {})) }
+        compose.mainClock.autoAdvance = false
+        compose.setContent {
+            OtusTheme {
+                CompositionLocalProvider(
+                    LocalNavigationEventDispatcherOwner provides rememberNavigationEventDispatcherOwner(parent = null),
+                ) {
+                    Box(Modifier.fillMaxSize().background(OtusColors.bgRegular)) {
+                        ToastHost(state, Modifier.align(Alignment.Center))
+                    }
+                }
+            }
         }
+        compose.mainClock.advanceTimeBy(SETTLE)
+        val toast = compose.onNodeWithText("Email deleted")
+        toast.performTouchInput { down(center) }
+        listOf(40.dp, 40.dp, 40.dp, 40.dp).forEachIndexed { step, by ->
+            toast.performTouchInput { moveBy(Offset(-by.toPx(), 0f)) }
+            compose.mainClock.advanceTimeBy(FRAME)
+            compose.captureWindow("toast-drag-${step + 1}")
+        }
+        toast.performTouchInput { up() }
     }
 
     private fun textBottom() = compose.onNodeWithText("Sent", useUnmergedTree = true).getBoundsInRoot().bottom
@@ -123,5 +136,6 @@ class BottomClearanceTest {
     private companion object {
         val BAR = 80.dp
         const val SETTLE = 1_000L
+        const val FRAME = 100L
     }
 }
