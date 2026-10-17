@@ -31,7 +31,10 @@ public sealed interface ConnectOutcome {
         val reason: ConnectFailure,
     ) : ConnectOutcome
 
-    /** Sign-in would go to [host], which the user did not enter. Retry with [origin] trusted to continue. */
+    /**
+     * Sign-in would go to [host], which the user did not enter, with its port unless it is the
+     * default. Retry with [origin] trusted to continue.
+     */
     public data class ConfirmHost(
         val host: String,
         val origin: String,
