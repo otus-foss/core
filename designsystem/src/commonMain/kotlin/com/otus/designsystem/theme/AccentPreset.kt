@@ -18,5 +18,14 @@ public enum class AccentPreset(
     public companion object {
         /** The preset whose color is [color], or null for a custom color. */
         public fun of(color: Color): AccentPreset? = entries.firstOrNull { it.color == color }
+
+        /** The preset nearest to [color], for places that offer only presets, such as the app icon. */
+        public fun closest(color: Color): AccentPreset =
+            entries.minBy { preset ->
+                val red = preset.color.red - color.red
+                val green = preset.color.green - color.green
+                val blue = preset.color.blue - color.blue
+                red * red + green * green + blue * blue
+            }
     }
 }

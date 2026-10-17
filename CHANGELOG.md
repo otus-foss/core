@@ -67,12 +67,16 @@
   the toast. `ToastState.isShowing(group)` tells whether a group's toast is still up, and
   `ToastState.messages` lists the messages on screen. See
   [the design system guide](docs/designsystem.md).
-- Add the brand assets: source SVGs in `designsystem/brand/`, the `brand_otus_logo` and
-  `brand_owl` drawables, and Mail's adaptive launcher icon `otus_mail_icon` as an Android
-  resource.
-- Add `MailLaunch`, Mail's launch animation, which loops while the app loads and shrinks and
-  fades out once it is done. It comes with `BrandTokens`, `MotionCurve.Rise`,
-  `Motion.LAUNCH_MILLIS`, `Motion.LAUNCH_LOOP_MILLIS`, and `Motion.scaled(millis, scale)`.
+- Add the brand assets: source SVGs in `designsystem/brand/`, `tools/brand_drawables.py`, the
+  `brand_otus_logo`, `brand_owl`, and `symbol_owl` drawables, and Mail's launcher icons
+  `otus_mail_icon_<name>` in Monochrome and each preset accent as Android resources.
+- Add `MailLaunch`, Mail's launch animation in the current theme's colors, which loops while the
+  app loads and shrinks and fades out once it is done. It comes with `AppIconStyle`,
+  `BrandTokens`, `MotionCurve.Rise`, `Motion.LAUNCH_MILLIS`, `Motion.LAUNCH_LOOP_MILLIS`, and
+  `Motion.scaled(millis, scale)`.
+- Add `AccentPreset.closest`.
+- Add `AppIconSettingsState` and `AppIconSetting`, the App icon row an app that can switch its
+  launcher icon adds to the appearance page's Look section.
 - Add the Ink theme, darker than Otus with surfaces closer together, and custom themes (decision
   0014). `ThemeColor` names the ten colors a user can change. `ThemeChoice` keeps a list of
   `CustomTheme`s, and `withColor` on a built-in theme creates and selects a new custom theme, so
