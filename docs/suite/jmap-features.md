@@ -134,8 +134,9 @@ app sees Read later as an ordinary folder.
 | `Identity/get` | Used | Reads `email` only, to list sending addresses under each account. Needs submission on the session and the mail account. Wildcard identities such as `*@example.org` are kept. |
 | `Identity/get` for the From field | In progress | On Mail `feat/send`, compose loads every account's identities, with `textSignature` and `htmlSignature`, for the Send-from dropdown. |
 | `Identity/set` (names, signatures, reply-to) | Planned | Signatures live on the server identity: one per identity, as `htmlSignature` and `textSignature`. Settings › Signatures on Mail `feat/send` will edit and copy them. |
-| `EmailSubmission/set` | In progress | Mail `feat/send` sends a draft with no envelope and files it in Sent through `onSuccessUpdateEmail`. Mail #26 still plans the offline queue and the undo-send window. |
-| `EmailSubmission/get`, delayed send | No plan | |
+| `EmailSubmission/set` | In progress | Mail `feat/send` sends a draft with no envelope and files it in Sent through `onSuccessUpdateEmail`, after a five-second Undo window on the device. Mail #26 still plans the offline queue. |
+| Delayed send (`maxDelayedSend`, `HOLDUNTIL`, `undoStatus`) | In progress | Schedule send on Mail `feat/send`, hidden when `maxDelayedSend` is 0. Undo cancels with `undoStatus: canceled`. |
+| `EmailSubmission/get` | No plan | |
 
 ### Sieve (rules)
 

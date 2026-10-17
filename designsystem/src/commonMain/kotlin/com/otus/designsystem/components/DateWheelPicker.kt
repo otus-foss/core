@@ -118,7 +118,7 @@ private fun DatePickerConfirm(
 }
 
 @Composable
-private fun DatePickerColumn(
+internal fun DatePickerColumn(
     title: String,
     options: List<String>,
     selected: Int,

@@ -32,7 +32,7 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   `SettingToggleRow`, `SettingsSection`, `SpecificDatePicker`, `Sidebar`, `SidebarRail`, `SummaryCard` and `PersonText` (with `NamedAvatar`), `ValueToken`, `ValuePicker`, `Collapsible`, `CollapsibleTree`, `AvatarStack`, `ContextMenu` (with `MenuAction`),
   `Dropdown` (with `DropdownRow`), `OptionsMenu` (with `OptionsItem`), `FormattingBar` (with
   `FormatButton` and `CompactSendButton`), `RecipientLine` (with `Recipient`, `AddressInput`, and `RecipientChip`),
-  `PersonAvatar`, `ClosableSheet` (with `SheetConfirm`), `SegmentedToggle`, `PickRow` (with `PickMark`), `PersonRow`,
+  `PersonAvatar`, `ClosableSheet` (with `SheetConfirm`), `SegmentedToggle`, `PickRow` (with `PickMark`), `PersonRow`, `RowGroup` (with `GroupRow`), `TimeWheelPicker`,
   `ResizableImage` (with `ImageSizing` and `ImagePreset`), `ListCaption`,
   `SidebarSwipeArea`, `SlidingOverlay`, `SlidingPages`, `SwipeActions`, `ThemeCard`, and `ToastHost`
   (with `ToastState` and `ToastMessage`).
@@ -145,7 +145,8 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   act, open more with a chevron, or switch an option, with dividers between groups.
 - `ClosableSheet` is a sheet titled at its start with a ✕ at its end and an optional full-width
   `SheetConfirm` button at the bottom; `SheetFrame` shares its surface. `SegmentedToggle` picks one
-  of a few options with a `bgLight` fill. `PickRow` is a sheet choice with a `text1` radio or
+  of a few options with a `bgLight` fill. `RowGroup` puts `GroupRow`s, with an icon, a label, and a value or a chevron, on one
+  `bgRegular` card. `TimeWheelPicker` picks a time like the date chooser. `PickRow` is a sheet choice with a `text1` radio or
   checkbox, never the accent, and dims without an action. `PersonRow` opens an address's page,
   with an avatar, a `text2` or muted `text3` line, and a chevron. `ResizableImage` shows a
   signature image with a selection outline, a ✕, a corner handle that snaps to `ImagePreset`s, and
