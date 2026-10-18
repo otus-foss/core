@@ -8,11 +8,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import com.otus.designsystem.elements.ButtonPill
 import com.otus.designsystem.elements.Symbol
 import com.otus.designsystem.theme.InboxTokens
 import com.otus.designsystem.theme.OtusColors
@@ -47,7 +47,7 @@ public fun EmptyState(
                 color = OtusColors.text2,
                 textAlign = TextAlign.Center,
             )
-            if (actionLabel != null) TextButton(onClick = onAction) { Text(actionLabel) }
+            if (actionLabel != null) ButtonPill(actionLabel, onAction, fill = OtusColors.bgLight)
         }
     }
 }
