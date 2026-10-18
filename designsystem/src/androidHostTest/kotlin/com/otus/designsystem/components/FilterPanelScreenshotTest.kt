@@ -44,6 +44,27 @@ class FilterPanelScreenshotTest {
         }
 
     @Test
+    fun fillHeight() =
+        compose.screenScreenshot("filter_panel_fill_height") {
+            WithBackDispatcher {
+                FilterPanel(
+                    open = true,
+                    collapsedHeight = 112.dp,
+                    onDismiss = {},
+                    header = { FilterPanelHeader("Metadata", {}, onBack = {}) },
+                    footer = { FilterPanelFooter("Show 30 conversations", {}, {}) },
+                    modifier = Modifier.padding(8.dp),
+                    fillHeight = true,
+                ) {
+                    FilterSection("Type", Modifier.padding(horizontal = FilterTokens.bodyInset)) {
+                        FilterChip("Newsletters", selected = false, onClick = {})
+                        FilterChip("Calendar invites", selected = true, onClick = {})
+                    }
+                }
+            }
+        }
+
+    @Test
     fun footerCounting() =
         compose.screenshot("filter_panel_footer_counting") {
             FilterPanelFooter("Show conversations", {}, {}, counting = true)

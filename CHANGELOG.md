@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Add the parts of the compact filter panel: `FilterRowCard`, `FilterValueRow`, `PeopleLine`
+  with `PersonChip`, and `FilterPickRow`, plus `FilterTokens` for their sizes and
+  `FilterTokens.FOLDER_MAX_DEPTH`.
+- `FilterPanel` takes `fillHeight`, which keeps the panel at its full height on short pages.
+- Add `DateRangeCalendar`, the calendar of `DateRangePicker` on its own, to embed in a page.
+- `FilterFolderRow` ends in the same check circle as `FilterPickRow` instead of a checkbox.
+- Add the `symbol_check_circle_fill`, `symbol_radio_button_unchecked`, `symbol_hourglass_empty`,
+  and `symbol_account_circle` symbols (Material Symbols Rounded, Apache 2.0).
 - `IconButton` takes a `badgeCount` and draws it outside its circle, so the filter button's count
   is no longer cut off. It replaces `BadgedSymbol`, which is removed.
 - A swipe reveal shrinks its edge fillet and free-end corner together while it is narrow, so it

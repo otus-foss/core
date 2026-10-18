@@ -39,7 +39,8 @@ import com.otus.designsystem.theme.panelTextStyle
 /**
  * One folder of a checkable folder tree, 48 dp tall: a chevron for folders with subfolders
  * ([expanded] is null for others), the [glyph], the [folder]'s name after its `text3` path, and a
- * checkbox at the end. Each depth level indents [FilterTokens.folderIndent], up to five levels.
+ * check circle at the end. Each depth level indents [FilterTokens.folderIndent], up to
+ * [FilterTokens.FOLDER_MAX_DEPTH] levels.
  */
 @Composable
 public fun FilterFolderRow(
@@ -75,7 +76,10 @@ public fun FilterFolderRow(
                     }
                 }
             }.clickable(enabled = enabled, onClick = onCheck)
-            .padding(start = FilterTokens.folderIndent * depth.coerceIn(0, MAX_INDENT), end = FilterTokens.bodyInset),
+            .padding(
+                start = FilterTokens.folderIndent * depth.coerceIn(0, FilterTokens.FOLDER_MAX_DEPTH - 1),
+                end = FilterTokens.bodyInset,
+            ),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FilterTokens.chipIconGap),
     ) {
@@ -103,7 +107,7 @@ public fun FilterFolderRow(
         )
         Spacer(Modifier.width(PanelTokens.iconGap))
         Box(Modifier.alpha(if (enabled) 1f else OtusAlpha.DISABLED)) {
-            PickMarkView(PickMark(selected = check != FolderCheck.Off, multiple = true))
+            FilterPickMark(selected = check != FolderCheck.Off)
         }
     }
 }
@@ -122,5 +126,3 @@ private fun folderState(
         },
         "included with parent".takeIf { check == FolderCheck.Included },
     ).joinToString(", ")
-
-private const val MAX_INDENT = 4

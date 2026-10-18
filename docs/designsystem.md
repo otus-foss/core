@@ -39,6 +39,7 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   `PersonAvatar`, `BarNotice`, `ClosableSheet` (with `SheetConfirm`), `SegmentedToggle`, `PickRow` (with `PickMark`), `PersonRow`, `RowGroup` (with `GroupRow`), `TimeWheelPicker`,
   `ResizableImage` (with `ImageSizing` and `ImagePreset`), `ListCaption`,
   `FilterPanel`, `FilterPanelHeader`, `FilterPanelFooter`, `FilterSection`, `FilterFolderRow` (with `FolderCheck` and `TreeFolder`),
+  `FilterRowCard`, `FilterValueRow`, `PeopleLine`, `PersonChip`, `FilterPickRow`, `DateRangeCalendar`,
   `SidebarSwipeArea`, `SlidingOverlay`, `SlidingPages`, `SwipeActions`, `ThemeCard`, and `ToastHost`
   (with `ToastState` and `ToastMessage`).
 - Settings rows follow Notion's settings pages: flat rows with a title and `text2` description
@@ -323,8 +324,20 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   checkbox, a radio, or a button. A `ChipLabel`'s prefix, such as a folder's parents, shows in `text3`.
   `FilterPanelFooter` has a Reset pill, dimmed with `OtusAlpha.DIMMED` while there is nothing to
   reset, and the primary button, whose label screen readers announce politely when it changes.
+  With `fillHeight`, the panel takes all of its room, so a short page keeps the height of a long
+  one and leaves space above the footer. Slide between its pages with `SlidingPages`.
   `FilterFolderRow` is one folder of a checkable tree: a chevron for parents, a `FolderGlyph`, the
-  name after an optional `text3` path, and a checkbox, dimmed while a parent includes it.
+  name after an optional `text3` path, and a check circle, dimmed while a parent includes it. It
+  indents up to `FilterTokens.FOLDER_MAX_DEPTH` levels.
+  `FilterRowCard` puts a filter page's rows on one `bgRegular` card with a `strokeBgDark` border
+  and lines. `FilterValueRow` opens a page, such as Folders, with its value at the end in `text3`
+  while it is the default and `text2` once set. `PeopleLine` is a line of the People card: a
+  `text3` label column, a `PersonChip` for each picked person, with an avatar, a name, and a ✕
+  read as "Remove <name>", and a `text3` placeholder in the rest; a tap anywhere else opens the
+  page. `FilterPickRow` is a 56 dp choice on a filter page, ending in an `accentLight` filled
+  check circle while chosen and a `text3` empty circle while not. `DateRangeCalendar` is the
+  calendar of `DateRangePicker` without its summary and shortcuts, for a page that has its own,
+  in a bounded height such as `FilterTokens.rangeCalendarHeight`.
   `FolderGlyph` is a filled folder in its `FolderColor`, or an outlined symbol in `text3`.
   `IconButton` takes a `badgeCount`, a small `accentLight` count on its top end, such as the
   active filters on the filter button.
