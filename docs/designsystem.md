@@ -286,8 +286,8 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   such as Attach, behind a divider, then Bold, Italic, Bulleted list, Numbered list, Link, and
   Clear formatting. The buttons scroll sideways with faded edges, and a trailing slot, such as
   `CompactSendButton`, stays pinned. An active format gets a `bgLight` fill, never the accent.
-  Over the keyboard the row reaches the page gap at both sides. `CompactSendButton` has the
-  action bar's collapsed action shape and sits flush at the row's end, its accent border over
+  Over the keyboard the row reaches the page gap at both sides. `CompactSendButton` is a circle as
+  tall as the row and sits flush at the row's end, its accent border over
   the row's.
 - `BarMorph` turns a `FormattingBar` into a full `ActionBar` and back: each part takes the other's
   height, then its width, so the row splits into the group and shell. The content blurs while the
