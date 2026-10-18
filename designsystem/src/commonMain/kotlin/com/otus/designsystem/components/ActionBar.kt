@@ -34,6 +34,7 @@ import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import com.otus.designsystem.elements.BarAddButton
 import com.otus.designsystem.elements.BarIconButton
 import com.otus.designsystem.theme.ActionBarTokens
 import com.otus.designsystem.theme.OtusColors
@@ -48,10 +49,10 @@ import kotlin.math.roundToInt
  * The whole shell then runs the primary. A bar that takes over from another, such as a page's bar
  * opening over the list's, moves its shell and action from where the other drew them in one motion;
  * see [BarEntry]. A [minimized] bar shows only the primary's icon, in a circle at the bar's end;
- * see [MinimizedBar]. A minimized bar puts [more] behind a round button at its start, which opens
- * them in a [ContextMenu]. A minimized bar that is [hidden], such as while a search field is about
- * to take the keyboard, scales out in place; a full bar ignores [more] and [hidden]. Inside a
- * [BarMorph], a full bar's group and shell move into the other bar's parts.
+ * see [MinimizedBar] and [BarMinimized]. Inside a
+ * [BarMorph], a full bar's group and shell move into the other bar's parts. With [onAdd], a full
+ * bar with room ends its group in a [BarAddButton], such as where settings edit the bar. A
+ * secondary action with a [BarAction.menu] opens it above its button.
  */
 @Composable
 public fun ActionBar(
@@ -59,13 +60,12 @@ public fun ActionBar(
     modifier: Modifier = Modifier,
     secondary: List<BarAction> = emptyList(),
     context: BarContext? = null,
-    minimized: Boolean = false,
-    hidden: Boolean = false,
-    more: List<MenuAction> = emptyList(),
+    minimized: BarMinimized? = null,
+    onAdd: (() -> Unit)? = null,
 ) {
     require(secondary.size <= MAX_SECONDARY) { "An action bar holds at most $MAX_SECONDARY secondary actions" }
-    if (minimized) {
-        MinimizedBar(primary, context, hidden, more, modifier)
+    if (minimized != null) {
+        MinimizedBar(primary, context, minimized.hidden, minimized.more, modifier)
         return
     }
     val front = rememberFrontBar(primary, context)
@@ -74,7 +74,7 @@ public fun ActionBar(
     ProvideTextStyle(panelTextStyle()) {
         Layout(
             listOf(
-                { SecondaryGroup(secondary, parts.group) },
+                { SecondaryGroup(secondary, onAdd.takeIf { secondary.size < MAX_SECONDARY }, parts.group) },
                 { PrimaryShell(primary, context, front, entry, parts.primary) },
             ),
             modifier.fillMaxWidth(),
@@ -83,7 +83,7 @@ public fun ActionBar(
             val gap = ActionBarTokens.gap.roundToPx()
             val group = groups.single()
             val ownGroup =
-                if (secondary.isEmpty()) {
+                if (secondary.isEmpty() && onAdd == null) {
                     0
                 } else {
                     group.maxIntrinsicWidth(ActionBarTokens.height.roundToPx()) +
@@ -107,12 +107,23 @@ public fun ActionBar(
     }
 }
 
+/**
+ * How a minimized [ActionBar] differs from the full one. It puts [more] behind a round button at
+ * its start, which opens them in a [ContextMenu]. While [hidden], such as while a search field is
+ * about to take the keyboard, it scales out in place.
+ */
+public class BarMinimized(
+    public val hidden: Boolean = false,
+    public val more: List<MenuAction> = emptyList(),
+)
+
 /** Most secondary actions an [ActionBar] shows. */
 public const val MAX_SECONDARY: Int = 3
 
 @Composable
 private fun SecondaryGroup(
     actions: List<BarAction>,
+    onAdd: (() -> Unit)?,
     modifier: Modifier,
 ) {
     val shape = RoundedCornerShape(ActionBarTokens.radius)
@@ -133,14 +144,19 @@ private fun SecondaryGroup(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             actions.forEach {
-                BarIconButton(
-                    it.label,
-                    it.symbol,
-                    it.onClick,
-                    enabled = it.enabled,
-                    mirrorInRtl = it.mirrorInRtl,
-                )
+                val menu = rememberBarMenu()
+                Box {
+                    BarIconButton(
+                        it.label,
+                        it.symbol,
+                        menu.click(it),
+                        enabled = it.enabled,
+                        mirrorInRtl = it.mirrorInRtl,
+                    )
+                    menu.Menu(it)
+                }
             }
+            onAdd?.let { BarAddButton("Add action", it) }
         }
     }
 }

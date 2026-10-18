@@ -20,7 +20,7 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   settings rows (`RuleChipTokens`, `FolderRowTokens`), the filter panel (`FilterTokens`), and
   shared opacities (`OtusAlpha`).
   `panelTextStyle()` uses Figtree.
-- `elements`: `ActionButton`, `ActionRow`, `AnimatedText`, `Avatar`, `AvatarImage`, `BarIconButton`, `CalendarDay`,
+- `elements`: `ActionButton`, `ActionRow`, `AnimatedText`, `Avatar`, `AvatarImage`, `BarIconButton`, `BarAddButton`, `CalendarDay`,
   `AddressPill`, `ButtonPill`, `ComposeField`, `HtmlView`, `QuoteChip`, `RichTextBody` (with `RichText` and `TextFormat`),
   `CalendarMonthBackground`, `Chip`, `ColorSlider`, `ColorSwatch`, `AddSwatch`, `SwatchStack`, `IconButton`, `IconPill`, `InputField`, `LabelPill`, `RefreshIndicator`,
   `FolderColorSwatch`, `LocalIconTint`, `RowButton`, `SearchField`, `SearchPrompt`, `SelectionRow`, `SidebarEntry`, `SidebarHeading`,
@@ -218,24 +218,29 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   moves back on the reverse curve, so closing replays opening backward; a context that goes away
   in place leaves the same way. When the primary changes, including when a page opens over
   another or closes back to it, its icon and label fade and scale out while the new ones fade and
-  scale in, 120 ms on the exit and enter curves; the shell stays. With `minimized`, the bar shows only the primary's icon in a
+  scale in, 120 ms on the exit and enter curves; the shell stays. With `minimized`, a `BarMinimized`, the bar shows only the primary's icon in a
   62 dp circle at its end, as far from the screen's end edge as from its bottom edge (the
   navigation bar counts toward both), filled like the full primary. Its ring is `accentLight`. With a `BarContext`, a fully rounded
   `bgDark` shell with a `strokeBgDark` outline grows out from behind the circle toward the start,
   240 ms on the enter curve, and shrinks back behind it on the exit curve. The context follows the
   frontmost bar like the icon, so it grows when a selection starts and shrinks when it ends. The
   whole button runs the primary. It stays in place while the
-  keyboard moves. With `hidden`, or when the keyboard starts opening, it fades and scales out like
+  keyboard moves. With `BarMinimized.hidden`, or when the keyboard starts opening, it fades and scales out like
   `PickerSearch`'s clear button, 120 ms on the exit curve. It fades and scales back in on the
   enter curve once the closing keyboard drops below it. Pass `hidden` as soon as a field will take
   the keyboard, because the keyboard otherwise covers the button within a few frames. When its primary changes, including when a page opens over another or closes
   back to it, or when a selection's bar replaces a list's, the old icon fades and scales out while the new one fades and scales in inside
   the circle, which stays, at the same speed and curves and read as "label, description"; the
-  secondary actions are not drawn. With `more`, a 62 dp `bgDark` circle with a `strokeBgDark` ring
+  secondary actions are not drawn. With `BarMinimized.more`, a 62 dp `bgDark` circle with a `strokeBgDark` ring
   and a ⋯ icon sits at the bar's start, balanced against the navigation bar like the primary. It
   scales in when it first appears and hides with the primary. Tapping it opens the `MenuAction`s
   in a `ContextMenu` 8 dp above it, lined up with its start edge, which leaves the screen behind
-  it undimmed. A full bar ignores `more`. The app chooses the actions and the context; the component only
+  it undimmed. A `BarAction` with a `menu` opens those `MenuAction`s
+  in the same `ContextMenu` instead of running its click: 8 dp above a secondary button, lined up
+  with its start edge, or above the primary, lined up with its end edge. The menu scrolls once it
+  reaches 480 dp. With `onAdd`, a full bar with fewer than three secondary actions ends its group
+  in a `BarAddButton`: a 36 dp dashed `text3` circle with a `text2` plus, shaped like
+  `AddSwatch`, so an empty slot in settings reads as room for an action and not as one. The app chooses the actions and the context; the component only
   draws them and reports clicks. `ActionBarHost` places the bar over the bottom of a page, above
   the navigation bar and keyboard, and pads the page's content so it can scroll clear of the bar.
   Mail uses it for an open message and for selected messages; see

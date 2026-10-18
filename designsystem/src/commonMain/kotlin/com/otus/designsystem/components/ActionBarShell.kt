@@ -69,6 +69,7 @@ internal fun PrimaryShell(
 ) {
     val shape = RoundedCornerShape(ActionBarTokens.radius)
     val interactions = remember { MutableInteractionSource() }
+    val menu = rememberBarMenu()
     val shown = entry.shownContext(context, primary.label)
     val animation = rememberCollapse(context != null, entry)
     val progress = { entry.blend(animation.value) { it.progress } }
@@ -78,7 +79,7 @@ internal fun PrimaryShell(
             .heightIn(min = ActionBarTokens.height)
             .background(OtusColors.bgDark, shape)
             .semantics { contentDescription = listOfNotNull(primary.label, context?.description).joinToString(", ") }
-            .clickable(interactions, null, enabled = primary.enabled, role = Role.Button, onClick = primary.onClick)
+            .clickable(interactions, null, enabled = primary.enabled, role = Role.Button, onClick = menu.click(primary))
             .controlPressFeedback(interactions, shape),
     ) {
         // Drawn before the action, so the action's accent border covers it where the two meet.
@@ -108,6 +109,7 @@ internal fun PrimaryShell(
             )
             PrimaryLabel(front.face, Modifier.align(Alignment.CenterStart)) { 1f - progress() / fadeStart }
         }
+        menu.Menu(primary, end = true)
     }
 }
 
