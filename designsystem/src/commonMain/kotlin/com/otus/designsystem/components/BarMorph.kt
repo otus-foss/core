@@ -37,31 +37,30 @@ import kotlin.math.roundToInt
 import kotlin.math.sin
 
 /**
- * Shows [formatting], a [FormattingBar], while [formattingShown], and [bar], a full [ActionBar],
- * otherwise, and morphs one into the other. Each part first takes its match's height, then its
- * width, so the row splits into the group and shell, or they merge into the row. While the width
- * changes, the parts' content blurs and the arriving content fades in over the leaving one. A bar
- * without a group or a shell, such as a minimized one, fades instead.
+ * Shows the bar [content] draws for [shown], such as a [FormattingBar], a full [ActionBar], or an
+ * [ImageBar], and morphs from one to the next when [shown] changes. Each part first takes its
+ * match's height, then its width, so a row splits into a group and shell, or they merge into a
+ * row. While the width changes, the parts' content blurs and the arriving content fades in over
+ * the leaving one. A bar without a group or a shell, such as a minimized one, fades instead.
  */
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-public fun BarMorph(
-    formattingShown: Boolean,
-    formatting: @Composable () -> Unit,
-    bar: @Composable () -> Unit,
+public fun <T> BarMorph(
+    shown: T,
     modifier: Modifier = Modifier,
+    content: @Composable (T) -> Unit,
 ) {
     val morph = Morph(Motion.millis(MotionSpeed.Normal, LocalMotionScale.current))
     SharedTransitionLayout(modifier) {
         AnimatedContent(
-            formattingShown,
+            shown,
             transitionSpec = {
                 fadeIn(tween(morph.millis)) togetherWith fadeOut(tween(morph.millis)) using SizeTransform(clip = false)
             },
             label = "Bar morph",
-        ) { shown ->
+        ) { bar ->
             val parts = BarParts(group = part("group", morph, this), primary = part("primary", morph, this))
-            CompositionLocalProvider(LocalBarParts provides parts) { if (shown) formatting() else bar() }
+            CompositionLocalProvider(LocalBarParts provides parts) { content(bar) }
         }
     }
 }

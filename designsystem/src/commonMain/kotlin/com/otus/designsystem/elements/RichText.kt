@@ -23,7 +23,8 @@ public enum class TextFormat { Bold, Italic, Bullets, Numbers, Link, Clear }
  * Reading either inside a snapshot observer, such as `snapshotFlow`, follows every edit.
  *
  * A text field cannot draw images, so the text is a run of [RichBlock]s: text, then each image
- * with the text after it. Formatting applies to the text block that last had focus.
+ * with the text after it; [images] edits them. Formatting applies to the text block that last had
+ * focus.
  */
 @Stable
 public class RichText(
@@ -36,6 +37,12 @@ public class RichText(
 
     /** The image showing its controls, if any; focusing text deselects it. */
     internal var selected: RichBlock.Image? by mutableStateOf(null)
+
+    /** How wide the text is drawn, which a full-width image matches. */
+    internal var textWidth: Dp by mutableStateOf(0.dp)
+
+    /** The images between the text, by their `src`. */
+    public val images: RichTextImages = RichTextImages(this)
 
     /** A text block to focus next, with the cursor where [RichBlock.Text.state] has it. */
     internal var focusNext: RichBlock.Text? by mutableStateOf(null)
@@ -54,13 +61,6 @@ public class RichText(
                 .map { it.state.annotatedString.text }
                 .filter { it.isNotEmpty() }
                 .joinToString("\n")
-
-    /**
-     * The `src` of each image in the text, in order; a
-     * [RichTextBody][com.otus.designsystem.components.RichTextBody] draws them with its images.
-     */
-    public val imageSources: List<String>
-        get() = blocks.filterIsInstance<RichBlock.Image>().map { it.source }
 
     private val current: RichTextState
         get() = (active?.takeIf { it in blocks } ?: blocks.first() as RichBlock.Text).state
@@ -121,41 +121,8 @@ public class RichText(
         if (state.selection.collapsed) state.addLink(url, url) else state.addLinkToSelection(url)
     }
 
-    /** Puts the image at [source] at the cursor, splitting the text there; typing goes on after it. */
-    public fun insertImage(source: String) {
-        val block = active?.takeIf { it in blocks } ?: blocks.last() as RichBlock.Text
-        block.state.insertHtmlAfterSelection(imageHtml(source))
-        val parts = split(block.state.toHtml())
-        val at = blocks.indexOf(block)
-        blocks.removeAt(at)
-        blocks.addAll(at, parts)
-        val after = parts.last() as RichBlock.Text
-        after.state.selection = TextRange(0)
-        active = after
-        focusNext = after
-    }
-
-    /** Takes every image at [source] out of the text, joining the text around each one. */
-    public fun removeImage(source: String) {
-        blocks
-            .withIndex()
-            .filter { (_, block) -> block is RichBlock.Image && block.source == source }
-            .reversed()
-            .forEach { (index, _) -> join(index) }
-    }
-
-    /** Removes the image at [index], as its ✕ does. */
-    internal fun removeImageAt(index: Int) {
-        if (blocks.getOrNull(index) is RichBlock.Image) join(index)
-    }
-
-    /** Removes the image before the text block at [index], as Backspace at the block's start does. */
-    internal fun removeImageBefore(index: Int) {
-        if (blocks.getOrNull(index - 1) is RichBlock.Image) join(index - 1)
-    }
-
     /** Removes the image at [index] and joins the text blocks around it, the cursor where they meet. */
-    private fun join(index: Int) {
+    internal fun join(index: Int) {
         val before = blocks[index - 1] as RichBlock.Text
         val after = blocks[index + 1] as RichBlock.Text
         val joined = RichBlock.Text(before.html + after.html)
@@ -181,37 +148,55 @@ internal sealed interface RichBlock {
             get() = if (state.annotatedString.text.isEmpty()) "" else state.toHtml()
     }
 
-    /** An image at [width], or as wide as the text while that is null. */
+    /** An image at [width], or as wide as the text while that is null, named by its [description]. */
     class Image(
         val source: String,
         width: Dp? = null,
+        description: String = "",
     ) : RichBlock {
         var width: Dp? by mutableStateOf(width)
+        var description: String by mutableStateOf(description)
 
-        override val html: String get() = imageHtml(source, width)
+        override val html: String get() = imageHtml(source, width, description)
     }
 }
 
 /** [html] as text blocks with an image block between each two, always starting and ending in text. */
-private fun split(html: String): List<RichBlock> {
+internal fun split(html: String): List<RichBlock> {
     val images = imageTag.findAll(html).toList()
     val texts =
         (listOf(-1) + images.map { it.range.last })
             .zip(images.map { it.range.first } + html.length)
             .map { (end, start) -> RichBlock.Text(html.substring(end + 1, start)) }
     return texts
-        .zip(images.map { RichBlock.Image(it.groupValues[1], it.width()) } + null)
+        .zip(images.map { RichBlock.Image(it.groupValues[1], it.width(), it.description()) } + null)
         .flatMap { (text, image) -> listOfNotNull(text, image) }
 }
 
 /** An image tag that never grows wider than the message it is in. */
-private fun imageHtml(
+internal fun imageHtml(
     source: String,
     width: Dp? = null,
+    description: String = "",
 ): String {
     val sized = width?.let { " width=\"${it.value.roundToInt()}\"" }.orEmpty()
-    return "<img src=\"$source\"$sized style=\"max-width:100%\">"
+    val alt = description.takeIf { it.isNotBlank() }?.let { " alt=\"${it.escaped()}\"" }.orEmpty()
+    return "<img src=\"$source\"$sized$alt style=\"max-width:100%\">"
 }
+
+private fun String.escaped(): String = replace("&", "&amp;").replace("\"", "&quot;").replace("<", "&lt;")
+
+private fun MatchResult.description(): String =
+    altAttribute
+        .find(value)
+        ?.groupValues
+        ?.get(1)
+        ?.replace("&lt;", "<")
+        ?.replace("&quot;", "\"")
+        ?.replace("&amp;", "&")
+        .orEmpty()
+
+private val altAttribute = Regex("""\balt="([^"]*)"""")
 
 private fun MatchResult.width(): Dp? =
     widthAttribute

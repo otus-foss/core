@@ -2,12 +2,20 @@
 
 ## Unreleased
 
-- `RichText` holds images: `insertImage` puts one at the cursor, `removeImage` takes it out, and
-  `imageSources` lists them. `RichTextBody` shows each between the text around it through its
-  new `images` slot, since a text field cannot draw images.
+- `RichText` holds images through `RichText.images`: `insert` puts one at the cursor, `remove`
+  takes it out, `sources` lists them, and `selected`, `width`, `resize`, `description`,
+  `describe`, and `replace` edit the selected one. `RichTextBody` shows each between the text
+  around it through its new `images` slot, since a text field cannot draw images.
+- Add `ImageBar`, the bottom bar while an image is selected: size presets, ⋯ options, and ✓.
+  `ResizableImage` draws dashed preset guides with a haptic tick while its handle drags.
+- **Breaking:** `BarMorph` takes the bar to show and a `content` lambda for it, instead of two
+  slots, so it can morph between any bars. `ResizableImage` drops `onRemove` and its size pill;
+  `ImagePreset` gains `short`. `SegmentedToggle` takes a `fontSize`, and keeps labels on one line.
+- `SignatureTokens.snapDistance` is 12 dp.
 - Add `decodeImage(bytes, maxSize)` and `rememberImage`, which decode a photo at a size of the
   caller's choosing; `decodeAvatarImage` is `decodeImage` at avatar size.
 - `AttachmentChip` takes `actions`, shown in a `ContextMenu` on a tap, instead of `onRetry`.
+- Add `ComposeTokens.inlineImageLarge`, `guideReach`, and `guideDash`.
 - Add `ComposeTokens.inlineImageLoadingHeight`, `inlineImageMinWidth`, `inlineImageSmall`, and
   `inlineImageMedium`.
 - **Breaking:** `RichTextBody` moved from `elements` to `components`, since it draws

@@ -19,7 +19,7 @@ public object SignatureTokens {
     /** The narrowest and widest an image can be dragged, and how close to a preset it snaps. */
     public val minImageWidth: Dp = 48.dp
     public val maxImageWidth: Dp = 300.dp
-    public val snapDistance: Dp = 6.dp
+    public val snapDistance: Dp = 12.dp
 
     /** The list of preset sizes under a selected image. */
     public val sizeListWidth: Dp = 220.dp

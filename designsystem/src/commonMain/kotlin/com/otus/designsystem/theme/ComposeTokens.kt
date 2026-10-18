@@ -46,6 +46,11 @@ public object ComposeTokens {
     public val inlineImageMinWidth: Dp = 48.dp
     public val inlineImageSmall: Dp = 120.dp
     public val inlineImageMedium: Dp = 200.dp
+    public val inlineImageLarge: Dp = 280.dp
+
+    /** The size guides while an image is dragged: how far past the image they reach, and their dashes. */
+    public val guideReach: Dp = 16.dp
+    public val guideDash: Dp = 4.dp
 
     /** The widest an attachment chip grows before its name ends in an ellipsis. */
     public val attachmentMaxWidth: Dp = 280.dp

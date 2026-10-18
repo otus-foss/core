@@ -248,12 +248,20 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   `RichText`: it reads and writes HTML and plain text. A text field cannot draw images, so
   `RichText` splits its HTML at each `<img>` into text blocks with an image block between each
   two. `insertImage` splits the text at the cursor, `removeImage` joins it again, and Backspace
-  at the start of the text after an image removes it. `RichTextBody` draws each image from its
-  `src` through its `images` slot as a `ResizableImage`, as wide as the text until it is resized
-  to Small (120), Medium (200), or any width; the width goes into the `<img>` tag, which also
-  caps it at 100%. Formatting goes to the text block that last had focus. `ResizableImage` takes
-  an `EditableImage`, whose optional status shows over its corner and whose actions open from a
-  ⋯ pill beside the size pill; `ImageSizing.range` sets how far its handle drags. `rememberImage` decodes a photo off the main thread at
+  at the start of the text after an image removes it; `RichText.images` (`RichTextImages`)
+  inserts, removes, resizes, describes, and replaces images and knows the selected one.
+  `RichTextBody` draws each image through its `images` slot as a `ResizableImage`, as wide as
+  the text until it is resized to Small (120), Medium (200), Large (280), or any width; the width
+  and description go into the `<img>` tag, which also caps it at 100%. Formatting goes to the
+  text block that last had focus.
+- `ResizableImage` shows an `EditableImage`; selected, it gets an outline and a corner handle.
+  Dragging the handle draws a dashed guide at each preset with its short label (S, M, L, Full),
+  snaps within 12 dp with a haptic tick, and names the size in a pill under the handle. Its
+  other controls live in `ImageBar`: the page's bottom bar while an image is selected, with the
+  presets in a `SegmentedToggle`, ⋯ for an `OptionsMenu`, and the accent ✓ in the primary's
+  place. `BarMorph` is generic over which bar shows, so a page morphs between its action bar,
+  formatting row, and image bar. `RichText.selectedImageSizing()` gives the bar the sizes the
+  body uses. `rememberImage` decodes a photo off the main thread at
   most 2048 px on a side. `QuoteChip` stands for the collapsed
   original at the end of a forward. With `collapsedAfter`, a `RecipientLine` holding more people
   shows that many and a "+N more" chip, without its field, until the chip is tapped; its label
