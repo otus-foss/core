@@ -5,7 +5,7 @@ import androidx.compose.ui.unit.dp
 
 /** The small menu that opens where the user pressed. */
 public object MenuTokens {
-    public val radius: Dp = 16.dp
+    public val radius: Dp = CornerTokens.surface
     public val minWidth: Dp = 180.dp
     public val inset: Dp = 4.dp
     public val rowPadding: Dp = 16.dp

@@ -31,7 +31,6 @@ import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntRect
 import androidx.compose.ui.unit.IntSize
@@ -114,8 +113,8 @@ internal fun MenuPopup(
 }
 
 /** The raised `bgDark` surface with a `bgLight` outline that every menu sits on. */
-internal fun Modifier.menuSurface(radius: Dp = MenuTokens.radius): Modifier {
-    val shape = RoundedCornerShape(radius)
+internal fun Modifier.menuSurface(): Modifier {
+    val shape = RoundedCornerShape(MenuTokens.radius)
     return background(OtusColors.bgDark, shape).border(PanelTokens.borderWidth, OtusColors.bgLight, shape)
 }
 

@@ -24,7 +24,7 @@ public object PanelTokens {
     public val chipGap: Dp = 6.dp
     public val panelInset: Dp = 8.dp
     public val headerHeight: Dp = touchTarget + panelInset * 2
-    public val panelRadius: Dp = 22.dp
+    public val panelRadius: Dp = CornerTokens.panel
     public val detachedGap: Dp = 0.dp
 
     /** How far a compact panel pulls its chips up: the space above a chip inside its touch target. */

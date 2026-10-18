@@ -14,7 +14,7 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
 - `theme`: `OtusColors`, `OtusTheme`, `OtusPalette`, `ThemeBase`, `ThemeChoice`, `ThemeColor`, `CustomTheme`, `AccentPreset`,
   `accentShades` (with `AccentShades`), color helpers (`hslColor`, `toHsl`, `contrast`, `toHex`,
   `parseHexColor`), `FolderColor`, `ThemeTokens`, `Motion` (with `MotionSpeed`, `MotionCurve`, and
-  `LocalMotionScale`), and tokens for avatars, calendars, control
+  `LocalMotionScale`), the corner scale (`CornerTokens`), and tokens for avatars, calendars, control
   feedback, pages, panels, refresh, sheets, the sidebar, the action bar (`ActionBarTokens`), and
   compose fields (`ComposeTokens`), reply threads (`ThreadTokens`), and rule chips and folder
   settings rows (`RuleChipTokens`, `FolderRowTokens`), the filter panel (`FilterTokens`), and
@@ -248,7 +248,7 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
 - The Write page's parts follow Mail's "Write" boards. `ComposeField` is a header line, such as
   Subject: a `text2` label in a 56 dp column beside a borderless field with a `text3` placeholder
   and a `bgLight` hairline below. `RecipientLine` uses the same column for To, Cc, and Bcc: a
-  `RecipientChip` for each person, with a 22 dp avatar in an 8 dp outlined box, wrapping as
+  `RecipientChip` for each person, with a 22 dp avatar in an outlined pill, wrapping as
   needed, and a field for the next address. Next or losing focus commits the typed text, and
   Backspace in an empty field removes the last chip. `RichTextBody` edits the formatted body,
   built on the compose-rich-editor library, which stays an implementation detail behind
@@ -286,8 +286,8 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   such as Attach, behind a divider, then Bold, Italic, Bulleted list, Numbered list, Link, and
   Clear formatting. The buttons scroll sideways with faded edges, and a trailing slot, such as
   `CompactSendButton`, stays pinned. An active format gets a `bgLight` fill, never the accent.
-  Over the keyboard the row reaches the page gap at both sides. `CompactSendButton` has the
-  action bar's collapsed action shape and sits flush at the row's end, its accent border over
+  Over the keyboard the row reaches the page gap at both sides. `CompactSendButton` is a circle as
+  tall as the row and sits flush at the row's end, its accent border over
   the row's.
 - `BarMorph` turns a `FormattingBar` into a full `ActionBar` and back: each part takes the other's
   height, then its width, so the row splits into the group and shell. The content blurs while the
@@ -295,7 +295,7 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
 - `AttachmentChip` is a file on a message being written: an attach symbol, the name with a
   `text3` detail under it, such as the size, and a ✕. It is outlined in `bgLight`, at least 48 dp
   tall and at most 280 dp wide. A failed upload can make the chip retry on a tap.
-- `Dropdown` opens a `bgDark` list with a 22 dp radius under the element it is called from, the
+- `Dropdown` opens a `bgDark` list with a 30 dp radius under the element it is called from, the
   window's width unless given one, and above the element when there is no room below.
   `DropdownRow` marks the selected row with a `bgRegular` fill and no checkmark; `ListCaption`
   heads a group in `text3`. A non-focusable dropdown leaves the keyboard to a field, for
@@ -334,6 +334,32 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
 All visual tokens live here, including `InboxTokens`. New elements and reusable components
 belong here even when only Mail currently uses them. Their APIs use values and callbacks,
 without app dependencies.
+
+## Corners
+
+Every radius comes from one scale in `theme/CornerTokens.kt`. Feature tokens such as
+`SheetTokens.radius` or `ComposeTokens.recipientRadius` name a step, so a change to the scale
+reaches every part that uses it. A part inside another takes the outer radius minus its inset:
+a menu row is `MenuTokens.radius - MenuTokens.inset`, and a theme sketch is
+`ThemeTokens.cardRadius - ThemeTokens.cardPadding`. Pills, avatars, and circles round to half
+their height and take no step. No corner rounds past half its own height. `RoundedCornerShape`
+scales its corners down for that, and code that draws its own rounded rectangles caps the radius
+itself.
+
+| Step | Radius | Used by |
+| --- | --- | --- |
+| `tiny` | 6 dp | Ends of a calendar date range |
+| `small` | 10 dp | Compact rule chips, theme sketch bars |
+| `chip` | 14 dp | Quote and attachment chips, value buttons, rule chips, date tokens, the calendar month outline, page sketches, swipe reveal corners |
+| `button` | 20 dp | Formatting buttons, search fields in the filter panel, theme cards |
+| `panel` | 22 dp | The control panel at the top of a page and the `FilterPanel` that grows out of it |
+| `row` | 24 dp | Rows and cards in pages, menus, and sheets, row groups, sidebar entries, the signature editor, custom theme previews |
+| `large` | 28 dp | The formatting row above the keyboard and its Send, nudge cards |
+| `surface` | 30 dp | The action bar, menus, dropdowns, and the top corners of sheets, dialogs, and wheel pickers |
+
+Only the control panel keeps 22 dp. `InboxTokens.selectionRadius` follows it, so a selected
+message row rounds like the panel. A `BarMorph` clips each part to the smaller of the formatting
+row's and the action bar's radius, so neither bar loses an edge while one turns into the other.
 
 ## Motion
 

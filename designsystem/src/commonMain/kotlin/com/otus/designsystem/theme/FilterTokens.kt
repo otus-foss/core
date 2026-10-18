@@ -34,7 +34,7 @@ public object FilterTokens {
     public val footerTextSize: TextUnit = 16.sp
     public val segmentHeight: Dp = 40.dp
     public val searchHeight: Dp = 48.dp
-    public val searchRadius: Dp = 18.dp
+    public val searchRadius: Dp = CornerTokens.button
     public val folderRowHeight: Dp = 48.dp
     public val folderIndent: Dp = 16.dp
 
