@@ -259,9 +259,9 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   snaps within 12 dp with a haptic tick, and names the size in a pill under the handle. Its
   other controls live in `ImageBar`: the page's bottom bar while an image is selected, with the
   presets in a `SegmentedToggle`, ⋯, and the accent ✓ in the primary's place.
-- `ExpandingBarGroup` is a bar group whose ⋯ grows it upward into one surface: any panel, such
-  as an `OptionsList`, above a divider and the group's row, with ⋯ filled while open. ⋯, a tap
-  outside, or Back folds it. `OptionsList` is the rows of an `OptionsMenu` for any surface. `BarMorph` is generic over which bar shows, so a page morphs between its action bar,
+- `ExpandingBarGroup` is a bar group whose ⋯ grows the group itself upward: any panel, such as
+  an `OptionsList`, above a divider and the group's row, with ⋯ filled while open. ⋯, Back, or
+  the panel's close folds it. `OptionsList` is the rows of an `OptionsMenu` for any surface. `BarMorph` is generic over which bar shows, so a page morphs between its action bar,
   formatting row, and image bar. `RichText.selectedImageSizing()` gives the bar the sizes the
   body uses. `rememberImage` decodes a photo off the main thread at
   most 2048 px on a side. `QuoteChip` stands for the collapsed
