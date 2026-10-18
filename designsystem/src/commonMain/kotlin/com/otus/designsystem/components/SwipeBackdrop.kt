@@ -187,8 +187,8 @@ internal data class RevealRadii(
 )
 
 /**
- * Shrinks [fillet] and [corner] to fit a revealed area [width] wide in a row [height] tall, so a
- * narrow area starts as a sliver at the edge and grows into the full shape.
+ * Shrinks [fillet] and [corner] together to fit a revealed area [width] wide in a row [height]
+ * tall, so a narrow area keeps a rounded free end while it grows into the full shape.
  */
 internal fun revealRadii(
     width: Float,
@@ -196,7 +196,6 @@ internal fun revealRadii(
     fillet: Float,
     corner: Float,
 ): RevealRadii {
-    val edge = minOf(fillet, width).coerceAtLeast(0f)
-    val end = minOf(corner, width - edge, height / 2f).coerceAtLeast(0f)
-    return RevealRadii(edge, end)
+    val share = (width / (fillet + corner)).coerceIn(0f, 1f)
+    return RevealRadii(fillet * share, minOf(corner * share, height / 2f))
 }

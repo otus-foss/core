@@ -37,6 +37,9 @@ class SwipeActionsScreenshotTest {
     fun atRest() = compose.screenshot("swipe_actions_rest") { Rows() }
 
     @Test
+    fun justStarted() = compose.screenshot("swipe_actions_just_started", { drag(48f) }) { Rows() }
+
+    @Test
     fun partlyRevealed() = compose.screenshot("swipe_actions_partly_revealed", { drag(160f) }) { Rows() }
 
     @Test
