@@ -56,9 +56,9 @@ class SwipeGeometryTest {
     }
 
     @Test
-    fun aNarrowRevealStartsAsASliverAtTheEdge() {
-        assertEquals(RevealRadii(fillet = 5f, corner = 0f), revealRadii(5f, 88f, fillet = 8f, corner = 12f))
-        assertEquals(RevealRadii(fillet = 8f, corner = 6f), revealRadii(14f, 88f, fillet = 8f, corner = 12f))
+    fun aNarrowRevealShrinksBothRadiiTogether() {
+        assertEquals(RevealRadii(fillet = 2f, corner = 3f), revealRadii(5f, 88f, fillet = 8f, corner = 12f))
+        assertEquals(RevealRadii(fillet = 4f, corner = 6f), revealRadii(10f, 88f, fillet = 8f, corner = 12f))
         assertEquals(RevealRadii(fillet = 0f, corner = 0f), revealRadii(0f, 88f, fillet = 8f, corner = 12f))
     }
 
