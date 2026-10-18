@@ -18,12 +18,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.InfiniteAnimationPolicy
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import com.otus.designsystem.resources.Res
+import com.otus.designsystem.resources.brand_owl_beak
 import com.otus.designsystem.resources.brand_owl_body
 import com.otus.designsystem.resources.brand_owl_eye_left
 import com.otus.designsystem.resources.brand_owl_eye_right
@@ -35,6 +37,7 @@ import com.otus.designsystem.theme.LocalMotionScale
 import com.otus.designsystem.theme.Motion
 import com.otus.designsystem.theme.OWL_ART_HEIGHT
 import com.otus.designsystem.theme.OWL_ART_WIDTH
+import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.OwlArt
 import com.otus.designsystem.theme.OwlTimeline
 import org.jetbrains.compose.resources.DrawableResource
@@ -75,7 +78,8 @@ public fun SidebarOwl(modifier: Modifier = Modifier) {
                 transformOrigin = OwlArt.tiltOrigin
             },
         ) {
-            Layer(Res.drawable.brand_owl_body)
+            Layer(Res.drawable.brand_owl_body, colorFilter = ColorFilter.tint(OtusColors.accentRegular))
+            Layer(Res.drawable.brand_owl_beak)
             Eye(Res.drawable.brand_owl_eye_left, Res.drawable.brand_owl_glint_left, OwlArt.leftEye, playback)
             Eye(Res.drawable.brand_owl_eye_right, Res.drawable.brand_owl_glint_right, OwlArt.rightEye, playback)
             Layer(Res.drawable.brand_owl_happy, Modifier.graphicsLayer { alpha = playback.value { happy } })
@@ -131,4 +135,10 @@ private fun Eye(
 private fun Layer(
     image: DrawableResource,
     modifier: Modifier = Modifier,
-) = Image(painterResource(image), contentDescription = null, modifier = modifier.fillMaxSize())
+    colorFilter: ColorFilter? = null,
+) = Image(
+    painterResource(image),
+    contentDescription = null,
+    modifier = modifier.fillMaxSize(),
+    colorFilter = colorFilter,
+)
