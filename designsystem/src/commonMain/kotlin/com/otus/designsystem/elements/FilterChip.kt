@@ -1,0 +1,132 @@
+package com.otus.designsystem.elements
+
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.material.minimumInteractiveComponentSize
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
+import com.otus.designsystem.theme.FilterTokens
+import com.otus.designsystem.theme.OtusColors
+import com.otus.designsystem.theme.PanelTokens
+import com.otus.designsystem.theme.panelTextStyle
+
+/** How a [FilterChip] reads to accessibility services, and how it toggles. */
+public enum class FilterChipRole {
+    /** One of several choices that can be on together. */
+    Checkbox,
+
+    /** One choice of a group where only one is on. */
+    Radio,
+
+    /** Opens something, such as a list of every folder; [FilterChip]'s `selected` is ignored. */
+    Button,
+}
+
+/**
+ * A choice in a filter panel section: a 36 dp capsule in a 48 dp touch target, `bgRegular` while
+ * off and `accentDark` while [selected]. An optional 18 dp [leading] icon or avatar comes first.
+ * A [prefix], such as the parent folders of a folder whose name repeats, comes before [label] in
+ * `text3`. [description] replaces the spoken label, such as a folder's full path.
+ */
+@Composable
+public fun FilterChip(
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    role: FilterChipRole = FilterChipRole.Checkbox,
+    prefix: String? = null,
+    description: String? = null,
+    leading: (@Composable () -> Unit)? = null,
+) {
+    val interactions = remember { MutableInteractionSource() }
+    val on = selected && role != FilterChipRole.Button
+    val choose =
+        when (role) {
+            FilterChipRole.Checkbox -> {
+                Modifier.toggleable(on, interactions, null, role = Role.Checkbox) { onClick() }
+            }
+
+            FilterChipRole.Radio -> {
+                Modifier.selectable(
+                    on,
+                    interactions,
+                    null,
+                    role = Role.RadioButton,
+                    onClick = onClick,
+                )
+            }
+
+            FilterChipRole.Button -> {
+                Modifier.clickable(interactions, null, role = Role.Button, onClick = onClick)
+            }
+        }
+    Box(
+        modifier
+            .minimumInteractiveComponentSize()
+            .semantics { contentDescription = description ?: listOfNotNull(prefix, label).joinToString(" ") }
+            .then(choose),
+        contentAlignment = Alignment.Center,
+    ) {
+        Surface(
+            Modifier.reportControlVisualBounds().controlPressFeedback(interactions),
+            shape = CircleShape,
+            color = if (on) OtusColors.accentDark else OtusColors.bgRegular,
+            contentColor = OtusColors.text1,
+            border = BorderStroke(PanelTokens.borderWidth, if (on) OtusColors.accentRegular else OtusColors.bgLight),
+        ) {
+            Row(
+                Modifier
+                    .height(FilterTokens.chipHeight)
+                    .padding(
+                        start = if (leading == null) FilterTokens.chipStart else FilterTokens.chipStartWithIcon,
+                        end = FilterTokens.chipEnd,
+                    ).clearAndSetSemantics {},
+                horizontalArrangement = Arrangement.spacedBy(FilterTokens.chipIconGap),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                leading?.invoke()
+                FilterChipText(label, prefix)
+            }
+        }
+    }
+}
+
+@Composable
+private fun FilterChipText(
+    label: String,
+    prefix: String?,
+) {
+    val faint = OtusColors.text3
+    val text =
+        buildAnnotatedString {
+            prefix?.let { withStyle(SpanStyle(color = faint)) { append("$it / ") } }
+            append(label)
+        }
+    Text(
+        text,
+        style = panelTextStyle().copy(color = Color.Unspecified, fontSize = FilterTokens.chipTextSize),
+        maxLines = 1,
+    )
+}
