@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
@@ -77,8 +78,8 @@ public fun Dropdown(
 
 /**
  * A choice in a [Dropdown]: an optional [leading] avatar, the [title], a smaller `text3`
- * [subtitle] under it, and a `text3` [detail] at its end, such as a size. The [selected] row is
- * filled with `bgRegular`, without a mark.
+ * [subtitle] under it, and a one-line `text3` [detail] at its end, such as a size or an address.
+ * The [selected] row is filled with `bgRegular`, without a mark.
  */
 @Composable
 public fun DropdownRow(
@@ -118,9 +119,12 @@ public fun DropdownRow(
         detail?.let {
             Text(
                 it,
+                Modifier.widthIn(max = MenuTokens.detailMaxWidth),
                 style = panelTextStyle(),
                 color = OtusColors.text3,
                 fontSize = ComposeTokens.detailSize,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
         }
     }
