@@ -13,6 +13,12 @@ public object MenuTokens {
     /** The tallest a dropdown grows before its rows scroll. */
     public val dropdownMaxHeight: Dp = 480.dp
 
+    /** The least room below its anchor a dropdown opens into, about three rows, before it may open above. */
+    public val dropdownMinRoom: Dp = 160.dp
+
+    /** The widest a dropdown row's end detail grows, such as an address, so its title keeps room. */
+    public val detailMaxWidth: Dp = 200.dp
+
     /** Between a row's icon and its label. */
     public val iconGap: Dp = 12.dp
 
