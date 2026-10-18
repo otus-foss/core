@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import com.otus.designsystem.theme.ComposeTokens
+import com.otus.designsystem.theme.OtusAlpha
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PanelTokens
 import com.otus.designsystem.theme.SettingTokens
@@ -55,7 +56,7 @@ public fun PickRow(
             .fillMaxWidth()
             .heightIn(min = SheetTokens.rowHeight)
             .then(choose)
-            .alpha(if (enabled) 1f else DISABLED_ALPHA)
+            .alpha(if (enabled) 1f else OtusAlpha.DISABLED)
             .padding(horizontal = SheetTokens.inset, vertical = PanelTokens.iconGap),
         horizontalArrangement = Arrangement.spacedBy(SheetTokens.gap),
         verticalAlignment = Alignment.CenterVertically,
@@ -108,7 +109,6 @@ private fun PickMarkView(mark: PickMark) {
     }
 }
 
-private const val DISABLED_ALPHA = 0.45f
 private const val CHECK_START_X = 0.25f
 private const val CHECK_MID_Y = 0.52f
 private const val CHECK_LOW_X = 0.43f
