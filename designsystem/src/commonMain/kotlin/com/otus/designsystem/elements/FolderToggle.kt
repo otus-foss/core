@@ -13,7 +13,9 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_folder
+import com.otus.designsystem.resources.symbol_folder_fill
 import com.otus.designsystem.resources.symbol_folder_open
+import com.otus.designsystem.resources.symbol_folder_open_fill
 import com.otus.designsystem.theme.PanelTokens
 import com.otus.designsystem.theme.SidebarTokens
 import org.jetbrains.compose.resources.DrawableResource
@@ -21,7 +23,8 @@ import org.jetbrains.compose.resources.DrawableResource
 /**
  * A folder icon in a target 48 dp wide and one compact row tall. With a non-null [expanded], it
  * folds the subfolders of the folder named [label] and shows an open folder while expanded.
- * Otherwise it shows [closed], such as a shared folder's icon. The icon takes [LocalIconTint].
+ * Otherwise it shows [closed], such as a shared folder's icon. The icon takes [LocalIconTint]. A
+ * tinted plain folder is filled, because a thin outline is too faint to read the color from.
  */
 @Composable
 internal fun FolderToggle(
@@ -44,6 +47,18 @@ internal fun FolderToggle(
         Box(
             Modifier.size(SidebarTokens.expandButton).controlPressFeedback(interactions),
             contentAlignment = Alignment.Center,
-        ) { LeadingSymbol(if (expanded == true) Res.drawable.symbol_folder_open else closed) }
+        ) { LeadingSymbol(folderSymbol(expanded == true, closed, filled = LocalIconTint.current != null)) }
     }
 }
+
+private fun folderSymbol(
+    open: Boolean,
+    closed: DrawableResource,
+    filled: Boolean,
+): DrawableResource =
+    when {
+        open && filled -> Res.drawable.symbol_folder_open_fill
+        open -> Res.drawable.symbol_folder_open
+        filled && closed == Res.drawable.symbol_folder -> Res.drawable.symbol_folder_fill
+        else -> closed
+    }
