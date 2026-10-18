@@ -27,7 +27,8 @@ import com.otus.designsystem.theme.panelTextStyle
 
 /**
  * A row of [options] in one track, one of them [selected] with a `bgLight` fill, such as Copy from
- * and Copy to; none while [selected] is -1. Each label stays on one line at [fontSize].
+ * and Copy to; none while [selected] is -1. Each label stays on one line at [fontSize], in a
+ * segment as wide as its share of the labels' length, so a longer label gets more room.
  */
 @Composable
 public fun SegmentedToggle(
@@ -55,7 +56,7 @@ public fun SegmentedToggle(
             )
             Box(
                 Modifier
-                    .weight(1f)
+                    .weight(option.length.coerceAtLeast(1).toFloat())
                     .fillMaxHeight()
                     .clip(CircleShape)
                     .background(fill)
