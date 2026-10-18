@@ -19,7 +19,9 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -60,13 +62,24 @@ public fun ContextMenu(
     onDismiss: () -> Unit,
 ) {
     val edge = with(LocalDensity.current) { MenuTokens.edge.roundToPx() }
-    val position = remember(at, edge) { AtPoint(at.round(), edge) }
+    ContextMenu(actions, remember(at, edge) { AtPoint(at.round(), edge) }, onDismiss)
+}
+
+/** A [ContextMenu] at [position]; its rows scroll once it reaches [MenuTokens.dropdownMaxHeight]. */
+@Composable
+internal fun ContextMenu(
+    actions: List<MenuAction>,
+    position: PopupPositionProvider,
+    onDismiss: () -> Unit,
+) {
     MenuPopup(position, onDismiss) {
         Column(
             Modifier
                 .width(IntrinsicSize.Max)
                 .widthIn(min = MenuTokens.minWidth)
+                .heightIn(max = MenuTokens.dropdownMaxHeight)
                 .menuSurface()
+                .verticalScroll(rememberScrollState())
                 .padding(MenuTokens.inset),
         ) {
             actions.forEach { action ->

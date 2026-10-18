@@ -45,15 +45,17 @@ fun ComposeContentTestRule.screenshot(
 }
 
 /**
- * Like [screenshot], but captures the whole screen, so content in its own window, such as a sheet
- * or a dialog, is in the image too.
+ * Like [screenshot], but captures the whole screen, so content in its own window, such as a sheet,
+ * a dialog, or a menu that [act] opens, is in the image too.
  */
 @OptIn(ExperimentalRoborazziApi::class)
 fun ComposeContentTestRule.screenScreenshot(
     name: String,
+    act: ComposeContentTestRule.() -> Unit = {},
     content: @Composable () -> Unit,
 ) {
     setContent { OtusTheme(content = content) }
+    act()
     waitForIdle()
     captureScreenRoboImage(shotPath(name))
 }
