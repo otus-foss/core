@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- Add the filter panel parts: `FilterPanel`, which grows out of a control panel over a scrim,
+  `FilterPanelHeader`, `FilterPanelFooter`, `FilterSection`, and `FilterFolderRow` (with
+  `FolderCheck`), and the `FilterChip` (with `FilterChipRole`), `FolderGlyph`, and `BadgedSymbol`
+  elements. Add `FilterTokens` and `OtusAlpha.DIMMED`, which `PickRow` now uses too.
+- `SegmentedToggle` takes a `height`; it stays 48 dp by default.
+- Add the `symbol_reply`, `symbol_calendar_today`, and `symbol_folder_fill` symbols (Material
+  Symbols Rounded, Apache 2.0).
 - `RichText` holds images through `RichText.images`: `insert` puts one at the cursor, `remove`
   takes it out, `sources` lists them, and `selected`, `width`, `resize`, `description`,
   `describe`, and `replace` edit the selected one. `RichTextBody` shows each between the text

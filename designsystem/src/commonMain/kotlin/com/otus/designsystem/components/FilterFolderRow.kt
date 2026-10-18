@@ -1,0 +1,141 @@
+package com.otus.designsystem.components
+
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.collapse
+import androidx.compose.ui.semantics.disabled
+import androidx.compose.ui.semantics.expand
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.semantics.toggleableState
+import androidx.compose.ui.state.ToggleableState
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
+import com.otus.designsystem.elements.ExpandChevron
+import com.otus.designsystem.theme.FilterTokens
+import com.otus.designsystem.theme.OtusAlpha
+import com.otus.designsystem.theme.OtusColors
+import com.otus.designsystem.theme.PanelTokens
+import com.otus.designsystem.theme.panelTextStyle
+
+/** A folder's checkbox in a [FilterFolderRow]. */
+public enum class FolderCheck {
+    Off,
+    On,
+
+    /** Checked because a parent is checked with its subfolders; it cannot change on its own. */
+    Included,
+}
+
+/**
+ * One folder of a checkable folder tree, 48 dp tall: a chevron for folders with subfolders
+ * ([expanded] is null for others), the [glyph], the [name] after an optional `text3` [path] of its
+ * parents, and a checkbox at the end. Each [depth] level indents [FilterTokens.folderIndent], up to
+ * five levels. A long press calls [onLongClick].
+ */
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+public fun FilterFolderRow(
+    name: String,
+    check: FolderCheck,
+    onCheck: () -> Unit,
+    modifier: Modifier = Modifier,
+    depth: Int = 0,
+    path: String? = null,
+    expanded: Boolean? = null,
+    onExpandedChange: (Boolean) -> Unit = {},
+    onLongClick: (() -> Unit)? = null,
+    glyph: @Composable () -> Unit,
+) {
+    val enabled = check != FolderCheck.Included
+    Row(
+        modifier
+            .fillMaxWidth()
+            .height(FilterTokens.folderRowHeight)
+            .semantics(mergeDescendants = true) {
+                role = Role.Checkbox
+                toggleableState = if (check == FolderCheck.Off) ToggleableState.Off else ToggleableState.On
+                stateDescription = folderState(check, depth, expanded)
+                if (!enabled) disabled()
+                if (expanded == false) {
+                    expand {
+                        onExpandedChange(true)
+                        true
+                    }
+                }
+                if (expanded == true) {
+                    collapse {
+                        onExpandedChange(false)
+                        true
+                    }
+                }
+            }.combinedClickable(enabled = enabled, onLongClick = onLongClick, onClick = onCheck)
+            .padding(start = FilterTokens.folderIndent * depth.coerceIn(0, MAX_INDENT), end = FilterTokens.bodyInset),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(FilterTokens.chipIconGap),
+    ) {
+        Box(Modifier.size(PanelTokens.touchTarget), contentAlignment = Alignment.Center) {
+            expanded?.let { open ->
+                Box(
+                    Modifier
+                        .size(PanelTokens.touchTarget)
+                        .clearAndSetSemantics {}
+                        .clickable { onExpandedChange(!open) },
+                    contentAlignment = Alignment.Center,
+                ) { ExpandChevron(open) }
+            }
+        }
+        glyph()
+        Text(
+            buildAnnotatedString {
+                path?.let { withStyle(SpanStyle(color = OtusColors.text3)) { append("$it / ") } }
+                append(name)
+            },
+            Modifier.weight(1f),
+            style = panelTextStyle(),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+        Spacer(Modifier.width(PanelTokens.iconGap))
+        Box(Modifier.alpha(if (enabled) 1f else OtusAlpha.DIMMED)) {
+            PickMarkView(PickMark(selected = check != FolderCheck.Off, multiple = true))
+        }
+    }
+}
+
+private fun folderState(
+    check: FolderCheck,
+    depth: Int,
+    expanded: Boolean?,
+): String =
+    listOfNotNull(
+        "Level ${depth + 1}",
+        when (expanded) {
+            true -> "expanded"
+            false -> "collapsed"
+            null -> null
+        },
+        "included with parent".takeIf { check == FolderCheck.Included },
+    ).joinToString(", ")
+
+private const val MAX_INDENT = 4
