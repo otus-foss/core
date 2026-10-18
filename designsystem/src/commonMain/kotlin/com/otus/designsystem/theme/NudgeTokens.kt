@@ -7,7 +7,7 @@ import androidx.compose.ui.unit.sp
 
 /** A dismissible card above a list that suggests one setting, such as a folder color. */
 public object NudgeTokens {
-    public val radius: Dp = 24.dp
+    public val radius: Dp = CornerTokens.large
     public val paddingVertical: Dp = 12.dp
     public val paddingHorizontal: Dp = 14.dp
     public val iconSize: Dp = 20.dp

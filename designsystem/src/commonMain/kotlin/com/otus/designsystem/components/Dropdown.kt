@@ -66,7 +66,7 @@ public fun Dropdown(
             modifier
                 .width(width ?: (window - MenuTokens.edge * 2))
                 .heightIn(max = MenuTokens.dropdownMaxHeight)
-                .menuSurface(PanelTokens.panelRadius)
+                .menuSurface()
                 .verticalScroll(rememberScrollState())
                 .selectableGroup()
                 .padding(MenuTokens.inset),
@@ -90,7 +90,7 @@ public fun DropdownRow(
     detail: String? = null,
     leading: (@Composable () -> Unit)? = null,
 ) {
-    val shape = RoundedCornerShape(PanelTokens.panelRadius - MenuTokens.inset)
+    val shape = RoundedCornerShape(MenuTokens.radius - MenuTokens.inset)
     Row(
         modifier
             .fillMaxWidth()

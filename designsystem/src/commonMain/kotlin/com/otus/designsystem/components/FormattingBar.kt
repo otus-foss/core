@@ -66,7 +66,7 @@ public fun FormattingBar(
     leading: (@Composable () -> Unit)? = null,
     trailing: (@Composable () -> Unit)? = null,
 ) {
-    val shape = RoundedCornerShape(PanelTokens.panelRadius)
+    val shape = RoundedCornerShape(ComposeTokens.formatBarRadius)
     val parts = LocalBarParts.current
     Box(
         // Widened first, so a [BarMorph] moves the whole row.
@@ -155,8 +155,8 @@ public fun FormatButton(
 
 /**
  * The Send at the end of a [FormattingBar]: the [icon], the send symbol by default, on the accent.
- * It fills the row's height and has an [ActionBar] shell's collapsed action shape, so it sits on
- * the row the way that action sits on its shell.
+ * It fills the row's height, as wide as an [ActionBar] shell's collapsed action, and rounds like
+ * the row, so its end lines up with the row's end.
  */
 @Composable
 public fun CompactSendButton(
@@ -166,7 +166,7 @@ public fun CompactSendButton(
     icon: DrawableResource = Res.drawable.symbol_send,
 ) {
     val interactions = remember { MutableInteractionSource() }
-    val shape = RoundedCornerShape(ActionBarTokens.radius)
+    val shape = RoundedCornerShape(ComposeTokens.formatBarRadius)
     Box(
         Modifier
             .fillMaxHeight()

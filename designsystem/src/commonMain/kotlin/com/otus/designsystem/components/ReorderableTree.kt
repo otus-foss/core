@@ -2,7 +2,9 @@ package com.otus.designsystem.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -11,10 +13,12 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.ReorderTreeTokens
 import com.otus.designsystem.theme.SheetTokens
@@ -110,9 +114,22 @@ private fun blockRowShape(
     joinedAbove: Boolean,
     joinedBelow: Boolean,
 ): Shape {
-    val top = if (joinedAbove) 0.dp else SheetTokens.rowRadius
-    val bottom = if (joinedBelow) 0.dp else SheetTokens.rowRadius
+    val top = if (joinedAbove) ZeroCornerSize else HalfHeightCorner(SheetTokens.rowRadius)
+    val bottom = if (joinedBelow) ZeroCornerSize else HalfHeightCorner(SheetTokens.rowRadius)
     return RoundedCornerShape(top, top, bottom, bottom)
+}
+
+/**
+ * A [radius] corner that never rounds more than half the row's height. A shape rounded at only one
+ * edge is not scaled down, so a short row's open end would otherwise curve past its middle.
+ */
+private data class HalfHeightCorner(
+    val radius: Dp,
+) : CornerSize {
+    override fun toPx(
+        shapeSize: Size,
+        density: Density,
+    ): Float = minOf(with(density) { radius.toPx() }, shapeSize.height / 2)
 }
 
 private data class TreeMoves(

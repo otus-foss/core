@@ -8,7 +8,7 @@ import androidx.compose.ui.unit.sp
 
 /** Theme cards, accent swatches, and color sliders on the theme settings page, and folder color swatches. */
 public object ThemeTokens {
-    public val cardRadius: Dp = 18.dp
+    public val cardRadius: Dp = CornerTokens.button
     public val cardPadding: Dp = 6.dp
     public val cardGap: Dp = 8.dp
     public val cardTitleSize: TextUnit = 15.sp
@@ -16,11 +16,11 @@ public object ThemeTokens {
     public val cardDetailSize: TextUnit = 12.sp
     public val cardDetailLineHeight: TextUnit = 16.sp
     public val sketchHeight: Dp = 64.dp
-    public val sketchRadius: Dp = 12.dp
+    public val sketchRadius: Dp = cardRadius - cardPadding
     public val sketchPadding: Dp = 8.dp
     public val sketchGap: Dp = 6.dp
     public val sketchBarHeight: Dp = 14.dp
-    public val sketchBarRadius: Dp = 6.dp
+    public val sketchBarRadius: Dp = CornerTokens.small
     public val sketchDot: Dp = 12.dp
     public val sketchLineHeight: Dp = 5.dp
     public const val SKETCH_LONG_LINE: Float = 0.5f
@@ -48,7 +48,7 @@ public object ThemeTokens {
     public val previewPadding: Dp = 10.dp
     public val previewGap: Dp = 8.dp
     public val previewRowPadding: Dp = 8.dp
-    public val previewRowRadius: Dp = 12.dp
+    public val previewRowRadius: Dp = SheetTokens.radius - previewPadding
     public val previewRowGap: Dp = 10.dp
     public val previewAvatar: Dp = 30.dp
     public val previewDetailSize: TextUnit = 11.sp
@@ -58,7 +58,7 @@ public object ThemeTokens {
     /** The custom color sheet: the picked color beside its hex code, and a preview per theme. */
     public val customColorSize: Dp = 64.dp
     public val customPreviewPadding: Dp = 10.dp
-    public val customPreviewRadius: Dp = 16.dp
+    public val customPreviewRadius: Dp = CornerTokens.row
     public val customPillHeight: Dp = 28.dp
     public val customPillPadding: Dp = 10.dp
 

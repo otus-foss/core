@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- Round corners more, from one internal scale in `CornerTokens`. The action bar, menus,
+  dropdowns, and sheet and dialog tops go from 22 dp (context menus from 16 dp) to 30 dp. Rows,
+  cards, row groups, and sidebar entries go from 16 dp to 24 dp, chips and value buttons from 8 dp
+  to 14 dp, formatting buttons from 12 dp to 20 dp, and the formatting row from 22 dp to 28 dp.
+  Smaller radii move up one step. The control panel and `FilterPanel` keep 22 dp. Public tokens
+  such as `SheetTokens.rowRadius` and `ThemeTokens.previewRowRadius` keep their names with the
+  new values.
 - Add `ChangeLogSheet`, which lists `ChangeLogSection`s of bulleted changes over a secondary and a
   wide primary button, such as Changelog and Install update, and `ChangeLogHistorySheet`, which
   lists `ChangeLogRelease`s by title. Installed releases share a lighter panel under an

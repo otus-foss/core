@@ -20,7 +20,7 @@ public object ActionBarTokens {
     /** Distance from the screen edges, matching the context panel at the top of a page. */
     public val barInset: Dp = PageTokens.pageInset
     public val gap: Dp = 8.dp
-    public val radius: Dp = PanelTokens.panelRadius
+    public val radius: Dp = CornerTokens.surface
     public val groupPadding: Dp = 7.dp
     public val slotGap: Dp = 2.dp
     public val symbolSize: Dp = 24.dp
@@ -35,7 +35,7 @@ public object ActionBarTokens {
     /** How far two people's avatars overlap, closer than an avatar and a count so the names keep room. */
     public val pairOverlap: Dp = 20.dp
     public val tokenRing: Dp = 2.dp
-    public val dateRadius: Dp = 8.dp
+    public val dateRadius: Dp = CornerTokens.chip
     public val titleSize: TextUnit = 18.sp
     public val titleLineHeight: TextUnit = 22.sp
     public val subtitleSize: TextUnit = 14.sp
