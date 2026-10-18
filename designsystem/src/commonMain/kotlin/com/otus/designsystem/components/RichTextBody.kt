@@ -31,6 +31,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.zIndex
 import com.mohamedrejeb.richeditor.ui.BasicRichTextEditor
 import com.otus.designsystem.elements.RichBlock
 import com.otus.designsystem.elements.RichText
@@ -43,8 +44,9 @@ import com.otus.designsystem.theme.panelTextStyle
  * The borderless editor for [text], below the header lines of a message. It grows with the text
  * and takes taps across the area the caller gives it. [placeholder] shows in `text3` while it is
  * empty and names it to accessibility services. Links draw in the accent. Each image shows what
- * [images] gives for its `src` between the text around it, a box until it gives one. A tap shows
- * its size and remove controls; Backspace at the start of the text after an image removes it.
+ * [images] gives for its `src` between the text around it, a box until it gives one. A tap
+ * selects it for an [ImageBar], see [selectedImageSizing]; Backspace at the start of the text
+ * after an image removes it.
  */
 @Composable
 public fun RichTextBody(
@@ -66,7 +68,7 @@ public fun RichTextBody(
             key(block) {
                 when (block) {
                     is RichBlock.Text -> TextBlock(text, block, index, placeholder, Modifier)
-                    is RichBlock.Image -> ImageBlock(text, block, index, images(block.source))
+                    is RichBlock.Image -> ImageBlock(text, block, images(block.source))
                 }
             }
         }
@@ -104,14 +106,14 @@ private fun TextBlock(
                 }.onPreviewKeyEvent { event ->
                     val backspace = event.key == Key.Backspace && event.type == KeyEventType.KeyDown
                     val atStart = block.state.selection.collapsed && block.state.selection.start == 0
-                    (backspace && atStart && index > 0).also { if (it) text.removeImageBefore(index) }
+                    (backspace && atStart && index > 0).also { if (it) text.images.removeBefore(index) }
                 }.semantics { contentDescription = if (index == 0) placeholder else "$placeholder, continued" },
         textStyle = style,
         cursorBrush = SolidColor(OtusColors.accentLight),
         keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
         decorationBox = { field ->
             Box(Modifier.padding(horizontal = PageTokens.textInset, vertical = PageTokens.contentInset)) {
-                if (index == 0 && text.text.isEmpty() && text.imageSources.isEmpty()) {
+                if (index == 0 && text.text.isEmpty() && text.images.sources.isEmpty()) {
                     Text(placeholder, style = style, color = OtusColors.text3)
                 }
                 field()
@@ -122,18 +124,23 @@ private fun TextBlock(
 
 /**
  * An image as wide as the text until it is resized; a `bgDark` box until it loads. Tapping it
- * shows the [ResizableImage] controls, and ✕ takes it out of the text.
+ * selects it, and the page's [ImageBar] takes over its other controls.
  */
 @Composable
 private fun ImageBlock(
     text: RichText,
     block: RichBlock.Image,
-    index: Int,
     image: EditableImage?,
 ) {
     val focus = LocalFocusManager.current
-    BoxWithConstraints(Modifier.padding(horizontal = PageTokens.textInset).fillMaxWidth()) {
-        val full = maxWidth
+    BoxWithConstraints(
+        Modifier
+            .zIndex(if (text.selected === block) 1f else 0f)
+            .padding(horizontal = PageTokens.textInset)
+            .fillMaxWidth(),
+    ) {
+        val width = maxWidth
+        SideEffect { text.textWidth = width }
         val drawn = image?.takeIf { it.painter.intrinsicSize.isSpecified && it.painter.intrinsicSize.width > 0f }
         if (drawn == null) {
             Box(
@@ -146,23 +153,31 @@ private fun ImageBlock(
         } else {
             ResizableImage(
                 drawn,
-                ImageSizing(
-                    block.width?.coerceAtMost(full) ?: full,
-                    listOf(
-                        ImagePreset("Small", ComposeTokens.inlineImageSmall),
-                        ImagePreset("Medium", ComposeTokens.inlineImageMedium),
-                        ImagePreset("Full width", full),
-                    ),
-                    onWidthChange = { block.width = it.takeIf { width -> width < full } },
-                    range = ComposeTokens.inlineImageMinWidth..full,
-                ),
+                text.imageSizing(block.source),
                 selected = text.selected === block,
                 onSelect = {
                     focus.clearFocus()
                     text.selected = block
                 },
-                onRemove = { text.removeImageAt(index) },
             )
         }
     }
+}
+
+/** The selected image's sizing for an [ImageBar], or null while no image is selected. */
+public fun RichText.selectedImageSizing(): ImageSizing? = images.selected?.let(::imageSizing)
+
+/** Small, Medium, Large, and Full width, which is the text's width and leaves the width unset. */
+private fun RichText.imageSizing(source: String): ImageSizing {
+    val full = textWidth.coerceAtLeast(ComposeTokens.inlineImageMinWidth)
+    return ImageSizing(
+        images.width(source)?.coerceAtMost(full) ?: full,
+        listOf(
+            ImagePreset("Small", ComposeTokens.inlineImageSmall),
+            ImagePreset("Medium", ComposeTokens.inlineImageMedium),
+            ImagePreset("Large", ComposeTokens.inlineImageLarge),
+            ImagePreset("Full", full, short = "Full"),
+        ).filter { it.width <= full },
+        range = ComposeTokens.inlineImageMinWidth..full,
+    ) { images.resize(source, it.takeIf { width -> width < full }) }
 }
