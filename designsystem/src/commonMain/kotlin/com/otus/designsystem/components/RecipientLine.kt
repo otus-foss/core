@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -83,14 +83,14 @@ public fun RecipientLine(
     }
 }
 
-/** A person's avatar and name in a small outlined box; tapping it edits or removes them. */
+/** A person's avatar and name in an outlined pill; tapping it edits or removes them. */
 @Composable
 public fun RecipientChip(
     recipient: Recipient,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val shape = RoundedCornerShape(ComposeTokens.recipientRadius)
+    val shape = CircleShape
     Row(
         modifier
             .height(ComposeTokens.recipientHeight)
@@ -112,7 +112,7 @@ private fun MoreChip(
     hidden: Int,
     onClick: () -> Unit,
 ) {
-    val shape = RoundedCornerShape(ComposeTokens.recipientRadius)
+    val shape = CircleShape
     Box(
         Modifier
             .height(ComposeTokens.recipientHeight)

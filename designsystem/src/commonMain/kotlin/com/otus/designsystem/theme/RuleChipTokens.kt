@@ -26,7 +26,7 @@ internal object RuleChipTokens {
 
     /** The one-line chip under a folder's name, sized to its content without a label column. */
     val compactHeight: Dp = 24.dp
-    val compactRadius: Dp = 6.dp
+    val compactRadius: Dp = CornerTokens.small
     val compactPadding: Dp = 8.dp
     val compactGap: Dp = 6.dp
     val compactAvatar: Dp = 16.dp

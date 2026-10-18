@@ -18,7 +18,7 @@ public object ComposeTokens {
 
     /** A recipient chip: its avatar, corner radius, height, and the gaps between wrapped chips. */
     public val recipientAvatarSize: Dp = 22.dp
-    public val recipientRadius: Dp = 8.dp
+    public val recipientRadius: Dp = CornerTokens.chip
     public val recipientHeight: Dp = 32.dp
     public val recipientGap: Dp = 6.dp
 
@@ -32,9 +32,10 @@ public object ComposeTokens {
 
     /** The formatting row docked above the keyboard. */
     public val formatBarHeight: Dp = 56.dp
+    internal val formatBarRadius: Dp = CornerTokens.large
     public val formatBarInset: Dp = 4.dp
     public val formatButtonSize: Dp = 40.dp
-    public val formatButtonRadius: Dp = 12.dp
+    public val formatButtonRadius: Dp = CornerTokens.button
     public val formatIconSize: Dp = 24.dp
     public val formatDividerHeight: Dp = 24.dp
 
@@ -56,5 +57,5 @@ public object ComposeTokens {
     public val attachmentMaxWidth: Dp = 280.dp
 
     /** The collapsed quote at the end of a reply. */
-    public val quoteRadius: Dp = 8.dp
+    public val quoteRadius: Dp = CornerTokens.chip
 }

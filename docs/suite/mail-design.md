@@ -89,7 +89,7 @@ a panel layout decision rather than a pill token.
 ## Selection sheets
 
 Inbox filters use the same bottom sheet as settings choices: it slides up from the bottom
-edge with 22 dp top corners, a bg-dark surface, a grab handle, Figtree text, and the shared
+edge with 30 dp top corners, a bg-dark surface, a grab handle, Figtree text, and the shared
 clipped press highlight. Picker search reuses the SearchField element but keeps its query
 independent of mail search. Clear edits only the sheet draft; Done commits, while the scrim,
 Back, or a downward swipe discard changes.
@@ -115,7 +115,7 @@ decisions, not verified Figma values, and no Figma frame for the bar has been in
 | Property | Value |
 | --- | --- |
 | Gap between group and shell | 8 dp |
-| Corner radius | 22 dp, the panel radius |
+| Corner radius | 30 dp, rounder than the 22 dp control panel |
 | Group horizontal padding | 7 dp |
 | Gap between secondary slots | 2 dp |
 | Symbol size | 24 dp |
@@ -125,7 +125,7 @@ decisions, not verified Figma values, and no Figma frame for the bar has been in
 | Gap after the token | 10 dp |
 | Avatar and count overlap | 12 dp |
 | Ring around the count | 2 dp |
-| Date token radius | 8 dp |
+| Date token radius | 14 dp |
 | Title text | 18 sp |
 | Subtitle text | 14 sp |
 
