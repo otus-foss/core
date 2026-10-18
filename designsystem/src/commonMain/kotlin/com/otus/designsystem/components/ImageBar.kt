@@ -27,10 +27,11 @@ public fun ImageBar(
     modifier: Modifier = Modifier,
 ) {
     val parts = LocalBarParts.current
+    // Bottom-aligned, so the group grows upward past the ✓ while its options show.
     Row(
-        modifier.fillMaxWidth().height(ActionBarTokens.height),
+        modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(ActionBarTokens.gap),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.Bottom,
     ) {
         ExpandingBarGroup(
             "Image options",
@@ -45,6 +46,8 @@ public fun ImageBar(
                 fontSize = ComposeTokens.detailSize,
             )
         }
-        Box(parts.primary) { CompactSendButton("Done", onDone, enabled = true, icon = Res.drawable.symbol_check) }
+        Box(parts.primary.height(ActionBarTokens.height)) {
+            CompactSendButton("Done", onDone, enabled = true, icon = Res.drawable.symbol_check)
+        }
     }
 }
