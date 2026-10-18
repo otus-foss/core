@@ -34,7 +34,7 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   `RuleChip`, `RuleChipGroup`, and `AddRuleChip` (with `RuleChipLine`, `RuleChipValue`, `RuleSegment`, and
   `RuleSegmentStyle`), `FolderSettingRow` with `FolderRuleSummary` and `FolderOwnerLine`, `SummaryCard` and `PersonText` (with `NamedAvatar`), `ValueToken`, `ValuePicker`, `Collapsible`, `CollapsibleTree`, `AvatarStack`, `ContextMenu` and `QuickActionBar` (with `MenuAction`),
   `Dropdown` (with `DropdownRow`), `OptionsMenu` (with `OptionsItem`), `FormattingBar` (with
-  `FormatButton` and `CompactSendButton`), `RecipientLine` (with `Recipient`, `AddressInput`, and `RecipientChip`), `ThreadStrip` (with `ThreadEntry` and `ThreadMessageRow`),
+  `FormatButton` and `CompactSendButton`), `BarMorph`, `AttachmentChip`, `RecipientLine` (with `Recipient`, `AddressInput`, and `RecipientChip`), `ThreadStrip` (with `ThreadEntry` and `ThreadMessageRow`),
   `PersonAvatar`, `BarNotice`, `ClosableSheet` (with `SheetConfirm`), `SegmentedToggle`, `PickRow` (with `PickMark`), `PersonRow`, `RowGroup` (with `GroupRow`), `TimeWheelPicker`,
   `ResizableImage` (with `ImageSizing` and `ImagePreset`), `ListCaption`,
   `SidebarSwipeArea`, `SlidingOverlay`, `SlidingPages`, `SwipeActions`, `ThemeCard`, and `ToastHost`
@@ -245,7 +245,26 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   needed, and a field for the next address. Next or losing focus commits the typed text, and
   Backspace in an empty field removes the last chip. `RichTextBody` edits the formatted body,
   built on the compose-rich-editor library, which stays an implementation detail behind
-  `RichText`: it reads and writes HTML and plain text. `QuoteChip` stands for the collapsed
+  `RichText`: it reads and writes HTML and plain text. A text field cannot draw images, so
+  `RichText` splits its HTML at each `<img>` into text blocks with an image block between each
+  two. `insertImage` splits the text at the cursor, `removeImage` joins it again, and Backspace
+  at the start of the text after an image removes it; `RichText.images` (`RichTextImages`)
+  inserts, removes, resizes, describes, and replaces images and knows the selected one.
+  `RichTextBody` draws each image through its `images` slot as a `ResizableImage`, as wide as
+  the text until it is resized to Small (120), Medium (200), Large (280), or any width; the width
+  and description go into the `<img>` tag, which also caps it at 100%. Formatting goes to the
+  text block that last had focus.
+- `ResizableImage` shows an `EditableImage`; selected, it gets an outline and a corner handle.
+  Dragging the handle draws a dashed guide at each preset with its short label (S, M, L, Full),
+  snaps within 12 dp with a haptic tick, and names the size in a pill under the handle. Its
+  other controls live in `ImageBar`: the page's bottom bar while an image is selected, with the
+  presets in a `SegmentedToggle`, ⋯, and the accent ✓ in the primary's place.
+- `ExpandingBarGroup` is a bar group whose ⋯ grows the group itself upward: any panel, such as
+  an `OptionsList`, above a divider and the group's row, with ⋯ filled while open. ⋯, Back, or
+  the panel's close folds it. `OptionsList` is the rows of an `OptionsMenu` for any surface. `BarMorph` is generic over which bar shows, so a page morphs between its action bar,
+  formatting row, and image bar. `RichText.selectedImageSizing()` gives the bar the sizes the
+  body uses. `rememberImage` decodes a photo off the main thread at
+  most 2048 px on a side. `QuoteChip` stands for the collapsed
   original at the end of a forward. With `collapsedAfter`, a `RecipientLine` holding more people
   shows that many and a "+N more" chip, without its field, until the chip is tapped; its label
   then stays beside the first row (`ComposeLine` with `topAligned`).
@@ -260,6 +279,15 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   such as Attach, behind a divider, then Bold, Italic, Bulleted list, Numbered list, Link, and
   Clear formatting. The buttons scroll sideways with faded edges, and a trailing slot, such as
   `CompactSendButton`, stays pinned. An active format gets a `bgLight` fill, never the accent.
+  Over the keyboard the row reaches the page gap at both sides. `CompactSendButton` has the
+  action bar's collapsed action shape and sits flush at the row's end, its accent border over
+  the row's.
+- `BarMorph` turns a `FormattingBar` into a full `ActionBar` and back: each part takes the other's
+  height, then its width, so the row splits into the group and shell. The content blurs while the
+  width changes. Pair it with `isKeyboardUp()`, which turns false as the keyboard starts to close.
+- `AttachmentChip` is a file on a message being written: an attach symbol, the name with a
+  `text3` detail under it, such as the size, and a ✕. It is outlined in `bgLight`, at least 48 dp
+  tall and at most 280 dp wide. A failed upload can make the chip retry on a tap.
 - `Dropdown` opens a `bgDark` list with a 22 dp radius under the element it is called from, the
   window's width unless given one, and above the element when there is no room below.
   `DropdownRow` marks the selected row with a `bgRegular` fill and no checkmark; `ListCaption`
