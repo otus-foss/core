@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -51,7 +50,8 @@ public fun PeopleLine(
             .padding(horizontal = SheetTokens.inset, vertical = FilterTokens.chipGap),
         verticalAlignment = Alignment.Top,
     ) {
-        LineSlot(Modifier.width(FilterTokens.peopleLabelWidth)) {
+        // At least the column's width, and wider with large text, so the label never runs into the chips.
+        LineSlot(Modifier.widthIn(min = FilterTokens.peopleLabelWidth).padding(end = FilterTokens.chipGap)) {
             Text(label, style = panelTextStyle(), color = OtusColors.text3, fontSize = FilterTokens.chipTextSize)
         }
         FlowRow(
