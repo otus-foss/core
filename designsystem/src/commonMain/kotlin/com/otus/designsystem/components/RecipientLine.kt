@@ -90,12 +90,33 @@ public fun RecipientChip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    PersonChipFrame(recipient, modifier.clickable(onClickLabel = "Edit", role = Role.Button, onClick = onClick))
+}
+
+/**
+ * A person in the same outlined pill as a [RecipientChip], where they are only shown, such as the
+ * people a message went to. With [onClick] the chip is a button, such as to show who they are;
+ * without it, screen readers read it as text.
+ */
+@Composable
+public fun PersonChip(
+    person: Recipient,
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
+) {
+    PersonChipFrame(person, onClick?.let { modifier.clickable(role = Role.Button, onClick = it) } ?: modifier)
+}
+
+@Composable
+private fun PersonChipFrame(
+    recipient: Recipient,
+    modifier: Modifier,
+) {
     val shape = CircleShape
     Row(
         modifier
             .height(ComposeTokens.recipientHeight)
             .border(PanelTokens.borderWidth, OtusColors.bgLight, shape)
-            .clickable(onClickLabel = "Edit", role = Role.Button, onClick = onClick)
             .semantics { contentDescription = recipient.description }
             .padding(start = PanelTokens.iconGap, end = PanelTokens.chipPadding),
         horizontalArrangement = Arrangement.spacedBy(PanelTokens.chipGap),

@@ -12,7 +12,8 @@ import com.otus.designsystem.theme.panelTextStyle
 /**
  * A [folder] to tick in a sheet, such as the folders a message is in: its glyph, its path with the
  * parents in `text3`, an optional `text3` [detail] such as "you're here", and a checkbox, since a
- * message may be in several folders. A system folder shows its outlined icon.
+ * message may be in several folders. A system folder shows its outlined icon. Rows are one touch
+ * target tall, so a long list of folders fits.
  */
 @Composable
 public fun FolderPickRow(
@@ -26,6 +27,7 @@ public fun FolderPickRow(
         PickMark(checked, multiple = true),
         onClick,
         modifier,
+        minHeight = PanelTokens.touchTarget,
         leading = { FolderNameGlyph(folder, PanelTokens.iconSize) },
         trailing =
             detail?.let {

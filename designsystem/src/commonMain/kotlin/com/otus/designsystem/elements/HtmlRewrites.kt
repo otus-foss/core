@@ -50,8 +50,8 @@ internal fun placeholderStyle(palette: OtusPalette): String {
 
 /**
  * The fold for [quote] after the body: a header pill with the author's initials and name and the
- * date, the quote cut to three lines that fade out, and a label that unfolds it. A hidden checkbox
- * holds the state, so it works without scripts.
+ * date, each left out when blank, the quote cut to three lines that fade out, and a label that
+ * unfolds it. A hidden checkbox holds the state, so it works without scripts.
  */
 internal fun quoteFold(
     quote: HtmlQuote,
@@ -76,11 +76,20 @@ internal fun quoteFold(
             ".otus-quote-toggle:checked~.otus-quote-label .otus-quote-less{display:inline}"
     return "<style>$style</style><div class=\"otus-quote\">" +
         "<input type=\"checkbox\" id=\"otus-quote\" class=\"otus-quote-toggle\">" +
-        "<div class=\"otus-quote-body\"><span class=\"otus-quote-pill\">" +
-        "<span class=\"otus-quote-avatar\">${escaped(quote.initials)}</span>${escaped(quote.name)}</span>" +
-        " · ${escaped(quote.date)}<div class=\"otus-quote-text\">${quote.html}</div></div>" +
+        "<div class=\"otus-quote-body\">${quoteHeader(quote)}<div class=\"otus-quote-text\">${quote.html}</div></div>" +
         "<label for=\"otus-quote\" class=\"otus-quote-label\"><span class=\"otus-quote-more\">Show quoted text</span>" +
         "<span class=\"otus-quote-less\">Hide quoted text</span></label></div>"
+}
+
+/** The pill of who wrote [quote], left out without a name, then its date when it has one. */
+private fun quoteHeader(quote: HtmlQuote): String {
+    val pill =
+        quote.name.takeIf { it.isNotBlank() }?.let {
+            "<span class=\"otus-quote-pill\"><span class=\"otus-quote-avatar\">${escaped(quote.initials)}</span>" +
+                "${escaped(it)}</span>"
+        }
+    val date = escaped(quote.date).takeIf { it.isNotBlank() }
+    return listOfNotNull(pill, date).joinToString(" · ")
 }
 
 /** [text] safe to put between HTML tags. */
