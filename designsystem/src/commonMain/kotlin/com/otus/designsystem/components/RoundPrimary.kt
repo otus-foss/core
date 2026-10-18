@@ -52,13 +52,14 @@ internal fun RoundPrimary(
     modifier: Modifier = Modifier,
 ) {
     val interactions = remember { MutableInteractionSource() }
+    val menu = rememberBarMenu()
     val pill = RoundedCornerShape(percent = 50)
     val front = rememberFrontBar(primary, context)
     Box(
         modifier
             .height(ActionBarTokens.height)
             .semantics { contentDescription = listOfNotNull(primary.label, context?.description).joinToString(", ") }
-            .clickable(interactions, null, enabled = primary.enabled, role = Role.Button, onClick = primary.onClick)
+            .clickable(interactions, null, enabled = primary.enabled, role = Role.Button, onClick = menu.click(primary))
             .controlPressFeedback(interactions, pill),
         contentAlignment = Alignment.CenterEnd,
     ) {
@@ -70,6 +71,7 @@ internal fun RoundPrimary(
                 front.face.Swapping { Symbol(it.symbol, it.mirrorInRtl, ActionBarTokens.symbolSize) }
             }
         }
+        menu.Menu(primary, end = true)
     }
 }
 

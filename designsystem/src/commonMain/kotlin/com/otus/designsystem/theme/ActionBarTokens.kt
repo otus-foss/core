@@ -25,6 +25,10 @@ public object ActionBarTokens {
     public val slotGap: Dp = 2.dp
     public val symbolSize: Dp = 24.dp
 
+    /** The dashed circle of an empty slot, inside its 48 dp target, and the plus inside it. */
+    public val addSlotSize: Dp = 36.dp
+    public val addSymbolSize: Dp = 20.dp
+
     /** Where the no-context label starts inside the action. */
     public val labelInset: Dp = 20.dp
     public val contextInset: Dp = 12.dp

@@ -2,8 +2,7 @@ package com.otus.designsystem.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.scaleIn
+import androidx.compose.animation.expandVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -19,7 +18,9 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -59,13 +60,24 @@ public fun ContextMenu(
     onDismiss: () -> Unit,
 ) {
     val edge = with(LocalDensity.current) { MenuTokens.edge.roundToPx() }
-    val position = remember(at, edge) { AtPoint(at.round(), edge) }
+    ContextMenu(actions, remember(at, edge) { AtPoint(at.round(), edge) }, onDismiss)
+}
+
+/** A [ContextMenu] at [position]; its rows scroll once it reaches [MenuTokens.dropdownMaxHeight]. */
+@Composable
+internal fun ContextMenu(
+    actions: List<MenuAction>,
+    position: PopupPositionProvider,
+    onDismiss: () -> Unit,
+) {
     MenuPopup(position, onDismiss) {
         Column(
             Modifier
                 .width(IntrinsicSize.Max)
                 .widthIn(min = MenuTokens.minWidth)
+                .heightIn(max = MenuTokens.dropdownMaxHeight)
                 .menuSurface()
+                .verticalScroll(rememberScrollState())
                 .padding(MenuTokens.inset),
         ) {
             actions.forEach { action ->
@@ -78,7 +90,11 @@ public fun ContextMenu(
     }
 }
 
-/** A popup at [position] that fades and grows in, as menus open; it takes focus while [focusable]. */
+/**
+ * A popup at [position] that opens at full size and unrolls from its top edge, so its first rows
+ * are readable at once. While [focusable] it takes focus and closes on a tap outside; otherwise
+ * taps on the keyboard count as outside, so the caller closes it.
+ */
 @Composable
 internal fun MenuPopup(
     position: PopupPositionProvider,
@@ -87,12 +103,11 @@ internal fun MenuPopup(
     content: @Composable () -> Unit,
 ) {
     val shown = remember { MutableTransitionState(false).apply { targetState = true } }
-    Popup(position, onDismissRequest = onDismiss, properties = PopupProperties(focusable = focusable)) {
+    val properties = PopupProperties(focusable = focusable, dismissOnClickOutside = focusable)
+    Popup(position, onDismissRequest = onDismiss, properties = properties) {
         AnimatedVisibility(
             shown,
-            enter =
-                fadeIn(motionTween(MotionSpeed.Fast)) +
-                    scaleIn(motionTween(MotionSpeed.Fast), initialScale = START_SCALE),
+            enter = expandVertically(motionTween(MotionSpeed.Fast), expandFrom = Alignment.Top),
         ) { content() }
     }
 }
@@ -168,5 +183,3 @@ private class AtPoint(
         )
     }
 }
-
-private const val START_SCALE = 0.9f
