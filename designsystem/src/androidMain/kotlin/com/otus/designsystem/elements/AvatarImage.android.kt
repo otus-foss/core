@@ -4,7 +4,10 @@ import android.graphics.BitmapFactory
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 
-public actual fun decodeAvatarImage(bytes: ByteArray): ImageBitmap? =
+public actual fun decodeImage(
+    bytes: ByteArray,
+    maxSize: Int,
+): ImageBitmap? =
     runCatching {
         val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
         BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
@@ -13,12 +16,11 @@ public actual fun decodeAvatarImage(bytes: ByteArray): ImageBitmap? =
         }
         options.inJustDecodeBounds = false
         options.inSampleSize = 1
-        while (maxOf(options.outWidth, options.outHeight) / options.inSampleSize > AVATAR_DECODE_SIZE) {
+        while (maxOf(options.outWidth, options.outHeight) / options.inSampleSize > maxSize) {
             options.inSampleSize *= SAMPLE_MULTIPLIER
         }
         BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)?.asImageBitmap()
     }.getOrNull()
 
 private const val MAX_IMAGE_DIMENSION = 4096
-private const val AVATAR_DECODE_SIZE = 256
 private const val SAMPLE_MULTIPLIER = 2

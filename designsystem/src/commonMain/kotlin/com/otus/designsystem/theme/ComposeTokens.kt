@@ -36,11 +36,24 @@ public object ComposeTokens {
     public val formatButtonSize: Dp = 40.dp
     public val formatButtonRadius: Dp = 12.dp
     public val formatIconSize: Dp = 24.dp
-    public val sendButtonWidth: Dp = 44.dp
     public val formatDividerHeight: Dp = 24.dp
 
     /** The more-options menu under the panel's ⋯ button. */
     public val optionsMenuWidth: Dp = 286.dp
+
+    /** An image in the message body: the box shown while it loads, its narrowest size, and its presets. */
+    public val inlineImageLoadingHeight: Dp = 160.dp
+    public val inlineImageMinWidth: Dp = 48.dp
+    public val inlineImageSmall: Dp = 120.dp
+    public val inlineImageMedium: Dp = 200.dp
+    public val inlineImageLarge: Dp = 280.dp
+
+    /** The size guides while an image is dragged: how far past the image they reach, and their dashes. */
+    public val guideReach: Dp = 16.dp
+    public val guideDash: Dp = 4.dp
+
+    /** The widest an attachment chip grows before its name ends in an ellipsis. */
+    public val attachmentMaxWidth: Dp = 280.dp
 
     /** The collapsed quote at the end of a reply. */
     public val quoteRadius: Dp = 8.dp

@@ -9,6 +9,8 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -28,6 +30,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.dp
 import com.otus.designsystem.elements.RichText
 import com.otus.designsystem.elements.Symbol
 import com.otus.designsystem.elements.TextFormat
@@ -40,6 +43,7 @@ import com.otus.designsystem.resources.symbol_format_list_bulleted
 import com.otus.designsystem.resources.symbol_format_list_numbered
 import com.otus.designsystem.resources.symbol_link
 import com.otus.designsystem.resources.symbol_send
+import com.otus.designsystem.theme.ActionBarTokens
 import com.otus.designsystem.theme.ComposeTokens
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PanelTokens
@@ -50,7 +54,9 @@ import org.jetbrains.compose.resources.DrawableResource
  * Attach, comes first behind a divider, then a button for each [TextFormat]; the row scrolls
  * sideways and fades at its edges when it does not fit. Link runs [onLink] so the caller can ask
  * for an address, or removes the link at the cursor. [trailing], such as a [CompactSendButton],
- * stays pinned at the end.
+ * stays pinned at the end, flush with the row's edge and drawn over its border. The row spans
+ * the width above the keyboard; see [overKeyboard]. Inside a [BarMorph], the row and [trailing]
+ * move into the other bar's parts.
  */
 @Composable
 public fun FormattingBar(
@@ -61,13 +67,37 @@ public fun FormattingBar(
     trailing: (@Composable () -> Unit)? = null,
 ) {
     val shape = RoundedCornerShape(PanelTokens.panelRadius)
-    Row(
-        modifier
+    val parts = LocalBarParts.current
+    Box(
+        // Widened first, so a [BarMorph] moves the whole row.
+        Modifier
+            .overKeyboard()
+            .then(parts.group)
+            .then(modifier)
             .fillMaxWidth()
             .height(ComposeTokens.formatBarHeight)
-            .background(OtusColors.bgDark, shape)
-            .border(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape)
-            .padding(horizontal = ComposeTokens.formatBarInset),
+            .background(OtusColors.bgDark, shape),
+    ) {
+        // Drawn before the buttons, so the Send's accent border covers it where the two meet.
+        Box(Modifier.matchParentSize().border(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape))
+        FormattingRow(text, onLink, leading, trailing?.let { { Box(parts.primary) { it() } } })
+    }
+}
+
+@Composable
+private fun FormattingRow(
+    text: RichText,
+    onLink: () -> Unit,
+    leading: (@Composable () -> Unit)?,
+    trailing: (@Composable () -> Unit)?,
+) {
+    Row(
+        Modifier
+            .fillMaxSize()
+            .padding(
+                start = ComposeTokens.formatBarInset,
+                end = if (trailing == null) ComposeTokens.formatBarInset else 0.dp,
+            ),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         val scroll = rememberScrollState()
@@ -123,7 +153,11 @@ public fun FormatButton(
     }
 }
 
-/** The small Send at the end of a [FormattingBar]: the [icon], the send symbol by default, on the accent. */
+/**
+ * The Send at the end of a [FormattingBar]: the [icon], the send symbol by default, on the accent.
+ * It fills the row's height and has an [ActionBar] shell's collapsed action shape, so it sits on
+ * the row the way that action sits on its shell.
+ */
 @Composable
 public fun CompactSendButton(
     description: String,
@@ -132,19 +166,17 @@ public fun CompactSendButton(
     icon: DrawableResource = Res.drawable.symbol_send,
 ) {
     val interactions = remember { MutableInteractionSource() }
-    val shape = RoundedCornerShape(ComposeTokens.formatButtonRadius)
+    val shape = RoundedCornerShape(ActionBarTokens.radius)
     Box(
         Modifier
-            .size(PanelTokens.touchTarget)
+            .fillMaxHeight()
+            .width(ActionBarTokens.collapsedActionWidth)
             .semantics { contentDescription = description }
             .clickable(interactions, indication = null, enabled = enabled, role = Role.Button, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
         Surface(
-            Modifier
-                .width(ComposeTokens.sendButtonWidth)
-                .height(ComposeTokens.formatButtonSize)
-                .controlPressFeedback(interactions, shape),
+            Modifier.fillMaxSize().controlPressFeedback(interactions, shape),
             shape = shape,
             color = if (enabled) OtusColors.accentDark else OtusColors.bgDark,
             contentColor = if (enabled) OtusColors.text1 else OtusColors.text3,
@@ -153,7 +185,11 @@ public fun CompactSendButton(
                     PanelTokens.borderWidth,
                     if (enabled) OtusColors.accentRegular else OtusColors.strokeBgDark,
                 ),
-        ) { Box(contentAlignment = Alignment.Center) { Symbol(icon, mirrorInRtl = true) } }
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Symbol(icon, mirrorInRtl = true, size = ActionBarTokens.symbolSize)
+            }
+        }
     }
 }
 

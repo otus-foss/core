@@ -2,6 +2,38 @@
 
 ## Unreleased
 
+- `RichText` holds images through `RichText.images`: `insert` puts one at the cursor, `remove`
+  takes it out, `sources` lists them, and `selected`, `width`, `resize`, `description`,
+  `describe`, and `replace` edit the selected one. `RichTextBody` shows each between the text
+  around it through its new `images` slot, since a text field cannot draw images.
+- Add `ImageBar`, the bottom bar while an image is selected: size presets, ⋯ options, and ✓.
+- Add `ExpandingBarGroup`, a bar group that grows upward into a panel above its row, and
+  `OptionsList`, the rows of an `OptionsMenu` for any surface. `ImageBar`'s ⋯ uses both.
+  `ResizableImage` draws dashed preset guides with a haptic tick while its handle drags.
+- **Breaking:** `BarMorph` takes the bar to show and a `content` lambda for it, instead of two
+  slots, so it can morph between any bars. `ResizableImage` drops `onRemove` and its size pill;
+  `ImagePreset` gains `short`. `SegmentedToggle` takes a `fontSize`, and keeps labels on one line.
+- `SignatureTokens.snapDistance` is 12 dp.
+- Add `decodeImage(bytes, maxSize)` and `rememberImage`, which decode a photo at a size of the
+  caller's choosing; `decodeAvatarImage` is `decodeImage` at avatar size.
+- `AttachmentChip` takes `actions`, shown in a `ContextMenu` on a tap, instead of `onRetry`.
+- Add `ComposeTokens.inlineImageLarge`, `guideReach`, and `guideDash`.
+- Add `ComposeTokens.inlineImageLoadingHeight`, `inlineImageMinWidth`, `inlineImageSmall`, and
+  `inlineImageMedium`.
+- **Breaking:** `RichTextBody` moved from `elements` to `components`, since it draws
+  `ResizableImage`. `ResizableImage` takes an `EditableImage` (painter, description, status,
+  actions) instead of an `ImageBitmap`, and `ImageSizing` takes a `range` before `onWidthChange`.
+- Add `AttachmentChip`, a file on a message being written with its name, a detail such as its
+  size, a ✕, and an optional retry, and `ComposeTokens.attachmentMaxWidth`.
+- Add `BarMorph`, which morphs a `FormattingBar` into a full `ActionBar` and back. Each part takes
+  its match's height, then its width, so the row splits into the group and shell. The content
+  blurs while the width changes. It runs at `MotionSpeed.Normal` and follows `LocalMotionScale`.
+- Add `isKeyboardUp()`, which turns false as soon as the keyboard starts to close. On iOS it
+  stays true until the keyboard is gone.
+- A `FormattingBar` spans the width above the keyboard, and draws its border under its buttons.
+- **Breaking:** `CompactSendButton` fills the formatting row's height with the action bar's
+  collapsed action shape, flush with the row's end. `ComposeTokens.sendButtonWidth` is removed.
+
 - A `SheetFrame` never gets shorter than it has been, so its top stays put when the keyboard
   closes. A sheet opened from another sheet's content starts at least as tall.
 - A row dragged in a `ReorderableTree` takes its nested rows along. Before, a parent hovering over

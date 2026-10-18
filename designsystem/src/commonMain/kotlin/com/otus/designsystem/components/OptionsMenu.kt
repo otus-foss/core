@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -36,7 +37,19 @@ public fun OptionsMenu(
     items: List<OptionsItem>,
     onDismiss: () -> Unit,
 ) {
-    Dropdown(onDismiss, alignEnd = true, width = ComposeTokens.optionsMenuWidth) {
+    Dropdown(onDismiss, alignEnd = true, width = ComposeTokens.optionsMenuWidth) { OptionsList(items, onDismiss) }
+}
+
+/**
+ * The rows of [items], as an [OptionsMenu] shows them, for any surface that lists options, such
+ * as an [ExpandingBarGroup]. An action runs [onDone] before its own click, to close what holds it.
+ */
+@Composable
+public fun OptionsList(
+    items: List<OptionsItem>,
+    onDone: () -> Unit,
+) {
+    Column {
         items.forEach { item ->
             when (item) {
                 is OptionsItem.Action -> {
@@ -44,7 +57,7 @@ public fun OptionsMenu(
                         item.icon,
                         item.label,
                         Modifier.clickable(role = Role.Button) {
-                            onDismiss()
+                            onDone()
                             item.onClick()
                         },
                     ) { if (item.opens) Symbol(Res.drawable.symbol_chevron_right, mirrorInRtl = true) }
@@ -59,19 +72,23 @@ public fun OptionsMenu(
                 }
 
                 OptionsItem.Divider -> {
-                    Box(
-                        Modifier
-                            .padding(
-                                horizontal = MenuTokens.rowPadding - MenuTokens.inset,
-                                vertical = PanelTokens.iconGap,
-                            ).fillMaxWidth()
-                            .height(PanelTokens.borderWidth)
-                            .background(OtusColors.bgLight),
-                    )
+                    OptionsDivider()
                 }
             }
         }
     }
+}
+
+/** The line between groups of options, inset like their rows. */
+@Composable
+internal fun OptionsDivider() {
+    Box(
+        Modifier
+            .padding(horizontal = MenuTokens.rowPadding - MenuTokens.inset, vertical = PanelTokens.iconGap)
+            .fillMaxWidth()
+            .height(PanelTokens.borderWidth)
+            .background(OtusColors.bgLight),
+    )
 }
 
 @Composable
