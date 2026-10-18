@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- `RichText` holds images: `insertImage` puts one at the cursor, `removeImage` takes it out, and
+  `imageSources` lists them. `RichTextBody` shows each between the text around it through its
+  new `images` slot, since a text field cannot draw images.
+- Add `decodeImage(bytes, maxSize)` and `rememberImage`, which decode a photo at a size of the
+  caller's choosing; `decodeAvatarImage` is `decodeImage` at avatar size.
+- `AttachmentChip` takes `actions`, shown in a `ContextMenu` on a tap, instead of `onRetry`.
+- Add `ComposeTokens.inlineImageMaxHeight`.
 - Add `AttachmentChip`, a file on a message being written with its name, a detail such as its
   size, a ✕, and an optional retry, and `ComposeTokens.attachmentMaxWidth`.
 - Add `BarMorph`, which morphs a `FormattingBar` into a full `ActionBar` and back. Each part takes

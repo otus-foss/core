@@ -51,12 +51,22 @@ import platform.ImageIO.kCGImageSourceCreateThumbnailFromImageAlways
 import platform.ImageIO.kCGImageSourceCreateThumbnailWithTransform
 import platform.ImageIO.kCGImageSourceThumbnailMaxPixelSize
 
-/** ImageIO thumbnails decode at avatar size, so large photos never allocate a full-size bitmap. */
+/** ImageIO thumbnails decode at [maxSize], so large photos never allocate a full-size bitmap. */
 @OptIn(ExperimentalForeignApi::class)
-public actual fun decodeAvatarImage(bytes: ByteArray): ImageBitmap? {
+public actual fun decodeImage(
+    bytes: ByteArray,
+    maxSize: Int,
+): ImageBitmap? {
     val source = imageSource(bytes) ?: return null
     try {
-        return if (hasAllowedSize(source)) thumbnail(source)?.let(::rasterizeAndRelease) else null
+        return if (hasAllowedSize(
+                source,
+            )
+        ) {
+            thumbnail(source, maxSize)?.let { rasterizeAndRelease(it, maxSize) }
+        } else {
+            null
+        }
     } finally {
         CFRelease(source)
     }
@@ -90,9 +100,12 @@ private fun CFDictionaryRef.intValue(key: CFStringRef?): Int? =
     }
 
 @OptIn(ExperimentalForeignApi::class)
-private fun thumbnail(source: CGImageSourceRef): CGImageRef? =
+private fun thumbnail(
+    source: CGImageSourceRef,
+    maxPixels: Int,
+): CGImageRef? =
     memScoped {
-        val size = alloc<IntVar>().apply { value = AVATAR_DECODE_SIZE }
+        val size = alloc<IntVar>().apply { value = maxPixels }
         val maxSize = CFNumberCreate(null, kCFNumberIntType, size.ptr)
         val options =
             CFDictionaryCreateMutable(
@@ -113,19 +126,25 @@ private fun thumbnail(source: CGImageSourceRef): CGImageRef? =
     }
 
 @OptIn(ExperimentalForeignApi::class)
-private fun rasterizeAndRelease(image: CGImageRef): ImageBitmap? =
+private fun rasterizeAndRelease(
+    image: CGImageRef,
+    maxSize: Int,
+): ImageBitmap? =
     try {
-        rasterize(image)
+        rasterize(image, maxSize)
     } finally {
         CGImageRelease(image)
     }
 
 /** Draws into premultiplied RGBA memory that Skia can wrap directly. */
 @OptIn(ExperimentalForeignApi::class)
-private fun rasterize(image: CGImageRef): ImageBitmap? {
+private fun rasterize(
+    image: CGImageRef,
+    maxSize: Int,
+): ImageBitmap? {
     val width = CGImageGetWidth(image).toInt()
     val height = CGImageGetHeight(image).toInt()
-    if (width !in 1..AVATAR_DECODE_SIZE || height !in 1..AVATAR_DECODE_SIZE) return null
+    if (width !in 1..maxSize || height !in 1..maxSize) return null
     val rowBytes = width * BYTES_PER_PIXEL
     val pixels = ByteArray(rowBytes * height)
     val info = ImageInfo(width, height, ColorType.RGBA_8888, ColorAlphaType.PREMUL)
@@ -173,7 +192,6 @@ private fun draw(
 }
 
 private const val MAX_IMAGE_DIMENSION = 4096
-private const val AVATAR_DECODE_SIZE = 256
 private const val BYTES_PER_PIXEL = 4
 private const val BITS_PER_COMPONENT = 8
 private const val THUMBNAIL_OPTION_COUNT = 3L
