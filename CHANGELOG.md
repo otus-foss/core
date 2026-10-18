@@ -19,6 +19,7 @@
 - `ContextPanel` takes `compact`, which shortens the header and pulls the chips up, such as while
   a list scrolls down. `PullToRefresh` takes `indicatorInset` for content drawn under a panel.
 
+- `SidebarOwl` draws the owl in the accent color.
 - `RichText` holds images through `RichText.images`: `insert` puts one at the cursor, `remove`
   takes it out, `sources` lists them, and `selected`, `width`, `resize`, `description`,
   `describe`, and `replace` edit the selected one. `RichTextBody` shows each between the text
