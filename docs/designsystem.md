@@ -437,8 +437,8 @@ converts them into drawables. Change the SVG, or an `AccentPreset` color, and ru
 `MailLaunch` plays the launch animation in the current theme: the owl and envelope in the style's
 color, and the background and dark details in `bgDark`. It starts with the play-once version.
 While the app reports `loading`, it continues with the loop, starting from the loop's settled
-pose, which matches where the intro ends. Once the owl has arrived and loading has finished, or on
-a tap, the mark shrinks to `BrandTokens.LAUNCH_EXIT_SCALE` and the whole screen fades out at
+pose, which matches where the intro ends. As soon as loading has finished, even mid-intro, or on a
+tap, the mark shrinks to `BrandTokens.LAUNCH_EXIT_SCALE` and the whole screen fades out at
 `Relaxed` speed on the `Exit` curve. `MailLaunchTimeline` holds both runs' keyframes as fractions
 of `Motion.LAUNCH_MILLIS` (3 s) and `Motion.LAUNCH_LOOP_MILLIS` (4.2 s), and `KeyframeTrack` eases
 between them like a CSS keyframes rule. The tilt and the blink use `Standard` where the SVGs use

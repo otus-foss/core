@@ -20,10 +20,6 @@ internal class MailLaunchPlayback {
     /** How far through [timeline] the animation is. */
     val fraction: Float get() = progress.value
 
-    /** Whether the owl has arrived, so the launch can end. */
-    val settled: Boolean
-        get() = timeline !== MailLaunchTimeline.Intro || fraction >= MailLaunchTimeline.INTRO_SETTLED
-
     /** Plays the intro, then the loop from its settled pose, until cancelled. */
     suspend fun play(scale: Float) {
         run(1f, scale)

@@ -50,10 +50,10 @@ import org.jetbrains.compose.resources.painterResource
 
 /**
  * Mail's launch animation in the current theme: the owl and envelope in [style]'s color on
- * [OtusColors.bgDark]. The envelope pops up, the owl rises behind it
- * and tilts upright. While [loading], it keeps looping. Once the owl has arrived and loading has
- * finished, or on a tap, the mark shrinks and fades out, and then [onFinished] runs. It takes
- * every touch meanwhile, so nothing beneath reacts.
+ * [OtusColors.bgDark]. The envelope pops up, the owl rises behind it and tilts upright. While
+ * [loading], it keeps looping. As soon as loading has finished, even before the owl has arrived, or
+ * on a tap, the mark shrinks and fades out, and then [onFinished] runs. It takes every touch
+ * meanwhile, so nothing beneath reacts.
  */
 @Composable
 public fun MailLaunch(
@@ -71,7 +71,7 @@ public fun MailLaunch(
     val finish by rememberUpdatedState(onFinished)
     LaunchedEffect(Unit) {
         val playing = launch { playback.play(motionScale) }
-        snapshotFlow { skipped || (playback.settled && !stillLoading) }.first { it }
+        snapshotFlow { skipped || !stillLoading }.first { it }
         playing.cancel()
         exit.animateTo(1f, Motion.tween(MotionSpeed.Relaxed, MotionCurve.Exit, motionScale))
         finish()

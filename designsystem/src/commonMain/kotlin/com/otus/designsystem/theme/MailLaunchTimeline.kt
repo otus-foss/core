@@ -23,9 +23,6 @@ internal class MailLaunchTimeline(
                 blink = blinks(0.7f, 0.82f),
             )
 
-        /** Where [Intro] has settled, so the launch can end without cutting the owl's arrival short. */
-        const val INTRO_SETTLED: Float = 0.57f
-
         /** `brand/otus-mail-launch-loop.svg`: everything arrives, blinks twice, and drops away again. */
         val Loop =
             MailLaunchTimeline(
