@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add `AttachmentChip`, a file on a message being written with its name, a detail such as its
+  size, a ✕, and an optional retry, and `ComposeTokens.attachmentMaxWidth`.
 - Add `BarMorph`, which morphs a `FormattingBar` into a full `ActionBar` and back. Each part takes
   its match's height, then its width, so the row splits into the group and shell. The content
   blurs while the width changes. It runs at `MotionSpeed.Normal` and follows `LocalMotionScale`.

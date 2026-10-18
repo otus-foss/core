@@ -34,7 +34,7 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   `RuleChip`, `RuleChipGroup`, and `AddRuleChip` (with `RuleChipLine`, `RuleChipValue`, `RuleSegment`, and
   `RuleSegmentStyle`), `FolderSettingRow` with `FolderRuleSummary` and `FolderOwnerLine`, `SummaryCard` and `PersonText` (with `NamedAvatar`), `ValueToken`, `ValuePicker`, `Collapsible`, `CollapsibleTree`, `AvatarStack`, `ContextMenu` and `QuickActionBar` (with `MenuAction`),
   `Dropdown` (with `DropdownRow`), `OptionsMenu` (with `OptionsItem`), `FormattingBar` (with
-  `FormatButton` and `CompactSendButton`), `RecipientLine` (with `Recipient`, `AddressInput`, and `RecipientChip`), `ThreadStrip` (with `ThreadEntry` and `ThreadMessageRow`),
+  `FormatButton` and `CompactSendButton`), `BarMorph`, `AttachmentChip`, `RecipientLine` (with `Recipient`, `AddressInput`, and `RecipientChip`), `ThreadStrip` (with `ThreadEntry` and `ThreadMessageRow`),
   `PersonAvatar`, `BarNotice`, `ClosableSheet` (with `SheetConfirm`), `SegmentedToggle`, `PickRow` (with `PickMark`), `PersonRow`, `RowGroup` (with `GroupRow`), `TimeWheelPicker`,
   `ResizableImage` (with `ImageSizing` and `ImagePreset`), `ListCaption`,
   `SidebarSwipeArea`, `SlidingOverlay`, `SlidingPages`, `SwipeActions`, `ThemeCard`, and `ToastHost`
@@ -260,6 +260,15 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   such as Attach, behind a divider, then Bold, Italic, Bulleted list, Numbered list, Link, and
   Clear formatting. The buttons scroll sideways with faded edges, and a trailing slot, such as
   `CompactSendButton`, stays pinned. An active format gets a `bgLight` fill, never the accent.
+  Over the keyboard the row reaches the page gap at both sides. `CompactSendButton` has the
+  action bar's collapsed action shape and sits flush at the row's end, its accent border over
+  the row's.
+- `BarMorph` turns a `FormattingBar` into a full `ActionBar` and back: each part takes the other's
+  height, then its width, so the row splits into the group and shell. The content blurs while the
+  width changes. Pair it with `isKeyboardUp()`, which turns false as the keyboard starts to close.
+- `AttachmentChip` is a file on a message being written: an attach symbol, the name with a
+  `text3` detail under it, such as the size, and a ✕. It is outlined in `bgLight`, at least 48 dp
+  tall and at most 280 dp wide. A failed upload can make the chip retry on a tap.
 - `Dropdown` opens a `bgDark` list with a 22 dp radius under the element it is called from, the
   window's width unless given one, and above the element when there is no room below.
   `DropdownRow` marks the selected row with a `bgRegular` fill and no checkmark; `ListCaption`

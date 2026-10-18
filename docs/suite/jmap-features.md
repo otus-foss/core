@@ -74,7 +74,7 @@ uncommitted `feat/action-bar` Mail worktree.
 | OAuth | Planned | [Mail #13](https://github.com/reazndev/otus-mail/issues/13). Do not design OAuth screens until it is decided. |
 | Result references in one request | Used | `Email/query` then `Email/get`; `ContactCard/query` then `ContactCard/get`. |
 | `ifInState` on `/set` | Used | Saving rules. A `stateMismatch` makes the app reload and ask the user to save again. |
-| Blob upload | Used | Sieve scripts. Attachments are planned. |
+| Blob upload | Used | Sieve scripts, signature images, and attachments on drafts. |
 | Blob download | Used | Contact photos. Attachments are planned. |
 | `/changes` | Planned | [Mail #15](https://github.com/reazndev/otus-mail/issues/15). Today every load refetches. |
 | `/queryChanges` | Planned | Mail #15, where the server supports it. |
