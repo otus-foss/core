@@ -32,3 +32,14 @@ runner minute.
 - A library change that breaks publication shows up when publishing. Run `publish` manually on
   the branch before tagging a release that changes the build.
 - This replaces the rule in each app's quality guide that local hooks are not relied upon.
+
+## Amendment: one run per ready pull request
+
+Accepted by the user on 2026-10-18, after CI had been paused to manual runs.
+
+- `quality` runs once per pull request: when a pull request that is not a draft opens, or when a
+  draft is marked ready for review. Later pushes to the branch do not start it again.
+- Open pull requests as drafts and mark them ready once every commit is pushed. Start the workflow
+  by hand to check again.
+- Mail's `check` job builds against Meta's source, from the Meta branch with the same name when one
+  exists and from `main` otherwise, because Meta publishing is paused.

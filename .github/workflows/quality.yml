@@ -1,9 +1,12 @@
 name: quality
 
-# Paused: CI starts only when run by hand from GitHub Actions; the local hooks still gate every
-# commit and push. To resume, trigger on pull requests that change more than Markdown again, with
-# paths-ignore "**/*.md".
+# Runs once per pull request, when it is ready to merge: on opening a pull request that is not a
+# draft, or on marking a draft ready for review. Later pushes do not start it again, so open a
+# draft and mark it ready once every commit is pushed. Start it by hand to check again.
 on:
+  pull_request:
+    types: [opened, ready_for_review]
+    paths-ignore: ["**/*.md"]
   workflow_dispatch:
 
 permissions:
@@ -15,6 +18,7 @@ concurrency:
 
 jobs:
   check:
+    if: github.event_name == 'workflow_dispatch' || !github.event.pull_request.draft
     runs-on: ubicloud-standard-2
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
