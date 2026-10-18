@@ -2,8 +2,7 @@ package com.otus.designsystem.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.scaleIn
+import androidx.compose.animation.expandVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -92,7 +91,11 @@ internal fun ContextMenu(
     }
 }
 
-/** A popup at [position] that fades and grows in, as menus open; it takes focus while [focusable]. */
+/**
+ * A popup at [position] that opens at full size and unrolls from its top edge, so its first rows
+ * are readable at once. While [focusable] it takes focus and closes on a tap outside; otherwise
+ * taps on the keyboard count as outside, so the caller closes it.
+ */
 @Composable
 internal fun MenuPopup(
     position: PopupPositionProvider,
@@ -101,12 +104,11 @@ internal fun MenuPopup(
     content: @Composable () -> Unit,
 ) {
     val shown = remember { MutableTransitionState(false).apply { targetState = true } }
-    Popup(position, onDismissRequest = onDismiss, properties = PopupProperties(focusable = focusable)) {
+    val properties = PopupProperties(focusable = focusable, dismissOnClickOutside = focusable)
+    Popup(position, onDismissRequest = onDismiss, properties = properties) {
         AnimatedVisibility(
             shown,
-            enter =
-                fadeIn(motionTween(MotionSpeed.Fast)) +
-                    scaleIn(motionTween(MotionSpeed.Fast), initialScale = START_SCALE),
+            enter = expandVertically(motionTween(MotionSpeed.Fast), expandFrom = Alignment.Top),
         ) { content() }
     }
 }
@@ -182,5 +184,3 @@ private class AtPoint(
         )
     }
 }
-
-private const val START_SCALE = 0.9f
