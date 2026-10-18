@@ -9,7 +9,10 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.mohamedrejeb.richeditor.model.RichTextState
+import kotlin.math.roundToInt
 
 /** A formatting the [FormattingBar][com.otus.designsystem.components.FormattingBar] turns on or off. */
 public enum class TextFormat { Bold, Italic, Bullets, Numbers, Link, Clear }
@@ -31,6 +34,9 @@ public class RichText(
     /** The text block formatting and new images go to. */
     internal var active: RichBlock.Text? by mutableStateOf(null)
 
+    /** The image showing its controls, if any; focusing text deselects it. */
+    internal var selected: RichBlock.Image? by mutableStateOf(null)
+
     /** A text block to focus next, with the cursor where [RichBlock.Text.state] has it. */
     internal var focusNext: RichBlock.Text? by mutableStateOf(null)
 
@@ -49,7 +55,10 @@ public class RichText(
                 .filter { it.isNotEmpty() }
                 .joinToString("\n")
 
-    /** The `src` of each image in the text, in order; a [RichTextBody] draws them with its images. */
+    /**
+     * The `src` of each image in the text, in order; a
+     * [RichTextBody][com.otus.designsystem.components.RichTextBody] draws them with its images.
+     */
     public val imageSources: List<String>
         get() = blocks.filterIsInstance<RichBlock.Image>().map { it.source }
 
@@ -135,6 +144,11 @@ public class RichText(
             .forEach { (index, _) -> join(index) }
     }
 
+    /** Removes the image at [index], as its ✕ does. */
+    internal fun removeImageAt(index: Int) {
+        if (blocks.getOrNull(index) is RichBlock.Image) join(index)
+    }
+
     /** Removes the image before the text block at [index], as Backspace at the block's start does. */
     internal fun removeImageBefore(index: Int) {
         if (blocks.getOrNull(index - 1) is RichBlock.Image) join(index - 1)
@@ -146,6 +160,7 @@ public class RichText(
         val after = blocks[index + 1] as RichBlock.Text
         val joined = RichBlock.Text(before.html + after.html)
         joined.state.selection = TextRange(before.state.annotatedString.text.length)
+        if (selected === blocks[index]) selected = null
         blocks.removeRange(index - 1, index + 2)
         blocks.add(index - 1, joined)
         active = joined
@@ -166,10 +181,14 @@ internal sealed interface RichBlock {
             get() = if (state.annotatedString.text.isEmpty()) "" else state.toHtml()
     }
 
+    /** An image at [width], or as wide as the text while that is null. */
     class Image(
         val source: String,
+        width: Dp? = null,
     ) : RichBlock {
-        override val html: String get() = imageHtml(source)
+        var width: Dp? by mutableStateOf(width)
+
+        override val html: String get() = imageHtml(source, width)
     }
 }
 
@@ -181,10 +200,27 @@ private fun split(html: String): List<RichBlock> {
             .zip(images.map { it.range.first } + html.length)
             .map { (end, start) -> RichBlock.Text(html.substring(end + 1, start)) }
     return texts
-        .zip(images.map { RichBlock.Image(it.groupValues[1]) } + null)
+        .zip(images.map { RichBlock.Image(it.groupValues[1], it.width()) } + null)
         .flatMap { (text, image) -> listOfNotNull(text, image) }
 }
 
-private fun imageHtml(source: String) = "<img src=\"$source\">"
+/** An image tag that never grows wider than the message it is in. */
+private fun imageHtml(
+    source: String,
+    width: Dp? = null,
+): String {
+    val sized = width?.let { " width=\"${it.value.roundToInt()}\"" }.orEmpty()
+    return "<img src=\"$source\"$sized style=\"max-width:100%\">"
+}
+
+private fun MatchResult.width(): Dp? =
+    widthAttribute
+        .find(value)
+        ?.groupValues
+        ?.get(1)
+        ?.toIntOrNull()
+        ?.dp
+
+private val widthAttribute = Regex("""\bwidth="(\d+)"""")
 
 private val imageTag = Regex("""<img\b[^>]*\bsrc="([^"]*)"[^>]*>""")
