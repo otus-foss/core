@@ -10,6 +10,18 @@
   downloads, and tapping does nothing. The arrow now sits in a `bgRegular` circle in the version's
   `text2` color.
 - The `SidebarOwl`'s eye glints take the accent color, like its body.
+- Add the filter panel parts: `FilterPanel`, which grows out of a control panel over a scrim,
+  `FilterPanelHeader`, `FilterPanelFooter`, `FilterSection`, and `FilterFolderRow` (with
+  `FolderCheck` and `TreeFolder`), and the `FilterChip` (with `FilterChipRole` and `ChipLabel`)
+  and `BadgedSymbol` elements. Add `FilterTokens`. The panel's disabled parts use
+  `OtusAlpha.DISABLED`.
+- `FolderGlyph` takes `color` first, with `kind` and an `icon` for uncolored folders, so filter
+  chips can show a system folder's own symbol. It is a breaking change for 0.8.0 callers that
+  passed `kind` first.
+- `SegmentedToggle` takes a `height`; it stays 48 dp by default.
+- Add the `symbol_calendar_today`, `symbol_person_add`, `symbol_forward`, `symbol_event`,
+  `symbol_newspaper`, `symbol_folder_off`, `symbol_speaker_notes_off`, `symbol_swap_vert`, and
+  `symbol_straighten` symbols (Material Symbols Rounded, Apache 2.0).
 - Add `CompactContentRow`, a two-line list row for mail conversations, with its model
   `CompactRowText`, `RowLine`, `RowTextPart`, `RowMark`, `RowFolderIcon`, and `CountPlacement`.
   It selects like `ContentRow`, and `dimmed` fades read rows without fading the selection tint.
@@ -26,7 +38,6 @@
   folder in text3.
 - `ContextPanel` takes `compact`, which shortens the header and pulls the chips up, such as while
   a list scrolls down. `PullToRefresh` takes `indicatorInset` for content drawn under a panel.
-
 - `SidebarOwl` draws the owl in the accent color.
 - `RichText` holds images through `RichText.images`: `insert` puts one at the cursor, `remove`
   takes it out, `sources` lists them, and `selected`, `width`, `resize`, `description`,
