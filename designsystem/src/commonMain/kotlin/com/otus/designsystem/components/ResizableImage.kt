@@ -200,8 +200,8 @@ private fun SizeLabel(
 }
 
 /**
- * A dashed line at each preset's width, reaching past the image, with its short label above and
- * beside it; the preset the width matches draws in `text1` and bold.
+ * A dashed line at each preset's width, reaching past the image, with its short label centered
+ * above it; the preset the width matches draws in `text1` and bold.
  */
 @Composable
 private fun Modifier.sizeGuides(sizing: ImageSizing): Modifier {
@@ -229,10 +229,9 @@ private fun Modifier.sizeGuides(sizing: ImageSizing): Modifier {
                     preset.short,
                     style.copy(color = color, fontWeight = if (chosen) FontWeight.Bold else null),
                 )
-            // A label that would pass the widest size sits left of its line instead.
-            val gap = PanelTokens.iconGap.toPx()
-            val right = x + gap + text.size.width <= sizing.range.endInclusive.toPx()
-            val left = if (right) x + gap else x - gap - text.size.width
+            // Centered on its line, but kept between the image's start and the widest size.
+            val widest = sizing.range.endInclusive.toPx()
+            val left = (x - text.size.width / 2f).coerceIn(0f, (widest - text.size.width).coerceAtLeast(0f))
             drawText(text, topLeft = Offset(left, -reach - text.size.height))
         }
     }
