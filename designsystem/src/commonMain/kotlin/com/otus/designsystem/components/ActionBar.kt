@@ -30,6 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.findRootCoordinates
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
@@ -49,7 +50,8 @@ import kotlin.math.roundToInt
  * see [BarEntry]. A [minimized] bar shows only the primary's icon, in a circle at the bar's end;
  * see [MinimizedBar]. A minimized bar puts [more] behind a round button at its start, which opens
  * them in a [ContextMenu]. A minimized bar that is [hidden], such as while a search field is about
- * to take the keyboard, scales out in place; a full bar ignores [more] and [hidden].
+ * to take the keyboard, scales out in place; a full bar ignores [more] and [hidden]. Inside a
+ * [BarMorph], a full bar's group and shell move into the other bar's parts.
  */
 @Composable
 public fun ActionBar(
@@ -68,11 +70,12 @@ public fun ActionBar(
     }
     val front = rememberFrontBar(primary, context)
     val entry = rememberBarEntry(front)
+    val parts = LocalBarParts.current
     ProvideTextStyle(panelTextStyle()) {
         Layout(
             listOf(
-                { SecondaryGroup(secondary) },
-                { PrimaryShell(primary, context, front, entry) },
+                { SecondaryGroup(secondary, parts.group) },
+                { PrimaryShell(primary, context, front, entry, parts.primary) },
             ),
             modifier.fillMaxWidth(),
         ) { (groups, shells), constraints ->
@@ -108,11 +111,14 @@ public fun ActionBar(
 public const val MAX_SECONDARY: Int = 3
 
 @Composable
-private fun SecondaryGroup(actions: List<BarAction>) {
+private fun SecondaryGroup(
+    actions: List<BarAction>,
+    modifier: Modifier,
+) {
     val shape = RoundedCornerShape(ActionBarTokens.radius)
     // The bar sets the group's width; while it moves in, the icons keep their places and clip.
     Box(
-        Modifier
+        modifier
             .height(ActionBarTokens.height)
             .clip(shape)
             .background(OtusColors.bgDark, shape)
@@ -183,4 +189,23 @@ public fun Modifier.actionBarInset(): Modifier {
     return windowInsetsPadding(WindowInsets.navigationBars.union(WindowInsets.ime))
         .padding(ActionBarTokens.barInset)
         .padding(horizontal = navigation)
+}
+
+/**
+ * Widens a hosted bar over the keyboard by the side padding [actionBarInset] adds for the
+ * navigation bar. There the bar sits [ActionBarTokens.barInset] from the keyboard, so it keeps
+ * only that gap at its sides too.
+ */
+@Composable
+internal fun Modifier.overKeyboard(): Modifier {
+    val navigation = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+    // A layout wider than its constraints is centered over them, so it reaches past both sides.
+    return layout { measurable, constraints ->
+        val extra = navigation.roundToPx() * 2
+        val placeable =
+            measurable.measure(
+                constraints.copy(minWidth = constraints.minWidth + extra, maxWidth = constraints.maxWidth + extra),
+            )
+        layout(placeable.width, placeable.height) { placeable.place(0, 0) }
+    }
 }

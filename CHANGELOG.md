@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Add `BarMorph`, which morphs a `FormattingBar` into a full `ActionBar` and back. Each part takes
+  its match's height, then its width, so the row splits into the group and shell. The content
+  blurs while the width changes. It runs at `MotionSpeed.Normal` and follows `LocalMotionScale`.
+- Add `isKeyboardUp()`, which turns false as soon as the keyboard starts to close. On iOS it
+  stays true until the keyboard is gone.
+- A `FormattingBar` spans the width above the keyboard, and draws its border under its buttons.
+- **Breaking:** `CompactSendButton` fills the formatting row's height with the action bar's
+  collapsed action shape, flush with the row's end. `ComposeTokens.sendButtonWidth` is removed.
+
 - A `SheetFrame` never gets shorter than it has been, so its top stays put when the keyboard
   closes. A sheet opened from another sheet's content starts at least as tall.
 - A row dragged in a `ReorderableTree` takes its nested rows along. Before, a parent hovering over
