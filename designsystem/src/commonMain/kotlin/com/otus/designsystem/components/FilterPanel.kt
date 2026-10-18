@@ -26,7 +26,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.unit.Dp
@@ -48,13 +47,12 @@ import kotlin.math.roundToInt
  * place and the room it may fill, which is its largest height. The [header] and [footer] stay put
  * while the [body] scrolls. While [open] it handles system back; back, a tap on the scrim, and an
  * upward swipe call [onDismiss]. Height and contents animate together, and the contents fade in
- * while they slide [FilterTokens.contentSlide] down. [title] names the panel to accessibility
- * services, which read only the panel while it is open.
+ * while they slide [FilterTokens.contentSlide] down. A [FilterPanelHeader] names the panel to
+ * accessibility services.
  */
 @Composable
 public fun FilterPanel(
     open: Boolean,
-    title: String,
     collapsedHeight: Dp,
     onDismiss: () -> Unit,
     header: @Composable () -> Unit,
@@ -82,7 +80,7 @@ public fun FilterPanel(
                 .background(OtusColors.scrim.copy(alpha = SheetTokens.SCRIM_ALPHA))
                 .pointerInput(onDismiss) { detectTapGestures { onDismiss() } },
         )
-        PanelSurface(progress, collapsedHeight, title, onDismiss, modifier) {
+        PanelSurface(progress, collapsedHeight, onDismiss, modifier) {
             header()
             Box(Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState())) { body() }
             footer()
@@ -94,7 +92,6 @@ public fun FilterPanel(
 private fun PanelSurface(
     progress: Float,
     collapsedHeight: Dp,
-    title: String,
     onDismiss: () -> Unit,
     modifier: Modifier,
     content: @Composable ColumnScope.() -> Unit,
@@ -107,10 +104,8 @@ private fun PanelSurface(
             Modifier
                 .fillMaxWidth()
                 .graphicsLayer { translationY = lift }
-                .semantics {
-                    paneTitle = title
-                    traversalIndex = -1f
-                }.draggable(
+                .semantics { traversalIndex = -1f }
+                .draggable(
                     rememberDraggableState { lift = (lift + it).coerceAtMost(0f) },
                     Orientation.Vertical,
                     onDragStopped = {

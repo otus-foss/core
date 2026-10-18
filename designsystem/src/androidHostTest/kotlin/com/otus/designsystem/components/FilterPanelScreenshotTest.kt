@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.unit.dp
+import com.otus.designsystem.elements.ChipLabel
 import com.otus.designsystem.elements.FilterChip
 import com.otus.designsystem.elements.FilterChipRole
 import com.otus.designsystem.elements.FolderGlyph
@@ -33,7 +34,6 @@ class FilterPanelScreenshotTest {
             WithBackDispatcher {
                 FilterPanel(
                     open = true,
-                    title = "Filters",
                     collapsedHeight = 112.dp,
                     onDismiss = {},
                     header = { FilterPanelHeader("Filters", {}, closeDescription = "Close filters") },
@@ -53,9 +53,22 @@ class FilterPanelScreenshotTest {
     fun folderRows() =
         compose.screenshot("filter_folder_rows") {
             Column {
-                FilterFolderRow("Clients", FolderCheck.On, {}, expanded = true) { FolderGlyph(FolderColor.Blue) }
-                FilterFolderRow("Acme", FolderCheck.Included, {}, depth = 1) { FolderGlyph(FolderColor.Default) }
-                FilterFolderRow("Invoices", FolderCheck.Off, {}, path = "Finance") { FolderGlyph(FolderColor.Yellow) }
+                FilterFolderRow(
+                    TreeFolder("Clients"),
+                    FolderCheck.On,
+                    {},
+                    expanded = true,
+                ) { FolderGlyph(FolderColor.Blue) }
+                FilterFolderRow(
+                    TreeFolder("Acme", depth = 1),
+                    FolderCheck.Included,
+                    {},
+                ) { FolderGlyph(FolderColor.Default) }
+                FilterFolderRow(
+                    TreeFolder("Invoices", path = "Finance"),
+                    FolderCheck.Off,
+                    {},
+                ) { FolderGlyph(FolderColor.Yellow) }
             }
         }
 }
@@ -69,7 +82,7 @@ private fun Sections() {
             FilterChip("Waiting for reply", selected = false, onClick = {})
         }
         FilterSection("In folder", Modifier.padding(top = FilterTokens.sectionGap)) {
-            FilterChip("Acme", selected = true, onClick = {}, prefix = "Clients") { FolderGlyph(FolderColor.Blue) }
+            FilterChip(ChipLabel("Acme", "Clients"), selected = true, onClick = {}) { FolderGlyph(FolderColor.Blue) }
             FilterChip("All folders…", selected = false, onClick = {}, role = FilterChipRole.Button) {
                 FolderGlyph(FolderColor.Default)
             }
