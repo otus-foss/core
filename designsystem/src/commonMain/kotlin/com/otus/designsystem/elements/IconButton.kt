@@ -1,12 +1,15 @@
 package com.otus.designsystem.elements
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -14,9 +17,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
+import com.otus.designsystem.theme.FilterTokens
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PanelTokens
+import com.otus.designsystem.theme.panelTextStyle
 
+/**
+ * A round button around a symbol. A [badgeCount] above zero puts a small `accentLight` count on its
+ * top end, such as the number of active filters on the filter button; the badge sits outside the
+ * circle's clip, so it is never cut off.
+ */
 @Composable
 public fun IconButton(
     description: String,
@@ -24,6 +35,7 @@ public fun IconButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     outlined: Boolean = true,
+    badgeCount: Int = 0,
     content: @Composable () -> Unit,
 ) {
     val interactions = remember { MutableInteractionSource() }
@@ -40,19 +52,45 @@ public fun IconButton(
             ),
         contentAlignment = Alignment.Center,
     ) {
-        Surface(
-            modifier =
-                Modifier
-                    .size(
-                        PanelTokens.chipHeight,
-                    ).reportControlVisualBounds()
-                    .controlPressFeedback(interactions),
-            shape = CircleShape,
-            color = OtusColors.bgDark,
-            contentColor = if (enabled) OtusColors.text1 else OtusColors.text3,
-            border = if (outlined) BorderStroke(PanelTokens.borderWidth, OtusColors.strokeBgDark) else null,
-        ) {
-            Box(contentAlignment = Alignment.Center) { content() }
+        Box(Modifier.size(PanelTokens.chipHeight)) {
+            Surface(
+                modifier =
+                    Modifier
+                        .size(
+                            PanelTokens.chipHeight,
+                        ).reportControlVisualBounds()
+                        .controlPressFeedback(interactions),
+                shape = CircleShape,
+                color = OtusColors.bgDark,
+                contentColor = if (enabled) OtusColors.text1 else OtusColors.text3,
+                border = if (outlined) BorderStroke(PanelTokens.borderWidth, OtusColors.strokeBgDark) else null,
+            ) {
+                Box(contentAlignment = Alignment.Center) { content() }
+            }
+            if (badgeCount > 0) CountDot(badgeCount, Modifier.align(Alignment.TopEnd))
         }
+    }
+}
+
+@Composable
+private fun CountDot(
+    count: Int,
+    modifier: Modifier,
+) {
+    Box(
+        modifier
+            .sizeIn(minWidth = FilterTokens.badgeSize, minHeight = FilterTokens.badgeSize)
+            .background(OtusColors.accentLight, CircleShape),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            count.toString(),
+            style = panelTextStyle(),
+            color = OtusColors.bgDark,
+            fontSize = FilterTokens.badgeTextSize,
+            lineHeight = FilterTokens.badgeTextSize,
+            fontWeight = FontWeight.SemiBold,
+            maxLines = 1,
+        )
     }
 }

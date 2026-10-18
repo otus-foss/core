@@ -33,7 +33,7 @@ class FilterChipScreenshotTest {
     @Test
     fun badge() =
         compose.screenshot("badged_symbol") {
-            IconButton("Open filters", {}) { BadgedSymbol(Res.drawable.symbol_mark_email_unread, 3) }
+            IconButton("Open filters", {}, badgeCount = 3) { Symbol(Res.drawable.symbol_mark_email_unread) }
         }
 }
 
