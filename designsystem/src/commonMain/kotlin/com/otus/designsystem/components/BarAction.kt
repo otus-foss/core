@@ -5,13 +5,15 @@ import org.jetbrains.compose.resources.DrawableResource
 /**
  * One action in an [ActionBar]. A secondary action shows only its [symbol] and names itself with
  * [label] to accessibility services and in a long-press tooltip; the primary shows its label when
- * the bar has no context. A disabled action keeps its place.
+ * the bar has no context. A disabled action keeps its place. An action with a [menu] opens it in a
+ * [ContextMenu] above the button instead of running [onClick].
  */
 public class BarAction(
     public val label: String,
     public val symbol: DrawableResource,
     public val enabled: Boolean = true,
     public val mirrorInRtl: Boolean = false,
+    public val menu: List<MenuAction> = emptyList(),
     public val onClick: () -> Unit,
 )
 
