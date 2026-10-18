@@ -38,9 +38,10 @@ The versioned Git hooks are the main gate. `pre-commit` runs the Spotless and Ru
 `pre-push` runs `checkAll` before every push that sends commits, including tags. Both check the
 working tree, so stash unrelated changes first. Do not skip them with `--no-verify`.
 
-**CI is paused.** The `quality` workflow runs only when started by hand from GitHub Actions, so
-pull requests get no CI results. The local hooks remain the gate. The workflow file says how to
-resume.
+**CI runs once per pull request,** on Ubicloud runners. The `quality` workflow starts when a pull
+request that is not a draft opens, or when a draft is marked ready for review. Later pushes do not
+start it again, so open pull requests as drafts and mark them ready once every commit is pushed.
+Start it by hand from GitHub Actions to check again.
 
 The CI `quality` workflow runs only on pull requests that change more than Markdown. The `check`
 job runs `checkAll`, and the `ios` job runs every module's iOS simulator tests on macOS 15 with
