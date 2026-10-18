@@ -12,6 +12,11 @@ python3 -m venv .venv
 git config --local core.hooksPath .githooks
 ```
 
+Gradle uses the repository's Python virtual environment when present. A linked worktree without
+one uses the main checkout's `.venv`.
+
+Test code gets ktlint formatting only. detekt skips test source sets to keep `checkAll` fast.
+
 Daily commands:
 
 ```sh
@@ -52,6 +57,8 @@ with `if: false`, so CI runs no simulator tests until it is enabled again. See
 ## Coverage
 
 Kover measures line and branch coverage. It reports numbers but does not fail any build.
+Tests run without coverage instrumentation unless the Gradle command names a Kover task, so
+`checkAll` does not pay for it.
 
 ```sh
 ./gradlew koverHtmlReport
