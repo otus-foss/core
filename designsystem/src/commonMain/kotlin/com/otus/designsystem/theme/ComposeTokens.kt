@@ -36,7 +36,6 @@ public object ComposeTokens {
     public val formatButtonSize: Dp = 40.dp
     public val formatButtonRadius: Dp = 12.dp
     public val formatIconSize: Dp = 24.dp
-    public val sendButtonWidth: Dp = 44.dp
     public val formatDividerHeight: Dp = 24.dp
 
     /** The more-options menu under the panel's ⋯ button. */

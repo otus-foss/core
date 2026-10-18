@@ -65,6 +65,7 @@ internal fun PrimaryShell(
     context: BarContext?,
     front: FrontBar,
     entry: BarEntry,
+    modifier: Modifier = Modifier,
 ) {
     val shape = RoundedCornerShape(ActionBarTokens.radius)
     val interactions = remember { MutableInteractionSource() }
@@ -73,7 +74,7 @@ internal fun PrimaryShell(
     val progress = { entry.blend(animation.value) { it.progress } }
     val fadeStart = ActionBarTokens.CONTEXT_FADE_START
     Box(
-        Modifier
+        modifier
             .heightIn(min = ActionBarTokens.height)
             .background(OtusColors.bgDark, shape)
             .semantics { contentDescription = listOfNotNull(primary.label, context?.description).joinToString(", ") }
