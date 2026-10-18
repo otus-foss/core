@@ -1,7 +1,6 @@
 package com.otus.designsystem.elements
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,6 +20,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -101,9 +104,7 @@ private fun TileBadge(
         Modifier
             .heightIn(min = SidebarTokens.badgeHeight)
             .widthIn(min = SidebarTokens.badgeHeight)
-            .clip(CircleShape)
-            .background(color)
-            .border(SidebarTokens.badgeRing, ring, CircleShape)
+            .ringedFill(ring, color)
             .padding(horizontal = SidebarTokens.badgePadding),
         contentAlignment = Alignment.Center,
     ) {
@@ -117,3 +118,23 @@ private fun TileBadge(
         )
     }
 }
+
+/**
+ * A pill in [ring], with [fill] inset by the ring's width. The fill never reaches the pill's edge,
+ * so no sliver of it shows past the ring's anti-aliased outline, and the pill keeps its size.
+ */
+private fun Modifier.ringedFill(
+    ring: Color,
+    fill: Color,
+): Modifier =
+    drawBehind {
+        val inset = SidebarTokens.badgeRing.toPx()
+        val radius = size.height / 2
+        drawRoundRect(ring, cornerRadius = CornerRadius(radius))
+        drawRoundRect(
+            fill,
+            topLeft = Offset(inset, inset),
+            size = Size(size.width - inset * 2, size.height - inset * 2),
+            cornerRadius = CornerRadius(radius - inset),
+        )
+    }
