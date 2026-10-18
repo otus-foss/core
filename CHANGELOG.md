@@ -5,6 +5,8 @@
 - Add the parts of the compact filter panel: `FilterRowCard`, `FilterValueRow`, `PeopleLine`
   with `PersonChip`, and `FilterPickRow`, plus `FilterTokens` for their sizes and
   `FilterTokens.FOLDER_MAX_DEPTH`.
+- Add `FilterNote` for a small note under a filter page's choices, and `FolderStackChip` (with
+  `StackedFolder`), the pill for chosen folders. `AvatarStackChip` takes a `prefix`, such as "To".
 - `FilterPanel` takes `fillHeight`, which keeps the panel at its full height on short pages.
 - Add `DateRangeCalendar`, the calendar of `DateRangePicker` on its own, to embed in a page.
 - `FilterFolderRow` ends in the same check circle as `FilterPickRow` instead of a checkbox.
