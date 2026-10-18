@@ -26,7 +26,7 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   `FolderColorSwatch`, `LocalIconTint`, `RowButton`, `SearchField`, `SearchPrompt`, `SelectionRow`, `SidebarEntry`, `SidebarHeading`,
   `SidebarCount`, `SidebarExpandButton`, `SidebarPill`, `SidebarInboxEntry`, `SidebarMailboxTile`,
   `SidebarFolderEntry` (with `SidebarFolder`), `SidebarDivider`, `SectionCaption`, `Symbol`, `Toast` (with `ToastAction`),
-  `ToggleSwitch`, `ValueButton`, `FilterChip` (with `FilterChipRole` and `ChipLabel`), `FolderGlyph`, `BadgedSymbol`, and the
+  `ToggleSwitch`, `ValueButton`, `FilterChip` (with `FilterChipRole` and `ChipLabel`), `FolderGlyph`, and the
   `controlPressFeedback` modifier.
 - `components`: `ActionBar`, `ActionBarHost`, `BarAction`, `BarContext`, `BarToken`, `ActionDialog`, `ChoiceDialog`, `ChoiceSheet` (with `ChoiceRow`), `ConfirmDialog`, `InputDialog`, `InputSheet`, `ContextPanel`, `DatePickerDialog`,
   `MonthNavigation`, `MonthYearPicker`, `PageScaffold`, `Subpage`, `PageSection`, `PanelSurface`,
@@ -326,8 +326,8 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   `FilterFolderRow` is one folder of a checkable tree: a chevron for parents, a `FolderGlyph`, the
   name after an optional `text3` path, and a checkbox, dimmed while a parent includes it.
   `FolderGlyph` is a filled folder in its `FolderColor`, or an outlined symbol in `text3`.
-  `BadgedSymbol` puts a small `accentLight` count on a symbol, such as the active filters on the
-  filter button.
+  `IconButton` takes a `badgeCount`, a small `accentLight` count on its top end, such as the
+  active filters on the filter button.
 - `BarContext.lead` puts a small line in place of the primary's label, so Send reads "Send to"
   above "Grace".
 
