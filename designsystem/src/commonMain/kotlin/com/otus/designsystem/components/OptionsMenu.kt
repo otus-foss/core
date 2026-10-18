@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.Dp
 import com.otus.designsystem.elements.Symbol
 import com.otus.designsystem.elements.ToggleSwitch
 import com.otus.designsystem.resources.Res
@@ -28,15 +29,18 @@ import com.otus.designsystem.theme.panelTextStyle
 import org.jetbrains.compose.resources.DrawableResource
 
 /**
- * The menu under a ⋯ button, aligned with its end: icon rows that act, open more, or switch an
- * option. Call it inside the button's layout, so it opens there.
+ * The menu under a ⋯ button, aligned with its end, [width] wide and [gap] away: icon rows that
+ * act, open more, or switch an option. Call it inside the button's layout, or a larger one such
+ * as the bar the button is in, so it opens there.
  */
 @Composable
 public fun OptionsMenu(
     items: List<OptionsItem>,
+    width: Dp = ComposeTokens.optionsMenuWidth,
+    gap: Dp = PanelTokens.cutoutGap,
     onDismiss: () -> Unit,
 ) {
-    Dropdown(onDismiss, alignEnd = true, width = ComposeTokens.optionsMenuWidth) {
+    Dropdown(onDismiss, alignEnd = true, width = width, gap = gap) {
         items.forEach { item ->
             when (item) {
                 is OptionsItem.Action -> {
