@@ -13,4 +13,14 @@ public object LabelTokens {
     public val iconGap: Dp = 4.dp
     public val spacing: Dp = 6.dp
     public val textSize: TextUnit = 12.sp
+
+    // A count pill, such as the number of mails in a conversation.
+    public val countHeight: Dp = 18.dp
+    public val countPadding: Dp = 6.dp
+    public val countTextSize: TextUnit = 11.sp
+
+    /** A count in a circle, as on the Unread pill. */
+    public val badgeSize: Dp = 22.dp
+    public val badgePadding: Dp = 5.dp
+    public val badgeTextSize: TextUnit = 12.sp
 }

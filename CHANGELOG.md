@@ -4,13 +4,33 @@
 
 - Add the filter panel parts: `FilterPanel`, which grows out of a control panel over a scrim,
   `FilterPanelHeader`, `FilterPanelFooter`, `FilterSection`, and `FilterFolderRow` (with
-  `FolderCheck` and `TreeFolder`), and the `FilterChip` (with `FilterChipRole` and `ChipLabel`),
-  `FolderGlyph`, and `BadgedSymbol` elements. Add `FilterTokens` and `OtusAlpha.DIMMED`, which `PickRow` now uses too.
+  `FolderCheck` and `TreeFolder`), and the `FilterChip` (with `FilterChipRole` and `ChipLabel`)
+  and `BadgedSymbol` elements. Add `FilterTokens`. The panel's disabled parts use
+  `OtusAlpha.DISABLED`.
+- `FolderGlyph` takes `color` first, with `kind` and an `icon` for uncolored folders, so filter
+  chips can show a system folder's own symbol. It is a breaking change for 0.8.0 callers that
+  passed `kind` first.
 - `SegmentedToggle` takes a `height`; it stays 48 dp by default.
-- Add the `symbol_reply`, `symbol_calendar_today`, `symbol_folder_fill`, `symbol_person_add`,
-  `symbol_forward`, `symbol_event`, `symbol_newspaper`, `symbol_folder_off`,
-  `symbol_speaker_notes_off`, `symbol_swap_vert`, and `symbol_straighten` symbols (Material
-  Symbols Rounded, Apache 2.0).
+- Add the `symbol_calendar_today`, `symbol_person_add`, `symbol_forward`, `symbol_event`,
+  `symbol_newspaper`, `symbol_folder_off`, `symbol_speaker_notes_off`, `symbol_swap_vert`, and
+  `symbol_straighten` symbols (Material Symbols Rounded, Apache 2.0).
+- Add `CompactContentRow`, a two-line list row for mail conversations, with its model
+  `CompactRowText`, `RowLine`, `RowTextPart`, `RowMark`, `RowFolderIcon`, and `CountPlacement`.
+  It selects like `ContentRow`, and `dimmed` fades read rows without fading the selection tint.
+- Add `AvatarBadge`, and `BadgedAvatar`, which puts a badge on an avatar's bottom-end corner.
+- Add `CountBadge`, a count in an avatar-style circle, such as unread mail beside a pill's label.
+- Add `CountPill`, `FolderGlyph` with `FolderGlyphKind`, and `FolderColorNudge`, a card that
+  offers a color for a folder that has none.
+- Add `OtusAlpha` with `DIMMED` and `DISABLED`; `PickRow` uses `DISABLED`.
+- Add `NudgeTokens`, the compact row and badge sizes in `InboxTokens`, and the count pill sizes
+  in `LabelTokens`.
+- Add the `symbol_reply`, `symbol_folder_fill`, `symbol_folder_open_fill`, and
+  `symbol_bookmark_fill` drawables.
+- A sidebar folder with a color shows a filled folder icon. One without a color shows an outlined
+  folder in text3.
+- `ContextPanel` takes `compact`, which shortens the header and pulls the chips up, such as while
+  a list scrolls down. `PullToRefresh` takes `indicatorInset` for content drawn under a panel.
+- `SidebarOwl` draws the owl in the accent color.
 - `RichText` holds images through `RichText.images`: `insert` puts one at the cursor, `remove`
   takes it out, `sources` lists them, and `selected`, `width`, `resize`, `description`,
   `describe`, and `replace` edit the selected one. `RichTextBody` shows each between the text

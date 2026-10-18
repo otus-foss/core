@@ -50,7 +50,7 @@ public fun Avatar(
     }
 }
 
-private fun avatarFill(colorIndex: Int): Color =
+internal fun avatarFill(colorIndex: Int): Color =
     when (colorIndex) {
         1 -> OtusColors.bgLight
         2 -> OtusColors.bgDark

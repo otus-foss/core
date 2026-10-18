@@ -56,7 +56,7 @@ public fun PickRow(
             .fillMaxWidth()
             .heightIn(min = SheetTokens.rowHeight)
             .then(choose)
-            .alpha(if (enabled) 1f else OtusAlpha.DIMMED)
+            .alpha(if (enabled) 1f else OtusAlpha.DISABLED)
             .padding(horizontal = SheetTokens.inset, vertical = PanelTokens.iconGap),
         horizontalArrangement = Arrangement.spacedBy(SheetTokens.gap),
         verticalAlignment = Alignment.CenterVertically,

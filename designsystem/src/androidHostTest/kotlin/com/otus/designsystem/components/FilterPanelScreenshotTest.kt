@@ -58,17 +58,17 @@ class FilterPanelScreenshotTest {
                     FolderCheck.On,
                     {},
                     expanded = true,
-                ) { FolderGlyph(FolderColor.Blue) }
+                ) { FolderGlyph(FolderColor.Blue, size = FilterTokens.chipIconSize) }
                 FilterFolderRow(
                     TreeFolder("Acme", depth = 1),
                     FolderCheck.Included,
                     {},
-                ) { FolderGlyph(FolderColor.Default) }
+                ) { FolderGlyph(FolderColor.Default, size = FilterTokens.chipIconSize) }
                 FilterFolderRow(
                     TreeFolder("Invoices", path = "Finance"),
                     FolderCheck.Off,
                     {},
-                ) { FolderGlyph(FolderColor.Yellow) }
+                ) { FolderGlyph(FolderColor.Yellow, size = FilterTokens.chipIconSize) }
             }
         }
 }
@@ -82,9 +82,10 @@ private fun Sections() {
             FilterChip("Waiting for reply", selected = false, onClick = {})
         }
         FilterSection("In folder", Modifier.padding(top = FilterTokens.sectionGap)) {
-            FilterChip(ChipLabel("Acme", "Clients"), selected = true, onClick = {}) { FolderGlyph(FolderColor.Blue) }
+            FilterChip(ChipLabel("Acme", "Clients"), selected = true, onClick = {
+            }) { FolderGlyph(FolderColor.Blue, size = FilterTokens.chipIconSize) }
             FilterChip("All folders…", selected = false, onClick = {}, role = FilterChipRole.Button) {
-                FolderGlyph(FolderColor.Default)
+                FolderGlyph(FolderColor.Default, size = FilterTokens.chipIconSize)
             }
         }
         SegmentedToggle(
