@@ -9,14 +9,15 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
@@ -155,8 +156,7 @@ public fun FormatButton(
 
 /**
  * The Send at the end of a [FormattingBar]: the [icon], the send symbol by default, on the accent.
- * It fills the row's height, as wide as an [ActionBar] shell's collapsed action, and rounds like
- * the row, so its end lines up with the row's end.
+ * It is a circle as tall as the row, so its end lines up with the row's rounded end.
  */
 @Composable
 public fun CompactSendButton(
@@ -166,11 +166,11 @@ public fun CompactSendButton(
     icon: DrawableResource = Res.drawable.symbol_send,
 ) {
     val interactions = remember { MutableInteractionSource() }
-    val shape = RoundedCornerShape(ComposeTokens.formatBarRadius)
+    val shape = CircleShape
     Box(
         Modifier
             .fillMaxHeight()
-            .width(ActionBarTokens.collapsedActionWidth)
+            .aspectRatio(1f)
             .semantics { contentDescription = description }
             .clickable(interactions, indication = null, enabled = enabled, role = Role.Button, onClick = onClick),
         contentAlignment = Alignment.Center,
