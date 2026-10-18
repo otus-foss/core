@@ -106,7 +106,10 @@ private class OwlPlayback {
     }
 }
 
-/** One eye, which squints around its [center]; its [glint] moves as the owl glances aside. */
+/**
+ * One eye, which squints around its [center]; its [glint], in the accent like the body, moves as
+ * the owl glances aside.
+ */
 @Composable
 private fun Eye(
     eye: DrawableResource,
@@ -124,10 +127,12 @@ private fun Eye(
     Layer(eye)
     Layer(
         glint,
-        Modifier.graphicsLayer {
-            translationX = playback.value { glanceX } * size.width / OWL_ART_WIDTH
-            translationY = playback.value { glanceY } * size.height / OWL_ART_HEIGHT
-        },
+        colorFilter = ColorFilter.tint(OtusColors.accentRegular),
+        modifier =
+            Modifier.graphicsLayer {
+                translationX = playback.value { glanceX } * size.width / OWL_ART_WIDTH
+                translationY = playback.value { glanceY } * size.height / OWL_ART_HEIGHT
+            },
     )
 }
 

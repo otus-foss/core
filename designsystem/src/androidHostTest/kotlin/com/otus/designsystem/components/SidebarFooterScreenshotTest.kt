@@ -24,13 +24,19 @@ class SidebarFooterScreenshotTest {
     @Test
     fun upToDate() =
         compose.screenshot("sidebar_footer") {
-            SidebarFooter("Nightly", "Build 412", WIDTH)
+            SidebarFooter("Nightly", "17.10.26", WIDTH)
         }
 
     @Test
     fun updateAvailable() =
         compose.screenshot("sidebar_footer_update") {
-            SidebarFooter("Nightly", "Build 412", WIDTH, onUpdate = {})
+            SidebarFooter("Nightly", "17.10.26", WIDTH, onUpdate = {})
+        }
+
+    @Test
+    fun updateDownloading() =
+        compose.screenshot("sidebar_footer_downloading") {
+            SidebarFooter("Nightly", "18.10.26", WIDTH, updateProgress = 0.6f)
         }
 
     @Test
