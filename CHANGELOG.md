@@ -8,6 +8,17 @@
   `AttachmentActions`. In the body: `ImageBanner`, `DetailsTable` with `DetailLine`, and
   `QuoteFold`. In the header: `DatePill`. Also `FolderPath`, `FolderStack`, `PlainAction`, and
   `FolderPickRow`, a folder with a checkbox for the folders sheet. Add `ReadTokens`.
+- `PickRow` takes `subtitleLines` for a description longer than one line, and `PickMark` takes
+  `atStart`, which puts the radio or checkbox before the text, as in a settings list of choices.
+  `FolderPickRow` rows are 48 dp tall.
+- `PositionStrip` always shows its dots and position text in full: its `trailing` slot gets the
+  width they leave and the title shortens first. Add `FirstFit`, which shows the first of several
+  versions of a slot that fits, such as a folder name, then a count, then an icon.
+- `AddressPill` takes `expanded`, which turns its chevron up while what it opens shows.
+- Add `PersonChip`, a person in the `RecipientChip` pill that is only shown, or is a button only
+  when it gets an `onClick`.
+- `HtmlView` leaves the quote fold's person pill out when the `HtmlQuote` has a blank name, and
+  the date when it is blank.
 - Add `DestinationPill`, a 40 dp pill for the Move to sheet, and `MoveTokens`. `IconPill` takes a
   `size`, so the sort button can match it; it stays 36 dp by default.
 - `OptionsMenu` and `OptionsList` show `OptionsItem.Caption`, a small heading row.

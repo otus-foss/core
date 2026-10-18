@@ -121,4 +121,12 @@ class HtmlViewTest {
         assertContains(body, "border-left:2px solid #3f4041")
         assertFalse("<script" in page)
     }
+
+    @Test
+    fun aQuoteWithoutAnAuthorHasNoPill() {
+        val quote = HtmlQuote("", "", "", "<p>Earlier</p>")
+        val page = sandboxedHtml("<p>Reply</p>", loadRemote = true, OtusPalette.Otus, quote = quote)
+        assertFalse("<span class=\"otus-quote-pill\">" in page)
+        assertContains(page, "<div class=\"otus-quote-body\"><div class=\"otus-quote-text\"><p>Earlier</p>")
+    }
 }

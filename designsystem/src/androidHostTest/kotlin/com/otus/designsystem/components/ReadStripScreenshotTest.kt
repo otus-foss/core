@@ -2,10 +2,13 @@ package com.otus.designsystem.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.unit.dp
+import com.otus.designsystem.elements.FirstFit
 import com.otus.designsystem.elements.FolderStack
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_archive
@@ -101,10 +104,55 @@ private fun PositionStrips() {
             current = 4,
             detail = "5/6 · 10 Oct",
             onClick = {},
-        ) {
-            Text("also", style = panelTextStyle(), color = OtusColors.text3, fontSize = ReadTokens.previewSize)
-            FolderStack(listOf(FolderColor.Yellow, FolderColor.Pink, FolderColor.Green))
-            Text("4 folders", style = panelTextStyle(), fontSize = ReadTokens.previewSize)
-        }
+        ) { FolderSlot() }
+        PositionStrip(
+            NamedAvatar("Margaret Hamilton-Knuth", DemoPeople.margaret),
+            count = 24,
+            current = 11,
+            detail = "12/24 · Yesterday",
+            onClick = {},
+        ) { FolderSlot() }
     }
+}
+
+/** "also" with stacked folders and their count, shortening to fit beside the position. */
+@Composable
+private fun FolderSlot() {
+    val stack = @Composable { FolderStack(listOf(FolderColor.Yellow, FolderColor.Pink, FolderColor.Green)) }
+    val count = @Composable { Text("4 folders", style = panelTextStyle(), fontSize = ReadTokens.previewSize) }
+    val also =
+        @Composable {
+            Text(
+                "also",
+                style = panelTextStyle(),
+                color = OtusColors.text3,
+                fontSize = ReadTokens.previewSize,
+            )
+        }
+    FirstFit(
+        listOf(
+            {
+                SlotRow {
+                    also()
+                    stack()
+                    count()
+                }
+            },
+            {
+                SlotRow {
+                    stack()
+                    count()
+                }
+            },
+            stack,
+        ),
+    )
+}
+
+@Composable
+private fun SlotRow(content: @Composable () -> Unit) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(ReadTokens.glyphGap),
+        verticalAlignment = Alignment.CenterVertically,
+    ) { content() }
 }

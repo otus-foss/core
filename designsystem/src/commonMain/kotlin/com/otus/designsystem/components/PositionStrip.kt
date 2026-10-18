@@ -2,7 +2,6 @@ package com.otus.designsystem.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +11,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -19,6 +19,7 @@ import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Constraints
 import com.otus.designsystem.elements.PageDots
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.ReadTokens
@@ -28,7 +29,8 @@ import com.otus.designsystem.theme.panelTextStyle
  * The thread strip above the read view's action bar: the [heading], the avatar of the page's
  * sender with a title such as "Latest" or the sender's name, and under it [PageDots] for the page
  * at [current] of [count] with the [detail], such as "5/6 · 10 Oct". [trailing] holds short folder
- * hints before the chevron; it keeps its natural width and the title gives way. The whole strip
+ * hints before the chevron. The dots and [detail] always show in full; [trailing] gets the width
+ * they leave, and the title gives way to both. A `FirstFit` lets it shorten itself. The whole strip
  * is one button that runs [onClick], usually to grow it into a [ThreadList]; screen readers hear
  * "<title>, message x of n".
  */
@@ -61,15 +63,38 @@ public fun PositionStrip(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             PersonAvatar(heading.avatar, ReadTokens.stripAvatarSize)
-            Column(Modifier.weight(1f)) {
+            PositionText(heading.name, count, current, detail, Modifier.weight(1f), trailing)
+            StripChevron(up = true)
+        }
+    }
+}
+
+/**
+ * The strip's title over its dots and [detail], beside the [trailing] slot. The dots line takes
+ * its full width first, the slot gets what is left, and the title shares the line's width.
+ */
+@Composable
+private fun PositionText(
+    title: String,
+    count: Int,
+    current: Int,
+    detail: String,
+    modifier: Modifier,
+    trailing: @Composable RowScope.() -> Unit,
+) {
+    Layout(
+        listOf(
+            {
                 Text(
-                    heading.name,
+                    title,
                     style = panelTextStyle(),
                     fontSize = ReadTokens.titleSize,
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
+            },
+            {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(ReadTokens.dotsGap),
                     verticalAlignment = Alignment.CenterVertically,
@@ -81,12 +106,32 @@ public fun PositionStrip(
                         color = OtusColors.text3,
                         fontSize = ReadTokens.detailSize,
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
+                        softWrap = false,
                     )
                 }
-            }
-            trailing()
-            StripChevron(up = true)
+            },
+            {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(ReadTokens.glyphGap),
+                    verticalAlignment = Alignment.CenterVertically,
+                    content = trailing,
+                )
+            },
+        ),
+        modifier,
+    ) { (titles, lines, slots), constraints ->
+        val width = constraints.maxWidth
+        val gap = ReadTokens.stripGap.roundToPx()
+        val line = lines.single().measure(Constraints(maxWidth = width))
+        val slot = slots.single().measure(Constraints(maxWidth = (width - line.width - gap).coerceAtLeast(0)))
+        val textWidth = if (slot.width == 0) width else width - slot.width - gap
+        val heading = titles.single().measure(Constraints(maxWidth = textWidth.coerceAtLeast(0)))
+        val height = maxOf(heading.height + line.height, slot.height, constraints.minHeight)
+        layout(width, height) {
+            val top = (height - heading.height - line.height) / 2
+            heading.placeRelative(0, top)
+            line.placeRelative(0, top + heading.height)
+            slot.placeRelative(width - slot.width, (height - slot.height) / 2)
         }
     }
 }

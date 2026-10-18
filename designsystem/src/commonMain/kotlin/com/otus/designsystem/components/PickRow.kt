@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import com.otus.designsystem.theme.ComposeTokens
 import com.otus.designsystem.theme.OtusAlpha
 import com.otus.designsystem.theme.OtusColors
@@ -33,8 +34,9 @@ import com.otus.designsystem.theme.SignatureTokens
 import com.otus.designsystem.theme.panelTextStyle
 
 /**
- * A choice in a sheet list: an optional [leading] avatar, the [title], a smaller `text2` [subtitle],
- * and a `text1` radio or checkbox, never the accent. A null [onClick] shows the row disabled.
+ * A choice in a sheet list: an optional [leading] avatar, the [title], a smaller `text2` [subtitle]
+ * of up to [subtitleLines] lines, and a `text1` radio or checkbox, never the accent. A null
+ * [onClick] shows the row disabled.
  */
 @Composable
 public fun PickRow(
@@ -43,6 +45,7 @@ public fun PickRow(
     mark: PickMark,
     onClick: (() -> Unit)?,
     modifier: Modifier = Modifier,
+    subtitleLines: Int = 1,
     leading: (@Composable () -> Unit)? = null,
 ) {
     PickRowFrame(mark, onClick, modifier, leading) {
@@ -53,7 +56,7 @@ public fun PickRow(
                 style = panelTextStyle(),
                 color = OtusColors.text2,
                 fontSize = ComposeTokens.detailSize,
-                maxLines = 1,
+                maxLines = subtitleLines,
                 overflow = TextOverflow.Ellipsis,
             )
         }
@@ -62,7 +65,8 @@ public fun PickRow(
 
 /**
  * The frame of a [PickRow] and its relatives, such as [FolderPickRow]: the [leading] slot, the
- * [content] column, an optional [trailing] slot, and the [mark] at the end.
+ * [content] column, an optional [trailing] slot, and the [mark] at the end, or first when it is
+ * [PickMark.atStart]. Rows are at least [minHeight] tall.
  */
 @Composable
 internal fun PickRowFrame(
@@ -71,6 +75,7 @@ internal fun PickRowFrame(
     modifier: Modifier,
     leading: (@Composable () -> Unit)?,
     trailing: (@Composable () -> Unit)? = null,
+    minHeight: Dp = SheetTokens.rowHeight,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val enabled = onClick != null
@@ -83,17 +88,18 @@ internal fun PickRowFrame(
     Row(
         modifier
             .fillMaxWidth()
-            .heightIn(min = SheetTokens.rowHeight)
+            .heightIn(min = minHeight)
             .then(choose)
             .alpha(if (enabled) 1f else OtusAlpha.DISABLED)
             .padding(horizontal = SheetTokens.inset, vertical = PanelTokens.iconGap),
         horizontalArrangement = Arrangement.spacedBy(SheetTokens.gap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        if (mark.atStart) PickMarkView(mark)
         leading?.invoke()
         Column(Modifier.weight(1f), content = content)
         trailing?.invoke()
-        PickMarkView(mark)
+        if (!mark.atStart) PickMarkView(mark)
     }
 }
 

@@ -81,6 +81,28 @@ class ReadBodyScreenshotTest {
         }
 
     @Test
+    fun choicePicks() =
+        compose.screenshot("pick_row_radio_first") {
+            Column {
+                PickRow(
+                    "From people you know",
+                    "Contacts, people you've written to and senders you allowed. Everyone else asks first.",
+                    PickMark(selected = true, atStart = true),
+                    {},
+                    subtitleLines = 3,
+                )
+                PickRow("Never", "Always ask, for every mail.", PickMark(selected = false, atStart = true), {})
+            }
+        }
+
+    @Test
+    fun personChips() =
+        compose.screenshot("person_chip") {
+            val mira = DemoPeople.mira
+            PersonChip(Recipient(mira.name, mira.avatar, mira.name))
+        }
+
+    @Test
     fun options() =
         compose.screenshot("options_list_read") {
             OptionsList(
