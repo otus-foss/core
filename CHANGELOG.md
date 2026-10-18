@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- `SidebarOwl` draws the owl in the accent color.
 - `RichText` holds images through `RichText.images`: `insert` puts one at the cursor, `remove`
   takes it out, `sources` lists them, and `selected`, `width`, `resize`, `description`,
   `describe`, and `replace` edit the selected one. `RichTextBody` shows each between the text
