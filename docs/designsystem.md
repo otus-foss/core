@@ -17,7 +17,8 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   `LocalMotionScale`), and tokens for avatars, calendars, control
   feedback, pages, panels, refresh, sheets, the sidebar, the action bar (`ActionBarTokens`), and
   compose fields (`ComposeTokens`), reply threads (`ThreadTokens`), and rule chips and folder
-  settings rows (`RuleChipTokens`, `FolderRowTokens`).
+  settings rows (`RuleChipTokens`, `FolderRowTokens`), the filter panel (`FilterTokens`), and
+  shared opacities (`OtusAlpha`).
   `panelTextStyle()` uses Figtree.
 - `elements`: `ActionButton`, `ActionRow`, `AnimatedText`, `Avatar`, `AvatarImage`, `BarIconButton`, `CalendarDay`,
   `AddressPill`, `ButtonPill`, `ComposeField`, `HtmlView`, `QuoteChip`, `RichTextBody` (with `RichText` and `TextFormat`),
@@ -25,7 +26,7 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   `FolderColorSwatch`, `LocalIconTint`, `RowButton`, `SearchField`, `SearchPrompt`, `SelectionRow`, `SidebarEntry`, `SidebarHeading`,
   `SidebarCount`, `SidebarExpandButton`, `SidebarPill`, `SidebarInboxEntry`, `SidebarMailboxTile`,
   `SidebarFolderEntry` (with `SidebarFolder`), `SidebarDivider`, `SectionCaption`, `Symbol`, `Toast` (with `ToastAction`),
-  `ToggleSwitch`, `ValueButton`, and the
+  `ToggleSwitch`, `ValueButton`, `FilterChip` (with `FilterChipRole` and `ChipLabel`), `FolderGlyph`, `BadgedSymbol`, and the
   `controlPressFeedback` modifier.
 - `components`: `ActionBar`, `ActionBarHost`, `BarAction`, `BarContext`, `BarToken`, `ActionDialog`, `ChoiceDialog`, `ChoiceSheet` (with `ChoiceRow`), `ConfirmDialog`, `InputDialog`, `InputSheet`, `ContextPanel`, `DatePickerDialog`,
   `MonthNavigation`, `MonthYearPicker`, `PageScaffold`, `Subpage`, `PageSection`, `PanelSurface`,
@@ -37,6 +38,7 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   `FormatButton` and `CompactSendButton`), `BarMorph`, `AttachmentChip`, `RecipientLine` (with `Recipient`, `AddressInput`, and `RecipientChip`), `ThreadStrip` (with `ThreadEntry` and `ThreadMessageRow`),
   `PersonAvatar`, `BarNotice`, `ClosableSheet` (with `SheetConfirm`), `SegmentedToggle`, `PickRow` (with `PickMark`), `PersonRow`, `RowGroup` (with `GroupRow`), `TimeWheelPicker`,
   `ResizableImage` (with `ImageSizing` and `ImagePreset`), `ListCaption`,
+  `FilterPanel`, `FilterPanelHeader`, `FilterPanelFooter`, `FilterSection`, `FilterFolderRow` (with `FolderCheck` and `TreeFolder`),
   `SidebarSwipeArea`, `SlidingOverlay`, `SlidingPages`, `SwipeActions`, `ThemeCard`, and `ToastHost`
   (with `ToastState` and `ToastMessage`).
 - Settings rows follow Notion's settings pages: flat rows with a title and `text2` description
@@ -306,6 +308,21 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   is sent from, avatar first and a chevron last, with long addresses ending in an ellipsis.
 - `BarNotice` sits just above a page's action bar and says what its main action will do
   differently, such as "Scheduled for Mon 19 Oct, 8:00", with a button such as Change.
+- `FilterPanel` grows down out of a control panel, on its surface, border, and radius, over a
+  scrim, so it reads as that panel opening. Its header and footer stay put while the body scrolls,
+  and it is at most as tall as the room its modifier gives it. Back, a tap on the scrim, and an
+  upward swipe close it; screen readers read only the panel while it is open and start at its
+  title. `FilterPanelHeader` has the title, or a back button named after the page it returns to,
+  and a plain ✕ at the top right. `FilterSection` puts a small `text3` label above wrapping
+  `FilterChip`s, which are `bgRegular` capsules while off and `accentDark` while on, read as a
+  checkbox, a radio, or a button. A `ChipLabel`'s prefix, such as a folder's parents, shows in `text3`.
+  `FilterPanelFooter` has a Reset pill, dimmed with `OtusAlpha.DIMMED` while there is nothing to
+  reset, and the primary button, whose label screen readers announce politely when it changes.
+  `FilterFolderRow` is one folder of a checkable tree: a chevron for parents, a `FolderGlyph`, the
+  name after an optional `text3` path, and a checkbox, dimmed while a parent includes it.
+  `FolderGlyph` is a filled folder in its `FolderColor`, or an outlined symbol in `text3`.
+  `BadgedSymbol` puts a small `accentLight` count on a symbol, such as the active filters on the
+  filter button.
 - `BarContext.lead` puts a small line in place of the primary's label, so Send reads "Send to"
   above "Grace".
 
