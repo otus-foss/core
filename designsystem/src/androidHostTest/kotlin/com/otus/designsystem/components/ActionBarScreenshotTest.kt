@@ -45,9 +45,9 @@ class ActionBarScreenshotTest {
         }
 
     @Test
-    fun minimized() = compose.screenshot("action_bar_minimized") { ActionBar(write, minimized = true) }
+    fun minimized() = compose.screenshot("action_bar_minimized") { ActionBar(write, minimized = BarMinimized()) }
 
     @Test
     fun minimizedHidden() =
-        compose.screenshot("action_bar_minimized_hidden") { ActionBar(write, minimized = true, hidden = true) }
+        compose.screenshot("action_bar_minimized_hidden") { ActionBar(write, minimized = BarMinimized(hidden = true)) }
 }
