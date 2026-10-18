@@ -3,6 +3,7 @@ package com.otus.designsystem.components
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -44,6 +45,34 @@ public fun PickRow(
     modifier: Modifier = Modifier,
     leading: (@Composable () -> Unit)? = null,
 ) {
+    PickRowFrame(mark, onClick, modifier, leading) {
+        Text(title, style = panelTextStyle(), maxLines = 1, overflow = TextOverflow.Ellipsis)
+        subtitle?.let {
+            Text(
+                it,
+                style = panelTextStyle(),
+                color = OtusColors.text2,
+                fontSize = ComposeTokens.detailSize,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+    }
+}
+
+/**
+ * The frame of a [PickRow] and its relatives, such as [FolderPickRow]: the [leading] slot, the
+ * [content] column, an optional [trailing] slot, and the [mark] at the end.
+ */
+@Composable
+internal fun PickRowFrame(
+    mark: PickMark,
+    onClick: (() -> Unit)?,
+    modifier: Modifier,
+    leading: (@Composable () -> Unit)?,
+    trailing: (@Composable () -> Unit)? = null,
+    content: @Composable ColumnScope.() -> Unit,
+) {
     val enabled = onClick != null
     val choose =
         if (mark.multiple) {
@@ -62,19 +91,8 @@ public fun PickRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         leading?.invoke()
-        Column(Modifier.weight(1f)) {
-            Text(title, style = panelTextStyle(), maxLines = 1, overflow = TextOverflow.Ellipsis)
-            subtitle?.let {
-                Text(
-                    it,
-                    style = panelTextStyle(),
-                    color = OtusColors.text2,
-                    fontSize = ComposeTokens.detailSize,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-        }
+        Column(Modifier.weight(1f), content = content)
+        trailing?.invoke()
         PickMarkView(mark)
     }
 }

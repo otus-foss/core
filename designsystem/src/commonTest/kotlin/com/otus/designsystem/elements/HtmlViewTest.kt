@@ -81,4 +81,44 @@ class HtmlViewTest {
     }
 
     private fun policyOf(document: String): String = document.substringAfter("content=\"").substringBefore('"')
+
+    @Test
+    fun remoteImagesBecomePlaceholdersOfTheirSize() {
+        val html =
+            "<img src=\"https://t.example/a.png\" width=\"320\" height=\"80\">" +
+                "<img style=\"width:200px;height:50px\" src='http://t.example/b.png'>" +
+                "<IMG SRC=//t.example/c.png>" +
+                "<img src=\"cid:logo\"><img src=\"data:image/png;base64,AA\">"
+        val blocked = sandboxedHtml(html, loadRemote = false, OtusPalette.Otus, placeholders = true)
+        assertContains(blocked, "<a href=\"otus-images:show\" class=\"otus-blocked\" style=\"width:320px;height:80px\"")
+        assertContains(blocked, "style=\"width:200px;height:50px\" aria-label")
+        assertContains(blocked, "style=\"width:100%;height:120px\"")
+        assertFalse("t.example" in blocked)
+        assertContains(blocked, "<img src=\"cid:logo\">")
+        assertContains(blocked, "<img src=\"data:image/png;base64,AA\">")
+        assertContains(blocked, ".otus-blocked{")
+        assertTrue(isShowImagesLink("otus-images:show"))
+        assertFalse(isOpenableLink("otus-images:show"))
+    }
+
+    @Test
+    fun imagesStayWithoutPlaceholdersOrOnceAllowed() {
+        val html = "<img src=\"https://t.example/a.png\">"
+        assertTrue(sandboxedHtml(html, loadRemote = false, OtusPalette.Otus).endsWith(html))
+        assertTrue(sandboxedHtml(html, loadRemote = true, OtusPalette.Otus, placeholders = true).endsWith(html))
+    }
+
+    @Test
+    fun aQuoteFoldsAfterTheBodyWithItsEscapedHeader() {
+        val quote = HtmlQuote("Ada <Lovelace>", "AL", "10 Oct", "<p>Earlier <img src=\"https://t.example/q.png\"></p>")
+        val page =
+            sandboxedHtml("<p>Reply</p>", loadRemote = false, OtusPalette.Otus, placeholders = true, quote = quote)
+        val body = page.substringAfter("<p>Reply</p>")
+        assertContains(body, "<input type=\"checkbox\" id=\"otus-quote\" class=\"otus-quote-toggle\">")
+        assertContains(body, "<span class=\"otus-quote-avatar\">AL</span>Ada &lt;Lovelace&gt;</span> · 10 Oct")
+        assertContains(body, "<div class=\"otus-quote-text\"><p>Earlier <a href=\"otus-images:show\"")
+        assertContains(body, "Show quoted text")
+        assertContains(body, "border-left:2px solid #3f4041")
+        assertFalse("<script" in page)
+    }
 }

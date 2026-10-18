@@ -17,8 +17,8 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   `LocalMotionScale`), the corner scale (`CornerTokens`), and tokens for avatars, calendars, control
   feedback, pages, panels, refresh, sheets, the sidebar, the action bar (`ActionBarTokens`), and
   compose fields (`ComposeTokens`), reply threads (`ThreadTokens`), and rule chips and folder
-  settings rows (`RuleChipTokens`, `FolderRowTokens`), the filter panel (`FilterTokens`), and
-  shared opacities (`OtusAlpha`).
+  settings rows (`RuleChipTokens`, `FolderRowTokens`), the filter panel (`FilterTokens`), the read
+  view (`ReadTokens`), the Move to pills (`MoveTokens`), and shared opacities (`OtusAlpha`).
   `panelTextStyle()` uses Figtree.
 - `elements`: `ActionButton`, `ActionRow`, `AnimatedText`, `Avatar`, `AvatarImage`, `BarIconButton`, `BarAddButton`, `CalendarDay`,
   `AddressPill`, `ButtonPill`, `ComposeField`, `HtmlView`, `QuoteChip`, `RichTextBody` (with `RichText` and `TextFormat`),
@@ -26,7 +26,8 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   `FolderColorSwatch`, `LocalIconTint`, `RowButton`, `SearchField`, `SearchPrompt`, `SelectionRow`, `SidebarEntry`, `SidebarHeading`,
   `SidebarCount`, `SidebarExpandButton`, `SidebarPill`, `SidebarInboxEntry`, `SidebarMailboxTile`,
   `SidebarFolderEntry` (with `SidebarFolder`), `SidebarDivider`, `SectionCaption`, `Symbol`, `Toast` (with `ToastAction`),
-  `ToggleSwitch`, `ValueButton`, `FilterChip` (with `FilterChipRole` and `ChipLabel`), `FolderGlyph`, and the
+  `ToggleSwitch`, `ValueButton`, `FilterChip` (with `FilterChipRole` and `ChipLabel`), `FolderGlyph`,
+  `FolderPath`, `FolderStack`, `PageDots`, `DatePill`, `DestinationPill`, `PlainAction`, `HtmlQuote`, and the
   `controlPressFeedback` modifier.
 - `components`: `ActionBar`, `ActionBarHost`, `BarAction`, `BarContext`, `BarToken`, `ActionDialog`, `ChoiceDialog`, `ChoiceSheet` (with `ChoiceRow`), `ConfirmDialog`, `InputDialog`, `InputSheet`, `ContextPanel`, `DatePickerDialog`,
   `MonthNavigation`, `MonthYearPicker`, `PageScaffold`, `Subpage`, `PageSection`, `PanelSurface`,
@@ -38,6 +39,9 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   `FormatButton` and `CompactSendButton`), `BarMorph`, `AttachmentChip`, `RecipientLine` (with `Recipient`, `AddressInput`, and `RecipientChip`), `ThreadStrip` (with `ThreadEntry` and `ThreadMessageRow`),
   `PersonAvatar`, `BarNotice`, `ClosableSheet` (with `SheetConfirm`), `SegmentedToggle`, `PickRow` (with `PickMark`), `PersonRow`, `RowGroup` (with `GroupRow`), `TimeWheelPicker`,
   `ResizableImage` (with `ImageSizing` and `ImagePreset`), `ListCaption`,
+  the read view strips `StripCard`, `PositionStrip`, `ThreadList`, `AlsoInStrip`, `FolderHint` (with `FolderName`),
+  `InfoStrip` (with `StripAction`), and `AttachmentStrip` (with `AttachmentFile`, `AttachmentKind`, and
+  `AttachmentActions`), `ImageBanner`, `DetailsTable` (with `DetailLine`), `QuoteFold`, `FolderPickRow`,
   `FilterPanel`, `FilterPanelHeader`, `FilterPanelFooter`, `FilterSection`, `FilterFolderRow` (with `FolderCheck` and `TreeFolder`),
   `SidebarSwipeArea`, `SlidingOverlay`, `SlidingPages`, `SwipeActions`, `ThemeCard`, and `ToastHost`
   (with `ToastState` and `ToastMessage`).
