@@ -1,8 +1,6 @@
 package com.otus.designsystem.components
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -38,35 +36,22 @@ import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PanelTokens
 import com.otus.designsystem.theme.panelTextStyle
 
-/** A folder's checkbox in a [FilterFolderRow]. */
-public enum class FolderCheck {
-    Off,
-    On,
-
-    /** Checked because a parent is checked with its subfolders; it cannot change on its own. */
-    Included,
-}
-
 /**
  * One folder of a checkable folder tree, 48 dp tall: a chevron for folders with subfolders
- * ([expanded] is null for others), the [glyph], the [name] after an optional `text3` [path] of its
- * parents, and a checkbox at the end. Each [depth] level indents [FilterTokens.folderIndent], up to
- * five levels. A long press calls [onLongClick].
+ * ([expanded] is null for others), the [glyph], the [folder]'s name after its `text3` path, and a
+ * checkbox at the end. Each depth level indents [FilterTokens.folderIndent], up to five levels.
  */
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 public fun FilterFolderRow(
-    name: String,
+    folder: TreeFolder,
     check: FolderCheck,
     onCheck: () -> Unit,
     modifier: Modifier = Modifier,
-    depth: Int = 0,
-    path: String? = null,
     expanded: Boolean? = null,
     onExpandedChange: (Boolean) -> Unit = {},
-    onLongClick: (() -> Unit)? = null,
     glyph: @Composable () -> Unit,
 ) {
+    val depth = folder.depth
     val enabled = check != FolderCheck.Included
     Row(
         modifier
@@ -89,7 +74,7 @@ public fun FilterFolderRow(
                         true
                     }
                 }
-            }.combinedClickable(enabled = enabled, onLongClick = onLongClick, onClick = onCheck)
+            }.clickable(enabled = enabled, onClick = onCheck)
             .padding(start = FilterTokens.folderIndent * depth.coerceIn(0, MAX_INDENT), end = FilterTokens.bodyInset),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FilterTokens.chipIconGap),
@@ -108,8 +93,8 @@ public fun FilterFolderRow(
         glyph()
         Text(
             buildAnnotatedString {
-                path?.let { withStyle(SpanStyle(color = OtusColors.text3)) { append("$it / ") } }
-                append(name)
+                folder.path?.let { withStyle(SpanStyle(color = OtusColors.text3)) { append("$it / ") } }
+                append(folder.name)
             },
             Modifier.weight(1f),
             style = panelTextStyle(),

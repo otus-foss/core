@@ -31,24 +31,7 @@ import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PanelTokens
 import com.otus.designsystem.theme.panelTextStyle
 
-/** How a [FilterChip] reads to accessibility services, and how it toggles. */
-public enum class FilterChipRole {
-    /** One of several choices that can be on together. */
-    Checkbox,
-
-    /** One choice of a group where only one is on. */
-    Radio,
-
-    /** Opens something, such as a list of every folder; [FilterChip]'s `selected` is ignored. */
-    Button,
-}
-
-/**
- * A choice in a filter panel section: a 36 dp capsule in a 48 dp touch target, `bgRegular` while
- * off and `accentDark` while [selected]. An optional 18 dp [leading] icon or avatar comes first.
- * A [prefix], such as the parent folders of a folder whose name repeats, comes before [label] in
- * `text3`. [description] replaces the spoken label, such as a folder's full path.
- */
+/** A [FilterChip] with a plain [label]. */
 @Composable
 public fun FilterChip(
     label: String,
@@ -56,8 +39,23 @@ public fun FilterChip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     role: FilterChipRole = FilterChipRole.Checkbox,
-    prefix: String? = null,
-    description: String? = null,
+    leading: (@Composable () -> Unit)? = null,
+) {
+    FilterChip(ChipLabel(label), selected, onClick, modifier, role, leading)
+}
+
+/**
+ * A choice in a filter panel section: a 36 dp capsule in a 48 dp touch target, `bgRegular` while
+ * off and `accentDark` while [selected]. An optional 18 dp [leading] icon or avatar comes first.
+ * The [label]'s prefix, such as the parent folders of a folder whose name repeats, shows in `text3`.
+ */
+@Composable
+public fun FilterChip(
+    label: ChipLabel,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    role: FilterChipRole = FilterChipRole.Checkbox,
     leading: (@Composable () -> Unit)? = null,
 ) {
     val interactions = remember { MutableInteractionSource() }
@@ -85,7 +83,7 @@ public fun FilterChip(
     Box(
         modifier
             .minimumInteractiveComponentSize()
-            .semantics { contentDescription = description ?: listOfNotNull(prefix, label).joinToString(" ") }
+            .semantics { contentDescription = label.spoken }
             .then(choose),
         contentAlignment = Alignment.Center,
     ) {
@@ -107,22 +105,19 @@ public fun FilterChip(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 leading?.invoke()
-                FilterChipText(label, prefix)
+                FilterChipText(label)
             }
         }
     }
 }
 
 @Composable
-private fun FilterChipText(
-    label: String,
-    prefix: String?,
-) {
+private fun FilterChipText(label: ChipLabel) {
     val faint = OtusColors.text3
     val text =
         buildAnnotatedString {
-            prefix?.let { withStyle(SpanStyle(color = faint)) { append("$it / ") } }
-            append(label)
+            label.prefix?.let { withStyle(SpanStyle(color = faint)) { append("$it / ") } }
+            append(label.text)
         }
     Text(
         text,

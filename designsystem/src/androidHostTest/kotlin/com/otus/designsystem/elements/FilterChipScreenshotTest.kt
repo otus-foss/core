@@ -44,7 +44,7 @@ private fun Chips() {
             Symbol(Res.drawable.symbol_mark_email_unread, size = FilterTokens.chipIconSize)
         }
         FilterChip("Last 7 days", selected = false, onClick = {}, role = FilterChipRole.Radio)
-        FilterChip("Invoices", selected = true, onClick = {}, prefix = "Finance") { FolderGlyph(FolderColor.Yellow) }
+        FilterChip(ChipLabel("Invoices", "Finance"), selected = true, onClick = {}) { FolderGlyph(FolderColor.Yellow) }
         FilterChip("All folders…", selected = false, onClick = {}, role = FilterChipRole.Button) {
             FolderGlyph(FolderColor.Default)
         }

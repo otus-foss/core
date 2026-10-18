@@ -46,13 +46,12 @@ public fun FilterPanelFooter(
     applyEnabled: Boolean = true,
     resetEnabled: Boolean = true,
     counting: Boolean = false,
-    resetLabel: String = "Reset",
 ) {
     Row(
         modifier.fillMaxWidth().padding(FilterTokens.footerPadding),
         horizontalArrangement = Arrangement.spacedBy(FilterTokens.chipGap),
     ) {
-        FooterButton(resetLabel, onReset, resetEnabled, primary = false)
+        FooterButton("Reset", onReset, resetEnabled, primary = false)
         FooterButton(applyLabel, onApply, applyEnabled, primary = true, Modifier.weight(1f), counting)
     }
 }

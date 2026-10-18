@@ -21,6 +21,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import com.otus.designsystem.elements.IconButton
@@ -49,7 +50,8 @@ public fun FilterPanelHeader(
     val focus = remember { FocusRequester() }
     LaunchedEffect(title, onBack == null) { focus.requestFocus() }
     Row(
-        modifier.fillMaxWidth().height(FilterTokens.headerHeight),
+        // The pane's title, which screen readers announce when the panel opens.
+        modifier.fillMaxWidth().height(FilterTokens.headerHeight).semantics { paneTitle = title },
         verticalAlignment = Alignment.CenterVertically,
     ) {
         val titleModifier = Modifier.weight(1f).focusRequester(focus).semantics { heading() }
