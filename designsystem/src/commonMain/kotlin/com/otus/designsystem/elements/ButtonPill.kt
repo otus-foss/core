@@ -15,16 +15,20 @@ import com.otus.designsystem.theme.ComposeTokens
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.panelTextStyle
 
-/** A pill that acts, such as "+ Cc", with an optional [leading] icon. Screen readers read [description]. */
+/**
+ * A pill that acts, such as "+ Cc", with an optional [leading] icon, filled with [fill]. Screen
+ * readers read [description].
+ */
 @Composable
 public fun ButtonPill(
     label: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     description: String = label,
+    fill: Color = OtusColors.bgDark,
     leading: (@Composable () -> Unit)? = null,
 ) {
-    ChipFrame(onClick, modifier.semantics { contentDescription = description }, null, true, OtusColors.bgDark) {
+    ChipFrame(onClick, modifier.semantics { contentDescription = description }, null, true, fill) {
         leading?.invoke()
         ChipText(label)
     }
