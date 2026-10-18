@@ -1,5 +1,6 @@
 package com.otus.designsystem.components
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,7 +18,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -33,16 +37,20 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.window.PopupPositionProvider
 import com.otus.designsystem.theme.ComposeTokens
 import com.otus.designsystem.theme.MenuTokens
+import com.otus.designsystem.theme.MotionSpeed
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PanelTokens
+import com.otus.designsystem.theme.motionTween
 import com.otus.designsystem.theme.panelTextStyle
 
 /**
  * A list that opens under the element it is called from, such as the addresses under a Send-from
  * pill. It lines up with the element's start, or its end when [alignEnd], and opens above it when
- * there is no room below. [width] fixes its width; without it the list spans the window, inside
+ * there is no room below, and scrolls when it is taller than the room it has, such as above the
+ * keyboard. [width] fixes its width; without it the list spans the window, inside
  * the menu edge. A tap outside or Back runs [onDismiss]. A dropdown that must leave the keyboard
- * to a field, such as suggestions while typing, is not [focusable].
+ * to a field, such as suggestions while typing, is not [focusable]: it stays open while the user
+ * types, and the field closes it. Its height animates as its rows change.
  */
 @Composable
 public fun Dropdown(
@@ -56,7 +64,9 @@ public fun Dropdown(
     val density = LocalDensity.current
     val gap = with(density) { PanelTokens.cutoutGap.roundToPx() }
     val edge = with(density) { MenuTokens.edge.roundToPx() }
-    val position = remember(alignEnd, gap, edge) { BelowAnchor(alignEnd, gap, edge) }
+    val minRoom = with(density) { MenuTokens.dropdownMinRoom.roundToPx() }
+    val position = remember(alignEnd, gap, edge, minRoom) { BelowAnchor(alignEnd, gap, edge, minRoom) }
+    val room = with(density) { position.room.toDp() }
     val window =
         with(density) {
             LocalWindowInfo.current.containerSize.width
@@ -66,7 +76,8 @@ public fun Dropdown(
         Column(
             modifier
                 .width(width ?: (window - MenuTokens.edge * 2))
-                .heightIn(max = MenuTokens.dropdownMaxHeight)
+                .heightIn(max = minOf(MenuTokens.dropdownMaxHeight, room))
+                .animateContentSize(motionTween(MotionSpeed.Fast))
                 .menuSurface(PanelTokens.panelRadius)
                 .verticalScroll(rememberScrollState())
                 .selectableGroup()
@@ -147,18 +158,29 @@ public fun ListCaption(text: String) {
     )
 }
 
-/** Puts the popup under the anchor, or above it when only that fits, [edge] pixels inside the window's sides. */
+/**
+ * Puts the popup under the anchor, or above it when only that fits, [edge] pixels inside the window's
+ * sides. [room] is the height the popup may take: the space below while it holds at least [minRoom],
+ * else the larger side.
+ */
 private class BelowAnchor(
     private val alignEnd: Boolean,
     private val gap: Int,
     private val edge: Int,
+    private val minRoom: Int,
 ) : PopupPositionProvider {
+    var room by mutableIntStateOf(Int.MAX_VALUE)
+        private set
+
     override fun calculatePosition(
         anchorBounds: IntRect,
         windowSize: IntSize,
         layoutDirection: LayoutDirection,
         popupContentSize: IntSize,
     ): IntOffset {
+        val roomBelow = windowSize.height - edge - anchorBounds.bottom - gap
+        val roomAbove = anchorBounds.top - gap - edge
+        room = if (roomBelow >= minRoom) roomBelow else maxOf(roomBelow, roomAbove)
         val atEnd = alignEnd != (layoutDirection == LayoutDirection.Rtl)
         val x = if (atEnd) anchorBounds.right - popupContentSize.width else anchorBounds.left
         val below = anchorBounds.bottom + gap
