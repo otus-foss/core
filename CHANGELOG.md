@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- A swipe reveal shrinks its edge fillet and free-end corner together while it is narrow, so it
+  stays rounded from the start instead of growing out of a square sliver.
 - Round corners more, from one internal scale in `CornerTokens`. The action bar, menus,
   dropdowns, and sheet and dialog tops go from 22 dp (context menus from 16 dp) to 30 dp. Rows,
   cards, row groups, and sidebar entries go from 16 dp to 24 dp, chips and value buttons from 8 dp
