@@ -62,6 +62,13 @@ public object FilterTokens {
     /** A date range calendar shown inline on a filter page: its heading, weekdays, and about four weeks. */
     public val rangeCalendarHeight: Dp = 360.dp
 
+    /** A small note under a filter page's choices, such as which folders are left out. */
+    public val noteSize: TextUnit = 12.sp
+
+    /** How far each folder in a pill's stack overlaps the one before it. */
+    public val folderStackOverlap: Dp = 8.dp
+    public const val FOLDER_STACK_LIMIT: Int = 3
+
     /** How far the panel keeps from the window's top and bottom edges. */
     public val screenInset: Dp = 16.dp
 

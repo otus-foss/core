@@ -39,7 +39,7 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   `PersonAvatar`, `BarNotice`, `ClosableSheet` (with `SheetConfirm`), `SegmentedToggle`, `PickRow` (with `PickMark`), `PersonRow`, `RowGroup` (with `GroupRow`), `TimeWheelPicker`,
   `ResizableImage` (with `ImageSizing` and `ImagePreset`), `ListCaption`,
   `FilterPanel`, `FilterPanelHeader`, `FilterPanelFooter`, `FilterSection`, `FilterFolderRow` (with `FolderCheck` and `TreeFolder`),
-  `FilterRowCard`, `FilterValueRow`, `PeopleLine`, `PersonChip`, `FilterPickRow`, `DateRangeCalendar`,
+  `FilterRowCard`, `FilterValueRow`, `PeopleLine`, `PersonChip`, `FilterPickRow`, `DateRangeCalendar`, `FilterNote`, `FolderStackChip`,
   `SidebarSwipeArea`, `SlidingOverlay`, `SlidingPages`, `SwipeActions`, `ThemeCard`, and `ToastHost`
   (with `ToastState` and `ToastMessage`).
 - Settings rows follow Notion's settings pages: flat rows with a title and `text2` description
@@ -337,7 +337,10 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   page. `FilterPickRow` is a 56 dp choice on a filter page, ending in an `accentLight` filled
   check circle while chosen and a `text3` empty circle while not. `DateRangeCalendar` is the
   calendar of `DateRangePicker` without its summary and shortcuts, for a page that has its own,
-  in a bounded height such as `FilterTokens.rangeCalendarHeight`.
+  in a bounded height such as `FilterTokens.rangeCalendarHeight`. `FilterNote` is a 12 sp `text3`
+  note under a page's choices. `FolderStackChip` is the pill for chosen folders: up to three
+  overlapping `FolderGlyph`s, the first folder's name, and a "+N" count. `AvatarStackChip` takes
+  a `text2` `prefix`, such as "To", before its avatars.
   `FolderGlyph` is a filled folder in its `FolderColor`, or an outlined symbol in `text3`.
   `IconButton` takes a `badgeCount`, a small `accentLight` count on its top end, such as the
   active filters on the filter button.

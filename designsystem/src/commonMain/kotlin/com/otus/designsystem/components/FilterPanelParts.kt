@@ -103,3 +103,18 @@ public fun FilterSection(
         FlowRow(horizontalArrangement = Arrangement.spacedBy(FilterTokens.chipGap), content = chips)
     }
 }
+
+/** A small `text3` note under a filter page's choices, such as which folders stay out. */
+@Composable
+public fun FilterNote(
+    text: String,
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        text,
+        modifier.padding(horizontal = FilterTokens.labelInset, vertical = FilterTokens.labelGap),
+        style = panelTextStyle(),
+        color = OtusColors.text3,
+        fontSize = FilterTokens.noteSize,
+    )
+}
