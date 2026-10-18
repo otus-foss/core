@@ -40,8 +40,9 @@ import com.otus.designsystem.theme.panelTextStyle
  * A list that opens under the element it is called from, such as the addresses under a Send-from
  * pill. It lines up with the element's start, or its end when [alignEnd], and opens above it when
  * there is no room below. [width] fixes its width; without it the list spans the window, inside
- * the menu edge. A tap outside or Back runs [onDismiss]. A dropdown that must leave the keyboard
- * to a field, such as suggestions while typing, is not [focusable].
+ * the menu edge, and [gap] keeps it off the element. A tap outside or Back runs [onDismiss]. A
+ * dropdown that must leave the keyboard to a field, such as suggestions while typing, is not
+ * [focusable].
  */
 @Composable
 public fun Dropdown(
@@ -50,12 +51,13 @@ public fun Dropdown(
     alignEnd: Boolean = false,
     width: Dp? = null,
     focusable: Boolean = true,
+    gap: Dp = PanelTokens.cutoutGap,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val density = LocalDensity.current
-    val gap = with(density) { PanelTokens.cutoutGap.roundToPx() }
+    val gapPx = with(density) { gap.roundToPx() }
     val edge = with(density) { MenuTokens.edge.roundToPx() }
-    val position = remember(alignEnd, gap, edge) { BelowAnchor(alignEnd, gap, edge) }
+    val position = remember(alignEnd, gapPx, edge) { BelowAnchor(alignEnd, gapPx, edge) }
     val window =
         with(density) {
             LocalWindowInfo.current.containerSize.width
