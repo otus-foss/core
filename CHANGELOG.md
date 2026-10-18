@@ -7,6 +7,8 @@
   `describe`, and `replace` edit the selected one. `RichTextBody` shows each between the text
   around it through its new `images` slot, since a text field cannot draw images.
 - Add `ImageBar`, the bottom bar while an image is selected: size presets, ⋯ options, and ✓.
+- Add `ExpandingBarGroup`, a bar group that grows upward into a panel above its row, and
+  `OptionsList`, the rows of an `OptionsMenu` for any surface. `ImageBar`'s ⋯ uses both.
   `ResizableImage` draws dashed preset guides with a haptic tick while its handle drags.
 - **Breaking:** `BarMorph` takes the bar to show and a `content` lambda for it, instead of two
   slots, so it can morph between any bars. `ResizableImage` drops `onRemove` and its size pill;
