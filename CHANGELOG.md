@@ -8,7 +8,11 @@
 - Add `decodeImage(bytes, maxSize)` and `rememberImage`, which decode a photo at a size of the
   caller's choosing; `decodeAvatarImage` is `decodeImage` at avatar size.
 - `AttachmentChip` takes `actions`, shown in a `ContextMenu` on a tap, instead of `onRetry`.
-- Add `ComposeTokens.inlineImageMaxHeight`.
+- Add `ComposeTokens.inlineImageLoadingHeight`, `inlineImageMinWidth`, `inlineImageSmall`, and
+  `inlineImageMedium`.
+- **Breaking:** `RichTextBody` moved from `elements` to `components`, since it draws
+  `ResizableImage`. `ResizableImage` takes an `EditableImage` (painter, description, status,
+  actions) instead of an `ImageBitmap`, and `ImageSizing` takes a `range` before `onWidthChange`.
 - Add `AttachmentChip`, a file on a message being written with its name, a detail such as its
   size, a ✕, and an optional retry, and `ComposeTokens.attachmentMaxWidth`.
 - Add `BarMorph`, which morphs a `FormattingBar` into a full `ActionBar` and back. Each part takes

@@ -23,7 +23,8 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
@@ -34,6 +35,7 @@ import com.otus.designsystem.elements.Symbol
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_close
 import com.otus.designsystem.resources.symbol_expand_more
+import com.otus.designsystem.resources.symbol_more_horiz
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PanelTokens
 import com.otus.designsystem.theme.SignatureTokens
@@ -47,35 +49,52 @@ public class ImagePreset(
     public val width: Dp,
 )
 
-/** An image's [width], the [presets] its size list offers, and [onWidthChange] for a new width. */
+/**
+ * An image's [width], the [presets] its size list offers, the [range] its handle drags within, a
+ * signature's by default, and [onWidthChange] for a new width.
+ */
 public class ImageSizing(
     public val width: Dp,
     public val presets: List<ImagePreset>,
+    public val range: ClosedRange<Dp> = SignatureTokens.minImageWidth..SignatureTokens.maxImageWidth,
     public val onWidthChange: (Dp) -> Unit,
 )
 
 /**
- * An image in a signature at the sizing's width, keeping its aspect ratio. Tapping it runs
- * [onSelect]. A [selected] image gets a `text2` outline, a ✕ that runs [onRemove], and one corner
- * handle that resizes it between [SignatureTokens.minImageWidth] and
- * [SignatureTokens.maxImageWidth], snapping to a preset within [SignatureTokens.snapDistance].
- * Under it, a size pill names the preset or the size in pixels and opens the presets.
+ * An image being written: [painter] draws it, [description] names it aloud, a [status] such as
+ * "Uploading…" shows over its corner, and [actions] open from the ⋯ pill of a selected image.
+ */
+public class EditableImage(
+    public val painter: Painter,
+    public val description: String,
+    public val status: String? = null,
+    public val actions: List<MenuAction> = emptyList(),
+)
+
+/**
+ * An [image] being written, such as in a signature or a message, at the sizing's width, keeping
+ * its aspect ratio. Tapping it runs [onSelect]. A [selected] image gets a `text2` outline, a ✕
+ * that runs [onRemove], and one corner handle that resizes it within the sizing's range, snapping
+ * to a preset within [SignatureTokens.snapDistance]. Under it, a size pill names the preset or the
+ * size in pixels and opens the presets, and a ⋯ pill opens the image's actions.
  */
 @Composable
 public fun ResizableImage(
-    image: ImageBitmap,
+    image: EditableImage,
     sizing: ImageSizing,
     selected: Boolean,
     onSelect: () -> Unit,
     onRemove: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val height = sizing.width * (image.height.toFloat() / image.width)
+    val painter = image.painter
+    val intrinsic = painter.intrinsicSize
+    val height = sizing.width * (intrinsic.height / intrinsic.width)
     Column(modifier, verticalArrangement = Arrangement.spacedBy(PanelTokens.chipGap)) {
         Box {
             Image(
-                image,
-                contentDescription = "Signature image",
+                painter,
+                contentDescription = image.description,
                 modifier =
                     Modifier
                         .size(sizing.width, height)
@@ -89,12 +108,54 @@ public fun ResizableImage(
                         ),
                 contentScale = ContentScale.Fit,
             )
+            image.status?.let { ImageStatus(it, Modifier.align(Alignment.TopStart)) }
             if (selected) {
                 RemoveButton(onRemove, Modifier.align(Alignment.TopEnd))
                 ResizeHandle(sizing, Modifier.align(Alignment.BottomEnd))
             }
         }
-        if (selected) ImageSizePill(sizing, height)
+        if (selected) {
+            Row(horizontalArrangement = Arrangement.spacedBy(PanelTokens.chipGap)) {
+                ImageSizePill(sizing, height)
+                if (image.actions.isNotEmpty()) MorePill(image.actions)
+            }
+        }
+    }
+}
+
+/** A short note over the image's corner, such as "Uploading…". */
+@Composable
+private fun ImageStatus(
+    text: String,
+    modifier: Modifier,
+) {
+    Text(
+        text,
+        modifier
+            .padding(PanelTokens.iconGap)
+            .background(OtusColors.bgDark, CircleShape)
+            .padding(horizontal = PanelTokens.chipPadding, vertical = PanelTokens.iconGap),
+        style = panelTextStyle(),
+        color = OtusColors.text2,
+    )
+}
+
+/** A round ⋯ pill beside the size pill that opens [actions]. */
+@Composable
+private fun MorePill(actions: List<MenuAction>) {
+    var open by remember { mutableStateOf(false) }
+    Box(
+        Modifier
+            .size(PanelTokens.touchTarget)
+            .semantics { contentDescription = "Image options" }
+            .clickable { open = true },
+        contentAlignment = Alignment.Center,
+    ) {
+        Box(
+            Modifier.size(PanelTokens.chipHeight).border(PanelTokens.borderWidth, OtusColors.bgLight, CircleShape),
+            contentAlignment = Alignment.Center,
+        ) { Symbol(Res.drawable.symbol_more_horiz) }
+        if (open) ContextMenu(actions, Offset.Zero) { open = false }
     }
 }
 
@@ -148,7 +209,7 @@ private fun ResizeHandle(
                                 with(density) {
                                     drag.x.toDp()
                                 }
-                        ).coerceIn(SignatureTokens.minImageWidth, SignatureTokens.maxImageWidth)
+                        ).coerceIn(current.range)
                     dragged = raw
                     current.onWidthChange(snapped(raw, current.presets))
                 }

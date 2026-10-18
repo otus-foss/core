@@ -41,8 +41,11 @@ public object ComposeTokens {
     /** The more-options menu under the panel's ⋯ button. */
     public val optionsMenuWidth: Dp = 286.dp
 
-    /** The tallest an image in the message body shows; a wider one shrinks to fit. */
-    public val inlineImageMaxHeight: Dp = 320.dp
+    /** An image in the message body: the box shown while it loads, its narrowest size, and its presets. */
+    public val inlineImageLoadingHeight: Dp = 160.dp
+    public val inlineImageMinWidth: Dp = 48.dp
+    public val inlineImageSmall: Dp = 120.dp
+    public val inlineImageMedium: Dp = 200.dp
 
     /** The widest an attachment chip grows before its name ends in an ellipsis. */
     public val attachmentMaxWidth: Dp = 280.dp

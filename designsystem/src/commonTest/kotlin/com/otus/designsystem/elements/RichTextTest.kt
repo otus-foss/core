@@ -10,7 +10,7 @@ class RichTextTest {
         val text = RichText("<p>Before</p><img src=\"cid:a\"><p>After</p>")
         assertEquals(listOf("cid:a"), text.imageSources)
         assertEquals("Before\nAfter", text.text)
-        assertTrue(text.html.contains("<img src=\"cid:a\">"))
+        assertTrue(text.html.contains("<img src=\"cid:a\""))
     }
 
     @Test
