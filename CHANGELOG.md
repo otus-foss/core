@@ -7,7 +7,9 @@
   `FolderCheck`), and the `FilterChip` (with `FilterChipRole`), `FolderGlyph`, and `BadgedSymbol`
   elements. Add `FilterTokens` and `OtusAlpha.DIMMED`, which `PickRow` now uses too.
 - `SegmentedToggle` takes a `height`; it stays 48 dp by default.
-- Add the `symbol_reply`, `symbol_calendar_today`, and `symbol_folder_fill` symbols (Material
+- Add the `symbol_reply`, `symbol_calendar_today`, `symbol_folder_fill`, `symbol_person_add`,
+  `symbol_forward`, `symbol_event`, `symbol_newspaper`, `symbol_folder_off`,
+  `symbol_speaker_notes_off`, `symbol_swap_vert`, and `symbol_straighten` symbols (Material
   Symbols Rounded, Apache 2.0).
 - `RichText` holds images through `RichText.images`: `insert` puts one at the cursor, `remove`
   takes it out, `sources` lists them, and `selected`, `width`, `resize`, `description`,
