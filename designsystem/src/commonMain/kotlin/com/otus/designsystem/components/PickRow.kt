@@ -80,7 +80,7 @@ public fun PickRow(
 }
 
 @Composable
-private fun PickMarkView(mark: PickMark) {
+internal fun PickMarkView(mark: PickMark) {
     val color = OtusColors.text1
     Canvas(Modifier.size(SignatureTokens.markSize)) {
         val stroke = SignatureTokens.markStroke.toPx()
