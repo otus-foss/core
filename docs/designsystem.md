@@ -248,7 +248,7 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
 - The Write page's parts follow Mail's "Write" boards. `ComposeField` is a header line, such as
   Subject: a `text2` label in a 56 dp column beside a borderless field with a `text3` placeholder
   and a `bgLight` hairline below. `RecipientLine` uses the same column for To, Cc, and Bcc: a
-  `RecipientChip` for each person, with a 22 dp avatar in a box outlined with 14 dp corners, wrapping as
+  `RecipientChip` for each person, with a 22 dp avatar in an outlined pill, wrapping as
   needed, and a field for the next address. Next or losing focus commits the typed text, and
   Backspace in an empty field removes the last chip. `RichTextBody` edits the formatted body,
   built on the compose-rich-editor library, which stays an implementation detail behind
@@ -350,7 +350,7 @@ itself.
 | --- | --- | --- |
 | `tiny` | 6 dp | Ends of a calendar date range |
 | `small` | 10 dp | Compact rule chips, theme sketch bars |
-| `chip` | 14 dp | Recipient, quote, and attachment chips, value buttons, rule chips, date tokens, the calendar month outline, page sketches, swipe reveal corners |
+| `chip` | 14 dp | Quote and attachment chips, value buttons, rule chips, date tokens, the calendar month outline, page sketches, swipe reveal corners |
 | `button` | 20 dp | Formatting buttons, search fields in the filter panel, theme cards |
 | `panel` | 22 dp | The control panel at the top of a page and the `FilterPanel` that grows out of it |
 | `row` | 24 dp | Rows and cards in pages, menus, and sheets, row groups, sidebar entries, the signature editor, custom theme previews |
