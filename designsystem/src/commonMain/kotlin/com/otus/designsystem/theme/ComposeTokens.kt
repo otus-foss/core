@@ -41,6 +41,9 @@ public object ComposeTokens {
     /** The more-options menu under the panel's ⋯ button. */
     public val optionsMenuWidth: Dp = 286.dp
 
+    /** The widest an attachment chip grows before its name ends in an ellipsis. */
+    public val attachmentMaxWidth: Dp = 280.dp
+
     /** The collapsed quote at the end of a reply. */
     public val quoteRadius: Dp = 8.dp
 }
