@@ -2,6 +2,23 @@
 
 ## Unreleased
 
+- Add `CompactContentRow`, a two-line list row for mail conversations, with its model
+  `CompactRowText`, `RowLine`, `RowTextPart`, `RowMark`, `RowFolderIcon`, and `CountPlacement`.
+  It selects like `ContentRow`, and `dimmed` fades read rows without fading the selection tint.
+- Add `AvatarBadge`, and `BadgedAvatar`, which puts a badge on an avatar's bottom-end corner.
+- Add `CountBadge`, a count in an avatar-style circle, such as unread mail beside a pill's label.
+- Add `CountPill`, `FolderGlyph` with `FolderGlyphKind`, and `FolderColorNudge`, a card that
+  offers a color for a folder that has none.
+- Add `OtusAlpha` with `DIMMED` and `DISABLED`; `PickRow` uses `DISABLED`.
+- Add `NudgeTokens`, the compact row and badge sizes in `InboxTokens`, and the count pill sizes
+  in `LabelTokens`.
+- Add the `symbol_reply`, `symbol_folder_fill`, `symbol_folder_open_fill`, and
+  `symbol_bookmark_fill` drawables.
+- A sidebar folder with a color shows a filled folder icon. One without a color shows an outlined
+  folder in text3.
+- `ContextPanel` takes `compact`, which shortens the header and pulls the chips up, such as while
+  a list scrolls down. `PullToRefresh` takes `indicatorInset` for content drawn under a panel.
+
 - `SidebarOwl` draws the owl in the accent color.
 - `RichText` holds images through `RichText.images`: `insert` puts one at the cursor, `remove`
   takes it out, `sources` lists them, and `selected`, `width`, `resize`, `description`,

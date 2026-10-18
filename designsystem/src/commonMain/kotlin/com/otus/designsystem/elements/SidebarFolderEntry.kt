@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,7 +30,8 @@ import com.otus.designsystem.theme.panelTextStyle
  * A folder in the sidebar tree. With subfolders, [expanded] is non-null and the icon is a toggle:
  * an open folder while expanded, a closed one while collapsed. Tapping the row calls [onClick];
  * a long press calls [onLongClick], such as to open the folder's actions. The icon takes
- * [LocalIconTint], such as the folder's color. It fits [com.otus.designsystem.components.CollapsibleTree]'s
+ * [LocalIconTint], such as the folder's color, and is a filled folder then; otherwise it is an
+ * outlined folder in text3. It fits [com.otus.designsystem.components.CollapsibleTree]'s
  * row callback.
  */
 @Composable
@@ -61,7 +64,10 @@ public fun SidebarFolderEntry(
             .padding(end = SidebarTokens.entryPadding),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        FolderToggle(folder.label, expanded, onExpandedChange)
+        // Untinted folders step back in text3, so colored ones stand out.
+        CompositionLocalProvider(LocalContentColor provides OtusColors.text3) {
+            FolderToggle(folder.label, expanded, onExpandedChange)
+        }
         Text(
             folder.label,
             Modifier.weight(1f),
