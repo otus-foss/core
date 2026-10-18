@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.unit.Dp
 import com.otus.designsystem.elements.Symbol
 import com.otus.designsystem.elements.ToggleSwitch
 import com.otus.designsystem.resources.Res
@@ -29,18 +29,27 @@ import com.otus.designsystem.theme.panelTextStyle
 import org.jetbrains.compose.resources.DrawableResource
 
 /**
- * The menu under a ⋯ button, aligned with its end, [width] wide and [gap] away: icon rows that
- * act, open more, or switch an option. Call it inside the button's layout, or a larger one such
- * as the bar the button is in, so it opens there.
+ * The menu under a ⋯ button, aligned with its end: icon rows that act, open more, or switch an
+ * option. Call it inside the button's layout, so it opens there.
  */
 @Composable
 public fun OptionsMenu(
     items: List<OptionsItem>,
-    width: Dp = ComposeTokens.optionsMenuWidth,
-    gap: Dp = PanelTokens.cutoutGap,
     onDismiss: () -> Unit,
 ) {
-    Dropdown(onDismiss, alignEnd = true, width = width, gap = gap) {
+    Dropdown(onDismiss, alignEnd = true, width = ComposeTokens.optionsMenuWidth) { OptionsList(items, onDismiss) }
+}
+
+/**
+ * The rows of [items], as an [OptionsMenu] shows them, for any surface that lists options, such
+ * as an [ExpandingBarGroup]. An action runs [onDone] before its own click, to close what holds it.
+ */
+@Composable
+public fun OptionsList(
+    items: List<OptionsItem>,
+    onDone: () -> Unit,
+) {
+    Column {
         items.forEach { item ->
             when (item) {
                 is OptionsItem.Action -> {
@@ -48,7 +57,7 @@ public fun OptionsMenu(
                         item.icon,
                         item.label,
                         Modifier.clickable(role = Role.Button) {
-                            onDismiss()
+                            onDone()
                             item.onClick()
                         },
                     ) { if (item.opens) Symbol(Res.drawable.symbol_chevron_right, mirrorInRtl = true) }
@@ -63,19 +72,23 @@ public fun OptionsMenu(
                 }
 
                 OptionsItem.Divider -> {
-                    Box(
-                        Modifier
-                            .padding(
-                                horizontal = MenuTokens.rowPadding - MenuTokens.inset,
-                                vertical = PanelTokens.iconGap,
-                            ).fillMaxWidth()
-                            .height(PanelTokens.borderWidth)
-                            .background(OtusColors.bgLight),
-                    )
+                    OptionsDivider()
                 }
             }
         }
     }
+}
+
+/** The line between groups of options, inset like their rows. */
+@Composable
+internal fun OptionsDivider() {
+    Box(
+        Modifier
+            .padding(horizontal = MenuTokens.rowPadding - MenuTokens.inset, vertical = PanelTokens.iconGap)
+            .fillMaxWidth()
+            .height(PanelTokens.borderWidth)
+            .background(OtusColors.bgLight),
+    )
 }
 
 @Composable
