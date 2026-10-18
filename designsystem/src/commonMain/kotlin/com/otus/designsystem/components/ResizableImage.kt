@@ -27,6 +27,9 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.contentDescription
@@ -36,6 +39,7 @@ import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.otus.designsystem.theme.ComposeTokens
 import com.otus.designsystem.theme.OtusColors
@@ -91,8 +95,19 @@ public fun ResizableImage(
     val intrinsic = image.painter.intrinsicSize
     val height = sizing.width * (intrinsic.height / intrinsic.width)
     val dragging = remember { mutableStateOf(false) }
+    // While the image's top is scrolled out of view, the guide labels move under it.
+    var topHidden by remember { mutableStateOf(false) }
     // Above what follows it, which the handle and its guides reach over.
-    Box(modifier.zIndex(if (selected) 1f else 0f).then(if (dragging.value) Modifier.sizeGuides(sizing) else Modifier)) {
+    Box(
+        modifier
+            .zIndex(if (selected) 1f else 0f)
+            .onGloballyPositioned {
+                if (dragging.value) {
+                    topHidden =
+                        it.boundsInWindow().top > it.positionInWindow().y + 1f
+                }
+            }.then(if (dragging.value) Modifier.sizeGuides(sizing, labelsBelow = topHidden) else Modifier),
+    ) {
         Image(
             image.painter,
             contentDescription = image.description,
@@ -107,7 +122,7 @@ public fun ResizableImage(
         )
         image.status?.let { ImageStatus(it, Modifier.align(Alignment.TopStart)) }
         if (selected) ResizeHandle(sizing, dragging, Modifier.align(Alignment.BottomEnd))
-        if (dragging.value) SizeLabel(sizing, height, Modifier.align(Alignment.BottomEnd))
+        if (dragging.value) SizeLabel(sizing, height, below = topHidden, Modifier.align(Alignment.BottomEnd))
     }
 }
 
@@ -178,11 +193,15 @@ private fun ResizeHandle(
     }
 }
 
-/** The pill under the handle while dragging: the preset's name, or the size in pixels. */
+/**
+ * The pill under the handle while dragging: the preset's name, or the size in pixels. It moves
+ * further down while the guide labels sit [below] the image.
+ */
 @Composable
 private fun SizeLabel(
     sizing: ImageSizing,
     height: Dp,
+    below: Boolean,
     modifier: Modifier,
 ) {
     val label =
@@ -191,8 +210,10 @@ private fun SizeLabel(
     Text(
         label,
         modifier
-            .offset(x = PanelTokens.touchTarget / 2, y = PanelTokens.touchTarget)
-            .background(OtusColors.text1, CircleShape)
+            .offset(
+                x = PanelTokens.touchTarget / 2,
+                y = PanelTokens.touchTarget + if (below) ComposeTokens.guideReach + PanelTokens.iconGap else 0.dp,
+            ).background(OtusColors.text1, CircleShape)
             .padding(horizontal = PanelTokens.chipPadding, vertical = PanelTokens.iconGap),
         style = panelTextStyle(),
         color = OtusColors.bgDark,
@@ -201,10 +222,13 @@ private fun SizeLabel(
 
 /**
  * A dashed line at each preset's width, reaching past the image, with its short label centered
- * above it; the preset the width matches draws in `text1` and bold.
+ * above it, or under it while [labelsBelow]; the preset the width matches draws in `text1` and bold.
  */
 @Composable
-private fun Modifier.sizeGuides(sizing: ImageSizing): Modifier {
+private fun Modifier.sizeGuides(
+    sizing: ImageSizing,
+    labelsBelow: Boolean,
+): Modifier {
     val measurer = rememberTextMeasurer()
     val style = panelTextStyle().merge(TextStyle(fontSize = ComposeTokens.detailSize))
     return drawBehind {
@@ -232,7 +256,8 @@ private fun Modifier.sizeGuides(sizing: ImageSizing): Modifier {
             // Centered on its line, but kept between the image's start and the widest size.
             val widest = sizing.range.endInclusive.toPx()
             val left = (x - text.size.width / 2f).coerceIn(0f, (widest - text.size.width).coerceAtLeast(0f))
-            drawText(text, topLeft = Offset(left, -reach - text.size.height))
+            val top = if (labelsBelow) size.height + reach else -reach - text.size.height
+            drawText(text, topLeft = Offset(left, top))
         }
     }
 }
