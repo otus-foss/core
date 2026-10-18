@@ -245,7 +245,13 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   needed, and a field for the next address. Next or losing focus commits the typed text, and
   Backspace in an empty field removes the last chip. `RichTextBody` edits the formatted body,
   built on the compose-rich-editor library, which stays an implementation detail behind
-  `RichText`: it reads and writes HTML and plain text. `QuoteChip` stands for the collapsed
+  `RichText`: it reads and writes HTML and plain text. A text field cannot draw images, so
+  `RichText` splits its HTML at each `<img>` into text blocks with an image block between each
+  two. `insertImage` splits the text at the cursor, `removeImage` joins it again, and Backspace
+  at the start of the text after an image removes it. `RichTextBody` draws each image from its
+  `src` through its `images` slot, as wide as the text and at most 320 dp tall; formatting goes
+  to the text block that last had focus. `rememberImage` decodes a photo off the main thread at
+  most 2048 px on a side. `QuoteChip` stands for the collapsed
   original at the end of a forward. With `collapsedAfter`, a `RecipientLine` holding more people
   shows that many and a "+N more" chip, without its field, until the chip is tapped; its label
   then stays beside the first row (`ComposeLine` with `topAligned`).

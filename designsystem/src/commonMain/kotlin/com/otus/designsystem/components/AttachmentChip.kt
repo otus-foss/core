@@ -13,8 +13,15 @@ import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -31,8 +38,8 @@ import com.otus.designsystem.theme.panelTextStyle
 
 /**
  * A file attached to a message being written: its [name], and a [detail] under it such as its
- * size or "Uploading…". Tapping the chip runs [onRetry] when there is one, for a failed upload;
- * ✕ runs [onRemove].
+ * size or "Uploading…". Tapping the chip opens [actions] in a [ContextMenu] under it, such as
+ * Retry or Show in message, when there are any; ✕ runs [onRemove].
  */
 @Composable
 public fun AttachmentChip(
@@ -40,18 +47,23 @@ public fun AttachmentChip(
     detail: String,
     onRemove: () -> Unit,
     modifier: Modifier = Modifier,
-    onRetry: (() -> Unit)? = null,
+    actions: List<MenuAction> = emptyList(),
 ) {
     val shape = RoundedCornerShape(ComposeTokens.recipientRadius)
+    var open by remember { mutableStateOf(false) }
+    var height by remember { mutableIntStateOf(0) }
     Row(
         modifier
             .heightIn(min = PanelTokens.touchTarget)
             .widthIn(max = ComposeTokens.attachmentMaxWidth)
+            .onSizeChanged { height = it.height }
             .border(PanelTokens.borderWidth, OtusColors.bgLight, shape)
             .then(
-                onRetry?.let {
-                    Modifier.clickable(onClickLabel = "Retry", role = Role.Button, onClick = it)
-                } ?: Modifier,
+                if (actions.isEmpty()) {
+                    Modifier
+                } else {
+                    Modifier.clickable(onClickLabel = "More options", role = Role.Button) { open = true }
+                },
             ).semantics(mergeDescendants = true) { contentDescription = "$name, $detail" }
             .padding(start = PanelTokens.chipPadding),
         horizontalArrangement = Arrangement.spacedBy(PanelTokens.chipGap),
@@ -73,5 +85,6 @@ public fun AttachmentChip(
         IconButton("Remove $name", onRemove, outlined = false) {
             Symbol(Res.drawable.symbol_close, size = PanelTokens.iconSize)
         }
+        if (open) ContextMenu(actions, Offset(0f, height.toFloat())) { open = false }
     }
 }
