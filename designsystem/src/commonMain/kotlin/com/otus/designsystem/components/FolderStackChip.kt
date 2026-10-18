@@ -16,17 +16,9 @@ import com.otus.designsystem.elements.Chip
 import com.otus.designsystem.elements.ChipLabel
 import com.otus.designsystem.elements.FolderGlyph
 import com.otus.designsystem.theme.FilterTokens
-import com.otus.designsystem.theme.FolderColor
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PanelTokens
 import com.otus.designsystem.theme.panelTextStyle
-import org.jetbrains.compose.resources.DrawableResource
-
-/** One folder of a [FolderStackChip]: its [color] and the [icon] it shows without one. */
-public data class StackedFolder(
-    val color: FolderColor?,
-    val icon: DrawableResource,
-)
 
 /**
  * A selected pill for chosen folders: up to [FilterTokens.FOLDER_STACK_LIMIT] overlapping

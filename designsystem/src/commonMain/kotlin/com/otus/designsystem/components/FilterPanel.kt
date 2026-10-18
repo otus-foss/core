@@ -48,8 +48,8 @@ import kotlin.math.roundToInt
  * while the [body] scrolls. While [open] it handles system back; back, a tap on the scrim, and an
  * upward swipe call [onDismiss]. Height and contents animate together, and the contents fade in
  * while they slide [FilterTokens.contentSlide] down. A [FilterPanelHeader] names the panel to
- * accessibility services. With [fillHeight], the panel takes all of its room even when the body
- * is short, so pages of different lengths keep one height and leave space above the footer.
+ * accessibility services. The panel takes all of its room even when the body is short, so pages
+ * of different lengths keep one height and leave space above the footer.
  */
 @Composable
 public fun FilterPanel(
@@ -59,7 +59,6 @@ public fun FilterPanel(
     header: @Composable () -> Unit,
     footer: @Composable () -> Unit,
     modifier: Modifier = Modifier,
-    fillHeight: Boolean = false,
     body: @Composable () -> Unit,
 ) {
     val progress by animateFloatAsState(
@@ -84,7 +83,7 @@ public fun FilterPanel(
         )
         PanelSurface(progress, collapsedHeight, onDismiss, modifier) {
             header()
-            Box(Modifier.weight(1f, fill = fillHeight).verticalScroll(rememberScrollState())) { body() }
+            Box(Modifier.weight(1f).verticalScroll(rememberScrollState())) { body() }
             footer()
         }
     }

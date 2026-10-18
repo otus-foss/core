@@ -22,7 +22,6 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import com.otus.designsystem.theme.ComposeTokens
 import com.otus.designsystem.theme.OtusAlpha
 import com.otus.designsystem.theme.OtusColors
@@ -45,17 +44,21 @@ public fun PickRow(
     modifier: Modifier = Modifier,
     leading: (@Composable () -> Unit)? = null,
 ) {
-    PickRowFrame(title, subtitle, mark, onClick, SheetTokens.rowHeight, modifier, leading) { PickMarkView(mark) }
+    PickRowFrame(title, subtitle, mark, onClick, modifier.heightIn(min = SheetTokens.rowHeight), leading) {
+        PickMarkView(mark)
+    }
 }
 
-/** The layout every pick row shares: [leading], the two lines of text, and [trailing] at the end. */
+/**
+ * The layout every pick row shares: [leading], the two lines of text, and [trailing] at the end.
+ * [modifier] sets the row's minimum height.
+ */
 @Composable
 internal fun PickRowFrame(
     title: String,
     subtitle: String?,
     mark: PickMark,
     onClick: (() -> Unit)?,
-    height: Dp,
     modifier: Modifier,
     leading: (@Composable () -> Unit)?,
     trailing: @Composable () -> Unit,
@@ -70,7 +73,6 @@ internal fun PickRowFrame(
     Row(
         modifier
             .fillMaxWidth()
-            .heightIn(min = height)
             .then(choose)
             .alpha(if (enabled) 1f else OtusAlpha.DISABLED)
             .padding(horizontal = SheetTokens.inset, vertical = PanelTokens.iconGap),

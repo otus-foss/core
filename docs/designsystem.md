@@ -324,7 +324,7 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   checkbox, a radio, or a button. A `ChipLabel`'s prefix, such as a folder's parents, shows in `text3`.
   `FilterPanelFooter` has a Reset pill, dimmed with `OtusAlpha.DIMMED` while there is nothing to
   reset, and the primary button, whose label screen readers announce politely when it changes.
-  With `fillHeight`, the panel takes all of its room, so a short page keeps the height of a long
+  The panel always takes all of its room, so a short page keeps the height of a long
   one and leaves space above the footer. Slide between its pages with `SlidingPages`.
   `FilterFolderRow` is one folder of a checkable tree: a chevron for parents, a `FolderGlyph`, the
   name after an optional `text3` path, and a check circle, dimmed while a parent includes it. It

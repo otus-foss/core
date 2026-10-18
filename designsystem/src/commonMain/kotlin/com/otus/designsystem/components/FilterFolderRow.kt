@@ -58,24 +58,8 @@ public fun FilterFolderRow(
         modifier
             .fillMaxWidth()
             .height(FilterTokens.folderRowHeight)
-            .semantics(mergeDescendants = true) {
-                role = Role.Checkbox
-                toggleableState = if (check == FolderCheck.Off) ToggleableState.Off else ToggleableState.On
-                stateDescription = folderState(check, depth, expanded)
-                if (!enabled) disabled()
-                if (expanded == false) {
-                    expand {
-                        onExpandedChange(true)
-                        true
-                    }
-                }
-                if (expanded == true) {
-                    collapse {
-                        onExpandedChange(false)
-                        true
-                    }
-                }
-            }.clickable(enabled = enabled, onClick = onCheck)
+            .folderSemantics(check, depth, expanded, onExpandedChange)
+            .clickable(enabled = enabled, onClick = onCheck)
             .padding(
                 start = FilterTokens.folderIndent * depth.coerceIn(0, FilterTokens.FOLDER_MAX_DEPTH - 1),
                 end = FilterTokens.bodyInset,
@@ -126,3 +110,29 @@ private fun folderState(
         },
         "included with parent".takeIf { check == FolderCheck.Included },
     ).joinToString(", ")
+
+/** Reads the row as a checkbox, with its state and, for parents, expand and collapse actions. */
+private fun Modifier.folderSemantics(
+    check: FolderCheck,
+    depth: Int,
+    expanded: Boolean?,
+    onExpandedChange: (Boolean) -> Unit,
+): Modifier =
+    semantics(mergeDescendants = true) {
+        role = Role.Checkbox
+        toggleableState = if (check == FolderCheck.Off) ToggleableState.Off else ToggleableState.On
+        stateDescription = folderState(check, depth, expanded)
+        if (check == FolderCheck.Included) disabled()
+        if (expanded == false) {
+            expand {
+                onExpandedChange(true)
+                true
+            }
+        }
+        if (expanded == true) {
+            collapse {
+                onExpandedChange(false)
+                true
+            }
+        }
+    }
