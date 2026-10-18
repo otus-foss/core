@@ -22,15 +22,23 @@ public actual fun HtmlView(
     loadRemote: Boolean,
     onOpenLink: (String) -> Unit,
     modifier: Modifier,
+    onShowRemote: (() -> Unit)?,
+    quote: HtmlQuote?,
 ) {
     val openLink by rememberUpdatedState(onOpenLink)
+    val showRemote by rememberUpdatedState(onShowRemote)
     val palette = OtusColors.palette
-    val document = remember(html, loadRemote, palette) { sandboxedHtml(html, loadRemote, palette) }
+    val placeholders = onShowRemote != null
+    val document =
+        remember(html, loadRemote, palette, placeholders, quote) {
+            sandboxedHtml(html, loadRemote, palette, placeholders, quote)
+        }
     // A new document gets a new view, so no page or setting of the last one carries over.
     key(document) {
         AndroidView(
             factory = { context ->
-                sandboxedWebView(context, loadRemote, darken = !palette.isLight) { openLink(it) }.apply {
+                val links = LinkClient(onOpenLink = { openLink(it) }, onShowRemote = { showRemote?.invoke() })
+                sandboxedWebView(context, loadRemote, darken = !palette.isLight, links).apply {
                     loadDataWithBaseURL(null, document, "text/html", "utf-8", null)
                 }
             },
@@ -49,7 +57,7 @@ private fun sandboxedWebView(
     context: Context,
     loadRemote: Boolean,
     darken: Boolean,
-    onOpenLink: (String) -> Unit,
+    links: LinkClient,
 ): WebView =
     WebView(ContextThemeWrapper(context, if (darken) THEME_DARK else THEME_LIGHT)).apply {
         setBackgroundColor(Color.TRANSPARENT)
@@ -64,19 +72,27 @@ private fun sandboxedWebView(
         // On Android 13 and later, a page with its own light colors is darkened under a dark theme.
         // Elsewhere it keeps its white page, which sandboxedHtml gives it.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) settings.isAlgorithmicDarkeningAllowed = darken
-        webViewClient = LinkClient(onOpenLink)
+        webViewClient = links
     }
 
-/** Keeps every navigation out of the view; a tapped openable link goes to [onOpenLink]. */
+/**
+ * Keeps every navigation out of the view; a tapped openable link goes to [onOpenLink], and a
+ * tapped image placeholder to [onShowRemote].
+ */
 private class LinkClient(
     private val onOpenLink: (String) -> Unit,
+    private val onShowRemote: () -> Unit,
 ) : WebViewClient() {
     override fun shouldOverrideUrlLoading(
         view: WebView,
         request: WebResourceRequest,
     ): Boolean {
         val url = request.url.toString()
-        if (request.isForMainFrame && request.hasGesture() && isOpenableLink(url)) onOpenLink(url)
+        val tapped = request.isForMainFrame && request.hasGesture()
+        when {
+            tapped && isShowImagesLink(url) -> onShowRemote()
+            tapped && isOpenableLink(url) -> onOpenLink(url)
+        }
         return true
     }
 }

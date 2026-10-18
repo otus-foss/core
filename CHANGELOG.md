@@ -2,6 +2,28 @@
 
 ## Unreleased
 
+- Add the read view parts. Strips above the action bar: `StripCard`, `PositionStrip` with
+  `PageDots`, `ThreadList`, `AlsoInStrip` with `FolderHint` and `FolderName`, `InfoStrip` with
+  `StripAction`, and `AttachmentStrip` with `AttachmentFile`, `AttachmentKind`, and
+  `AttachmentActions`. In the body: `ImageBanner`, `DetailsTable` with `DetailLine`, and
+  `QuoteFold`. In the header: `DatePill`. Also `FolderPath`, `FolderStack`, `PlainAction`, and
+  `FolderPickRow`, a folder with a checkbox for the folders sheet. Add `ReadTokens`.
+- Add `DestinationPill`, a 40 dp pill for the Move to sheet, and `MoveTokens`. `IconPill` takes a
+  `size`, so the sort button can match it; it stays 36 dp by default.
+- `OptionsMenu` and `OptionsList` show `OptionsItem.Caption`, a small heading row.
+  `OptionsItem.Action` takes a `detail`, shown as a second line, and so does `OptionsItem.Toggle`
+  through a new constructor that puts `detail` before `onCheckedChange`. The old constructors
+  still work.
+- `HtmlView` takes `onShowRemote`: while remote content is blocked, each remote image becomes a
+  dashed placeholder of its size, and tapping one runs `onShowRemote`. It also takes a
+  `HtmlQuote`, folded under the body with its author and date, and unfolded by a tap without
+  scripts.
+- Add the `symbol_expand_less`, `symbol_unsubscribe`, `symbol_download`, `symbol_hide_image`,
+  `symbol_image`, `symbol_verified_user`, `symbol_block`, `symbol_reply_all`, `symbol_print`,
+  `symbol_info`, `symbol_notifications_off`, `symbol_picture_as_pdf`, `symbol_table`,
+  `symbol_description`, `symbol_delete_sweep`, and `symbol_unfold_less` symbols (Material Symbols
+  Rounded, Apache 2.0).
+
 - `IconButton` takes a `badgeCount` and draws it outside its circle, so the filter button's count
   is no longer cut off. It replaces `BadgedSymbol`, which is removed.
 - A swipe reveal shrinks its edge fillet and free-end corner together while it is narrow, so it

@@ -13,6 +13,10 @@ import com.otus.designsystem.theme.OtusPalette
  * and fonts load only while [loadRemote] is true, and no DNS prefetch or preconnect hint is
  * followed without it, so a message cannot report that it was read.
  * Colors follow the theme the user picked, not the platform's dark mode.
+ *
+ * With [onShowRemote] and without [loadRemote], each remote image becomes a dashed placeholder of
+ * its size, and tapping one runs [onShowRemote]. A [quote] folds under the body with its author
+ * and date and unfolds on a tap, without scripts.
  */
 @Composable
 public expect fun HtmlView(
@@ -20,6 +24,8 @@ public expect fun HtmlView(
     loadRemote: Boolean,
     onOpenLink: (String) -> Unit,
     modifier: Modifier = Modifier,
+    onShowRemote: (() -> Unit)? = null,
+    quote: HtmlQuote? = null,
 )
 
 /**
@@ -34,19 +40,25 @@ public expect fun HtmlView(
  *
  * Without [loadRemote], DNS prefetching is off and the document's `<link>` elements become inert:
  * the policy does not cover `dns-prefetch` or `preconnect` hints, which would otherwise reach the
- * sender's server, and every other link it could load is blocked anyway.
+ * sender's server, and every other link it could load is blocked anyway. With [placeholders] it
+ * also swaps remote images for placeholders. A [quote] follows the body as a fold.
  */
 internal fun sandboxedHtml(
     html: String,
     loadRemote: Boolean,
     palette: OtusPalette,
+    placeholders: Boolean = false,
+    quote: HtmlQuote? = null,
 ): String {
     val remote = if (loadRemote) " http: https:" else ""
     val policy =
         "default-src 'none'; img-src data:$remote; style-src 'unsafe-inline'$remote; " +
             "font-src data:$remote; form-action 'none'"
     val prefetch = if (loadRemote) "" else "<meta http-equiv=\"x-dns-prefetch-control\" content=\"off\">"
-    val body = if (loadRemote) html else html.replace(LINK_TAG, "<otus-inert-link")
+    val document = html + quote?.let { quoteFold(it, palette) }.orEmpty()
+    val blocked = !loadRemote && placeholders
+    val inert = if (loadRemote) document else document.replace(LINK_TAG, "<otus-inert-link")
+    val body = if (blocked) withImagePlaceholders(inert) else inert
     val page =
         if (hasOwnColors(html)) {
             "body{color:#000;background:#fff}"
@@ -57,7 +69,9 @@ internal fun sandboxedHtml(
     return "<meta http-equiv=\"Content-Security-Policy\" content=\"$policy\">" +
         prefetch +
         "<meta name=\"viewport\" content=\"width=device-width\">" +
-        "<style>body{margin:0;overflow-wrap:anywhere}img{max-width:100%;height:auto}$page</style>" +
+        "<style>body{margin:0;overflow-wrap:anywhere}img{max-width:100%;height:auto}$page" +
+        (if (blocked) placeholderStyle(palette) else "") +
+        "</style>" +
         body
 }
 
@@ -70,7 +84,7 @@ private val COLOR_ATTRIBUTE = Regex("""(?i)<[^>]*\s(?:bg)?color\s*=""")
 private val STYLES = Regex("""(?is)<style\b[^>]*>(.*?)</style>|\sstyle\s*=\s*(?:"([^"]*)"|'([^']*)')""")
 private val CSS_COLOR = Regex("""(?i)(?:^|[\s;{])(?:color|background(?:-color)?)\s*:""")
 
-private fun Color.css(): String = "#" + (toArgb() and RGB).toString(HEX).padStart(RGB_DIGITS, '0')
+internal fun Color.css(): String = "#" + (toArgb() and RGB).toString(HEX).padStart(RGB_DIGITS, '0')
 
 private const val RGB = 0xFFFFFF
 private const val HEX = 16
@@ -78,6 +92,9 @@ private const val RGB_DIGITS = 6
 
 /** An HTML `<link>` start tag: the tag name ends at whitespace, `/`, or `>`, in any case. */
 private val LINK_TAG = Regex("<link(?=[\\s/>])", RegexOption.IGNORE_CASE)
+
+/** Whether [url] is a placeholder's request to show the blocked images. */
+internal fun isShowImagesLink(url: String): Boolean = url == SHOW_IMAGES_URL
 
 /** Whether [HtmlView] passes [url] on: web, mail, and phone links, never app or file links. */
 internal fun isOpenableLink(url: String): Boolean = url.substringBefore(':').lowercase() in OPENABLE_SCHEMES

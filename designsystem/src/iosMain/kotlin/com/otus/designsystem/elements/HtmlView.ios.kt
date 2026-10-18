@@ -28,12 +28,19 @@ public actual fun HtmlView(
     loadRemote: Boolean,
     onOpenLink: (String) -> Unit,
     modifier: Modifier,
+    onShowRemote: (() -> Unit)?,
+    quote: HtmlQuote?,
 ) {
     val openLink by rememberUpdatedState(onOpenLink)
+    val showRemote by rememberUpdatedState(onShowRemote)
     val palette = OtusColors.palette
-    val document = remember(html, loadRemote, palette) { sandboxedHtml(html, loadRemote, palette) }
+    val placeholders = onShowRemote != null
+    val document =
+        remember(html, loadRemote, palette, placeholders, quote) {
+            sandboxedHtml(html, loadRemote, palette, placeholders, quote)
+        }
     // WebKit keeps only a weak reference to its delegate.
-    val delegate = remember { LinkDelegate { openLink(it) } }
+    val delegate = remember { LinkDelegate(onOpenLink = { openLink(it) }, onShowRemote = { showRemote?.invoke() }) }
     key(document) {
         UIKitView(
             factory = {
@@ -50,9 +57,13 @@ public actual fun HtmlView(
     }
 }
 
-/** Allows only the document's own load; a tapped openable link goes to [onOpenLink]. */
+/**
+ * Allows only the document's own load; a tapped openable link goes to [onOpenLink], and a tapped
+ * image placeholder to [onShowRemote].
+ */
 private class LinkDelegate(
     private val onOpenLink: (String) -> Unit,
+    private val onShowRemote: () -> Unit,
 ) : NSObject(),
     WKNavigationDelegateProtocol {
     override fun webView(
@@ -65,7 +76,10 @@ private class LinkDelegate(
                 ?.absoluteString
                 .orEmpty()
         val tapped = decidePolicyForNavigationAction.navigationType == WKNavigationTypeLinkActivated
-        if (tapped && isOpenableLink(url)) onOpenLink(url)
+        when {
+            tapped && isShowImagesLink(url) -> onShowRemote()
+            tapped && isOpenableLink(url) -> onOpenLink(url)
+        }
         val ownLoad = url == "about:blank"
         decisionHandler(if (ownLoad) WKNavigationActionPolicyAllow else WKNavigationActionPolicyCancel)
     }

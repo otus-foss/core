@@ -25,6 +25,7 @@ import com.otus.designsystem.theme.ComposeTokens
 import com.otus.designsystem.theme.MenuTokens
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PanelTokens
+import com.otus.designsystem.theme.ReadTokens
 import com.otus.designsystem.theme.panelTextStyle
 import org.jetbrains.compose.resources.DrawableResource
 
@@ -56,6 +57,7 @@ public fun OptionsList(
                     OptionsRow(
                         item.icon,
                         item.label,
+                        item.detail,
                         Modifier.clickable(role = Role.Button) {
                             onDone()
                             item.onClick()
@@ -67,8 +69,13 @@ public fun OptionsList(
                     OptionsRow(
                         item.icon,
                         item.label,
+                        item.detail,
                         Modifier.toggleable(item.checked, role = Role.Switch, onValueChange = item.onCheckedChange),
                     ) { ToggleSwitch(item.checked) }
+                }
+
+                is OptionsItem.Caption -> {
+                    ListCaption(item.text)
                 }
 
                 OptionsItem.Divider -> {
@@ -95,6 +102,7 @@ internal fun OptionsDivider() {
 private fun OptionsRow(
     icon: DrawableResource,
     label: String,
+    detail: String?,
     modifier: Modifier,
     trailing: @Composable RowScope.() -> Unit,
 ) {
@@ -107,7 +115,12 @@ private fun OptionsRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Symbol(icon)
-        Box(Modifier.weight(1f)) { Text(label, style = panelTextStyle()) }
+        Column(Modifier.weight(1f)) {
+            Text(label, style = panelTextStyle())
+            detail?.let {
+                Text(it, style = panelTextStyle(), color = OtusColors.text3, fontSize = ReadTokens.detailSize)
+            }
+        }
         trailing()
     }
 }
