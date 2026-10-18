@@ -55,7 +55,7 @@ public fun AddRuleChip(
                     outline,
                     topLeft = Offset(width / 2, width / 2),
                     size = Size(size.width - width, size.height - width),
-                    cornerRadius = CornerRadius(RuleChipTokens.radius.toPx()),
+                    cornerRadius = CornerRadius(minOf(RuleChipTokens.radius.toPx(), size.height / 2)),
                     style = Stroke(width, pathEffect = outlineDash()),
                 )
             }.clickable(interactions, indication = null, role = Role.Button, onClick = onClick)

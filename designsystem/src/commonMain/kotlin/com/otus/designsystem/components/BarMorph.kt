@@ -27,11 +27,12 @@ import androidx.compose.ui.graphics.BlurEffect
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
+import com.otus.designsystem.theme.ActionBarTokens
+import com.otus.designsystem.theme.ComposeTokens
 import com.otus.designsystem.theme.LocalMotionScale
 import com.otus.designsystem.theme.Motion
 import com.otus.designsystem.theme.MotionCurve
 import com.otus.designsystem.theme.MotionSpeed
-import com.otus.designsystem.theme.PanelTokens
 import kotlin.math.PI
 import kotlin.math.roundToInt
 import kotlin.math.sin
@@ -91,7 +92,8 @@ private fun SharedTransitionScope.part(
         ).graphicsLayer {
             val radius = BLUR_RADIUS.toPx() * morph.blurShare(if (arriving) shown else 1f - shown)
             renderEffect = if (radius > 0f) BlurEffect(radius, radius, TileMode.Clamp) else null
-            shape = RoundedCornerShape(PanelTokens.panelRadius)
+            // The rounder bar's corners lie inside the less round clip, so neither bar loses an edge.
+            shape = RoundedCornerShape(minOf(ComposeTokens.formatBarRadius, ActionBarTokens.radius))
             clip = true
         }
 }

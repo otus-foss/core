@@ -9,7 +9,7 @@ public object SignatureTokens {
     public val addressLabelMaxWidth: Dp = 110.dp
 
     /** The editor box around the signature. */
-    public val editorRadius: Dp = 16.dp
+    public val editorRadius: Dp = CornerTokens.row
 
     /** A selected image: its outline, the remove button, and the corner handle that resizes it. */
     public val selectionOutline: Dp = 2.dp

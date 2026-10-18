@@ -29,7 +29,7 @@ internal object SettingTokens {
     val textGap: Dp = 4.dp
     val dividerWidth: Dp = 1.dp
 
-    val valueRadius: Dp = 8.dp
+    val valueRadius: Dp = CornerTokens.chip
     val valuePaddingHorizontal: Dp = 12.dp
     val valuePaddingVertical: Dp = 8.dp
     val valuePaddingSwatch: Dp = 8.dp

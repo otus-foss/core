@@ -11,7 +11,7 @@ internal object SidebarTokens {
     val pageVisible = 56.dp
     val inset = 8.dp
     val entryPadding = 12.dp
-    val entryRadius = 16.dp
+    val entryRadius = CornerTokens.row
 
     /** The expand button at the end of a folder row with subfolders. */
     val expandButton = 32.dp
