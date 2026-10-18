@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- `IconButton` takes a `badgeCount` and draws it outside its circle, so the filter button's count
+  is no longer cut off. It replaces `BadgedSymbol`, which is removed.
 - A swipe reveal shrinks its edge fillet and free-end corner together while it is narrow, so it
   stays rounded from the start instead of growing out of a square sliver.
 - Round corners more, from one internal scale in `CornerTokens`. The action bar, menus,
