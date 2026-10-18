@@ -95,14 +95,15 @@ public fun ResizableImage(
     val intrinsic = image.painter.intrinsicSize
     val height = sizing.width * (intrinsic.height / intrinsic.width)
     val dragging = remember { mutableStateOf(false) }
-    // While the image's top is scrolled out of view, the guide labels move under it.
+    // Where the image's top is when a drag starts decides whether the guide labels sit above or
+    // under it, and they stay there until the drag ends.
     var topHidden by remember { mutableStateOf(false) }
     // Above what follows it, which the handle and its guides reach over.
     Box(
         modifier
             .zIndex(if (selected) 1f else 0f)
             .onGloballyPositioned {
-                if (dragging.value) {
+                if (!dragging.value) {
                     topHidden =
                         it.boundsInWindow().top > it.positionInWindow().y + 1f
                 }
