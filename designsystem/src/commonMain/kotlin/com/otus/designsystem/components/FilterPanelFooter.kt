@@ -69,7 +69,7 @@ private fun FooterButton(
     Surface(
         modifier
             .height(FilterTokens.footerButtonHeight)
-            .alpha(if (enabled) 1f else OtusAlpha.DIMMED)
+            .alpha(if (enabled) 1f else OtusAlpha.DISABLED)
             .clickable(interactions, null, enabled, role = Role.Button, onClick = onClick)
             .controlPressFeedback(interactions),
         shape = CircleShape,

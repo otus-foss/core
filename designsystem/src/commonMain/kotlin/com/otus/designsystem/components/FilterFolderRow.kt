@@ -102,7 +102,7 @@ public fun FilterFolderRow(
             overflow = TextOverflow.Ellipsis,
         )
         Spacer(Modifier.width(PanelTokens.iconGap))
-        Box(Modifier.alpha(if (enabled) 1f else OtusAlpha.DIMMED)) {
+        Box(Modifier.alpha(if (enabled) 1f else OtusAlpha.DISABLED)) {
             PickMarkView(PickMark(selected = check != FolderCheck.Off, multiple = true))
         }
     }
