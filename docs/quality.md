@@ -15,7 +15,9 @@ git config --local core.hooksPath .githooks
 Gradle uses the repository's Python virtual environment when present. A linked worktree without
 one uses the main checkout's `.venv`.
 
-Test code gets ktlint formatting only. detekt skips test source sets to keep `checkAll` fast.
+Test code gets ktlint formatting only. detekt and Android lint (`ignoreTestSources`) skip test
+source sets. The apps' lint analyzes Meta modules through `checkDependencies`, so this keeps their
+`checkAll` fast too.
 
 Daily commands:
 

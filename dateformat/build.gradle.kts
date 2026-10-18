@@ -25,6 +25,7 @@ kotlin {
                 .toInt()
         compilerOptions { jvmTarget = JvmTarget.JVM_11 }
         withHostTest {}
+        lint { ignoreTestSources = true }
     }
     sourceSets {
         commonMain.dependencies { api(libs.kotlinx.datetime) }
