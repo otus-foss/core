@@ -7,7 +7,7 @@
   `FilterTokens.FOLDER_MAX_DEPTH`.
 - Add `FilterNote` for a small note under a filter page's choices, and `FolderStackChip` (with
   `StackedFolder`), the pill for chosen folders. `AvatarStackChip` takes a `prefix`, such as "To".
-- `FilterPanel` takes `fillHeight`, which keeps the panel at its full height on short pages.
+- `FilterPanel` always takes its full height, so short pages keep the height of long ones.
 - Add `DateRangeCalendar`, the calendar of `DateRangePicker` on its own, to embed in a page.
 - `FilterFolderRow` ends in the same check circle as `FilterPickRow` instead of a checkbox.
 - Add the `symbol_check_circle_fill`, `symbol_radio_button_unchecked`, `symbol_hourglass_empty`,

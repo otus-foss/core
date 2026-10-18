@@ -54,7 +54,6 @@ class FilterPanelScreenshotTest {
                     header = { FilterPanelHeader("Metadata", {}, onBack = {}) },
                     footer = { FilterPanelFooter("Show 30 conversations", {}, {}) },
                     modifier = Modifier.padding(8.dp),
-                    fillHeight = true,
                 ) {
                     FilterSection("Type", Modifier.padding(horizontal = FilterTokens.bodyInset)) {
                         FilterChip("Newsletters", selected = false, onClick = {})
