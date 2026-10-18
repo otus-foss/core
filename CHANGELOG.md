@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Add `ChangeLogSheet`, which lists `ChangeLogSection`s of bulleted changes over a secondary and a
+  wide primary button, such as Changelog and Install update, and `ChangeLogHistorySheet`, which
+  lists `ChangeLogRelease`s by title. Installed releases share a lighter panel under an
+  "Installed" divider.
+- `SidebarFooter` takes `updateProgress`: a ring fills around the update arrow while the update
+  downloads, and tapping does nothing. The arrow now sits in a `bgRegular` circle in the version's
+  `text2` color.
+- The `SidebarOwl`'s eye glints take the accent color, like its body.
 - Add `CompactContentRow`, a two-line list row for mail conversations, with its model
   `CompactRowText`, `RowLine`, `RowTextPart`, `RowMark`, `RowFolderIcon`, and `CountPlacement`.
   It selects like `ContentRow`, and `dimmed` fades read rows without fading the selection tint.

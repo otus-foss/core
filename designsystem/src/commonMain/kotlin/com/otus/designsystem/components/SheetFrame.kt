@@ -192,11 +192,14 @@ private class HeldHeight(
 /** The held height of the sheet whose content is composing, so a sheet opened from it starts as tall. */
 private val LocalSheetHeight = compositionLocalOf<HeldHeight?> { null }
 
-/** The grab handle, the centered [title], [leadingAction] at the start, and [doneLabel] at the end. */
+/**
+ * The grab handle, the centered [title], [leadingAction] at the start, and [doneLabel] at the end
+ * unless [onDone] is null.
+ */
 @Composable
 internal fun SheetHeader(
     title: String,
-    onDone: () -> Unit,
+    onDone: (() -> Unit)?,
     modifier: Modifier = Modifier,
     doneEnabled: Boolean = true,
     doneLabel: String = "Done",
@@ -218,13 +221,15 @@ internal fun SheetHeader(
             fontSize = ChoiceSheetTokens.titleSize,
             fontWeight = FontWeight.SemiBold,
         )
-        SheetHeaderAction(
-            doneLabel,
-            onDone,
-            Modifier.align(Alignment.CenterEnd),
-            color = OtusColors.accentLight,
-            enabled = doneEnabled,
-        )
+        onDone?.let {
+            SheetHeaderAction(
+                doneLabel,
+                it,
+                Modifier.align(Alignment.CenterEnd),
+                color = OtusColors.accentLight,
+                enabled = doneEnabled,
+            )
+        }
     }
 }
 

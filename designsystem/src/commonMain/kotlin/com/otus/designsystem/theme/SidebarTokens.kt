@@ -57,8 +57,13 @@ internal object SidebarTokens {
      */
     val owlBottomGap = 5.dp
 
-    /** The arrow before the version in the footer when a newer build is out. */
-    val updateIcon = 16.dp
+    /**
+     * The circled arrow before the version in the footer when a newer build is out. While the
+     * update downloads, a ring of [updateRing] fills around the circle.
+     */
+    val updateBadge = 20.dp
+    val updateIcon = 14.dp
+    val updateRing = 2.dp
 
     /** A swipe released faster than this, per second, opens or closes the sidebar regardless of position. */
     val flingVelocity = 400.dp
