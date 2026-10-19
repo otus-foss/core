@@ -120,9 +120,6 @@ public object ReadTokens {
     /** The quote fold: its start border, the inset after it, and its text. */
     public val quoteBorder: Dp = 2.dp
     public val quoteInset: Dp = 12.dp
-
-    /** The chevron of a folded deeper quote row in an HTML body, drawn as two sides of a turned square. */
-    public val quoteChevronSize: Dp = 7.dp
     public val quoteTextSize: TextUnit = 14.sp
     public val quoteLineHeight: TextUnit = 21.sp
     public const val QUOTE_FOLDED_LINES: Int = 3

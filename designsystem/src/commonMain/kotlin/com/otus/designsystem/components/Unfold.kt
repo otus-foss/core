@@ -3,11 +3,13 @@ package com.otus.designsystem.components
 import androidx.compose.animation.core.animate
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.BlurEffect
@@ -15,9 +17,9 @@ import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import com.otus.designsystem.theme.LocalMotionScale
 import com.otus.designsystem.theme.Motion
 import com.otus.designsystem.theme.MotionCurve
@@ -106,23 +108,29 @@ public fun rememberUnfold(open: Boolean): Unfold {
  * A strip card whose height follows [unfold] and nothing else, so its top edge stays with a
  * dragging finger: [folded] tall, as the strip it grows from, up to as tall as [content] when open,
  * growing upward from its bottom edge in between. [content] shows its bottom part while it grows,
- * so its top arrives last. It fades in over the strip as it leaves it, and is not shown folded.
+ * so its top arrives last. The card itself stays sharp and opaque over the strip, while the
+ * strip's own [foldedContent], drawn without its card, blurs away under [content] blurring in. It
+ * is not shown folded, where the strip itself shows.
  */
 @Composable
 public fun UnfoldingStripCard(
     unfold: Unfold,
+    folded: Dp,
+    foldedContent: @Composable () -> Unit,
     modifier: Modifier = Modifier,
-    folded: Dp = 0.dp,
     content: @Composable () -> Unit,
 ) {
     Layout(
         {
-            Box(
-                Modifier
-                    .graphicsLayer { alpha = unfold.fadeIn }
-                    .stripCardFrame()
-                    .unfolding(unfold, folded),
-            ) { Box(Modifier.unfoldedForm(unfold)) { content() } }
+            Box(Modifier.stripCardFrame()) {
+                Box(Modifier.unfolding(unfold, folded).unfoldedForm(unfold)) { content() }
+                if (unfold.fraction < 1f) {
+                    // The strip underneath is the one screen readers and taps reach.
+                    Box(Modifier.align(Alignment.BottomStart).foldedForm(unfold).clearAndSetSemantics {}) {
+                        CompositionLocalProvider(LocalStripFramed provides false, content = foldedContent)
+                    }
+                }
+            }
         },
         modifier,
     ) { measurables, constraints ->
