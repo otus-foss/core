@@ -38,8 +38,10 @@ public fun SlidingPositionStrip(
     modifier: Modifier = Modifier,
     trailing: @Composable RowScope.() -> Unit = {},
 ) {
-    val shown = page(current)
-    val spoken = shown.description ?: StripPosition(count, current, shown.detail).spoken(shown.heading)
+    // Screen readers hear a page that exists, even if a caller's index runs past the ends.
+    val heard = current.coerceIn(0, (count - 1).coerceAtLeast(0))
+    val shown = page(heard)
+    val spoken = shown.description ?: StripPosition(count, heard, shown.detail).spoken(shown.heading)
     PositionCard(spoken, onClick, modifier) {
         PageTrack(count, position, Modifier.weight(1f)) { index ->
             val content = page(index)
