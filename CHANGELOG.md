@@ -16,8 +16,8 @@
   its tracks. `Unfold` tracks how far a strip has unfolded, follows a finger with `dragBy`, and
   eases to rest; `UnfoldingStripCard` grows with it, and `AttachmentStrip` takes an `Unfold` in
   place of `expanded`. `SheetPull`, provided as `LocalSheetPull`, lets a finger outside a sheet pull
-  it up. `QuoteFold` takes a `QuotedLevel` and the `deeper` levels it quotes, which fold to one
-  row each at a single indent; `HtmlQuote` takes `deeper` `HtmlQuoteLevel`s and folds them the
+  it up. `QuoteFold` takes a `QuotedLevel` and the `deeper` levels it quotes, each nested one step
+  further in; `HtmlQuote` takes `deeper` `HtmlQuoteLevel`s and folds them the
   same way in HTML bodies. Add `ReadTokens`.
 - `PickRow` takes `subtitleLines` for a description longer than one line, and `PickMark` takes
   `atStart`, which puts the radio or checkbox before the text, as in a settings list of choices.
@@ -38,9 +38,12 @@
   quote leaves open, such as `<style>`, `<a>`, or a comment, is closed before the fold.
 - Add the `symbol_expand_less`, `symbol_unsubscribe`, `symbol_download`, `symbol_hide_image`,
   `symbol_image`, `symbol_verified_user`, `symbol_block`, `symbol_reply_all`, `symbol_print`,
-  `symbol_info`, `symbol_notifications_off`, `symbol_picture_as_pdf`, `symbol_table`,
-  `symbol_description`, `symbol_delete_sweep`, and `symbol_unfold_less` symbols (Material Symbols
-  Rounded, Apache 2.0).
+  `symbol_info`, `symbol_notifications_off`, `symbol_delete_sweep`, `symbol_unfold_less`,
+  `symbol_landscape`, `symbol_grid_on`, `symbol_slideshow`, `symbol_folder_zip`,
+  `symbol_music_note`, and `symbol_movie` symbols (Material Symbols Rounded, Apache 2.0), and
+  `symbol_pdf`, the "PDF" letters of `picture_as_pdf` on their own. `AttachmentKind` also covers
+  slides, archives, audio, video, calendar events, contacts, and code, and files sit on round
+  tiles, like avatars.
 
 - `IconButton` takes a `badgeCount` and draws it outside its circle, so the filter button's count
   is no longer cut off. It replaces `BadgedSymbol`, which is removed.

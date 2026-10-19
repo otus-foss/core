@@ -12,11 +12,13 @@ import com.otus.designsystem.theme.ReadTokens
 import com.otus.designsystem.theme.panelTextStyle
 
 /**
- * A level quoted inside a [QuoteFold], shown whole under its person and date pill. It folds and
- * unfolds with the quote around it, never on its own.
+ * The first of [levels] quoted inside a [QuoteFold], shown whole under its person and date pill,
+ * with the levels it quotes inside it, one step further in. They fold and unfold with the quote
+ * around them, never on their own. Nothing shows for no levels.
  */
 @Composable
-internal fun DeeperQuote(level: QuotedLevel) {
+internal fun DeeperQuote(levels: List<QuotedLevel>) {
+    val level = levels.firstOrNull() ?: return
     Column(
         Modifier.fillMaxWidth().startBorder().padding(start = ReadTokens.quoteInset),
         verticalArrangement = Arrangement.spacedBy(ReadTokens.quoteHeaderGap),
@@ -31,5 +33,6 @@ internal fun DeeperQuote(level: QuotedLevel) {
                 lineHeight = ReadTokens.quoteLineHeight,
             )
         }
+        DeeperQuote(levels.drop(1))
     }
 }

@@ -2,25 +2,39 @@ package com.otus.designsystem.components
 
 import androidx.compose.ui.graphics.ImageBitmap
 import com.otus.designsystem.resources.Res
-import com.otus.designsystem.resources.symbol_description
-import com.otus.designsystem.resources.symbol_file_blank
-import com.otus.designsystem.resources.symbol_file_pdf
-import com.otus.designsystem.resources.symbol_file_sheet
-import com.otus.designsystem.resources.symbol_image
+import com.otus.designsystem.resources.symbol_attach_file
+import com.otus.designsystem.resources.symbol_code
+import com.otus.designsystem.resources.symbol_event
+import com.otus.designsystem.resources.symbol_folder_zip
+import com.otus.designsystem.resources.symbol_grid_on
+import com.otus.designsystem.resources.symbol_landscape
+import com.otus.designsystem.resources.symbol_movie
+import com.otus.designsystem.resources.symbol_music_note
+import com.otus.designsystem.resources.symbol_notes
+import com.otus.designsystem.resources.symbol_pdf
+import com.otus.designsystem.resources.symbol_person
+import com.otus.designsystem.resources.symbol_slideshow
 import org.jetbrains.compose.resources.DrawableResource
 
 /**
- * What kind of file an [AttachmentFile] is, which picks its symbol when it has no thumbnail. Every
- * kind but an image shows the same folded page, marked with lines, "PDF", or cells, or left blank.
+ * What kind of file an [AttachmentFile] is, which picks the symbol on its round tile when it has
+ * no thumbnail. Each symbol stands alone, without a frame of its own, so the tile is its frame.
  */
 public enum class AttachmentKind(
     internal val icon: DrawableResource,
 ) {
-    Image(Res.drawable.symbol_image),
-    Pdf(Res.drawable.symbol_file_pdf),
-    Sheet(Res.drawable.symbol_file_sheet),
-    Document(Res.drawable.symbol_description),
-    Other(Res.drawable.symbol_file_blank),
+    Image(Res.drawable.symbol_landscape),
+    Pdf(Res.drawable.symbol_pdf),
+    Document(Res.drawable.symbol_notes),
+    Sheet(Res.drawable.symbol_grid_on),
+    Slides(Res.drawable.symbol_slideshow),
+    Archive(Res.drawable.symbol_folder_zip),
+    Audio(Res.drawable.symbol_music_note),
+    Video(Res.drawable.symbol_movie),
+    Calendar(Res.drawable.symbol_event),
+    Contact(Res.drawable.symbol_person),
+    Code(Res.drawable.symbol_code),
+    Other(Res.drawable.symbol_attach_file),
 }
 
 /**

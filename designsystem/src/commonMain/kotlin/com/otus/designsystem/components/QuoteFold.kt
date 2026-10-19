@@ -42,8 +42,8 @@ import com.otus.designsystem.theme.panelTextStyle
  * header shows the [quote]'s person and date in one pill, divided by a line; without a person, the
  * date alone. Folded, the first lines of its text fade out; "Show quoted text" runs [onToggle] to
  * unfold it while [expanded] is false. A quote short enough to show whole has no fade and no
- * toggle. Once its text shows whole, the [deeper] levels it quotes follow, each under its own pill,
- * all at the same indent however deep they go.
+ * toggle. Once its text shows whole, the [deeper] levels it quotes follow, each under its own pill
+ * and inside the one before it, one step further in for every level.
  */
 @Composable
 public fun QuoteFold(
@@ -75,7 +75,7 @@ public fun QuoteFold(
                 maxLines = if (expanded) Int.MAX_VALUE else ReadTokens.QUOTE_FOLDED_LINES,
                 onTextLayout = { if (!expanded) overflows = it.hasVisualOverflow },
             )
-            if (expanded || !overflows) deeper.forEach { DeeperQuote(it) }
+            if (expanded || !overflows) DeeperQuote(deeper)
         }
         if (expanded || overflows) QuoteToggle(expanded, onToggle)
     }

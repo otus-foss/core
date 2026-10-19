@@ -27,19 +27,18 @@ private val LINK =
     Regex("""\[([^\]\n]+)]\(((?:https?://|mailto:)[^\s()<>]+)\)|(https?://[^\s()<>]*[^\s()<>.,;:!?])""")
 
 /**
- * The [levels] a quote quotes, each whole under its pill, all at the same indent. They fold and
- * unfold with the quote around them, never on their own.
+ * The [levels] a quote quotes, each whole under its pill and inside the one before it, one step
+ * further in for every level. They fold and unfold with the quote around them, never on their own.
  */
 internal fun deeperQuotes(
     levels: List<HtmlQuoteLevel>,
     key: RenderKey,
 ): String =
-    levels.joinToString("") { level ->
+    levels.foldRight("") { level, inner ->
+        val author = QuoteAuthor(level.name, level.initials, level.date, level.fullDate)
         "<div class=\"${key.className("deeper")}\">" +
-            "<div class=\"${key.className(
-                "row",
-            )}\">${quoteHeader(QuoteAuthor(level.name, level.initials, level.date, level.fullDate), key)}</div>" +
-            "<div>${textHtml(level.text)}</div></div>"
+            "<div class=\"${key.className("row")}\">${quoteHeader(author, key)}</div>" +
+            "<div>${textHtml(level.text)}</div>$inner</div>"
     }
 
 /** How the deeper levels look: a start line like the quote's, and a gap under each pill. */

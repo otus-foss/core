@@ -33,6 +33,7 @@ import androidx.compose.ui.layout.findRootCoordinates
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalDensity
 import com.otus.designsystem.elements.BarAddButton
 import com.otus.designsystem.elements.BarIconButton
@@ -188,7 +189,9 @@ public fun ActionBarHost(
                     .pinnedChrome(PageChrome.ActionBar)
                     .onSizeChanged { barHeight = it.height }
                     .onGloballyPositioned {
-                        reach = (it.findRootCoordinates().size.height - it.boundsInRoot().top).roundToInt()
+                        // Not boundsInRoot: a bar clipped out of view, such as the list's under an
+                        // open message, has empty bounds at the top and would claim the whole height.
+                        reach = (it.findRootCoordinates().size.height - it.positionInRoot().y).roundToInt()
                     }.actionBarInset(),
             ) { CompositionLocalProvider(LocalHostedBar provides true) { it() } }
         }
