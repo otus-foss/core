@@ -13,7 +13,10 @@
   always shows its dots and position text in full, and takes a `description` that replaces what
   screen readers hear. `SlidingPositionStrip` takes a `PositionPage` for each page and a
   position, and slides each page's content inside a card that stays put, as a mini player turns
-  its tracks. Add `ReadTokens`.
+  its tracks. `Unfold` tracks how far a strip has unfolded, follows a finger with `dragBy`, and
+  eases to rest; `UnfoldingStripCard` grows with it, and `AttachmentStrip` takes an `Unfold` in
+  place of `expanded`. `SheetPull`, provided as `LocalSheetPull`, lets a finger outside a sheet pull
+  it up. Add `ReadTokens`.
 - `PickRow` takes `subtitleLines` for a description longer than one line, and `PickMark` takes
   `atStart`, which puts the radio or checkbox before the text, as in a settings list of choices.
   `subtitleLines` comes before `leading`, so a call that passes `leading` by position, not as the
