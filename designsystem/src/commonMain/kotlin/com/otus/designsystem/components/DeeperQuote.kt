@@ -21,7 +21,7 @@ internal fun DeeperQuote(level: QuotedLevel) {
         Modifier.fillMaxWidth().startBorder().padding(start = ReadTokens.quoteInset),
         verticalArrangement = Arrangement.spacedBy(ReadTokens.quoteHeaderGap),
     ) {
-        QuoteHeader(level.person, level.date, level.onPerson)
+        QuoteHeader(level.person, level.date, level.fullDate, level.onPerson)
         if (level.text.isNotBlank()) {
             Text(
                 level.text,

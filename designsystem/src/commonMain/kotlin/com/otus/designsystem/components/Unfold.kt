@@ -20,6 +20,7 @@ import androidx.compose.ui.layout.layout
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.otus.designsystem.theme.LocalMotionScale
 import com.otus.designsystem.theme.Motion
 import com.otus.designsystem.theme.MotionCurve
@@ -146,24 +147,28 @@ internal val Unfold.fadeIn: Float
     get() = (fraction * CROSSFADE).coerceAtMost(1f)
 
 /**
- * The open form of a strip as [unfold] grows it out of the folded form: it fades in from a blur,
- * as the parts of a [BarMorph] do, so the two forms never show sharp text over each other.
+ * The open form of a strip as [unfold] grows it out of the folded form: it fades in, staying sharp
+ * so its rows and lines never smear into the card's edge.
  */
-public fun Modifier.unfoldedForm(unfold: Unfold): Modifier = crossfading { unfold.fadeIn }
+public fun Modifier.unfoldedForm(unfold: Unfold): Modifier = graphicsLayer { alpha = unfold.fadeIn }
 
-/** The folded form of a strip, which blurs and fades away as [unfold] grows the open form over it. */
-public fun Modifier.foldedForm(unfold: Unfold): Modifier = crossfading { 1f - unfold.fadeIn }
-
-private fun Modifier.crossfading(shown: () -> Float): Modifier =
+/**
+ * The folded form of a strip, which blurs lightly and fades away as [unfold] grows the open form
+ * over it, as the leaving part of a [BarMorph] does, so the two never show sharp text together.
+ */
+public fun Modifier.foldedForm(unfold: Unfold): Modifier =
     graphicsLayer {
-        val visible = shown()
-        alpha = visible
-        val radius = BLUR_RADIUS.toPx() * (1f - visible)
+        val gone = unfold.fadeIn
+        alpha = 1f - gone
+        val radius = FOLDED_BLUR.toPx() * gone
         renderEffect = if (radius > 0f) BlurEffect(radius, radius, TileMode.Clamp) else null
     }
 
-/** How much faster than the unfold the folded and open forms cross-fade, so neither lingers over the other. */
-private const val CROSSFADE = 3f
+/** How far the folded form blurs at most, half a [BarMorph]'s, since it lasts only the first moves. */
+private val FOLDED_BLUR = 3.dp
+
+/** How much faster than the unfold the two forms cross-fade: over the first sixth of the travel. */
+private const val CROSSFADE = 6f
 
 /**
  * Lays its content out at full height but shows only the bottom part [unfold] has reached, from

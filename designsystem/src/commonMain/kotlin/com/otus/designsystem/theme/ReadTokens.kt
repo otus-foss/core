@@ -120,6 +120,9 @@ public object ReadTokens {
     /** The quote fold: its start border, the inset after it, and its text. */
     public val quoteBorder: Dp = 2.dp
     public val quoteInset: Dp = 12.dp
+
+    /** The chevron after a quote's date that shows the full date and time. */
+    public val dateToggleSize: Dp = 16.dp
     public val quoteTextSize: TextUnit = 14.sp
     public val quoteLineHeight: TextUnit = 21.sp
     public const val QUOTE_FOLDED_LINES: Int = 3

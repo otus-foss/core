@@ -26,7 +26,10 @@ internal fun quoteFold(
         "<details class=\"$toggle\"><summary class=\"${key.className("label")}\">" +
         "<span class=\"$more\">Show quoted text</span>" +
         "<span class=\"$less\">Hide quoted text</span></summary></details>" +
-        "<div class=\"$body\">${quoteHeader(quote.name, quote.initials, quote.date, key)}" +
+        "<div class=\"$body\">${quoteHeader(
+            QuoteAuthor(quote.name, quote.initials, quote.date, quote.fullDate),
+            key,
+        )}" +
         "<div class=\"$text\">${sealedHtml(quote.html)}${deeperQuotes(quote.deeper, key)}</div></div></div>"
 }
 
@@ -136,28 +139,48 @@ private fun headerStyle(
             "overflow:hidden",
             "text-overflow:ellipsis",
         ),
+        dateToggleStyle(palette, className),
         deeperStyle(palette, className),
     ).joinToString("")
 
+/** Who wrote a quote, by [name] and [initials], its short [date], and its [fullDate] with the time. */
+internal class QuoteAuthor(
+    val name: String,
+    val initials: String,
+    val date: String,
+    val fullDate: String,
+)
+
 /**
- * Who wrote a quote, by [name] and [initials], and its [date] in one pill, divided by a line; the
- * date alone without a name, and the name alone without a date.
+ * Who wrote a quote and its date in one pill, divided by a line; the date alone without a name,
+ * and the name alone without a date.
  */
 internal fun quoteHeader(
-    name: String,
-    initials: String,
-    date: String,
+    author: QuoteAuthor,
     key: RenderKey,
 ): String {
-    val shownDate = escaped(date).takeIf { it.isNotBlank() }
-    val author = name.takeIf { it.isNotBlank() } ?: return shownDate.orEmpty()
-    val dated =
-        shownDate
-            ?.let {
-                "<span class=\"${key.className("divider")}\"></span><span class=\"${key.className("date")}\">$it</span>"
-            }.orEmpty()
+    val date = dateHtml(author, key).takeIf { author.date.isNotBlank() }
+    val name = author.name.takeIf { it.isNotBlank() } ?: return date.orEmpty()
+    val dated = date?.let { "<span class=\"${key.className("divider")}\"></span>$it" }.orEmpty()
     return "<span class=\"${key.className("pill")}\"><span class=\"${key.className("avatar")}\">" +
-        "${escaped(initials)}</span>${escaped(author)}$dated</span>"
+        "${escaped(author.initials)}</span>${escaped(name)}$dated</span>"
+}
+
+/**
+ * The short date, or, when there is more to it, a `<details>` that shows the full date and time
+ * after a tap on the chevron beside it, without scripts.
+ */
+private fun dateHtml(
+    author: QuoteAuthor,
+    key: RenderKey,
+): String {
+    val date = "<span class=\"${key.className("date")}\">${escaped(author.date)}</span>"
+    if (author.fullDate.isBlank() || author.fullDate == author.date) return date
+    return "<details class=\"${key.className("when")}\"><summary class=\"${key.className("when-label")}\">" +
+        "<span class=\"${key.className("short")}\">$date</span>" +
+        "<span class=\"${key.className("full")}\"><span class=\"${key.className("date")}\">" +
+        "${escaped(author.fullDate)}</span></span>" +
+        "<span class=\"${key.className("date-toggle")}\" aria-hidden=\"true\">›</span></summary></details>"
 }
 
 /** [text] safe to put between HTML tags. */

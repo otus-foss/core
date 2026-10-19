@@ -64,7 +64,7 @@ public fun QuoteFold(
                 .animateContentSize(motionTween(MotionSpeed.Normal)),
             verticalArrangement = Arrangement.spacedBy(ReadTokens.quoteHeaderGap),
         ) {
-            QuoteHeader(quote.person, quote.date, quote.onPerson)
+            QuoteHeader(quote.person, quote.date, quote.fullDate, quote.onPerson)
             Text(
                 text,
                 if (!expanded && overflows) Modifier.fadeOut() else Modifier,
@@ -85,24 +85,31 @@ public fun QuoteFold(
 internal fun QuoteHeader(
     person: NamedAvatar?,
     date: String,
+    fullDate: String,
     onPerson: (() -> Unit)?,
 ) {
+    var full by remember(date, fullDate) { mutableStateOf(false) }
+    val toggle = { full = !full }.takeIf { fullDate.isNotBlank() && fullDate != date }
+    val shown = if (full) fullDate else date
     if (person != null) {
         PersonPill(
             person.name,
             person.avatar,
             PersonPillSize.Small,
             onClick = onPerson,
-            detail = date.ifBlank { null },
+            detail = shown.ifBlank { null }?.let { PillDetail(it, full, toggle) },
         )
     } else {
-        Text(
-            date,
-            style = panelTextStyle(),
-            color = OtusColors.text3,
-            fontSize = ReadTokens.quoteTextSize,
-            maxLines = 1,
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                shown,
+                style = panelTextStyle(),
+                color = OtusColors.text3,
+                fontSize = ReadTokens.quoteTextSize,
+                maxLines = 1,
+            )
+            toggle?.let { DateToggle(full, it) }
+        }
     }
 }
 
