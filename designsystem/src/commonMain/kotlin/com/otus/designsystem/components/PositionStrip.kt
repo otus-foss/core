@@ -32,7 +32,7 @@ import com.otus.designsystem.theme.panelTextStyle
  * hints before the chevron. The dots and [detail] always show in full; [trailing] gets the width
  * they leave, and the title gives way to both. A `FirstFit` lets it shorten itself. The whole strip
  * is one button that runs [onClick], usually to grow it into a [ThreadList]; screen readers hear
- * "<title>, message x of n".
+ * "<title>, message x of n, <detail>".
  */
 @Composable
 public fun PositionStrip(
@@ -44,7 +44,44 @@ public fun PositionStrip(
     modifier: Modifier = Modifier,
     trailing: @Composable RowScope.() -> Unit = {},
 ) {
-    val description = "${heading.name}, message ${current + 1} of $count"
+    PositionCard(heading, StripPosition(count, current, detail), onClick, modifier, null, trailing)
+}
+
+/**
+ * The same strip, which screen readers hear as [description] when it is not null. The caller
+ * then names what [trailing] shows too, such as the sender, the date, and the folders.
+ */
+@Composable
+public fun PositionStrip(
+    heading: NamedAvatar,
+    count: Int,
+    current: Int,
+    detail: String,
+    onClick: () -> Unit,
+    description: String?,
+    trailing: @Composable RowScope.() -> Unit = {},
+) {
+    PositionCard(heading, StripPosition(count, current, detail), onClick, Modifier, description, trailing)
+}
+
+/** Where the page sits, as a [PositionStrip] shows it. */
+private class StripPosition(
+    val count: Int,
+    val current: Int,
+    val detail: String,
+)
+
+@Composable
+private fun PositionCard(
+    heading: NamedAvatar,
+    position: StripPosition,
+    onClick: () -> Unit,
+    modifier: Modifier,
+    description: String?,
+    trailing: @Composable RowScope.() -> Unit,
+) {
+    val spoken =
+        description ?: "${heading.name}, message ${position.current + 1} of ${position.count}, ${position.detail}"
     StripCard(modifier) {
         Row(
             Modifier
@@ -52,7 +89,7 @@ public fun PositionStrip(
                 .heightIn(min = ReadTokens.positionHeight)
                 .clickable(role = Role.Button, onClick = onClick)
                 .clearAndSetSemantics {
-                    contentDescription = description
+                    contentDescription = spoken
                     role = Role.Button
                     onClick {
                         onClick()
@@ -63,22 +100,20 @@ public fun PositionStrip(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             PersonAvatar(heading.avatar, ReadTokens.stripAvatarSize)
-            PositionText(heading.name, count, current, detail, Modifier.weight(1f), trailing)
+            PositionText(heading.name, position, Modifier.weight(1f), trailing)
             StripChevron(up = true)
         }
     }
 }
 
 /**
- * The strip's title over its dots and [detail], beside the [trailing] slot. The dots line takes
+ * The strip's title over its dots and detail, beside the [trailing] slot. The dots line takes
  * its full width first, the slot gets what is left, and the title shares the line's width.
  */
 @Composable
 private fun PositionText(
     title: String,
-    count: Int,
-    current: Int,
-    detail: String,
+    position: StripPosition,
     modifier: Modifier,
     trailing: @Composable RowScope.() -> Unit,
 ) {
@@ -99,9 +134,9 @@ private fun PositionText(
                     horizontalArrangement = Arrangement.spacedBy(ReadTokens.dotsGap),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    PageDots(count, current)
+                    PageDots(position.count, position.current)
                     Text(
-                        detail,
+                        position.detail,
                         style = panelTextStyle(),
                         color = OtusColors.text3,
                         fontSize = ReadTokens.detailSize,

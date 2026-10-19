@@ -22,7 +22,8 @@ import com.otus.designsystem.theme.ReadTokens
  * The files of a message in a strip above the action bar, never inline in its text. Closed, it
  * shows overlapping thumbnails and the [summary], such as "3 attachments · 4.2 MB". [expanded],
  * the same card grows upward into a header with "Save all" and one row per file, which run the
- * [actions]. Tapping the closed strip or the header runs [onToggle].
+ * [actions]; the rows scroll past a fixed height. Tapping the closed strip or the header runs
+ * [onToggle].
  */
 @Composable
 public fun AttachmentStrip(
@@ -36,7 +37,7 @@ public fun AttachmentStrip(
     StripCard(modifier) {
         if (expanded) {
             AttachmentHeader(summary, onToggle, actions.onSaveAll)
-            Column(Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState())) {
+            Column(Modifier.heightIn(max = ReadTokens.openStripMaxHeight).verticalScroll(rememberScrollState())) {
                 files.forEachIndexed {
                     index,
                     file,

@@ -1,12 +1,13 @@
 package com.otus.designsystem.elements
 
-import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.AnimationVector2D
+import androidx.compose.animation.core.TwoWayConverter
+import androidx.compose.animation.core.animateValueAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -14,6 +15,8 @@ import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
 import com.otus.designsystem.theme.MotionSpeed
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.ReadTokens
@@ -42,17 +45,24 @@ public fun PageDots(
 
 @Composable
 private fun Dot(dot: VisibleDot) {
-    val width by animateDpAsState(
-        if (dot.current) ReadTokens.currentDotWidth else dot.size,
+    // Width and height animate as one value, so a dot that grows or shrinks stays round.
+    val size by animateValueAsState(
+        DpSize(if (dot.current) ReadTokens.currentDotWidth else dot.size, dot.size),
+        DpSizeConverter,
         motionTween(MotionSpeed.Fast),
     )
     Box(
         Modifier
-            .width(width)
-            .height(dot.size)
+            .size(size)
             .background(if (dot.current) OtusColors.text1 else OtusColors.bgLight, CircleShape),
     )
 }
+
+private val DpSizeConverter =
+    TwoWayConverter<DpSize, AnimationVector2D>(
+        { AnimationVector2D(it.width.value, it.height.value) },
+        { DpSize(it.v1.dp, it.v2.dp) },
+    )
 
 /** One dot [PageDots] draws: the page [index], whether it is [current], and its height. */
 internal data class VisibleDot(

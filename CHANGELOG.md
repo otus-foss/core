@@ -6,29 +6,29 @@
   `PageDots`, `ThreadList`, `AlsoInStrip` with `FolderHint` and `FolderName`, `InfoStrip` with
   `StripAction`, and `AttachmentStrip` with `AttachmentFile`, `AttachmentKind`, and
   `AttachmentActions`. In the body: `ImageBanner`, `DetailsTable` with `DetailLine`, and
-  `QuoteFold`. In the header: `DatePill`. Also `FolderPath`, `FolderStack`, `PlainAction`, and
-  `FolderPickRow`, a folder with a checkbox for the folders sheet. Add `ReadTokens`.
+  `QuoteFold`. In the header: `DatePill`. Also `FolderPath`, `FolderStack`, `PlainAction`,
+  `FirstFit`, which shows the first of several versions of a slot that fits, `PersonChip`, a person
+  in the `RecipientChip` pill that is only shown or is a button with an `onClick`, and
+  `FolderPickRow`, a folder with a checkbox for the folders sheet, 48 dp tall. `PositionStrip`
+  always shows its dots and position text in full, and takes a `description` that replaces what
+  screen readers hear. Add `ReadTokens`.
 - `PickRow` takes `subtitleLines` for a description longer than one line, and `PickMark` takes
   `atStart`, which puts the radio or checkbox before the text, as in a settings list of choices.
-  `FolderPickRow` rows are 48 dp tall.
-- `PositionStrip` always shows its dots and position text in full: its `trailing` slot gets the
-  width they leave and the title shortens first. Add `FirstFit`, which shows the first of several
-  versions of a slot that fits, such as a folder name, then a count, then an icon.
+  `subtitleLines` comes before `leading`, so a call that passes `leading` by position, not as the
+  trailing lambda or by name, must name it.
 - `AddressPill` takes `expanded`, which turns its chevron up while what it opens shows.
-- Add `PersonChip`, a person in the `RecipientChip` pill that is only shown, or is a button only
-  when it gets an `onClick`.
-- `HtmlView` leaves the quote fold's person pill out when the `HtmlQuote` has a blank name, and
-  the date when it is blank.
 - Add `DestinationPill`, a 40 dp pill for the Move to sheet, and `MoveTokens`. `IconPill` takes a
   `size`, so the sort button can match it; it stays 36 dp by default.
 - `OptionsMenu` and `OptionsList` show `OptionsItem.Caption`, a small heading row.
-  `OptionsItem.Action` takes a `detail`, shown as a second line, and so does `OptionsItem.Toggle`
-  through a new constructor that puts `detail` before `onCheckedChange`. The old constructors
-  still work.
+  `OptionsItem.Action` takes a `detail`, shown as a second line in `MenuTokens.detailSize`, and so
+  does `OptionsItem.Toggle` through a new constructor that puts `detail` before `onCheckedChange`.
+  The old constructors still work.
 - `HtmlView` takes `onShowRemote`: while remote content is blocked, each remote image becomes a
-  dashed placeholder of its size, and tapping one runs `onShowRemote`. It also takes a
-  `HtmlQuote`, folded under the body with its author and date, and unfolded by a tap without
-  scripts.
+  dashed placeholder of its size, and tapping one runs `onShowRemote`. Only the placeholder link
+  of the current render counts, so a link in the message cannot fake it. It also takes a
+  `HtmlQuote`, a data class, folded under the body in a `<details>` element with its author and
+  date, each left out when blank, and unfolded by a tap without scripts. An element the body or
+  quote leaves open, such as `<style>`, `<a>`, or a comment, is closed before the fold.
 - Add the `symbol_expand_less`, `symbol_unsubscribe`, `symbol_download`, `symbol_hide_image`,
   `symbol_image`, `symbol_verified_user`, `symbol_block`, `symbol_reply_all`, `symbol_print`,
   `symbol_info`, `symbol_notifications_off`, `symbol_picture_as_pdf`, `symbol_table`,

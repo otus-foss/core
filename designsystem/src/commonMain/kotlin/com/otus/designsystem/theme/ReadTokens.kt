@@ -56,6 +56,9 @@ public object ReadTokens {
     public val previewSize: TextUnit = 14.sp
     public val dateSize: TextUnit = 13.sp
 
+    /** The tallest the grown thread list gets, header included, before its rows scroll. */
+    public val threadListMaxHeight: Dp = 360.dp
+
     /** Folder glyphs stacked in a strip, and how far each overlaps the one before. */
     public val folderGlyphSize: Dp = 16.dp
     public val folderOverlap: Dp = 4.dp
@@ -74,6 +77,9 @@ public object ReadTokens {
     public val buttonIconSize: Dp = 18.dp
     public val buttonTextSize: TextUnit = 14.sp
 
+    /** The widest a strip button's label gets before it ends in an ellipsis. */
+    public val stripButtonLabelMaxWidth: Dp = 140.dp
+
     /** The closed attachment strip's overlapping thumbnails. */
     public val thumbSize: Dp = 28.dp
     public val thumbRadius: Dp = CornerTokens.small
@@ -88,7 +94,10 @@ public object ReadTokens {
     /** A file row in the opened attachment strip, and its thumbnail tile. */
     public val fileRowHeight: Dp = 60.dp
     public val fileTileSize: Dp = 40.dp
-    public val fileTileRadius: Dp = 12.dp
+    public val fileTileRadius: Dp = CornerTokens.chip
+
+    /** The tallest the opened attachment rows get before they scroll. */
+    public val openStripMaxHeight: Dp = 320.dp
 
     /** A plain text action such as "Save all": its symbol and label. */
     public val plainIconSize: Dp = 18.dp
@@ -123,6 +132,17 @@ public object ReadTokens {
     public val quoteAvatarSize: Dp = 20.dp
     public val quotePillStart: Dp = 3.dp
     public val quoteToggleIcon: Dp = 16.dp
+
+    /** In an HTML body: the space above the quote fold, between its header and text, and the initials size. */
+    public val quoteGap: Dp = 16.dp
+    public val quoteHeaderGap: Dp = 8.dp
+    public val quoteInitialsSize: TextUnit = 9.sp
+
+    /** A blocked remote image without a size of its own, its dashed border, corner, and mark. */
+    public val placeholderHeight: Dp = 120.dp
+    public val placeholderBorder: Dp = 2.dp
+    public val placeholderRadius: Dp = CornerTokens.chip
+    public val placeholderIcon: Dp = 24.dp
 }
 
 /** The destination pills in the Move to sheet, smaller than chips so the sort button always fits. */
@@ -130,6 +150,7 @@ public object MoveTokens {
     public val pillHeight: Dp = 40.dp
     public val labelSize: TextUnit = 15.sp
     public val iconSize: Dp = 18.dp
+    public val iconGap: Dp = 6.dp
     public val pillStart: Dp = 10.dp
     public val pillEnd: Dp = 13.dp
 }

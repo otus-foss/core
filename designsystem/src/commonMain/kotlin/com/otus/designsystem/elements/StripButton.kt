@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -18,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PanelTokens
@@ -28,7 +30,7 @@ import org.jetbrains.compose.resources.DrawableResource
 /**
  * The outlined button at the end of a strip or banner, such as Unsubscribe or Show: a `bgRegular`
  * pill [height] tall with a `bgLight` border, an optional [icon], and a semibold label. It keeps a
- * 48 dp touch target.
+ * 48 dp touch target. A long label ends in an ellipsis, so the strip's own text keeps room.
  */
 @Composable
 internal fun StripButton(
@@ -60,11 +62,12 @@ internal fun StripButton(
                 icon?.let { Symbol(it, size = ReadTokens.buttonIconSize) }
                 Text(
                     label,
+                    Modifier.widthIn(max = ReadTokens.stripButtonLabelMaxWidth),
                     style = panelTextStyle(),
                     fontSize = ReadTokens.buttonTextSize,
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 1,
-                    softWrap = false,
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
         }

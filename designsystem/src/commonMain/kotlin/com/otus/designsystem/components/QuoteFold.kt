@@ -12,6 +12,10 @@ import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -37,7 +41,7 @@ import com.otus.designsystem.theme.panelTextStyle
  * The quoted part of a reply, folded under its body. A `bgLight` line runs along its start; the
  * header shows the quoted [person] as a pill, which runs [onPerson] when given, and the [date].
  * Folded, the first lines of [text] fade out; "Show quoted text" runs [onToggle] to unfold it
- * while [expanded] is false.
+ * while [expanded] is false. A quote short enough to show whole has no fade and no toggle.
  */
 @Composable
 public fun QuoteFold(
@@ -49,6 +53,7 @@ public fun QuoteFold(
     onPerson: (() -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
+    var overflows by remember(text) { mutableStateOf(false) }
     Column(modifier.fillMaxWidth()) {
         Column(
             Modifier
@@ -56,20 +61,21 @@ public fun QuoteFold(
                 .startBorder()
                 .padding(start = ReadTokens.quoteInset)
                 .animateContentSize(motionTween(MotionSpeed.Normal)),
-            verticalArrangement = Arrangement.spacedBy(PanelTokens.iconGap * 2),
+            verticalArrangement = Arrangement.spacedBy(ReadTokens.quoteHeaderGap),
         ) {
             QuoteHeader(person, date, onPerson)
             Text(
                 text,
-                if (expanded) Modifier else Modifier.fadeOut(),
+                if (!expanded && overflows) Modifier.fadeOut() else Modifier,
                 style = panelTextStyle(),
                 color = OtusColors.text3,
                 fontSize = ReadTokens.quoteTextSize,
                 lineHeight = ReadTokens.quoteLineHeight,
                 maxLines = if (expanded) Int.MAX_VALUE else ReadTokens.QUOTE_FOLDED_LINES,
+                onTextLayout = { if (!expanded) overflows = it.hasVisualOverflow },
             )
         }
-        QuoteToggle(expanded, onToggle)
+        if (expanded || overflows) QuoteToggle(expanded, onToggle)
     }
 }
 
@@ -80,7 +86,7 @@ private fun QuoteHeader(
     onPerson: (() -> Unit)?,
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        person?.let { PersonPill(it, onPerson) }
+        person?.let { PersonPill(it.name, it.avatar, PersonPillSize.Small, onClick = onPerson) }
         Text(
             if (person == null) date else "$DATE_SEPARATOR$date",
             style = panelTextStyle(),

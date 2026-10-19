@@ -35,18 +35,21 @@ public expect fun HtmlView(
  * declares itself can only block more.
  *
  * A document without colors of its own takes the text and link colors of [palette], the theme the
- * user picked, on the page behind the view. One that sets its own colors keeps the white page and
- * black text its author designed against, so it stays readable on every platform and theme.
+ * user picked, on the page behind the view. One that sets its own colors, in its body or its quote,
+ * keeps the white page and black text its author designed against, so it stays readable on every
+ * platform and theme.
  *
  * Without [loadRemote], DNS prefetching is off and the document's `<link>` elements become inert:
  * the policy does not cover `dns-prefetch` or `preconnect` hints, which would otherwise reach the
  * sender's server, and every other link it could load is blocked anyway. With [placeholders] it
- * also swaps remote images for placeholders. A [quote] follows the body as a fold.
+ * also swaps remote images for placeholders. A [quote] follows the sealed body as a fold. [key]
+ * names the parts this function adds, so the message cannot fake or restyle them.
  */
 internal fun sandboxedHtml(
     html: String,
     loadRemote: Boolean,
     palette: OtusPalette,
+    key: RenderKey,
     placeholders: Boolean = false,
     quote: HtmlQuote? = null,
 ): String {
@@ -55,12 +58,12 @@ internal fun sandboxedHtml(
         "default-src 'none'; img-src data:$remote; style-src 'unsafe-inline'$remote; " +
             "font-src data:$remote; form-action 'none'"
     val prefetch = if (loadRemote) "" else "<meta http-equiv=\"x-dns-prefetch-control\" content=\"off\">"
-    val document = html + quote?.let { quoteFold(it, palette) }.orEmpty()
+    val document = if (quote == null) html else sealedHtml(html) + quoteFold(quote, palette, key)
     val blocked = !loadRemote && placeholders
     val inert = if (loadRemote) document else document.replace(LINK_TAG, "<otus-inert-link")
-    val body = if (blocked) withImagePlaceholders(inert) else inert
+    val body = if (blocked) withImagePlaceholders(inert, key) else inert
     val page =
-        if (hasOwnColors(html)) {
+        if (hasOwnColors(html) || quote?.html?.let(::hasOwnColors) == true) {
             "body{color:#000;background:#fff}"
         } else {
             val scheme = if (palette.isLight) "light" else "dark"
@@ -70,7 +73,7 @@ internal fun sandboxedHtml(
         prefetch +
         "<meta name=\"viewport\" content=\"width=device-width\">" +
         "<style>body{margin:0;overflow-wrap:anywhere}img{max-width:100%;height:auto}$page" +
-        (if (blocked) placeholderStyle(palette) else "") +
+        (if (blocked) placeholderStyle(palette, key) else "") +
         "</style>" +
         body
 }
@@ -92,9 +95,6 @@ private const val RGB_DIGITS = 6
 
 /** An HTML `<link>` start tag: the tag name ends at whitespace, `/`, or `>`, in any case. */
 private val LINK_TAG = Regex("<link(?=[\\s/>])", RegexOption.IGNORE_CASE)
-
-/** Whether [url] is a placeholder's request to show the blocked images. */
-internal fun isShowImagesLink(url: String): Boolean = url == SHOW_IMAGES_URL
 
 /** Whether [HtmlView] passes [url] on: web, mail, and phone links, never app or file links. */
 internal fun isOpenableLink(url: String): Boolean = url.substringBefore(':').lowercase() in OPENABLE_SCHEMES
