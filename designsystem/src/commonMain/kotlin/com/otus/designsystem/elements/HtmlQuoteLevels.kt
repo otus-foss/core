@@ -52,6 +52,10 @@ internal fun dateToggleStyle(
             "gap:${ReadTokens.glyphGap.css()}",
             "list-style:none",
             "cursor:pointer",
+            // No browser tap box or focus ring; the date and chevron changing are the feedback.
+            "-webkit-tap-highlight-color:transparent",
+            "outline:none",
+            "user-select:none",
         ),
         cssRule("${className("when-label")}::-webkit-details-marker", "display:none"),
         cssRule(className("full"), "display:none"),
