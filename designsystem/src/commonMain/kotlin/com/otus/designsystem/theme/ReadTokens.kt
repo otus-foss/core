@@ -82,7 +82,6 @@ public object ReadTokens {
 
     /** The closed attachment strip's overlapping thumbnails. */
     public val thumbSize: Dp = 28.dp
-    public val thumbRadius: Dp = CornerTokens.small
     public val thumbOverlap: Dp = 8.dp
     public val thumbRing: Dp = 2.dp
     public val thumbIconSize: Dp = 16.dp
@@ -94,7 +93,6 @@ public object ReadTokens {
     /** A file row in the opened attachment strip, and its thumbnail tile. */
     public val fileRowHeight: Dp = 60.dp
     public val fileTileSize: Dp = 40.dp
-    public val fileTileRadius: Dp = CornerTokens.chip
 
     /** The tallest the opened attachment rows get before they scroll. */
     public val openStripMaxHeight: Dp = 320.dp

@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -39,39 +39,37 @@ import com.otus.designsystem.theme.PanelTokens
 import com.otus.designsystem.theme.ReadTokens
 import com.otus.designsystem.theme.panelTextStyle
 
-/** Up to [ReadTokens.THUMB_LIMIT] small thumbnails that overlap, each ringed in the strip's color. */
+/**
+ * Up to [ReadTokens.THUMB_LIMIT] small round thumbnails that overlap, each ringed in the strip's
+ * color, as a stack of avatars is.
+ */
 @Composable
 internal fun ThumbStack(files: List<AttachmentFile>) {
     Row(horizontalArrangement = Arrangement.spacedBy(-ReadTokens.thumbOverlap)) {
         files.take(ReadTokens.THUMB_LIMIT).forEach { file ->
-            val shape = RoundedCornerShape(ReadTokens.thumbRadius)
-            Box(Modifier.background(OtusColors.bgDark, shape).padding(ReadTokens.thumbRing)) {
-                FileTile(
-                    file,
-                    ReadTokens.thumbSize - ReadTokens.thumbRing * 2,
-                    ReadTokens.thumbRadius - ReadTokens.thumbRing,
-                    ReadTokens.thumbIconSize,
-                )
+            Box(Modifier.background(OtusColors.bgDark, CircleShape).padding(ReadTokens.thumbRing)) {
+                FileTile(file, ReadTokens.thumbSize - ReadTokens.thumbRing * 2, ReadTokens.thumbIconSize)
             }
         }
     }
 }
 
-/** A file's thumbnail, or its kind's symbol on a `bgRegular` tile with a `bgLight` border. */
+/**
+ * A file's thumbnail, or its kind's symbol, on a round `bgRegular` tile with a `bgLight` border,
+ * round like the avatars and buttons beside it.
+ */
 @Composable
 internal fun FileTile(
     file: AttachmentFile,
     size: Dp,
-    radius: Dp,
     iconSize: Dp,
 ) {
-    val shape = RoundedCornerShape(radius)
     Box(
         Modifier
             .size(size)
-            .clip(shape)
+            .clip(CircleShape)
             .background(OtusColors.bgRegular)
-            .border(PanelTokens.borderWidth, OtusColors.bgLight, shape),
+            .border(PanelTokens.borderWidth, OtusColors.bgLight, CircleShape),
         contentAlignment = Alignment.Center,
     ) {
         val thumbnail = file.thumbnail
@@ -125,7 +123,7 @@ internal fun FileRow(
         horizontalArrangement = Arrangement.spacedBy(ReadTokens.stripGap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        FileTile(file, ReadTokens.fileTileSize, ReadTokens.fileTileRadius, PanelTokens.iconSize)
+        FileTile(file, ReadTokens.fileTileSize, PanelTokens.iconSize)
         Column(Modifier.weight(1f)) {
             Text(
                 file.name,

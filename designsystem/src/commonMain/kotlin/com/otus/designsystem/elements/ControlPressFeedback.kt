@@ -2,11 +2,16 @@ package com.otus.designsystem.elements
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.interaction.InteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Shape
@@ -15,6 +20,9 @@ import com.otus.designsystem.theme.ControlFeedbackTokens
 import com.otus.designsystem.theme.MotionSpeed
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.motionTween
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filterIsInstance
 
 /** Share the touch target's interactions, but paint feedback only on the visible control. */
 @Composable
@@ -24,9 +32,18 @@ public fun Modifier.controlPressFeedback(
 ): Modifier {
     val pressed by interactions.collectIsPressedAsState()
     val focused by interactions.collectIsFocusedAsState()
+    // Inside a scrolling list a quick tap presses and releases in one frame, so it flashes after.
+    var flashing by remember(interactions) { mutableStateOf(false) }
+    LaunchedEffect(interactions) {
+        interactions.interactions.filterIsInstance<PressInteraction.Release>().collectLatest {
+            flashing = true
+            delay(ControlFeedbackTokens.FLASH_MILLIS)
+            flashing = false
+        }
+    }
     val opacity =
         animateFloatAsState(
-            targetValue = if (pressed || focused) ControlFeedbackTokens.OPACITY else 0f,
+            targetValue = if (pressed || focused || flashing) ControlFeedbackTokens.OPACITY else 0f,
             animationSpec = motionTween(MotionSpeed.Quick),
             label = "Control press feedback",
         )
