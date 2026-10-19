@@ -26,8 +26,8 @@ internal fun quoteFold(
         "<details class=\"$toggle\"><summary class=\"${key.className("label")}\">" +
         "<span class=\"$more\">Show quoted text</span>" +
         "<span class=\"$less\">Hide quoted text</span></summary></details>" +
-        "<div class=\"$body\">${quoteHeader(quote, key)}" +
-        "<div class=\"$text\">${sealedHtml(quote.html)}</div></div></div>"
+        "<div class=\"$body\">${quoteHeader(quote.name, quote.initials, quote.date, key)}" +
+        "<div class=\"$text\">${sealedHtml(quote.html)}${deeperQuotes(quote.deeper, key)}</div></div></div>"
 }
 
 private fun foldStyle(
@@ -125,29 +125,32 @@ private fun headerStyle(
             "background:${palette.bgLight.css()}",
         ),
         cssRule(className("date"), "color:${palette.text3.css()}"),
+        deeperStyle(palette, className),
     ).joinToString("")
 
 /**
- * Who wrote [quote] and its date in one pill, divided by a line; the date alone without a name,
- * and the name alone without a date.
+ * Who wrote a quote, by [name] and [initials], and its [date] in one pill, divided by a line; the
+ * date alone without a name, and the name alone without a date.
  */
-private fun quoteHeader(
-    quote: HtmlQuote,
+internal fun quoteHeader(
+    name: String,
+    initials: String,
+    date: String,
     key: RenderKey,
 ): String {
-    val date = escaped(quote.date).takeIf { it.isNotBlank() }
-    val name = quote.name.takeIf { it.isNotBlank() } ?: return date.orEmpty()
+    val shownDate = escaped(date).takeIf { it.isNotBlank() }
+    val author = name.takeIf { it.isNotBlank() } ?: return shownDate.orEmpty()
     val dated =
-        date
+        shownDate
             ?.let {
                 "<span class=\"${key.className("divider")}\"></span><span class=\"${key.className("date")}\">$it</span>"
             }.orEmpty()
     return "<span class=\"${key.className("pill")}\"><span class=\"${key.className("avatar")}\">" +
-        "${escaped(quote.initials)}</span>${escaped(name)}$dated</span>"
+        "${escaped(initials)}</span>${escaped(author)}$dated</span>"
 }
 
 /** [text] safe to put between HTML tags. */
-private fun escaped(text: String): String =
+internal fun escaped(text: String): String =
     text
         .replace("&", "&amp;")
         .replace("<", "&lt;")
