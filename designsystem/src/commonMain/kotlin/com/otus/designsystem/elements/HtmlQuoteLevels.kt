@@ -3,8 +3,28 @@ package com.otus.designsystem.elements
 import com.otus.designsystem.theme.OtusPalette
 import com.otus.designsystem.theme.ReadTokens
 
-/** Plain [text] as HTML: escaped, with its line breaks kept. */
-internal fun textHtml(text: String): String = escaped(text).replace("\n", "<br>")
+/**
+ * Plain [text] as HTML: escaped, with its line breaks kept, and its links as links, as the body
+ * shows them: a Markdown link such as `[Proton Mail](https://proton.me)` by its label, and a bare
+ * web address as itself.
+ */
+internal fun textHtml(text: String): String {
+    // A plain loop: the text between links is escaped piece by piece, and each piece needs the last end.
+    val html = StringBuilder()
+    var last = 0
+    LINK.findAll(text).forEach { link ->
+        val (label, target, bare) = link.destructured
+        val url = target.ifEmpty { bare }
+        html.append(escaped(text.substring(last, link.range.first)))
+        html.append("<a href=\"${escaped(url)}\">${escaped(label.ifEmpty { url })}</a>")
+        last = link.range.last + 1
+    }
+    return html.append(escaped(text.substring(last))).toString().replace("\n", "<br>")
+}
+
+/** A Markdown link to a web or mail address, or a bare web address without trailing punctuation. */
+private val LINK =
+    Regex("""\[([^\]\n]+)]\(((?:https?://|mailto:)[^\s()<>]+)\)|(https?://[^\s()<>]*[^\s()<>.,;:!?])""")
 
 /**
  * The [levels] a quote quotes, each whole under its pill, all at the same indent. They fold and
