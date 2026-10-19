@@ -43,7 +43,7 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   `FormatButton` and `CompactSendButton`), `BarMorph`, `AttachmentChip`, `RecipientLine` (with `Recipient`, `AddressInput`, and `RecipientChip`), `ThreadStrip` (with `ThreadEntry` and `ThreadMessageRow`),
   `PersonAvatar`, `BarNotice`, `ClosableSheet` (with `SheetConfirm`), `SegmentedToggle`, `PickRow` (with `PickMark`), `PersonRow`, `RowGroup` (with `GroupRow`), `TimeWheelPicker`,
   `ResizableImage` (with `ImageSizing` and `ImagePreset`), `ListCaption`, `PersonChip`,
-  the read view strips `StripCard`, `PositionStrip`, `ThreadList`, `AlsoInStrip`, `FolderHint` (with `FolderName`),
+  the read view strips `StripCard`, `PositionStrip` (and `SlidingPositionStrip`, whose content slides inside the card), `ThreadList`, `AlsoInStrip`, `FolderHint` (with `FolderName`),
   `InfoStrip` (with `StripAction`), and `AttachmentStrip` (with `AttachmentFile`, `AttachmentKind`, and
   `AttachmentActions`), `ImageBanner`, `DetailsTable` (with `DetailLine`), `QuoteFold`, `FolderPickRow`,
   `FilterPanel`, `FilterPanelHeader`, `FilterPanelFooter`, `FilterSection`, `FilterFolderRow` (with `FolderCheck` and `TreeFolder`),

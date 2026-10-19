@@ -44,7 +44,10 @@ public fun PositionStrip(
     modifier: Modifier = Modifier,
     trailing: @Composable RowScope.() -> Unit = {},
 ) {
-    PositionCard(heading, StripPosition(count, current, detail), onClick, modifier, null, trailing)
+    val position = StripPosition(count, current, detail)
+    PositionCard(position.spoken(heading), onClick, modifier) {
+        PositionInfo(heading, position, Modifier.weight(1f), trailing)
+    }
 }
 
 /**
@@ -61,27 +64,30 @@ public fun PositionStrip(
     description: String?,
     trailing: @Composable RowScope.() -> Unit = {},
 ) {
-    PositionCard(heading, StripPosition(count, current, detail), onClick, Modifier, description, trailing)
+    val position = StripPosition(count, current, detail)
+    PositionCard(description ?: position.spoken(heading), onClick, Modifier) {
+        PositionInfo(heading, position, Modifier.weight(1f), trailing)
+    }
 }
 
 /** Where the page sits, as a [PositionStrip] shows it. */
-private class StripPosition(
+internal class StripPosition(
     val count: Int,
     val current: Int,
     val detail: String,
-)
+) {
+    /** What screen readers hear without a description of the caller's: "<title>, message x of n, <detail>". */
+    fun spoken(heading: NamedAvatar): String = "${heading.name}, message ${current + 1} of $count, $detail"
+}
 
+/** The strip's card: one button that runs [onClick], heard as [spoken], with [content] before the chevron. */
 @Composable
-private fun PositionCard(
-    heading: NamedAvatar,
-    position: StripPosition,
+internal fun PositionCard(
+    spoken: String,
     onClick: () -> Unit,
     modifier: Modifier,
-    description: String?,
-    trailing: @Composable RowScope.() -> Unit,
+    content: @Composable RowScope.() -> Unit,
 ) {
-    val spoken =
-        description ?: "${heading.name}, message ${position.current + 1} of ${position.count}, ${position.detail}"
     StripCard(modifier) {
         Row(
             Modifier
@@ -99,10 +105,27 @@ private fun PositionCard(
             horizontalArrangement = Arrangement.spacedBy(ReadTokens.stripGap),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            PersonAvatar(heading.avatar, ReadTokens.stripAvatarSize)
-            PositionText(heading.name, position, Modifier.weight(1f), trailing)
+            content()
             StripChevron(up = true)
         }
+    }
+}
+
+/** The sender's avatar, then the title over the dots and detail, beside [trailing]. */
+@Composable
+internal fun PositionInfo(
+    heading: NamedAvatar,
+    position: StripPosition,
+    modifier: Modifier,
+    trailing: @Composable RowScope.() -> Unit,
+) {
+    Row(
+        modifier,
+        horizontalArrangement = Arrangement.spacedBy(ReadTokens.stripGap),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        PersonAvatar(heading.avatar, ReadTokens.stripAvatarSize)
+        PositionText(heading.name, position, Modifier.weight(1f), trailing)
     }
 }
 
