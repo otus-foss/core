@@ -17,7 +17,8 @@
   eases to rest; `UnfoldingStripCard` grows with it, and `AttachmentStrip` takes an `Unfold` in
   place of `expanded`. `SheetPull`, provided as `LocalSheetPull`, lets a finger outside a sheet pull
   it up. `QuoteFold` takes a `QuotedLevel` and the `deeper` levels it quotes, which fold to one
-  row each at a single indent. Add `ReadTokens`.
+  row each at a single indent; `HtmlQuote` takes `deeper` `HtmlQuoteLevel`s and folds them the
+  same way in HTML bodies. Add `ReadTokens`.
 - `PickRow` takes `subtitleLines` for a description longer than one line, and `PickMark` takes
   `atStart`, which puts the radio or checkbox before the text, as in a settings list of choices.
   `subtitleLines` comes before `leading`, so a call that passes `leading` by position, not as the
