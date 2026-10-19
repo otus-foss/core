@@ -39,7 +39,8 @@ import com.otus.designsystem.theme.panelTextStyle
 
 /**
  * The quoted part of a reply, folded under its body. A `bgLight` line runs along its start; the
- * header shows the quoted [person] as a pill, which runs [onPerson] when given, and the [date].
+ * header shows the quoted [person] and the [date] in one pill, divided by a line, which runs
+ * [onPerson] when given; without a person, the date alone.
  * Folded, the first lines of [text] fade out; "Show quoted text" runs [onToggle] to unfold it
  * while [expanded] is false. A quote short enough to show whole has no fade and no toggle.
  */
@@ -85,10 +86,17 @@ private fun QuoteHeader(
     date: String,
     onPerson: (() -> Unit)?,
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        person?.let { PersonPill(it.name, it.avatar, PersonPillSize.Small, onClick = onPerson) }
+    if (person != null) {
+        PersonPill(
+            person.name,
+            person.avatar,
+            PersonPillSize.Small,
+            onClick = onPerson,
+            detail = date.ifBlank { null },
+        )
+    } else {
         Text(
-            if (person == null) date else "$DATE_SEPARATOR$date",
+            date,
             style = panelTextStyle(),
             color = OtusColors.text3,
             fontSize = ReadTokens.quoteTextSize,
@@ -149,5 +157,3 @@ private fun Modifier.fadeOut(): Modifier {
         )
     }
 }
-
-private const val DATE_SEPARATOR = " · "
