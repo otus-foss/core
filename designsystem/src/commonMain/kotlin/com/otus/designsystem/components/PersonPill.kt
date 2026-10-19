@@ -109,7 +109,14 @@ internal fun PersonPillFrame(
         )
         detail?.let {
             ChipDivider(selected = false)
-            Text(it, style = panelTextStyle(), color = OtusColors.text3, fontSize = size.textSize, maxLines = 1)
+            Text(
+                it,
+                style = panelTextStyle(),
+                color = OtusColors.text3,
+                fontSize = size.textSize,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
         }
     }
 }

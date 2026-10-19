@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import com.otus.designsystem.theme.MotionCurve
@@ -29,6 +30,7 @@ public fun StripCard(
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit,
 ) {
+    if (!LocalStripFramed.current) return Column(modifier.fillMaxWidth(), content = content)
     Column(
         modifier
             .fillMaxWidth()
@@ -46,3 +48,6 @@ internal fun Modifier.stripCardFrame(): Modifier {
         .background(OtusColors.bgDark)
         .border(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape)
 }
+
+/** False inside an [UnfoldingStripCard]'s folded form, whose card already frames the strip drawn there. */
+internal val LocalStripFramed = staticCompositionLocalOf { true }

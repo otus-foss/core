@@ -102,6 +102,10 @@ private fun headerStyle(
             "background:${palette.bgDark.css()}",
             "border:${PanelTokens.borderWidth.css()} solid ${palette.bgLight.css()}",
             "color:${palette.text2.css()}",
+            // One line, like the Compose pill: a long date ends in an ellipsis instead of wrapping.
+            "white-space:nowrap",
+            "max-width:100%",
+            "overflow:hidden",
         ),
         cssRule(
             className("avatar"),
@@ -114,6 +118,7 @@ private fun headerStyle(
             "background:${palette.bgLight.css()}",
             "color:${palette.text1.css()}",
             "font-size:${ReadTokens.quoteInitialsSize.css()}",
+            "flex-shrink:0",
         ),
         // The date follows the name inside the pill, after a line like a chip's divider.
         cssRule(
@@ -124,7 +129,13 @@ private fun headerStyle(
             "margin:0 ${PanelTokens.iconGap.css()}",
             "background:${palette.bgLight.css()}",
         ),
-        cssRule(className("date"), "color:${palette.text3.css()}"),
+        cssRule(
+            className("date"),
+            "color:${palette.text3.css()}",
+            "min-width:0",
+            "overflow:hidden",
+            "text-overflow:ellipsis",
+        ),
         deeperStyle(palette, className),
     ).joinToString("")
 
