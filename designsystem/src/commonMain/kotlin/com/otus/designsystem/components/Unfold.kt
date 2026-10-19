@@ -167,8 +167,8 @@ public fun Modifier.foldedForm(unfold: Unfold): Modifier =
 /** How far the folded form blurs at most, half a [BarMorph]'s, since it lasts only the first moves. */
 private val FOLDED_BLUR = 3.dp
 
-/** How much faster than the unfold the two forms cross-fade: over the first sixth of the travel. */
-private const val CROSSFADE = 6f
+/** How much faster than the unfold the two forms cross-fade: over the first quarter of the travel. */
+private const val CROSSFADE = 4f
 
 /**
  * Lays its content out at full height but shows only the bottom part [unfold] has reached, from

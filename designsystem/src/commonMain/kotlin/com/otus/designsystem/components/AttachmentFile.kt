@@ -2,22 +2,25 @@ package com.otus.designsystem.components
 
 import androidx.compose.ui.graphics.ImageBitmap
 import com.otus.designsystem.resources.Res
-import com.otus.designsystem.resources.symbol_attach_file
 import com.otus.designsystem.resources.symbol_description
+import com.otus.designsystem.resources.symbol_file_blank
+import com.otus.designsystem.resources.symbol_file_pdf
+import com.otus.designsystem.resources.symbol_file_sheet
 import com.otus.designsystem.resources.symbol_image
-import com.otus.designsystem.resources.symbol_picture_as_pdf
-import com.otus.designsystem.resources.symbol_table
 import org.jetbrains.compose.resources.DrawableResource
 
-/** What kind of file an [AttachmentFile] is, which picks its symbol when it has no thumbnail. */
+/**
+ * What kind of file an [AttachmentFile] is, which picks its symbol when it has no thumbnail. Every
+ * kind but an image shows the same folded page, marked with lines, "PDF", or cells, or left blank.
+ */
 public enum class AttachmentKind(
     internal val icon: DrawableResource,
 ) {
     Image(Res.drawable.symbol_image),
-    Pdf(Res.drawable.symbol_picture_as_pdf),
-    Sheet(Res.drawable.symbol_table),
+    Pdf(Res.drawable.symbol_file_pdf),
+    Sheet(Res.drawable.symbol_file_sheet),
     Document(Res.drawable.symbol_description),
-    Other(Res.drawable.symbol_attach_file),
+    Other(Res.drawable.symbol_file_blank),
 }
 
 /**
