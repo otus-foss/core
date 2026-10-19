@@ -142,6 +142,22 @@ class HtmlViewTest {
     }
 
     @Test
+    fun aQuotedGreaterThanSignDoesNotHideARemoteImage() {
+        val html = "<img alt=\"a > b\" src=\"https://tracker.example/p.gif\">"
+        val blocked = sandboxedHtml(html, loadRemote = false, OtusPalette.Otus, key, placeholders = true)
+        assertFalse("tracker.example" in blocked, "The image becomes a placeholder")
+    }
+
+    @Test
+    fun anOpenNoscriptOrObjectIsClosedBeforeTheFold() {
+        val quote = HtmlQuote("Ada", "AL", "10 Oct", "<p>Earlier</p>")
+        listOf("noscript", "object").forEach { name ->
+            val sandboxed = sandboxedHtml("<p>Hi<$name>", loadRemote = false, OtusPalette.Otus, key, quote = quote)
+            assertTrue("<$name></$name>" in sandboxed, "The $name closes before the fold")
+        }
+    }
+
+    @Test
     fun placeholderSizesKeepPercentagesAndFillMissingSides() {
         val html =
             "<img src=\"https://t.example/a.png\" width=\"50%\" height=\"40\">" +

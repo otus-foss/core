@@ -120,7 +120,8 @@ private const val COMMENT_END = "-->"
 private val RAW_TEXT = setOf("style", "script", "textarea", "title", "xmp", "iframe", "noembed", "noframes")
 
 /** Elements that would turn what follows into a link, hide it, or read it as something else. */
-private val CONTAINERS = setOf("a", "button", "select", "template", "table", "svg", "math")
+private val CONTAINERS =
+    setOf("a", "button", "select", "template", "table", "svg", "math", "noscript", "object")
 
 /** The only containers a `/>` closes; HTML elements ignore it. */
 private val FOREIGN = setOf("svg", "math")
