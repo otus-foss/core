@@ -13,7 +13,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import com.otus.designsystem.elements.PlainAction
@@ -37,32 +36,31 @@ public fun AttachmentStrip(
     actions: AttachmentActions,
     modifier: Modifier = Modifier,
 ) {
-    StripCard(modifier) {
-        Box {
-            val folded = unfold.fraction == 0f
-            Column(
-                Modifier
-                    .unfolding(unfold, ReadTokens.attachmentHeight)
-                    .graphicsLayer { alpha = (unfold.fraction * CROSSFADE).coerceAtMost(1f) }
-                    .then(if (folded) Modifier.clearAndSetSemantics {} else Modifier),
-            ) {
-                AttachmentHeader(summary, onToggle, actions.onSaveAll)
-                Column(Modifier.heightIn(max = ReadTokens.openStripMaxHeight).verticalScroll(rememberScrollState())) {
-                    files.forEachIndexed { index, file ->
-                        FileRow(file, { actions.onOpen(index) }, { actions.onSave(index) })
-                    }
+    // The unfold sets the height frame by frame, so the card must not animate it again.
+    Box(modifier.stripCardFrame()) {
+        val folded = unfold.fraction == 0f
+        Column(
+            Modifier
+                .unfolding(unfold, ReadTokens.attachmentHeight)
+                .unfoldedForm(unfold)
+                .then(if (folded) Modifier.clearAndSetSemantics {} else Modifier),
+        ) {
+            AttachmentHeader(summary, onToggle, actions.onSaveAll)
+            Column(Modifier.heightIn(max = ReadTokens.openStripMaxHeight).verticalScroll(rememberScrollState())) {
+                files.forEachIndexed { index, file ->
+                    FileRow(file, { actions.onOpen(index) }, { actions.onSave(index) })
                 }
             }
-            if (unfold.fraction < 1f) {
-                FoldedLine(
-                    files,
-                    summary,
-                    onToggle,
-                    Modifier
-                        .align(Alignment.BottomStart)
-                        .graphicsLayer { alpha = (1f - unfold.fraction * CROSSFADE).coerceAtLeast(0f) },
-                )
-            }
+        }
+        if (unfold.fraction < 1f) {
+            FoldedLine(
+                files,
+                summary,
+                onToggle,
+                Modifier
+                    .align(Alignment.BottomStart)
+                    .foldedForm(unfold),
+            )
         }
     }
 }
@@ -89,9 +87,6 @@ private fun FoldedLine(
         StripChevron(up = true)
     }
 }
-
-/** How much faster than the unfold the two forms cross-fade, so neither lingers over the other. */
-private const val CROSSFADE = 3f
 
 @Composable
 private fun AttachmentHeader(

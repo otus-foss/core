@@ -56,8 +56,8 @@ class ReadBodyScreenshotTest {
     fun quote() =
         compose.screenshot("quote_fold") {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                QuoteFold(DemoPeople.mira, "10 Oct", QUOTE, expanded = false, onToggle = {}, onPerson = {})
-                QuoteFold(null, "10 Oct", QUOTE, expanded = true, onToggle = {}, onPerson = null)
+                QuoteFold(QuotedLevel(DemoPeople.mira, "10 Oct", QUOTE, onPerson = {}), expanded = false, onToggle = {})
+                QuoteFold(QuotedLevel(null, "10 Oct", QUOTE), expanded = true, onToggle = {})
             }
         }
 

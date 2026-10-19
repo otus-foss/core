@@ -39,21 +39,21 @@ import com.otus.designsystem.theme.panelTextStyle
 
 /**
  * The quoted part of a reply, folded under its body. A `bgLight` line runs along its start; the
- * header shows the quoted [person] and the [date] in one pill, divided by a line, which runs
- * [onPerson] when given; without a person, the date alone.
- * Folded, the first lines of [text] fade out; "Show quoted text" runs [onToggle] to unfold it
- * while [expanded] is false. A quote short enough to show whole has no fade and no toggle.
+ * header shows the [quote]'s person and date in one pill, divided by a line; without a person, the
+ * date alone. Folded, the first lines of its text fade out; "Show quoted text" runs [onToggle] to
+ * unfold it while [expanded] is false. A quote short enough to show whole has no fade and no
+ * toggle. Once its text shows whole, the [deeper] levels it quotes follow as one folded row each,
+ * opened one at a time, all at the same indent however deep they go.
  */
 @Composable
 public fun QuoteFold(
-    person: NamedAvatar?,
-    date: String,
-    text: String,
+    quote: QuotedLevel,
     expanded: Boolean,
     onToggle: () -> Unit,
-    onPerson: (() -> Unit)?,
     modifier: Modifier = Modifier,
+    deeper: List<QuotedLevel> = emptyList(),
 ) {
+    val text = quote.text
     var overflows by remember(text) { mutableStateOf(false) }
     Column(modifier.fillMaxWidth()) {
         Column(
@@ -64,7 +64,7 @@ public fun QuoteFold(
                 .animateContentSize(motionTween(MotionSpeed.Normal)),
             verticalArrangement = Arrangement.spacedBy(ReadTokens.quoteHeaderGap),
         ) {
-            QuoteHeader(person, date, onPerson)
+            QuoteHeader(quote.person, quote.date, quote.onPerson)
             Text(
                 text,
                 if (!expanded && overflows) Modifier.fadeOut() else Modifier,
@@ -75,13 +75,14 @@ public fun QuoteFold(
                 maxLines = if (expanded) Int.MAX_VALUE else ReadTokens.QUOTE_FOLDED_LINES,
                 onTextLayout = { if (!expanded) overflows = it.hasVisualOverflow },
             )
+            if (expanded || !overflows) deeper.forEach { DeeperQuote(it) }
         }
         if (expanded || overflows) QuoteToggle(expanded, onToggle)
     }
 }
 
 @Composable
-private fun QuoteHeader(
+internal fun QuoteHeader(
     person: NamedAvatar?,
     date: String,
     onPerson: (() -> Unit)?,
@@ -134,7 +135,7 @@ private fun QuoteToggle(
 
 /** The quote's `bgLight` line along its start edge. */
 @Composable
-private fun Modifier.startBorder(): Modifier {
+internal fun Modifier.startBorder(): Modifier {
     val color = OtusColors.bgLight
     return drawBehind {
         val x = ReadTokens.quoteBorder.toPx() / 2

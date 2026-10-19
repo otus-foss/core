@@ -10,6 +10,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.BlurEffect
+import androidx.compose.ui.graphics.TileMode
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.unit.Constraints
@@ -100,9 +103,10 @@ public fun rememberUnfold(open: Boolean): Unfold {
 }
 
 /**
- * A [StripCard] whose height follows [unfold]: [folded] tall when folded, as tall as [content]
- * when open, growing upward from its bottom edge in between. [content] shows its bottom part
- * while it grows, so its top arrives last. Folded to nothing, the card is not shown at all.
+ * A strip card whose height follows [unfold] and nothing else, so its top edge stays with a
+ * dragging finger: [folded] tall, as the strip it grows from, up to as tall as [content] when open,
+ * growing upward from its bottom edge in between. [content] shows its bottom part while it grows,
+ * so its top arrives last. It fades in over the strip as it leaves it, and is not shown folded.
  */
 @Composable
 public fun UnfoldingStripCard(
@@ -112,14 +116,46 @@ public fun UnfoldingStripCard(
     content: @Composable () -> Unit,
 ) {
     Layout(
-        { StripCard { Box(Modifier.unfolding(unfold, folded)) { content() } } },
+        {
+            Box(
+                Modifier
+                    .graphicsLayer { alpha = unfold.fadeIn }
+                    .stripCardFrame()
+                    .unfolding(unfold, folded),
+            ) { Box(Modifier.unfoldedForm(unfold)) { content() } }
+        },
         modifier,
     ) { measurables, constraints ->
+        // Measured even when folded, so the first drag already knows how far a full unfold travels.
         val card = measurables.single().measure(constraints)
-        val shown = unfold.fraction > 0f || folded > 0.dp
+        val shown = unfold.fraction > 0f
         layout(card.width, if (shown) card.height else 0) { if (shown) card.place(0, 0) }
     }
 }
+
+/** How opaque the open form of a strip is, reaching full well before the unfold does. */
+internal val Unfold.fadeIn: Float
+    get() = (fraction * CROSSFADE).coerceAtMost(1f)
+
+/**
+ * The open form of a strip as [unfold] grows it out of the folded form: it fades in from a blur,
+ * as the parts of a [BarMorph] do, so the two forms never show sharp text over each other.
+ */
+public fun Modifier.unfoldedForm(unfold: Unfold): Modifier = crossfading { unfold.fadeIn }
+
+/** The folded form of a strip, which blurs and fades away as [unfold] grows the open form over it. */
+public fun Modifier.foldedForm(unfold: Unfold): Modifier = crossfading { 1f - unfold.fadeIn }
+
+private fun Modifier.crossfading(shown: () -> Float): Modifier =
+    graphicsLayer {
+        val visible = shown()
+        alpha = visible
+        val radius = BLUR_RADIUS.toPx() * (1f - visible)
+        renderEffect = if (radius > 0f) BlurEffect(radius, radius, TileMode.Clamp) else null
+    }
+
+/** How much faster than the unfold the folded and open forms cross-fade, so neither lingers over the other. */
+private const val CROSSFADE = 3f
 
 /**
  * Lays its content out at full height but shows only the bottom part [unfold] has reached, from

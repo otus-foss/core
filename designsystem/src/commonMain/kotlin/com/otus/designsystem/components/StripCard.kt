@@ -21,21 +21,28 @@ import com.otus.designsystem.theme.motionTween
  * The card of a strip above the action bar, such as the thread or attachment strip: full width,
  * rounded like the bar, `bgDark` with a `strokeBgDark` border. Its size animates as its content
  * changes, so a strip at the bottom of a column grows upward in place. The caller adds the side
- * margin and the gaps between strips.
+ * margin and the gaps between strips. A strip whose height follows a finger uses
+ * [UnfoldingStripCard] instead, since a second animation would trail behind the finger.
  */
 @Composable
 public fun StripCard(
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    val shape = RoundedCornerShape(ReadTokens.stripRadius)
     Column(
         modifier
             .fillMaxWidth()
             .animateContentSize(motionTween(MotionSpeed.Normal, MotionCurve.Standard))
-            .clip(shape)
-            .background(OtusColors.bgDark)
-            .border(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape),
+            .stripCardFrame(),
         content = content,
     )
+}
+
+/** A strip card's full width, rounded `bgDark` fill, and `strokeBgDark` border, without the size animation. */
+internal fun Modifier.stripCardFrame(): Modifier {
+    val shape = RoundedCornerShape(ReadTokens.stripRadius)
+    return fillMaxWidth()
+        .clip(shape)
+        .background(OtusColors.bgDark)
+        .border(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape)
 }
