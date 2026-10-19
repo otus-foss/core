@@ -49,7 +49,7 @@ internal fun ThumbStack(files: List<AttachmentFile>) {
                 FileTile(
                     file,
                     ReadTokens.thumbSize - ReadTokens.thumbRing * 2,
-                    ReadTokens.thumbRadius,
+                    ReadTokens.thumbRadius - ReadTokens.thumbRing,
                     ReadTokens.thumbIconSize,
                 )
             }

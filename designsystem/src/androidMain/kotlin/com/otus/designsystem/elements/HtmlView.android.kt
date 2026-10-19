@@ -29,15 +29,17 @@ public actual fun HtmlView(
     val showRemote by rememberUpdatedState(onShowRemote)
     val palette = OtusColors.palette
     val placeholders = onShowRemote != null
+    val renderKey = remember { newRenderKey() }
     val document =
         remember(html, loadRemote, palette, placeholders, quote) {
-            sandboxedHtml(html, loadRemote, palette, placeholders, quote)
+            sandboxedHtml(html, loadRemote, palette, renderKey, placeholders, quote)
         }
     // A new document gets a new view, so no page or setting of the last one carries over.
     key(document) {
         AndroidView(
             factory = { context ->
-                val links = LinkClient(onOpenLink = { openLink(it) }, onShowRemote = { showRemote?.invoke() })
+                val links =
+                    LinkClient(renderKey, onOpenLink = { openLink(it) }, onShowRemote = { showRemote?.invoke() })
                 sandboxedWebView(context, loadRemote, darken = !palette.isLight, links).apply {
                     loadDataWithBaseURL(null, document, "text/html", "utf-8", null)
                 }
@@ -80,6 +82,7 @@ private fun sandboxedWebView(
  * tapped image placeholder to [onShowRemote].
  */
 private class LinkClient(
+    private val key: RenderKey,
     private val onOpenLink: (String) -> Unit,
     private val onShowRemote: () -> Unit,
 ) : WebViewClient() {
@@ -90,7 +93,7 @@ private class LinkClient(
         val url = request.url.toString()
         val tapped = request.isForMainFrame && request.hasGesture()
         when {
-            tapped && isShowImagesLink(url) -> onShowRemote()
+            tapped && isShowImagesLink(url, key) -> onShowRemote()
             tapped && isOpenableLink(url) -> onOpenLink(url)
         }
         return true

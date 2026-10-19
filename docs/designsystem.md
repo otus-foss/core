@@ -4,7 +4,11 @@ The `designsystem` module (`com.otus.designsystem`, artifact `com.otus:designsys
 Otus theme, elements, and components. It moved here from otus-mail in version 0.2.0. Elements and
 components take values and callbacks; they own no ViewModels, navigation, networking, or storage.
 `HtmlView` is the one exception: with `loadRemote`, its web view fetches the images, styles, and
-fonts the document names.
+fonts the document names. Without it, and with `onShowRemote`, each remote image shows as a dashed
+placeholder of its size, and a tap on one runs `onShowRemote`. The placeholder link carries a key
+made for each render, so a link in the message cannot fake it. A `HtmlQuote` folds under the body
+in a `<details>` element, so it unfolds without scripts; the body is sealed first, so an element
+it leaves open, such as `<style>` or `<a>`, cannot swallow or wrap the fold.
 The user picks one of four themes and an accent color. Changing any single color saves a custom
 theme. The Otus theme with Otus blue is the palette recorded in [mail design foundations](suite/mail-design.md). See
 [decision 0014](decisions/0014-user-themes.md).
@@ -27,7 +31,7 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   `SidebarCount`, `SidebarExpandButton`, `SidebarPill`, `SidebarInboxEntry`, `SidebarMailboxTile`,
   `SidebarFolderEntry` (with `SidebarFolder`), `SidebarDivider`, `SectionCaption`, `Symbol`, `Toast` (with `ToastAction`),
   `ToggleSwitch`, `ValueButton`, `FilterChip` (with `FilterChipRole` and `ChipLabel`), `FolderGlyph`,
-  `FolderPath`, `FolderStack`, `PageDots`, `DatePill`, `DestinationPill`, `PlainAction`, `HtmlQuote`, and the
+  `FolderPath`, `FolderStack`, `PageDots`, `DatePill`, `DestinationPill`, `PlainAction`, `HtmlQuote`, `FirstFit`, and the
   `controlPressFeedback` modifier.
 - `components`: `ActionBar`, `ActionBarHost`, `BarAction`, `BarContext`, `BarToken`, `ActionDialog`, `ChoiceDialog`, `ChoiceSheet` (with `ChoiceRow`), `ConfirmDialog`, `InputDialog`, `InputSheet`, `ContextPanel`, `DatePickerDialog`,
   `MonthNavigation`, `MonthYearPicker`, `PageScaffold`, `Subpage`, `PageSection`, `PanelSurface`,
@@ -38,7 +42,7 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   `Dropdown` (with `DropdownRow`), `OptionsMenu` (with `OptionsItem`), `FormattingBar` (with
   `FormatButton` and `CompactSendButton`), `BarMorph`, `AttachmentChip`, `RecipientLine` (with `Recipient`, `AddressInput`, and `RecipientChip`), `ThreadStrip` (with `ThreadEntry` and `ThreadMessageRow`),
   `PersonAvatar`, `BarNotice`, `ClosableSheet` (with `SheetConfirm`), `SegmentedToggle`, `PickRow` (with `PickMark`), `PersonRow`, `RowGroup` (with `GroupRow`), `TimeWheelPicker`,
-  `ResizableImage` (with `ImageSizing` and `ImagePreset`), `ListCaption`,
+  `ResizableImage` (with `ImageSizing` and `ImagePreset`), `ListCaption`, `PersonChip`,
   the read view strips `StripCard`, `PositionStrip`, `ThreadList`, `AlsoInStrip`, `FolderHint` (with `FolderName`),
   `InfoStrip` (with `StripAction`), and `AttachmentStrip` (with `AttachmentFile`, `AttachmentKind`, and
   `AttachmentActions`), `ImageBanner`, `DetailsTable` (with `DetailLine`), `QuoteFold`, `FolderPickRow`,

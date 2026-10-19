@@ -25,7 +25,6 @@ import com.otus.designsystem.theme.ComposeTokens
 import com.otus.designsystem.theme.MenuTokens
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.ReadTokens
 import com.otus.designsystem.theme.panelTextStyle
 import org.jetbrains.compose.resources.DrawableResource
 
@@ -118,7 +117,7 @@ private fun OptionsRow(
         Column(Modifier.weight(1f)) {
             Text(label, style = panelTextStyle())
             detail?.let {
-                Text(it, style = panelTextStyle(), color = OtusColors.text3, fontSize = ReadTokens.detailSize)
+                Text(it, style = panelTextStyle(), color = OtusColors.text3, fontSize = MenuTokens.detailSize)
             }
         }
         trailing()

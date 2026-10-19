@@ -1,16 +1,19 @@
 package com.otus.designsystem.elements
 
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import com.otus.designsystem.theme.OtusPalette
-
-/** The link a blocked image placeholder opens; [HtmlView] catches it and asks to show images. */
-internal const val SHOW_IMAGES_URL = "otus-images:show"
+import com.otus.designsystem.theme.ReadTokens
 
 /**
  * [html] with each remote `<img>` swapped for a dashed placeholder of the same size, so the layout
- * holds while images stay blocked. A placeholder is a link to [SHOW_IMAGES_URL]. Images with a
- * `data:` or `cid:` source are part of the message and stay.
+ * holds while images stay blocked. A placeholder links to the [key]'s show images link. Images with
+ * a `data:` or `cid:` source are part of the message and stay.
  */
-internal fun withImagePlaceholders(html: String): String =
+internal fun withImagePlaceholders(
+    html: String,
+    key: RenderKey,
+): String =
     IMG_TAG.replace(html) { match ->
         val tag = match.value
         val source =
@@ -23,88 +26,83 @@ internal fun withImagePlaceholders(html: String): String =
         if (!REMOTE.containsMatchIn(source)) {
             tag
         } else {
-            val width = dimension(tag, "width")?.let { "${it}px" } ?: "100%"
-            val height = dimension(tag, "height")?.let { "${it}px" } ?: "${PLACEHOLDER_HEIGHT}px"
-            "<a href=\"$SHOW_IMAGES_URL\" class=\"otus-blocked\" style=\"width:$width;height:$height\" " +
+            "<a href=\"${key.showImagesUrl}\" class=\"${key.className(BLOCKED)}\" style=\"${placeholderSize(tag)}\" " +
                 "aria-label=\"Show images\"></a>"
         }
     }
 
-/** The pixel size [name] the tag gives in an attribute, or else in its inline style. */
+/**
+ * The placeholder's size from the image's own. With both sides in pixels it keeps their ratio and
+ * still shrinks to the page width; a missing side falls back to the full width or the token height.
+ */
+private fun placeholderSize(tag: String): String {
+    val width = dimension(tag, "width")
+    val height = dimension(tag, "height")
+    return if (width?.unit == PX && height?.unit == PX) {
+        "width:${width.css};max-width:100%;aspect-ratio:${width.number}/${height.number};height:auto"
+    } else {
+        "width:${width?.css ?: "100%"};height:${height?.css ?: ReadTokens.placeholderHeight.css()}"
+    }
+}
+
+/** A size an image gives, as a number and `px` or `%`. */
+private class Dimension(
+    val number: String,
+    val unit: String,
+) {
+    val css: String get() = number + unit
+}
+
+/** The size [name] the tag gives in an attribute, where a bare number means pixels, or else in its inline style. */
 private fun dimension(
     tag: String,
     name: String,
-): String? =
-    Regex("""(?i)\s$name\s*=\s*["']?(\d+)""").find(tag)?.groupValues?.get(1)
-        ?: Regex("""(?i)[\s;"']$name\s*:\s*(\d+)px""").find(tag)?.groupValues?.get(1)
+): Dimension? {
+    val match =
+        Regex("""(?i)\s$name\s*=\s*["']?(\d+(?:\.\d+)?)(%|px)?""").find(tag)
+            ?: Regex("""(?i)[\s;"']$name\s*:\s*(\d+(?:\.\d+)?)(px|%)""").find(tag)
+    return match?.let { Dimension(it.groupValues[1], it.groupValues[2].lowercase().ifEmpty { PX }) }
+}
 
 /** The style of the placeholders: a dashed `text3` border around a crossed-out image mark. */
-internal fun placeholderStyle(palette: OtusPalette): String {
+internal fun placeholderStyle(
+    palette: OtusPalette,
+    key: RenderKey,
+): String {
     val color = palette.text3.css()
     val mark =
         "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E" +
             "%3Cpath fill='${color.replace("#", "%23")}' d='$HIDE_IMAGE_PATH'/%3E%3C/svg%3E"
-    return ".otus-blocked{display:inline-block;box-sizing:border-box;max-width:100%;vertical-align:middle;" +
-        "border:2px dashed $color;border-radius:14px;background:url(\"$mark\") center/24px no-repeat}"
+    return cssRule(
+        ".${key.className(BLOCKED)}",
+        "display:inline-block",
+        "box-sizing:border-box",
+        "max-width:100%",
+        "vertical-align:middle",
+        "border:${ReadTokens.placeholderBorder.css()} dashed $color",
+        "border-radius:${ReadTokens.placeholderRadius.css()}",
+        "background:url(\"$mark\") center/${ReadTokens.placeholderIcon.css()} no-repeat",
+    )
 }
 
-/**
- * The fold for [quote] after the body: a header pill with the author's initials and name and the
- * date, each left out when blank, the quote cut to three lines that fade out, and a label that
- * unfolds it. A hidden checkbox holds the state, so it works without scripts.
- */
-internal fun quoteFold(
-    quote: HtmlQuote,
-    palette: OtusPalette,
-): String {
-    val style =
-        ".otus-quote{margin-top:16px;font-size:14px;line-height:21px;color:${palette.text3.css()}}" +
-            ".otus-quote-toggle{display:none}" +
-            ".otus-quote-body{border-left:2px solid ${palette.bgLight.css()};padding-left:12px}" +
-            ".otus-quote-pill{display:inline-flex;align-items:center;gap:6px;height:26px;box-sizing:border-box;" +
-            "padding:0 10px 0 3px;border-radius:13px;background:${palette.bgDark.css()};" +
-            "border:1px solid ${palette.bgLight.css()};color:${palette.text2.css()}}" +
-            ".otus-quote-avatar{display:inline-flex;align-items:center;justify-content:center;width:20px;" +
-            "height:20px;border-radius:10px;background:${palette.bgLight.css()};color:${palette.text1.css()};" +
-            "font-size:9px}" +
-            ".otus-quote-text{margin-top:8px;max-height:63px;overflow:hidden;" +
-            "-webkit-mask-image:$QUOTE_FADE;mask-image:$QUOTE_FADE}" +
-            ".otus-quote-toggle:checked~.otus-quote-body .otus-quote-text{max-height:none;" +
-            "-webkit-mask-image:none;mask-image:none}" +
-            ".otus-quote-label{display:block;padding:14px 0;color:${palette.text2.css()}}" +
-            ".otus-quote-less,.otus-quote-toggle:checked~.otus-quote-label .otus-quote-more{display:none}" +
-            ".otus-quote-toggle:checked~.otus-quote-label .otus-quote-less{display:inline}"
-    return "<style>$style</style><div class=\"otus-quote\">" +
-        "<input type=\"checkbox\" id=\"otus-quote\" class=\"otus-quote-toggle\">" +
-        "<div class=\"otus-quote-body\">${quoteHeader(quote)}<div class=\"otus-quote-text\">${quote.html}</div></div>" +
-        "<label for=\"otus-quote\" class=\"otus-quote-label\"><span class=\"otus-quote-more\">Show quoted text</span>" +
-        "<span class=\"otus-quote-less\">Hide quoted text</span></label></div>"
-}
+/** A CSS rule whose [declarations] win over the message's own style sheets. */
+internal fun cssRule(
+    selector: String,
+    vararg declarations: String,
+): String = declarations.joinToString(";", "$selector{", "}") { "$it!important" }
 
-/** The pill of who wrote [quote], left out without a name, then its date when it has one. */
-private fun quoteHeader(quote: HtmlQuote): String {
-    val pill =
-        quote.name.takeIf { it.isNotBlank() }?.let {
-            "<span class=\"otus-quote-pill\"><span class=\"otus-quote-avatar\">${escaped(quote.initials)}</span>" +
-                "${escaped(it)}</span>"
-        }
-    val date = escaped(quote.date).takeIf { it.isNotBlank() }
-    return listOfNotNull(pill, date).joinToString(" · ")
-}
+/** A size in CSS pixels, which match density-independent pixels at the view's default zoom. */
+internal fun Dp.css(): String = value.cssNumber() + PX
 
-/** [text] safe to put between HTML tags. */
-private fun escaped(text: String): String =
-    text
-        .replace("&", "&amp;")
-        .replace("<", "&lt;")
-        .replace(">", "&gt;")
-        .replace("\"", "&quot;")
+internal fun TextUnit.css(): String = value.cssNumber() + PX
 
+private fun Float.cssNumber(): String = if (this % 1f == 0f) toInt().toString() else toString()
+
+private const val PX = "px"
+private const val BLOCKED = "blocked"
 private val IMG_TAG = Regex("""(?i)<img\b[^>]*>""")
 private val SRC = Regex("""(?i)\ssrc\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))""")
 private val REMOTE = Regex("""(?i)^\s*(?:https?:)?//""")
-private const val PLACEHOLDER_HEIGHT = 120
-private const val QUOTE_FADE = "linear-gradient(#000 30%,transparent)"
 
 /** The Material Symbols `hide_image` path, drawn in the placeholder's center. */
 private const val HIDE_IMAGE_PATH =

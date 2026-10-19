@@ -35,12 +35,14 @@ public actual fun HtmlView(
     val showRemote by rememberUpdatedState(onShowRemote)
     val palette = OtusColors.palette
     val placeholders = onShowRemote != null
+    val renderKey = remember { newRenderKey() }
     val document =
         remember(html, loadRemote, palette, placeholders, quote) {
-            sandboxedHtml(html, loadRemote, palette, placeholders, quote)
+            sandboxedHtml(html, loadRemote, palette, renderKey, placeholders, quote)
         }
     // WebKit keeps only a weak reference to its delegate.
-    val delegate = remember { LinkDelegate(onOpenLink = { openLink(it) }, onShowRemote = { showRemote?.invoke() }) }
+    val delegate =
+        remember { LinkDelegate(renderKey, onOpenLink = { openLink(it) }, onShowRemote = { showRemote?.invoke() }) }
     key(document) {
         UIKitView(
             factory = {
@@ -59,9 +61,10 @@ public actual fun HtmlView(
 
 /**
  * Allows only the document's own load; a tapped openable link goes to [onOpenLink], and a tapped
- * image placeholder to [onShowRemote].
+ * image placeholder of this render, by its [key], to [onShowRemote].
  */
 private class LinkDelegate(
+    private val key: RenderKey,
     private val onOpenLink: (String) -> Unit,
     private val onShowRemote: () -> Unit,
 ) : NSObject(),
@@ -77,7 +80,7 @@ private class LinkDelegate(
                 .orEmpty()
         val tapped = decidePolicyForNavigationAction.navigationType == WKNavigationTypeLinkActivated
         when {
-            tapped && isShowImagesLink(url) -> onShowRemote()
+            tapped && isShowImagesLink(url, key) -> onShowRemote()
             tapped && isOpenableLink(url) -> onOpenLink(url)
         }
         val ownLoad = url == "about:blank"

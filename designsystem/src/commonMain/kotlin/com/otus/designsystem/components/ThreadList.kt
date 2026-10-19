@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PanelTokens
 import com.otus.designsystem.theme.ReadTokens
@@ -43,9 +44,9 @@ public fun ThreadList(
     onSelect: (Int) -> Unit,
     onFold: () -> Unit,
     modifier: Modifier = Modifier,
-    maxHeight: Dp = Dp.Unspecified,
+    maxHeight: Dp = ReadTokens.threadListMaxHeight,
 ) {
-    Column(modifier.fillMaxWidth().heightIn(max = maxHeight)) {
+    Column(modifier.fillMaxWidth()) {
         Row(
             Modifier
                 .fillMaxWidth()
@@ -65,7 +66,11 @@ public fun ThreadList(
             )
             StripChevron(up = false)
         }
-        Column(Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState())) {
+        Column(
+            Modifier
+                .heightIn(max = (maxHeight - ReadTokens.listHeaderHeight).coerceAtLeast(0.dp))
+                .verticalScroll(rememberScrollState()),
+        ) {
             entries.forEachIndexed { index, entry ->
                 ThreadListRow(entry, index == current) { onSelect(index) }
             }
@@ -84,7 +89,7 @@ private fun ThreadListRow(
             .fillMaxWidth()
             .background(if (current) OtusColors.bgRegular else Color.Transparent)
             .topHairline(OtusColors.strokeBgDark)
-            .selectable(current, role = Role.Tab, onClick = onClick)
+            .selectable(current, role = Role.Button, onClick = onClick)
             .heightIn(min = PanelTokens.touchTarget)
             .padding(start = ReadTokens.stripStart, end = ReadTokens.stripStart),
         horizontalArrangement = Arrangement.spacedBy(ReadTokens.stripGap),
