@@ -42,6 +42,18 @@ class ReadStripScreenshotTest {
     fun positionLight() =
         compose.screenshot("position_strip_light", palette = ThemeChoice(ThemeBase.Light).palette) { PositionStrips() }
 
+    /** Mid-swipe: the first page's content slides out to the left while the second's slides in, inside one card. */
+    @Test
+    fun slidingMidSwipe() =
+        compose.screenshot("position_strip_sliding") {
+            val pages =
+                listOf(
+                    PositionPage(NamedAvatar("Latest", DemoPeople.grace), "1/6 · 12 Oct"),
+                    PositionPage(NamedAvatar("Margaret Knuth", DemoPeople.margaret), "2/6 · 11 Oct"),
+                )
+            SlidingPositionStrip(6, 0, { 0.4f }, { pages[it.coerceAtMost(1)] }, {}) { FolderSlot() }
+        }
+
     @Test
     fun threadList() =
         compose.screenshot("thread_list") {

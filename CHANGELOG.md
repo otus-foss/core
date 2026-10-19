@@ -11,7 +11,9 @@
   in the `RecipientChip` pill that is only shown or is a button with an `onClick`, and
   `FolderPickRow`, a folder with a checkbox for the folders sheet, 48 dp tall. `PositionStrip`
   always shows its dots and position text in full, and takes a `description` that replaces what
-  screen readers hear. Add `ReadTokens`.
+  screen readers hear. `SlidingPositionStrip` takes a `PositionPage` for each page and a
+  position, and slides each page's content inside a card that stays put, as a mini player turns
+  its tracks. Add `ReadTokens`.
 - `PickRow` takes `subtitleLines` for a description longer than one line, and `PickMark` takes
   `atStart`, which puts the radio or checkbox before the text, as in a settings list of choices.
   `subtitleLines` comes before `leading`, so a call that passes `leading` by position, not as the
