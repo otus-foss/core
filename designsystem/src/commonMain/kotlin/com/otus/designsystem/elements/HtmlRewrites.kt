@@ -100,7 +100,9 @@ private fun Float.cssNumber(): String = if (this % 1f == 0f) toInt().toString() 
 
 private const val PX = "px"
 private const val BLOCKED = "blocked"
-private val IMG_TAG = Regex("""(?i)<img\b[^>]*>""")
+
+/** An `<img>` start tag; a `>` inside a quoted attribute value, such as `alt="a > b"`, does not end it. */
+private val IMG_TAG = Regex("""(?i)<img\b(?:[^>"']|"[^"]*"|'[^']*')*>""")
 private val SRC = Regex("""(?i)\ssrc\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))""")
 private val REMOTE = Regex("""(?i)^\s*(?:https?:)?//""")
 
