@@ -115,20 +115,35 @@ private fun headerStyle(
             "color:${palette.text1.css()}",
             "font-size:${ReadTokens.quoteInitialsSize.css()}",
         ),
+        // The date follows the name inside the pill, after a line like a chip's divider.
+        cssRule(
+            className("divider"),
+            "display:inline-block",
+            "width:${PanelTokens.borderWidth.css()}",
+            "height:${PanelTokens.chipDividerHeight.css()}",
+            "margin:0 ${PanelTokens.iconGap.css()}",
+            "background:${palette.bgLight.css()}",
+        ),
+        cssRule(className("date"), "color:${palette.text3.css()}"),
     ).joinToString("")
 
-/** The pill of who wrote [quote], left out without a name, then its date when it has one. */
+/**
+ * Who wrote [quote] and its date in one pill, divided by a line; the date alone without a name,
+ * and the name alone without a date.
+ */
 private fun quoteHeader(
     quote: HtmlQuote,
     key: RenderKey,
 ): String {
-    val pill =
-        quote.name.takeIf { it.isNotBlank() }?.let {
-            "<span class=\"${key.className("pill")}\"><span class=\"${key.className("avatar")}\">" +
-                "${escaped(quote.initials)}</span>${escaped(it)}</span>"
-        }
     val date = escaped(quote.date).takeIf { it.isNotBlank() }
-    return listOfNotNull(pill, date).joinToString(" · ")
+    val name = quote.name.takeIf { it.isNotBlank() } ?: return date.orEmpty()
+    val dated =
+        date
+            ?.let {
+                "<span class=\"${key.className("divider")}\"></span><span class=\"${key.className("date")}\">$it</span>"
+            }.orEmpty()
+    return "<span class=\"${key.className("pill")}\"><span class=\"${key.className("avatar")}\">" +
+        "${escaped(quote.initials)}</span>${escaped(name)}$dated</span>"
 }
 
 /** [text] safe to put between HTML tags. */

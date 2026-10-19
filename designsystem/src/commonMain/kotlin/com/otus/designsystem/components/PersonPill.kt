@@ -21,6 +21,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
+import com.otus.designsystem.elements.ChipDivider
 import com.otus.designsystem.elements.controlPressFeedback
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PanelTokens
@@ -28,8 +29,9 @@ import com.otus.designsystem.theme.panelTextStyle
 
 /**
  * A person's [avatar] and [name] in an outlined pill, read as one item by screen readers, as
- * [description] when given. With [onClick] it is a button inside a 48 dp touch target, which
- * makes it take more room than the pill it shows.
+ * [description] when given. A [detail], such as the date of a quoted email, follows the name after
+ * a divider line, inside the same pill. With [onClick] it is a button inside a 48 dp touch target,
+ * which makes it take more room than the pill it shows.
  */
 @Composable
 internal fun PersonPill(
@@ -39,9 +41,17 @@ internal fun PersonPill(
     modifier: Modifier = Modifier,
     description: String? = null,
     onClick: (() -> Unit)? = null,
+    detail: String? = null,
 ) {
     if (onClick == null) {
-        PersonPillFrame(name, avatar, size, modifier.semantics(mergeDescendants = true) {}, description)
+        PersonPillFrame(
+            name,
+            avatar,
+            size,
+            modifier.semantics(mergeDescendants = true) {},
+            description,
+            detail = detail,
+        )
     } else {
         val interactions = remember { MutableInteractionSource() }
         Box(
@@ -50,7 +60,14 @@ internal fun PersonPill(
                 .clickable(interactions, null, role = Role.Button, onClick = onClick),
             contentAlignment = Alignment.Center,
         ) {
-            PersonPillFrame(name, avatar, size, Modifier.controlPressFeedback(interactions), description)
+            PersonPillFrame(
+                name,
+                avatar,
+                size,
+                Modifier.controlPressFeedback(interactions),
+                description,
+                detail = detail,
+            )
         }
     }
 }
@@ -67,6 +84,7 @@ internal fun PersonPillFrame(
     modifier: Modifier,
     description: String?,
     action: Modifier = Modifier,
+    detail: String? = null,
 ) {
     val small = size == PersonPillSize.Small
     Row(
@@ -89,5 +107,9 @@ internal fun PersonPillFrame(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
+        detail?.let {
+            ChipDivider(selected = false)
+            Text(it, style = panelTextStyle(), color = OtusColors.text3, fontSize = size.textSize, maxLines = 1)
+        }
     }
 }

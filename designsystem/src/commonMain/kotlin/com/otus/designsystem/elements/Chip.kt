@@ -134,7 +134,7 @@ internal fun ChipText(text: String) {
 
 /** A thin line, shorter than the text beside it, in a color that recedes behind that text. */
 @Composable
-private fun ChipDivider(selected: Boolean) {
+internal fun ChipDivider(selected: Boolean) {
     Box(
         Modifier
             .padding(horizontal = PanelTokens.iconGap)

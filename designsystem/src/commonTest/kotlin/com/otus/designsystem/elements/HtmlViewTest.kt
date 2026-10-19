@@ -126,7 +126,11 @@ class HtmlViewTest {
             sandboxedHtml("<p>Reply</p>", loadRemote = false, OtusPalette.Otus, key, placeholders = true, quote = quote)
         val body = page.substringAfter("<p>Reply</p>")
         assertContains(body, "<details class=\"otus-k1-toggle\"><summary class=\"otus-k1-label\">")
-        assertContains(body, "<span class=\"otus-k1-avatar\">AL</span>Ada &lt;Lovelace&gt;</span> · 10 Oct")
+        assertContains(
+            body,
+            "<span class=\"otus-k1-avatar\">AL</span>Ada &lt;Lovelace&gt;" +
+                "<span class=\"otus-k1-divider\"></span><span class=\"otus-k1-date\">10 Oct</span></span>",
+        )
         assertContains(body, "<div class=\"otus-k1-text\"><p>Earlier <a href=\"otus-images:show?k=k1\"")
         assertContains(body, "Show quoted text")
         assertContains(body, "border-left:2px solid #3f4041")
