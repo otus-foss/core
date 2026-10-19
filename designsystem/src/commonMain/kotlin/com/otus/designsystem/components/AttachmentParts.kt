@@ -23,6 +23,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -30,7 +32,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
-import com.otus.designsystem.elements.IconButton
 import com.otus.designsystem.elements.Symbol
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_download
@@ -141,7 +142,15 @@ internal fun FileRow(
                 overflow = TextOverflow.Ellipsis,
             )
         }
-        IconButton("Save ${file.name}", onSave, outlined = false) {
+        // The default ripple, as on Save all, also shows a quick tap inside the scrolling file list.
+        Box(
+            Modifier
+                .size(PanelTokens.touchTarget)
+                .clip(CircleShape)
+                .clickable(role = Role.Button, onClick = onSave)
+                .semantics { contentDescription = "Save ${file.name}" },
+            contentAlignment = Alignment.Center,
+        ) {
             CompositionLocalProvider(
                 LocalContentColor provides OtusColors.text2,
             ) { Symbol(Res.drawable.symbol_download) }
