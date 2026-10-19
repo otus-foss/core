@@ -33,6 +33,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -56,6 +57,9 @@ import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PanelTokens
 import com.otus.designsystem.theme.SheetTokens
 import com.otus.designsystem.theme.panelTextStyle
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -113,7 +117,21 @@ internal fun SheetSurface(
     val currentOnDone by rememberUpdatedState(onDone)
     val close: () -> Unit = { scope.launch { position.hide { currentOnDismiss() } } }
     val done: () -> Unit = { scope.launch { position.hide { currentOnDone() } } }
-    LaunchedEffect(Unit) { position.show(MotionCurve.Enter) }
+    val pull = LocalSheetPull.current
+    val flingVelocity = with(density) { ChoiceSheetTokens.dismissVelocity.toPx() }
+    LaunchedEffect(Unit) {
+        if (pull == null) {
+            position.show(MotionCurve.Enter)
+        } else {
+            // The sheet rises with the finger pulling it, and settles once the finger lets go.
+            val released =
+                snapshotFlow { Triple(pull.pulled, pull.releasedAt, position.height) }
+                    .onEach { (pulled) -> position.pullTo(pulled) }
+                    .mapNotNull { (_, released) -> released }
+                    .first()
+            position.releasePull(released, flingVelocity, close)
+        }
+    }
     Dialog(close, properties = selectionSheetDialogProperties()) {
         CompositionLocalProvider(LocalDensity provides density) {
             BoxWithConstraints(Modifier.fillMaxSize()) {
@@ -138,8 +156,10 @@ internal fun SheetSurface(
                                 .swipeToDismiss(position, close)
                                 .windowInsetsPadding(WindowInsets.safeDrawing.only(BottomAndSides)),
                         ) {
+                            // A sheet opened from this one slides up by itself.
                             CompositionLocalProvider(
                                 LocalSheetHeight provides held,
+                                LocalSheetPull provides null,
                             ) { content(close, done, position.closing) }
                         }
                     }

@@ -41,7 +41,7 @@ private fun Attachments(expanded: Boolean) {
             AttachmentFile("numbers.xlsx", "Spreadsheet · 1.9 MB", AttachmentKind.Sheet),
         ),
         "3 attachments · 4.2 MB",
-        expanded,
+        rememberUnfold(expanded),
         onToggle = {},
         AttachmentActions(onOpen = {}, onSave = {}, onSaveAll = {}),
     )
