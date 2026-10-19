@@ -37,8 +37,9 @@ import com.otus.designsystem.theme.panelTextStyle
 /**
  * A person's [avatar] and [name] in an outlined pill, read as one item by screen readers, as
  * [description] when given. A [detail], such as the date of a quoted email, follows the name after
- * a divider line, inside the same pill, with a button that shows it in full when it has one. With [onClick] it is a button inside a 48 dp touch target,
- * which makes it take more room than the pill it shows.
+ * a divider line, inside the same pill, with a button that shows it in full when it has one. With
+ * [onClick] it is a button inside a 48 dp touch target, which makes it take more room than the pill
+ * it shows.
  */
 @Composable
 internal fun PersonPill(

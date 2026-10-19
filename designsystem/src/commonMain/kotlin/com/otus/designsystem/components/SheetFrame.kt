@@ -120,16 +120,12 @@ internal fun SheetSurface(
     val pull = LocalSheetPull.current
     val flingVelocity = with(density) { ChoiceSheetTokens.dismissVelocity.toPx() }
     LaunchedEffect(Unit) {
-        if (pull == null) {
+        if (pull ==
+            null
+        ) {
             position.show(MotionCurve.Enter)
         } else {
-            // The sheet rises with the finger pulling it, and settles once the finger lets go.
-            val released =
-                snapshotFlow { Triple(pull.pulled, pull.releasedAt, position.height) }
-                    .onEach { (pulled) -> position.pullTo(pulled) }
-                    .mapNotNull { (_, released) -> released }
-                    .first()
-            position.releasePull(released, flingVelocity, close)
+            position.follow(pull, flingVelocity, close)
         }
     }
     Dialog(close, properties = selectionSheetDialogProperties()) {
@@ -274,4 +270,21 @@ public fun SheetHeaderAction(
             .padding(horizontal = SheetTokens.inset),
         contentAlignment = Alignment.Center,
     ) { Text(label, color = if (enabled) color else OtusColors.text3, fontWeight = FontWeight.SemiBold) }
+}
+
+/**
+ * Rises with the finger behind [pull], then settles once it lets go: open after an upward fling of
+ * [flingVelocity] or more than half shown, else [close].
+ */
+private suspend fun SheetPosition.follow(
+    pull: SheetPull,
+    flingVelocity: Float,
+    close: () -> Unit,
+) {
+    val released =
+        snapshotFlow { Triple(pull.pulled, pull.releasedAt, height) }
+            .onEach { (pulled) -> pullTo(pulled) }
+            .mapNotNull { (_, released) -> released }
+            .first()
+    releasePull(released, flingVelocity, close)
 }
