@@ -135,5 +135,5 @@ private class Morph(
     }
 }
 
-/** How far a part's content blurs at most, halfway through a [BarMorph]'s width change. */
-private val BLUR_RADIUS = 6.dp
+/** How far a part's content blurs at most, halfway through a [BarMorph]'s width change, or a strip's as it unfolds. */
+internal val BLUR_RADIUS = 6.dp
