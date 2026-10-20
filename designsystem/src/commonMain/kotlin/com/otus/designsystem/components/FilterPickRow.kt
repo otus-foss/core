@@ -1,5 +1,6 @@
 package com.otus.designsystem.components
 
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -29,9 +30,8 @@ public fun FilterPickRow(
     PickRowFrame(
         mark,
         onClick,
-        modifier,
+        modifier.heightIn(min = FilterTokens.pickRowHeight),
         leading,
-        minHeight = FilterTokens.pickRowHeight,
         markView = { FilterPickMark(mark.selected) },
     ) { PickRowText(title, subtitle) }
 }
