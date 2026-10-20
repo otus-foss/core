@@ -106,7 +106,8 @@ internal fun PickRowFrame(
 
 /**
  * The radio or checkbox of a [PickRow] on its own, for rows built from other parts, such as a
- * folder tree row in the Folders sheet. A ticked checkbox fills with `accentLight`.
+ * folder tree row in the Folders sheet. An unticked checkbox has a dim `text3` outline, as in
+ * [com.otus.designsystem.elements.SelectionRow], and a ticked one fills with `accentLight`.
  */
 @Composable
 public fun PickMarkView(mark: PickMark) {
@@ -126,7 +127,7 @@ public fun PickMarkView(mark: PickMark) {
                 drawPath(check, OtusColors.bgDark, style = Stroke(stroke, cap = StrokeCap.Round))
             } else {
                 drawRoundRect(
-                    color,
+                    OtusColors.text3,
                     Offset(stroke / 2, stroke / 2),
                     size.copy(size.width - stroke, size.height - stroke),
                     corner,
