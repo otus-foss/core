@@ -7,13 +7,13 @@ import android.view.ContextThemeWrapper
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.otus.designsystem.theme.OtusColors
 import kotlin.math.roundToInt
@@ -26,7 +26,7 @@ public actual fun HtmlView(
     modifier: Modifier,
     onShowRemote: (() -> Unit)?,
     quote: HtmlQuote?,
-    bottomInset: Dp,
+    insets: PaddingValues,
 ) {
     val openLink by rememberUpdatedState(onOpenLink)
     val showRemote by rememberUpdatedState(onShowRemote)
@@ -34,9 +34,13 @@ public actual fun HtmlView(
     val placeholders = onShowRemote != null
     val renderKey = remember { newRenderKey() }
     val document =
-        remember(html, loadRemote, palette, placeholders, quote, bottomInset) {
-            // At a device-width viewport a CSS pixel is a dp.
-            sandboxedHtml(html, loadRemote, palette, renderKey, placeholders, quote, bottomInset.value.roundToInt())
+        remember(html, loadRemote, palette, placeholders, quote, insets) {
+            val spacers =
+                HtmlSpacers(
+                    insets.calculateTopPadding().value.roundToInt(),
+                    insets.calculateBottomPadding().value.roundToInt(),
+                )
+            sandboxedHtml(html, loadRemote, palette, renderKey, placeholders, quote, spacers)
         }
     // A new document gets a new view, so no page or setting of the last one carries over.
     key(document) {

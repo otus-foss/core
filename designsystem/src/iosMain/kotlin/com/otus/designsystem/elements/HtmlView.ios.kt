@@ -1,12 +1,12 @@
 package com.otus.designsystem.elements
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.viewinterop.UIKitView
 import com.otus.designsystem.theme.OtusColors
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -32,7 +32,7 @@ public actual fun HtmlView(
     modifier: Modifier,
     onShowRemote: (() -> Unit)?,
     quote: HtmlQuote?,
-    bottomInset: Dp,
+    insets: PaddingValues,
 ) {
     val openLink by rememberUpdatedState(onOpenLink)
     val showRemote by rememberUpdatedState(onShowRemote)
@@ -40,9 +40,13 @@ public actual fun HtmlView(
     val placeholders = onShowRemote != null
     val renderKey = remember { newRenderKey() }
     val document =
-        remember(html, loadRemote, palette, placeholders, quote, bottomInset) {
-            // At a device-width viewport a CSS pixel is a dp.
-            sandboxedHtml(html, loadRemote, palette, renderKey, placeholders, quote, bottomInset.value.roundToInt())
+        remember(html, loadRemote, palette, placeholders, quote, insets) {
+            val spacers =
+                HtmlSpacers(
+                    insets.calculateTopPadding().value.roundToInt(),
+                    insets.calculateBottomPadding().value.roundToInt(),
+                )
+            sandboxedHtml(html, loadRemote, palette, renderKey, placeholders, quote, spacers)
         }
     // WebKit keeps only a weak reference to its delegate.
     val delegate =
