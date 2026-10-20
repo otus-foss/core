@@ -2,6 +2,49 @@
 
 ## Unreleased
 
+- Add the read view parts. Strips above the action bar: `StripCard`, `PositionStrip` with
+  `PageDots`, `ThreadList`, `AlsoInStrip` with `FolderHint` and `FolderName`, `InfoStrip` with
+  `StripAction`, and `AttachmentStrip` with `AttachmentFile`, `AttachmentKind`, and
+  `AttachmentActions`. In the body: `ImageBanner`, `DetailsTable` with `DetailLine`, and
+  `QuoteFold`. In the header: `DatePill`. Also `FolderPath`, `FolderStack`, `PlainAction`,
+  `FirstFit`, which shows the first of several versions of a slot that fits, `PersonChip`, a person
+  in the `RecipientChip` pill that is only shown or is a button with an `onClick`, and
+  `FolderPickRow`, a folder with a checkbox for the folders sheet, 48 dp tall. `PositionStrip`
+  always shows its dots and position text in full, and takes a `description` that replaces what
+  screen readers hear. `SlidingPositionStrip` takes a `PositionPage` for each page and a
+  position, and slides each page's content inside a card that stays put, as a mini player turns
+  its tracks. `Unfold` tracks how far a strip has unfolded, follows a finger with `dragBy`, and
+  eases to rest; `UnfoldingStripCard` grows with it, and `AttachmentStrip` takes an `Unfold` in
+  place of `expanded`. `SheetPull`, provided as `LocalSheetPull`, lets a finger outside a sheet pull
+  it up. `QuoteFold` takes a `QuotedLevel` and the `deeper` levels it quotes, each nested one step
+  further in; `HtmlQuote` takes `deeper` `HtmlQuoteLevel`s and folds them the
+  same way in HTML bodies. Add `ReadTokens`.
+- `PickRow` takes `subtitleLines` for a description longer than one line, and `PickMark` takes
+  `atStart`, which puts the radio or checkbox before the text, as in a settings list of choices.
+  `subtitleLines` comes before `leading`, so a call that passes `leading` by position, not as the
+  trailing lambda or by name, must name it.
+- `AddressPill` takes `expanded`, which turns its chevron up while what it opens shows.
+- Add `DestinationPill`, a 40 dp pill for the Move to sheet, and `MoveTokens`. `IconPill` takes a
+  `size`, so the sort button can match it; it stays 36 dp by default.
+- `OptionsMenu` and `OptionsList` show `OptionsItem.Caption`, a small heading row.
+  `OptionsItem.Action` takes a `detail`, shown as a second line in `MenuTokens.detailSize`, and so
+  does `OptionsItem.Toggle` through a new constructor that puts `detail` before `onCheckedChange`.
+  The old constructors still work.
+- `HtmlView` takes `onShowRemote`: while remote content is blocked, each remote image becomes a
+  dashed placeholder of its size, and tapping one runs `onShowRemote`. Only the placeholder link
+  of the current render counts, so a link in the message cannot fake it. It also takes a
+  `HtmlQuote`, a data class, folded under the body in a `<details>` element with its author and
+  date, each left out when blank, and unfolded by a tap without scripts. An element the body or
+  quote leaves open, such as `<style>`, `<a>`, or a comment, is closed before the fold.
+- Add the `symbol_expand_less`, `symbol_unsubscribe`, `symbol_download`, `symbol_hide_image`,
+  `symbol_image`, `symbol_verified_user`, `symbol_block`, `symbol_reply_all`, `symbol_print`,
+  `symbol_info`, `symbol_notifications_off`, `symbol_delete_sweep`, `symbol_unfold_less`,
+  `symbol_landscape`, `symbol_grid_on`, `symbol_slideshow`, `symbol_folder_zip`,
+  `symbol_music_note`, and `symbol_movie` symbols (Material Symbols Rounded, Apache 2.0), and
+  `symbol_pdf`, the "PDF" letters of `picture_as_pdf` on their own. `AttachmentKind` also covers
+  slides, archives, audio, video, calendar events, contacts, and code, and files sit on round
+  tiles, like avatars.
+
 - `IconButton` takes a `badgeCount` and draws it outside its circle, so the filter button's count
   is no longer cut off. It replaces `BadgedSymbol`, which is removed.
 - A swipe reveal shrinks its edge fillet and free-end corner together while it is narrow, so it
