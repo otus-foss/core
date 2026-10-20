@@ -61,7 +61,7 @@ private fun sandboxedWebView(
     darken: Boolean,
     links: LinkClient,
 ): WebView =
-    WebView(ContextThemeWrapper(context, if (darken) THEME_DARK else THEME_LIGHT)).apply {
+    FittingWebView(ContextThemeWrapper(context, if (darken) THEME_DARK else THEME_LIGHT)).apply {
         setBackgroundColor(Color.TRANSPARENT)
         settings.javaScriptEnabled = false
         settings.allowFileAccess = false
@@ -98,7 +98,32 @@ private class LinkClient(
         }
         return true
     }
+
+    override fun onPageFinished(
+        view: WebView,
+        url: String?,
+    ) {
+        // The page lays out after the load ends, so its width is known one frame later.
+        (view as? FittingWebView)?.let { fitting -> fitting.post { fitting.fitWidth() } }
+    }
 }
+
+/**
+ * A view that zooms a page wider than itself out until it fits. Mail laid out at a fixed width,
+ * such as a 600 px newsletter, would otherwise need sideways scrolling, since the page's viewport
+ * is the view's width.
+ */
+private class FittingWebView(
+    context: Context,
+) : WebView(context) {
+    fun fitWidth() {
+        val content = computeHorizontalScrollRange()
+        if (width > 0 && content > width) zoomBy((width.toFloat() / content).coerceAtLeast(MIN_FIT_ZOOM))
+    }
+}
+
+/** The furthest a page zooms out to fit, so a very wide page stays readable and scrolls instead. */
+private const val MIN_FIT_ZOOM = 0.3f
 
 private const val THEME_DARK = android.R.style.Theme_Material
 private const val THEME_LIGHT = android.R.style.Theme_Material_Light

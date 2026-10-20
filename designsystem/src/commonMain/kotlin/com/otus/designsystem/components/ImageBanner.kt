@@ -23,17 +23,22 @@ import com.otus.designsystem.theme.ReadTokens
 import com.otus.designsystem.theme.panelTextStyle
 import org.jetbrains.compose.resources.DrawableResource
 
+/** A button of an [ImageBanner]: its short [label] and what it does. */
+public data class BannerAction(
+    val label: String,
+    val onClick: () -> Unit,
+)
+
 /**
- * A banner at the top of a message body with one button, such as "Images blocked for privacy"
- * with Show. The same banner changes its text and button after the step, such as "Images shown
- * this time" with "Always for Sentry".
+ * A banner at the top of a message body with its [actions] as buttons, such as "Images blocked for
+ * privacy" with Show. The same banner changes its text and buttons after the step, such as
+ * "Images shown" with Hide and Always. Keep the text and labels short; they never wrap.
  */
 @Composable
 public fun ImageBanner(
     icon: DrawableResource,
     text: String,
-    actionLabel: String,
-    onAction: () -> Unit,
+    actions: List<BannerAction>,
     modifier: Modifier = Modifier,
 ) {
     val shape = RoundedCornerShape(ReadTokens.bannerRadius)
@@ -57,6 +62,6 @@ public fun ImageBanner(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
-        StripButton(actionLabel, icon = null, ReadTokens.bannerButtonHeight, onAction)
+        actions.forEach { StripButton(it.label, icon = null, ReadTokens.bannerButtonHeight, it.onClick) }
     }
 }

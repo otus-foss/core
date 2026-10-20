@@ -35,8 +35,16 @@ class ReadBodyScreenshotTest {
     fun banner() =
         compose.screenshot("image_banner") {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                ImageBanner(Res.drawable.symbol_hide_image, "Images blocked for privacy", "Show", {})
-                ImageBanner(Res.drawable.symbol_image, "Images shown this time", "Always for Sentry", {})
+                ImageBanner(
+                    Res.drawable.symbol_hide_image,
+                    "Images blocked for privacy",
+                    listOf(BannerAction("Show") {}),
+                )
+                ImageBanner(
+                    Res.drawable.symbol_image,
+                    "Images shown",
+                    listOf(BannerAction("Hide") {}, BannerAction("Always") {}),
+                )
             }
         }
 
