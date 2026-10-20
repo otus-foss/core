@@ -6,6 +6,7 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.viewinterop.UIKitView
 import com.otus.designsystem.theme.OtusColors
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -20,6 +21,7 @@ import platform.WebKit.WKNavigationTypeLinkActivated
 import platform.WebKit.WKWebView
 import platform.WebKit.WKWebViewConfiguration
 import platform.darwin.NSObject
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalForeignApi::class)
 @Composable
@@ -30,6 +32,7 @@ public actual fun HtmlView(
     modifier: Modifier,
     onShowRemote: (() -> Unit)?,
     quote: HtmlQuote?,
+    bottomInset: Dp,
 ) {
     val openLink by rememberUpdatedState(onOpenLink)
     val showRemote by rememberUpdatedState(onShowRemote)
@@ -37,8 +40,9 @@ public actual fun HtmlView(
     val placeholders = onShowRemote != null
     val renderKey = remember { newRenderKey() }
     val document =
-        remember(html, loadRemote, palette, placeholders, quote) {
-            sandboxedHtml(html, loadRemote, palette, renderKey, placeholders, quote)
+        remember(html, loadRemote, palette, placeholders, quote, bottomInset) {
+            // At a device-width viewport a CSS pixel is a dp.
+            sandboxedHtml(html, loadRemote, palette, renderKey, placeholders, quote, bottomInset.value.roundToInt())
         }
     // WebKit keeps only a weak reference to its delegate.
     val delegate =
