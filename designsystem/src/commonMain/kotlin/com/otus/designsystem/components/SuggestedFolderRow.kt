@@ -1,6 +1,5 @@
 package com.otus.designsystem.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -31,30 +30,27 @@ import com.otus.designsystem.theme.ReadTokens
 import com.otus.designsystem.theme.SheetTokens
 
 /**
- * A folder the sheet suggests, such as where a sender's mail usually goes: a `bgRegular` card with
- * a `bgLight` outline, holding the [person] pill, an arrow, and a pill with the [folder]'s glyph and
- * path. The whole card is one button that runs [onClick]; screen readers hear [description].
+ * A folder the sheet suggests, such as where a sender's mail usually goes: the [person] pill, an
+ * arrow, and a pill with the [folder]'s glyph and path, on one line with no card around them. The
+ * whole row is one button that runs [onClick]; screen readers hear [description].
  */
 @Composable
-public fun SuggestedFolderCard(
+public fun SuggestedFolderRow(
     person: Recipient,
     folder: FolderName,
     description: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val shape = RoundedCornerShape(SheetTokens.rowRadius)
     Row(
         modifier
             .fillMaxWidth()
-            .clip(shape)
-            .background(OtusColors.bgRegular)
-            .border(PanelTokens.borderWidth, OtusColors.bgLight, shape)
+            .clip(RoundedCornerShape(SheetTokens.rowRadius))
             .clickable(onClick = onClick)
             .clearAndSetSemantics {
                 contentDescription = description
                 role = Role.Button
-            }.padding(SheetTokens.gap),
+            }.padding(vertical = SheetTokens.gap),
         horizontalArrangement = Arrangement.spacedBy(ReadTokens.glyphGap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
