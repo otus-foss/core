@@ -54,18 +54,19 @@ import kotlin.math.abs
 import kotlin.math.sign
 
 /**
- * Lets the user drag [content] sideways in either direction. A darker end opens behind it on the
- * side it leaves, with a dim close symbol and "Dismiss". Past [ToastTokens.DISMISS_FRACTION] of
- * the width they brighten and a haptic marks it; releasing there slides the toast off the screen
- * while the end fades, then calls [onDismiss]. Shorter drags spring back. [onHeld] reports whether
- * the toast is away from rest, so its timer can pause. [content] receives whether it is lifted.
+ * Lets the user drag [content] sideways in either direction to dismiss it, as a toast or the
+ * Read view's images banner. A darker end opens behind it on the side it leaves, with a dim close
+ * symbol and "Dismiss". Past [ToastTokens.DISMISS_FRACTION] of the width they brighten and a haptic
+ * marks it; releasing there slides [content] off the screen while the end fades, then calls
+ * [onDismiss]. Shorter drags spring back. [onHeld] reports whether it is away from rest, so a
+ * timer can pause. [content] receives whether it is lifted.
  */
 @Composable
-internal fun ToastSwipe(
-    enabled: Boolean,
-    onHeld: (Boolean) -> Unit,
+public fun SwipeToDismiss(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    onHeld: (Boolean) -> Unit = {},
     content: @Composable (lifted: Boolean) -> Unit,
 ) {
     var width by remember { mutableIntStateOf(0) }

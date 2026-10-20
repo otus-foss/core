@@ -123,9 +123,10 @@ private fun PanelHeader(
             .heightIn(
                 min = PanelTokens.touchTarget + inset * 2,
             ).padding(end = PanelTokens.panelInset),
-        verticalAlignment = Alignment.CenterVertically,
+        // Top-aligned, so content that wraps to more lines grows down and Back stays on the first.
+        verticalAlignment = Alignment.Top,
     ) {
-        navigation?.invoke()
+        navigation?.let { Box(Modifier.padding(top = inset)) { it() } }
         Box(
             Modifier
                 .weight(1f)
@@ -137,7 +138,12 @@ private fun PanelHeader(
             contentAlignment = Alignment.CenterStart,
         ) { ProvideTextStyle(panelTextStyle()) { content() } }
         if (action != null) {
-            AnimatedVisibility(actionShown, enter = fadeIn(motionTween()), exit = fadeOut(motionTween())) { action() }
+            AnimatedVisibility(
+                actionShown,
+                Modifier.padding(top = inset),
+                enter = fadeIn(motionTween()),
+                exit = fadeOut(motionTween()),
+            ) { action() }
         }
     }
 }

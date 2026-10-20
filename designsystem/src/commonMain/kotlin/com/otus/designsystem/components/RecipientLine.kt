@@ -35,7 +35,6 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextOverflow
 import com.otus.designsystem.elements.ComposeLine
 import com.otus.designsystem.theme.ComposeTokens
 import com.otus.designsystem.theme.OtusColors
@@ -90,20 +89,28 @@ public fun RecipientChip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val shape = CircleShape
-    Row(
-        modifier
-            .height(ComposeTokens.recipientHeight)
-            .border(PanelTokens.borderWidth, OtusColors.bgLight, shape)
-            .clickable(onClickLabel = "Edit", role = Role.Button, onClick = onClick)
-            .semantics { contentDescription = recipient.description }
-            .padding(start = PanelTokens.iconGap, end = PanelTokens.chipPadding),
-        horizontalArrangement = Arrangement.spacedBy(PanelTokens.chipGap),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        PersonAvatar(recipient.avatar, ComposeTokens.recipientAvatarSize)
-        Text(recipient.name, style = panelTextStyle(), maxLines = 1, overflow = TextOverflow.Ellipsis)
-    }
+    PersonPillFrame(
+        recipient.name,
+        recipient.avatar,
+        PersonPillSize.Regular,
+        modifier,
+        recipient.description,
+        Modifier.clickable(onClickLabel = "Edit", role = Role.Button, onClick = onClick),
+    )
+}
+
+/**
+ * A person in the same outlined pill as a [RecipientChip], where they are only shown, such as the
+ * people a message went to. With [onClick] the chip is a button in a 48 dp touch target, such as
+ * to show who they are; without it, screen readers read it once, as text.
+ */
+@Composable
+public fun PersonChip(
+    person: Recipient,
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
+) {
+    PersonPill(person.name, person.avatar, PersonPillSize.Regular, modifier, person.description, onClick)
 }
 
 /** The count of people a folded line hides, such as "+3 more"; tapping it shows them. */
