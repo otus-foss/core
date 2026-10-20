@@ -1,5 +1,6 @@
 package com.otus.designsystem.elements
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -20,6 +21,7 @@ import platform.WebKit.WKNavigationTypeLinkActivated
 import platform.WebKit.WKWebView
 import platform.WebKit.WKWebViewConfiguration
 import platform.darwin.NSObject
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalForeignApi::class)
 @Composable
@@ -28,12 +30,27 @@ public actual fun HtmlView(
     loadRemote: Boolean,
     onOpenLink: (String) -> Unit,
     modifier: Modifier,
+    onShowRemote: (() -> Unit)?,
+    quote: HtmlQuote?,
+    insets: PaddingValues,
 ) {
     val openLink by rememberUpdatedState(onOpenLink)
+    val showRemote by rememberUpdatedState(onShowRemote)
     val palette = OtusColors.palette
-    val document = remember(html, loadRemote, palette) { sandboxedHtml(html, loadRemote, palette) }
+    val placeholders = onShowRemote != null
+    val renderKey = remember { newRenderKey() }
+    val document =
+        remember(html, loadRemote, palette, placeholders, quote, insets) {
+            val spacers =
+                HtmlSpacers(
+                    insets.calculateTopPadding().value.roundToInt(),
+                    insets.calculateBottomPadding().value.roundToInt(),
+                )
+            sandboxedHtml(html, loadRemote, palette, renderKey, placeholders, quote, spacers)
+        }
     // WebKit keeps only a weak reference to its delegate.
-    val delegate = remember { LinkDelegate { openLink(it) } }
+    val delegate =
+        remember { LinkDelegate(renderKey, onOpenLink = { openLink(it) }, onShowRemote = { showRemote?.invoke() }) }
     key(document) {
         UIKitView(
             factory = {
@@ -50,9 +67,14 @@ public actual fun HtmlView(
     }
 }
 
-/** Allows only the document's own load; a tapped openable link goes to [onOpenLink]. */
+/**
+ * Allows only the document's own load; a tapped openable link goes to [onOpenLink], and a tapped
+ * image placeholder of this render, by its [key], to [onShowRemote].
+ */
 private class LinkDelegate(
+    private val key: RenderKey,
     private val onOpenLink: (String) -> Unit,
+    private val onShowRemote: () -> Unit,
 ) : NSObject(),
     WKNavigationDelegateProtocol {
     override fun webView(
@@ -65,7 +87,10 @@ private class LinkDelegate(
                 ?.absoluteString
                 .orEmpty()
         val tapped = decidePolicyForNavigationAction.navigationType == WKNavigationTypeLinkActivated
-        if (tapped && isOpenableLink(url)) onOpenLink(url)
+        when {
+            tapped && isShowImagesLink(url, key) -> onShowRemote()
+            tapped && isOpenableLink(url) -> onOpenLink(url)
+        }
         val ownLoad = url == "about:blank"
         decisionHandler(if (ownLoad) WKNavigationActionPolicyAllow else WKNavigationActionPolicyCancel)
     }
