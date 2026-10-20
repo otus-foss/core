@@ -313,7 +313,7 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   `SheetConfirm` button at the bottom; `SheetFrame` shares its surface. `SegmentedToggle` picks one
   of a few options with a `bgLight` fill. `RowGroup` puts `GroupRow`s, with an icon, a label, and a value or a chevron, on one
   `bgRegular` card. `TimeWheelPicker` picks a time like the date chooser. `PickRow` is a sheet choice with a `text1` radio or
-  checkbox, never the accent, and dims without an action. `PersonRow` opens an address's page,
+  checkbox; a ticked checkbox fills with `accentLight` and a `bgDark` tick, as in `SelectionRow`, and the row dims without an action. `PersonRow` opens an address's page,
   with an avatar, a `text2` or muted `text3` line, and a chevron. `ResizableImage` shows a
   signature image with a selection outline, a ✕, a corner handle that snaps to `ImagePreset`s, and
   a size pill under it. `ListCaption` heads a group of rows in `text3`.
