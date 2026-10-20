@@ -15,7 +15,8 @@ import org.jetbrains.compose.resources.DrawableResource
 /**
  * A place to move mail to with one tap, such as Inbox or Archive in the Move to sheet. It is
  * smaller than a [SidebarPill], so a row of them leaves room for the sort button at its end. A
- * long label ends in an ellipsis.
+ * long label ends in an ellipsis. A non-null [selected] makes it a toggle, filled with the accent
+ * while on, as in the Folders sheet, where it adds mail to the folder.
  */
 @Composable
 public fun DestinationPill(
@@ -23,11 +24,12 @@ public fun DestinationPill(
     icon: DrawableResource,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    selected: Boolean? = null,
 ) {
     ChipFrame(
         onClick,
         modifier,
-        selected = null,
+        selected = selected,
         enabled = true,
         fill = OtusColors.bgRegular,
         layout = ChipLayout(height = MoveTokens.pillHeight, start = MoveTokens.pillStart, end = MoveTokens.pillEnd),

@@ -104,8 +104,12 @@ internal fun PickRowFrame(
     }
 }
 
+/**
+ * The radio or checkbox of a [PickRow] on its own, for rows built from other parts, such as a
+ * folder tree row in the Folders sheet. A ticked checkbox fills with `accentLight`.
+ */
 @Composable
-internal fun PickMarkView(mark: PickMark) {
+public fun PickMarkView(mark: PickMark) {
     val color = OtusColors.text1
     Canvas(Modifier.size(SignatureTokens.markSize)) {
         val stroke = SignatureTokens.markStroke.toPx()
