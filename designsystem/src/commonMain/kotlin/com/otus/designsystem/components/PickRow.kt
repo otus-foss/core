@@ -35,8 +35,9 @@ import com.otus.designsystem.theme.panelTextStyle
 
 /**
  * A choice in a sheet list: an optional [leading] avatar, the [title], a smaller `text2` [subtitle]
- * of up to [subtitleLines] lines, and a `text1` radio or checkbox, never the accent. A null
- * [onClick] shows the row disabled.
+ * of up to [subtitleLines] lines, and a `text1` radio or checkbox. A ticked checkbox fills with
+ * `accentLight`, as in [com.otus.designsystem.elements.SelectionRow]. A null [onClick] shows the
+ * row disabled.
  */
 @Composable
 public fun PickRow(
@@ -110,21 +111,23 @@ internal fun PickMarkView(mark: PickMark) {
         val stroke = SignatureTokens.markStroke.toPx()
         if (mark.multiple) {
             val corner = CornerRadius(SettingTokens.valueRadius.toPx() / 2)
-            drawRoundRect(
-                color,
-                Offset(stroke / 2, stroke / 2),
-                size.copy(size.width - stroke, size.height - stroke),
-                corner,
-                Stroke(stroke),
-            )
             if (mark.selected) {
+                drawRoundRect(OtusColors.accentLight, cornerRadius = corner)
                 val check =
                     Path().apply {
                         moveTo(size.width * CHECK_START_X, size.height * CHECK_MID_Y)
                         lineTo(size.width * CHECK_LOW_X, size.height * CHECK_LOW_Y)
                         lineTo(size.width * CHECK_END_X, size.height * CHECK_END_Y)
                     }
-                drawPath(check, color, style = Stroke(stroke, cap = StrokeCap.Round))
+                drawPath(check, OtusColors.bgDark, style = Stroke(stroke, cap = StrokeCap.Round))
+            } else {
+                drawRoundRect(
+                    color,
+                    Offset(stroke / 2, stroke / 2),
+                    size.copy(size.width - stroke, size.height - stroke),
+                    corner,
+                    Stroke(stroke),
+                )
             }
         } else {
             drawCircle(color, radius = size.minDimension / 2 - stroke / 2, style = Stroke(stroke))
