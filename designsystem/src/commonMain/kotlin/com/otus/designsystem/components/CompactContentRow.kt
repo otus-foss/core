@@ -28,8 +28,8 @@ import com.otus.designsystem.theme.OtusColors
  * A two-line list row: [CompactRowText.first] and the date, then [CompactRowText.second] with its
  * marks and folders, and an optional preview. Selection works as in [ContentRow].
  *
- * [dimmed] fades the content but never the selection tint; pass false while the list is selecting,
- * so selected rows read clearly. Accessibility services read [CompactRowText.description] instead of the visible
+ * [dimmed] fades the content but never the selection tint; pass false for a selected row, so it
+ * reads clearly. Accessibility services read [CompactRowText.description] instead of the visible
  * text, because the marks and pills are icons.
  */
 @OptIn(ExperimentalFoundationApi::class)

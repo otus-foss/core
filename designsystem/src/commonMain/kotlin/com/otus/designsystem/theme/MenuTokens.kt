@@ -1,7 +1,9 @@
 package com.otus.designsystem.theme
 
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 /** The small menu that opens where the user pressed. */
 public object MenuTokens {
@@ -21,6 +23,9 @@ public object MenuTokens {
 
     /** Between a row's icon and its label. */
     public val iconGap: Dp = 12.dp
+
+    /** A row's smaller second line, such as an option's detail. */
+    public val detailSize: TextUnit = 12.sp
 
     /** How far a [com.otus.designsystem.components.QuickActionBar] sits from the pressed point. */
     public val barGap: Dp = 12.dp

@@ -52,6 +52,23 @@ internal class SheetPosition(
         then()
     }
 
+    /** Shows the bottom [pulled] pixels of the sheet, as a finger pulling it up from outside does. */
+    fun pullTo(pulled: Float) {
+        if (height <= 0 || closing) return
+        animation?.cancel()
+        hidden = (1f - pulled / height).coerceIn(0f, 1f)
+    }
+
+    /** After a pull from outside: an upward fling or a sheet more than half shown opens; anything else closes. */
+    suspend fun releasePull(
+        velocity: Float,
+        flingVelocity: Float,
+        close: () -> Unit,
+    ) {
+        if (closing) return
+        if (velocity < -flingVelocity || hidden < PULL_OPEN_FRACTION) show(MotionCurve.Enter) else close()
+    }
+
     /** Moves the sheet [delta] pixels down, or up when negative, and returns how far it moved. */
     fun dragBy(delta: Float): Float {
         if (height <= 0 || closing) return 0f
@@ -149,3 +166,6 @@ private class SheetScrollConnection(
         return available
     }
 }
+
+/** How much of a pulled sheet must show at release for it to open. */
+private const val PULL_OPEN_FRACTION = 0.5f

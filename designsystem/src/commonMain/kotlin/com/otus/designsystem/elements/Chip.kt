@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PanelTokens
@@ -101,14 +102,14 @@ internal fun ChipFrame(
         ) {
             Row(
                 if (layout.width == ChipWidth.Circle) {
-                    Modifier.size(PanelTokens.chipHeight)
+                    Modifier.size(layout.height)
                 } else {
                     Modifier
                         .then(if (layout.width == ChipWidth.Fill) Modifier.fillMaxWidth() else Modifier)
-                        .heightIn(min = PanelTokens.chipHeight)
+                        .heightIn(min = layout.height)
                         .padding(
-                            start = if (layout.avatarFirst) PanelTokens.iconGap else PanelTokens.chipPadding,
-                            end = PanelTokens.chipPadding,
+                            start = if (layout.avatarFirst) PanelTokens.iconGap else layout.start,
+                            end = layout.end,
                             top = PanelTokens.iconGap,
                             bottom = PanelTokens.iconGap,
                         )
@@ -133,7 +134,7 @@ internal fun ChipText(text: String) {
 
 /** A thin line, shorter than the text beside it, in a color that recedes behind that text. */
 @Composable
-private fun ChipDivider(selected: Boolean) {
+internal fun ChipDivider(selected: Boolean) {
     Box(
         Modifier
             .padding(horizontal = PanelTokens.iconGap)
@@ -142,10 +143,16 @@ private fun ChipDivider(selected: Boolean) {
     )
 }
 
-/** How a [ChipFrame] is laid out: its [width], and whether a round avatar comes first, close to the start edge. */
+/**
+ * How a [ChipFrame] is laid out: its [width], whether a round avatar comes first, close to the
+ * start edge, its [height], and the content inset from its [start] and [end].
+ */
 internal data class ChipLayout(
     val width: ChipWidth = ChipWidth.Content,
     val avatarFirst: Boolean = false,
+    val height: Dp = PanelTokens.chipHeight,
+    val start: Dp = PanelTokens.chipPadding,
+    val end: Dp = PanelTokens.chipPadding,
 )
 
 /** How wide a [ChipFrame] is. */
