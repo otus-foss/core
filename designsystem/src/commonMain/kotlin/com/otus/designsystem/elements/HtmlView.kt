@@ -1,11 +1,10 @@
 package com.otus.designsystem.elements
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import com.otus.designsystem.theme.OtusPalette
 
 /**
@@ -18,8 +17,9 @@ import com.otus.designsystem.theme.OtusPalette
  *
  * With [onShowRemote] and without [loadRemote], each remote image becomes a dashed placeholder of
  * its size, and tapping one runs [onShowRemote]. A [quote] folds under the body with its author
- * and date and unfolds on a tap, without scripts. [bottomInset] adds room under the page, so it can
- * scroll clear of parts that float over the view's bottom, such as strips and an action bar.
+ * and date and unfolds on a tap, without scripts. The top and bottom of [insets] add room above and
+ * under the page, so it can scroll clear of parts that float over the view's edges, such as a
+ * header, strips, and an action bar.
  */
 @Composable
 public expect fun HtmlView(
@@ -29,7 +29,7 @@ public expect fun HtmlView(
     modifier: Modifier = Modifier,
     onShowRemote: (() -> Unit)? = null,
     quote: HtmlQuote? = null,
-    bottomInset: Dp = 0.dp,
+    insets: PaddingValues = PaddingValues(),
 )
 
 /**
@@ -56,7 +56,7 @@ internal fun sandboxedHtml(
     key: RenderKey,
     placeholders: Boolean = false,
     quote: HtmlQuote? = null,
-    bottomInset: Int = 0,
+    spacers: HtmlSpacers = HtmlSpacers(),
 ): String {
     val remote = if (loadRemote) " http: https:" else ""
     val policy =
@@ -80,10 +80,19 @@ internal fun sandboxedHtml(
         "<style>body{margin:0;overflow-wrap:anywhere}img{max-width:100%;height:auto}$page" +
         (if (blocked) placeholderStyle(palette, key) else "") +
         "</style>" +
+        // Spacers, not body padding, since a mail's own styles may reset the body's padding.
+        spacer(spacers.top) +
         body +
-        // A spacer, not body padding, since a mail's own styles may reset the body's padding.
-        (if (bottomInset > 0) "<div style=\"height:${bottomInset}px\"></div>" else "")
+        spacer(spacers.bottom)
 }
+
+/** Empty space above and under a page, in CSS pixels, which are dp at a device-width viewport. */
+internal data class HtmlSpacers(
+    val top: Int = 0,
+    val bottom: Int = 0,
+)
+
+private fun spacer(height: Int): String = if (height > 0) "<div style=\"height:${height}px\"></div>" else ""
 
 /** Whether [html] sets a text or background color, in a color attribute, a style attribute, or a style sheet. */
 internal fun hasOwnColors(html: String): Boolean =
