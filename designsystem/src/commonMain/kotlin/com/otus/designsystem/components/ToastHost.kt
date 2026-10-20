@@ -151,7 +151,7 @@ private fun ToastItem(
             presence.animateTo(1f, enter)
         }
     }
-    ToastSwipe(
+    SwipeToDismiss(
         enabled = reachable,
         onHeld = { entry.held = it },
         onDismiss = { state.remove(entry) },
