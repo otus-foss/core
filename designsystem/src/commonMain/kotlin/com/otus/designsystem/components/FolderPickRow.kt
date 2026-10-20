@@ -1,5 +1,6 @@
 package com.otus.designsystem.components
 
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -26,8 +27,7 @@ public fun FolderPickRow(
     PickRowFrame(
         PickMark(checked, multiple = true),
         onClick,
-        modifier,
-        minHeight = PanelTokens.touchTarget,
+        modifier.heightIn(min = PanelTokens.touchTarget),
         leading = { FolderNameGlyph(folder, PanelTokens.iconSize) },
         trailing =
             detail?.let {
