@@ -23,12 +23,6 @@ import com.otus.designsystem.theme.ReadTokens
 import com.otus.designsystem.theme.panelTextStyle
 import org.jetbrains.compose.resources.DrawableResource
 
-/** A button of an [ImageBanner]: its short [label] and what it does. */
-public data class BannerAction(
-    val label: String,
-    val onClick: () -> Unit,
-)
-
 /**
  * A banner at the top of a message body with its [actions] as buttons, such as "Images blocked for
  * privacy" with Show. The same banner changes its text and buttons after the step, such as
