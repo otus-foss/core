@@ -323,15 +323,16 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
 - `BarNotice` sits just above a page's action bar and says what its main action will do
   differently, such as "Scheduled for Mon 19 Oct, 8:00", with a button such as Change.
 - `FilterPanel` grows down out of a control panel, on its surface, border, and radius, over a
-  scrim, so it reads as that panel opening. Its header and footer stay put while the body scrolls,
-  and it is at most as tall as the room its modifier gives it. Back, a tap on the scrim, and an
-  upward swipe close it; screen readers read only the panel while it is open and start at its
-  title. `FilterPanelHeader` has the title, or a back button named after the page it returns to,
-  and a plain ✕ at the top right. `FilterSection` puts a small `text3` label above wrapping
+  scrim, so it reads as that panel opening. Its header stays put, and the footer floats at the
+  bottom while the body scrolls under it, fading out over `PanelTokens.fadeWidth` just above it.
+  It is at most as tall as the room its modifier gives it. A plain ✕ at the top end, a tap on the
+  scrim, back, and an upward swipe close it; screen readers read only the panel while it is open
+  and start at its title. `FilterPanelHeader` has the title, or a back button named after the page
+  it returns to, and leaves room for the panel's ✕. `FilterSection` puts a small `text3` label above wrapping
   `FilterChip`s, which are `bgRegular` capsules while off and `accentDark` while on, read as a
   checkbox, a radio, or a button. A `ChipLabel`'s prefix, such as a folder's parents, shows in `text3`.
-  `FilterPanelFooter` has a Reset pill, dimmed with `OtusAlpha.DIMMED` while there is nothing to
-  reset, and the primary button, whose label screen readers announce politely when it changes.
+  `FilterPanelFooter` has a Reset pill whose label dims while there is nothing to reset, while
+  the pill stays opaque over the body, and the primary button, whose label screen readers announce politely when it changes.
   The panel always takes all of its room, so a short page keeps the height of a long
   one and leaves space above the footer. Slide between its pages with `SlidingPages`.
   `FilterFolderRow` is one folder of a checkable tree: a chevron for parents, a `FolderGlyph`, the
