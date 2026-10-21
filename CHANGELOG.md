@@ -8,6 +8,8 @@
 - Add `FilterNote` for a small note under a filter page's choices, and `FolderStackChip` (with
   `StackedFolder`), the pill for chosen folders. `AvatarStackChip` takes a `prefix`, such as "To".
 - `FilterPanel` always takes its full height, so short pages keep the height of long ones.
+- `RecipientLine` with the default `collapsedAfter` no longer folds into a "+0 more" chip, which
+  hid its address field.
 - Add `DateRangeCalendar`, the calendar of `DateRangePicker` on its own, to embed in a page.
 - `FilterFolderRow` ends in the same check circle as `FilterPickRow` instead of a checkbox.
 - Add the `symbol_check_circle_fill`, `symbol_radio_button_unchecked`, `symbol_hourglass_empty`,

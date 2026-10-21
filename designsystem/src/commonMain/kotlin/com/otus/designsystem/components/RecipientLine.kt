@@ -58,8 +58,8 @@ public fun RecipientLine(
     collapsedAfter: Int = Int.MAX_VALUE,
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
-    // One more person fits in place of a "+1 more" chip.
-    val folded = !expanded && recipients.size > collapsedAfter + 1
+    // One more person fits in place of a "+1 more" chip. Subtracting keeps Int.MAX_VALUE from overflowing.
+    val folded = !expanded && recipients.size - 1 > collapsedAfter
     val shown = if (folded) recipients.take(collapsedAfter) else recipients
     ComposeLine(label, modifier, topAligned = true) {
         FlowRow(
