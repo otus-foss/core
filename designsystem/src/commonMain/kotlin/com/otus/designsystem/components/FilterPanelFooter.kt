@@ -69,7 +69,6 @@ private fun FooterButton(
     Surface(
         modifier
             .height(FilterTokens.footerButtonHeight)
-            .alpha(if (enabled) 1f else OtusAlpha.DISABLED)
             .clickable(interactions, null, enabled, role = Role.Button, onClick = onClick)
             .controlPressFeedback(interactions),
         shape = CircleShape,
@@ -77,7 +76,11 @@ private fun FooterButton(
         contentColor = OtusColors.text1,
         border = BorderStroke(PanelTokens.borderWidth, if (primary) OtusColors.accentRegular else OtusColors.bgLight),
     ) {
-        Box(Modifier.padding(horizontal = SheetTokens.inset), contentAlignment = Alignment.Center) {
+        // Only the label dims: the pill stays opaque, since the body scrolls behind the footer.
+        Box(
+            Modifier.padding(horizontal = SheetTokens.inset).alpha(if (enabled) 1f else OtusAlpha.DISABLED),
+            contentAlignment = Alignment.Center,
+        ) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(FilterTokens.chipGap),
                 verticalAlignment = Alignment.CenterVertically,

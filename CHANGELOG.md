@@ -8,6 +8,11 @@
 - Add `FilterNote` for a small note under a filter page's choices, and `FolderStackChip` (with
   `StackedFolder`), the pill for chosen folders. `AvatarStackChip` takes a `prefix`, such as "To".
 - `FilterPanel` always takes its full height, so short pages keep the height of long ones.
+- `FilterPanel` draws a plain ✕ at its top end that calls `onDismiss`. Its footer floats at the
+  bottom, and the body scrolls under it and fades out over `PanelTokens.fadeWidth` just above it.
+  A disabled `FilterPanelFooter` button dims only its label, so the pill hides the body behind it.
+- `FilterPanelHeader` drops `onClose` and `closeDescription`, since the panel draws the ✕. Remove
+  those arguments; the header keeps room for the ✕ at its end.
 - `RecipientLine` with the default `collapsedAfter` no longer folds into a "+0 more" chip, which
   hid its address field.
 - Add `DateRangeCalendar`, the calendar of `DateRangePicker` on its own, to embed in a page.
