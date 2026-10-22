@@ -7,10 +7,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.FlowRowScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,11 +26,9 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
-import com.otus.designsystem.elements.IconButton
 import com.otus.designsystem.elements.Symbol
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_chevron_left
-import com.otus.designsystem.resources.symbol_close
 import com.otus.designsystem.theme.FilterTokens
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PanelTokens
@@ -36,15 +36,13 @@ import com.otus.designsystem.theme.panelTextStyle
 
 /**
  * A [FilterPanel]'s top row: the [title] on the left, or a back button named after the page it
- * returns to while [onBack] is set, and a plain ✕ at the top right that calls [onClose]. The title
- * takes focus when it appears, so screen readers start at the panel.
+ * returns to while [onBack] is set. The panel draws its own ✕, so the row leaves room for it. The
+ * title takes focus when it appears, so screen readers start at the panel.
  */
 @Composable
 public fun FilterPanelHeader(
     title: String,
-    onClose: () -> Unit,
     modifier: Modifier = Modifier,
-    closeDescription: String = "Close $title",
     onBack: (() -> Unit)? = null,
 ) {
     val focus = remember { FocusRequester() }
@@ -78,9 +76,7 @@ public fun FilterPanelHeader(
                 }
             }
         }
-        IconButton(closeDescription, onClose, outlined = false) {
-            Symbol(Res.drawable.symbol_close, size = FilterTokens.closeIconSize)
-        }
+        Spacer(Modifier.width(PanelTokens.touchTarget))
     }
 }
 
@@ -102,4 +98,19 @@ public fun FilterSection(
         // Each chip's 48 dp touch target already keeps rows 12 dp apart, so rows add no gap of their own.
         FlowRow(horizontalArrangement = Arrangement.spacedBy(FilterTokens.chipGap), content = chips)
     }
+}
+
+/** A small `text3` note under a filter page's choices, such as which folders stay out. */
+@Composable
+public fun FilterNote(
+    text: String,
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        text,
+        modifier.padding(horizontal = FilterTokens.labelInset, vertical = FilterTokens.labelGap),
+        style = panelTextStyle(),
+        color = OtusColors.text3,
+        fontSize = FilterTokens.noteSize,
+    )
 }
