@@ -30,14 +30,17 @@ import org.jetbrains.compose.resources.DrawableResource
 
 /**
  * The menu under a ⋯ button, aligned with its end: icon rows that act, open more, or switch an
- * option. Call it inside the button's layout, so it opens there.
+ * option. Call it inside the button's layout, so it opens there. It shows at once, without
+ * unrolling, so a tap on ⋯ answers in the same frame.
  */
 @Composable
 public fun OptionsMenu(
     items: List<OptionsItem>,
     onDismiss: () -> Unit,
 ) {
-    Dropdown(onDismiss, alignEnd = true, width = ComposeTokens.optionsMenuWidth) { OptionsList(items, onDismiss) }
+    Dropdown(onDismiss, alignEnd = true, width = ComposeTokens.optionsMenuWidth, unrolls = false) {
+        OptionsList(items, onDismiss)
+    }
 }
 
 /**

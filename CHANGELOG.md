@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- `OptionsMenu` and the menus of action bar buttons, such as ⋯, open at once instead of unrolling.
+  `Dropdown` takes `unrolls`, which is true by default. Add the `symbol_self_improvement` drawable.
 - Add the read view parts. Strips above the action bar: `StripCard`, `PositionStrip` with
   `PageDots`, `ThreadList`, `AlsoInStrip` with `FolderHint` and `FolderName`, `InfoStrip` with
   `StripAction`, and `AttachmentStrip` with `AttachmentFile`, `AttachmentKind`, and

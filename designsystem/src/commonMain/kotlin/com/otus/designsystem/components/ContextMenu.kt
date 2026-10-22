@@ -63,14 +63,18 @@ public fun ContextMenu(
     ContextMenu(actions, remember(at, edge) { AtPoint(at.round(), edge) }, onDismiss)
 }
 
-/** A [ContextMenu] at [position]; its rows scroll once it reaches [MenuTokens.dropdownMaxHeight]. */
+/**
+ * A [ContextMenu] at [position]; its rows scroll once it reaches [MenuTokens.dropdownMaxHeight].
+ * It unrolls as it opens while [unrolls] is true.
+ */
 @Composable
 internal fun ContextMenu(
     actions: List<MenuAction>,
     position: PopupPositionProvider,
     onDismiss: () -> Unit,
+    unrolls: Boolean = true,
 ) {
-    MenuPopup(position, onDismiss) {
+    MenuPopup(position, onDismiss, unrolls = unrolls) {
         Column(
             Modifier
                 .width(IntrinsicSize.Max)
@@ -91,18 +95,20 @@ internal fun ContextMenu(
 }
 
 /**
- * A popup at [position] that opens at full size and unrolls from its top edge, so its first rows
- * are readable at once. While [focusable] it takes focus and closes on a tap outside; otherwise
- * taps on the keyboard count as outside, so the caller closes it.
+ * A popup at [position] that opens at full size and, when it [unrolls], unrolls from its top edge,
+ * so its first rows are readable at once; otherwise it shows in the same frame. While [focusable]
+ * it takes focus and closes on a tap outside; otherwise taps on the keyboard count as outside, so
+ * the caller closes it.
  */
 @Composable
 internal fun MenuPopup(
     position: PopupPositionProvider,
     onDismiss: () -> Unit,
     focusable: Boolean = true,
+    unrolls: Boolean = true,
     content: @Composable () -> Unit,
 ) {
-    val shown = remember { MutableTransitionState(false).apply { targetState = true } }
+    val shown = remember { MutableTransitionState(!unrolls).apply { targetState = true } }
     val properties = PopupProperties(focusable = focusable, dismissOnClickOutside = focusable)
     Popup(position, onDismissRequest = onDismiss, properties = properties) {
         AnimatedVisibility(
