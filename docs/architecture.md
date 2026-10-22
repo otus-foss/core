@@ -9,7 +9,8 @@ access to the other app's accounts or storage.
 
 Move code here when the second app needs it or the user explicitly requests a suite extraction
 of existing behavior. The settings/account extraction follows that request and leaves Calendar
-adoption for later. App-specific workflows and speculative modules stay out of this repository. All branded visual
+adoption for later. The contacts modules are new code the user asked for before either app needs
+them; see [decision 0016](decisions/0016-contacts-modules.md). App-specific workflows and speculative modules stay out of this repository. All branded visual
 elements, reusable components, visual tokens, and symbols live here, including those currently
 used only by Mail. See [decision 0008](decisions/0008-central-ui-ownership.md).
 
@@ -44,11 +45,14 @@ these through pinned libraries or an opt-in composite build; Calendar is unchang
 | 3 | `dateformat` | `core/dateformat` in both apps | Moved from Mail in 0.2.0. See [date formatting](dateformat.md). |
 | 4 | `avatar` | `core/avatar` in both apps | Moved from Mail in 0.2.0; Calendar's copy is older. See [avatars](avatar.md). |
 | 5 | `push` | New | JMAP push subscriptions for Mail, and Calendar later. See [push](push.md) and decision 0015. |
+| 6 | `jscontact` | New | JSContact cards (RFC 9553). Depends only on kotlinx.serialization. No app uses it yet. See [contacts](contacts.md) and decision 0016. |
+| 7 | `jmap-contacts` | New | JMAP for Contacts (RFC 9610) on `jmap` and `jscontact`. No app uses it yet. See [contacts](contacts.md) and decision 0016. |
 
 Later modules come from the roadmap issues once their APIs exist in one app and the second app
 needs them. Candidates are storage (SQLDelight drivers, migrations, blob files), sync cursors,
-the durable operation queue, contacts, filter definitions, invitation parsing, settings
-transfer, and per-capability JMAP modules such as `jmap-mail` or `jmap-calendars`. Split a
+the durable operation queue, filter definitions, invitation parsing, settings transfer, and
+more per-capability JMAP modules such as `jmap-mail` or `jmap-calendars`, alongside
+`jmap-contacts`. Split a
 module on a real dependency difference, for example when Calendar must not pull in Sieve code.
 
 ## Dependency rules
