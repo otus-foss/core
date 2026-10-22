@@ -52,6 +52,24 @@ fun server(api: (String) -> String = { error("unexpected API call") }): Pair<Moc
     return engine to requests
 }
 
+/**
+ * Serves [session] without checking credentials and answers each request to its `/jmap/` apiUrl
+ * with [api]. Records every request.
+ */
+fun fixtureServer(
+    session: String,
+    api: (String) -> String,
+): Pair<MockEngine, MutableList<Recorded>> {
+    val requests = mutableListOf<Recorded>()
+    val engine =
+        MockEngine { request ->
+            val record = request.record()
+            requests += record
+            if (record.path == "/jmap/") json(api(record.body)) else json(session)
+        }
+    return engine to requests
+}
+
 fun HttpRequestData.record() =
     Recorded(
         url.host,
