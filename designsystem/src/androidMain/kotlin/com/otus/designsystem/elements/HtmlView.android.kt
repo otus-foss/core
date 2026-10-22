@@ -16,7 +16,6 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import com.otus.designsystem.theme.OtusColors
-import kotlin.math.roundToInt
 
 @Composable
 public actual fun HtmlView(
@@ -35,12 +34,7 @@ public actual fun HtmlView(
     val renderKey = remember { newRenderKey() }
     val document =
         remember(html, loadRemote, palette, placeholders, quote, insets) {
-            val spacers =
-                HtmlSpacers(
-                    insets.calculateTopPadding().value.roundToInt(),
-                    insets.calculateBottomPadding().value.roundToInt(),
-                )
-            sandboxedHtml(html, loadRemote, palette, renderKey, placeholders, quote, spacers)
+            sandboxedHtml(html, loadRemote, palette, renderKey, placeholders, quote, insets.spacers())
         }
     // A new document gets a new view, so no page or setting of the last one carries over.
     key(document) {

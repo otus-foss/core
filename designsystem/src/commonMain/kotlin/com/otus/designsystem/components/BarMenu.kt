@@ -23,7 +23,10 @@ internal class BarMenu {
 
     fun click(action: BarAction): () -> Unit = { if (action.menu.isEmpty()) action.onClick() else open = true }
 
-    /** [action]'s open menu, one bar gap above the button and lined up with its [end] or start edge. */
+    /**
+     * [action]'s open menu, one bar gap above the button and lined up with its [end] or start edge.
+     * It shows at once, without unrolling, since the button's tap asked for it.
+     */
     @Composable
     fun Menu(
         action: BarAction,
@@ -35,7 +38,7 @@ internal class BarMenu {
             remember(end, density) {
                 with(density) { AboveBar(ActionBarTokens.gap.roundToPx(), MenuTokens.edge.roundToPx(), end) }
             }
-        ContextMenu(action.menu, position) { open = false }
+        ContextMenu(action.menu, position, { open = false }, unrolls = false)
     }
 }
 

@@ -21,7 +21,6 @@ import platform.WebKit.WKNavigationTypeLinkActivated
 import platform.WebKit.WKWebView
 import platform.WebKit.WKWebViewConfiguration
 import platform.darwin.NSObject
-import kotlin.math.roundToInt
 
 @OptIn(ExperimentalForeignApi::class)
 @Composable
@@ -41,12 +40,7 @@ public actual fun HtmlView(
     val renderKey = remember { newRenderKey() }
     val document =
         remember(html, loadRemote, palette, placeholders, quote, insets) {
-            val spacers =
-                HtmlSpacers(
-                    insets.calculateTopPadding().value.roundToInt(),
-                    insets.calculateBottomPadding().value.roundToInt(),
-                )
-            sandboxedHtml(html, loadRemote, palette, renderKey, placeholders, quote, spacers)
+            sandboxedHtml(html, loadRemote, palette, renderKey, placeholders, quote, insets.spacers())
         }
     // WebKit keeps only a weak reference to its delegate.
     val delegate =
