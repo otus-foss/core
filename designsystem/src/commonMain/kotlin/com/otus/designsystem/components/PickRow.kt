@@ -23,7 +23,6 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import com.otus.designsystem.theme.ComposeTokens
 import com.otus.designsystem.theme.OtusAlpha
 import com.otus.designsystem.theme.OtusColors
@@ -49,25 +48,35 @@ public fun PickRow(
     subtitleLines: Int = 1,
     leading: (@Composable () -> Unit)? = null,
 ) {
-    PickRowFrame(mark, onClick, modifier, leading) {
-        Text(title, style = panelTextStyle(), maxLines = 1, overflow = TextOverflow.Ellipsis)
-        subtitle?.let {
-            Text(
-                it,
-                style = panelTextStyle(),
-                color = OtusColors.text2,
-                fontSize = ComposeTokens.detailSize,
-                maxLines = subtitleLines,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
+    PickRowFrame(mark, onClick, modifier.heightIn(min = SheetTokens.rowHeight), leading) {
+        PickRowText(title, subtitle, subtitleLines)
+    }
+}
+
+/** The [title] and smaller `text2` [subtitle] of a [PickRow] or [FilterPickRow]. */
+@Composable
+internal fun PickRowText(
+    title: String,
+    subtitle: String?,
+    subtitleLines: Int = 1,
+) {
+    Text(title, style = panelTextStyle(), maxLines = 1, overflow = TextOverflow.Ellipsis)
+    subtitle?.let {
+        Text(
+            it,
+            style = panelTextStyle(),
+            color = OtusColors.text2,
+            fontSize = ComposeTokens.detailSize,
+            maxLines = subtitleLines,
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }
 
 /**
  * The frame of a [PickRow] and its relatives, such as [FolderPickRow]: the [leading] slot, the
- * [content] column, an optional [trailing] slot, and the [mark] at the end, or first when it is
- * [PickMark.atStart]. Rows are at least [minHeight] tall.
+ * [content] column, an optional [trailing] slot, and the [markView] at the end, or first when
+ * [mark] is [PickMark.atStart]. [modifier] sets the row's minimum height.
  */
 @Composable
 internal fun PickRowFrame(
@@ -76,7 +85,7 @@ internal fun PickRowFrame(
     modifier: Modifier,
     leading: (@Composable () -> Unit)?,
     trailing: (@Composable () -> Unit)? = null,
-    minHeight: Dp = SheetTokens.rowHeight,
+    markView: @Composable () -> Unit = { PickMarkView(mark) },
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val enabled = onClick != null
@@ -89,18 +98,17 @@ internal fun PickRowFrame(
     Row(
         modifier
             .fillMaxWidth()
-            .heightIn(min = minHeight)
             .then(choose)
             .alpha(if (enabled) 1f else OtusAlpha.DISABLED)
             .padding(horizontal = SheetTokens.inset, vertical = PanelTokens.iconGap),
         horizontalArrangement = Arrangement.spacedBy(SheetTokens.gap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        if (mark.atStart) PickMarkView(mark)
+        if (mark.atStart) markView()
         leading?.invoke()
         Column(Modifier.weight(1f), content = content)
         trailing?.invoke()
-        if (!mark.atStart) PickMarkView(mark)
+        if (!mark.atStart) markView()
     }
 }
 

@@ -36,10 +36,45 @@ class FilterPanelScreenshotTest {
                     open = true,
                     collapsedHeight = 112.dp,
                     onDismiss = {},
-                    header = { FilterPanelHeader("Filters", {}, closeDescription = "Close filters") },
+                    header = { FilterPanelHeader("Filters") },
                     footer = { FilterPanelFooter("Show 12 conversations", {}, {}, resetEnabled = false) },
                     modifier = Modifier.padding(8.dp),
                 ) { Sections() }
+            }
+        }
+
+    @Test
+    fun fillHeight() =
+        compose.screenScreenshot("filter_panel_fill_height") {
+            WithBackDispatcher {
+                FilterPanel(
+                    open = true,
+                    collapsedHeight = 112.dp,
+                    onDismiss = {},
+                    header = { FilterPanelHeader("Metadata", onBack = {}) },
+                    footer = { FilterPanelFooter("Show 30 conversations", {}, {}) },
+                    modifier = Modifier.padding(8.dp),
+                ) {
+                    FilterSection("Type", Modifier.padding(horizontal = FilterTokens.bodyInset)) {
+                        FilterChip("Newsletters", selected = false, onClick = {})
+                        FilterChip("Calendar invites", selected = true, onClick = {})
+                    }
+                }
+            }
+        }
+
+    @Test
+    fun bodyUnderFooter() =
+        compose.screenScreenshot("filter_panel_body_under_footer") {
+            WithBackDispatcher {
+                FilterPanel(
+                    open = true,
+                    collapsedHeight = 112.dp,
+                    onDismiss = {},
+                    header = { FilterPanelHeader("Filters") },
+                    footer = { FilterPanelFooter("Show 12 conversations", {}, {}) },
+                    modifier = Modifier.padding(8.dp),
+                ) { repeat(BODY_REPEATS) { Sections() } }
             }
         }
 
@@ -97,3 +132,5 @@ private fun Sections() {
         )
     }
 }
+
+private const val BODY_REPEATS = 3
