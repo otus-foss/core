@@ -21,6 +21,51 @@
 - `FilterFolderRow` ends in the same check circle as `FilterPickRow` instead of a checkbox.
 - Add the `symbol_check_circle_fill`, `symbol_radio_button_unchecked`, `symbol_hourglass_empty`,
   and `symbol_account_circle` symbols (Material Symbols Rounded, Apache 2.0).
+- Add the `jscontact` module (`com.otus:jscontact`, decision 0016) for JSContact cards
+  (RFC 9553): `Card` and one class per object type, such as `Name`, `EmailAddress`, `Phone`,
+  `Address`, `Media`, and `Anniversary` with `PartialDate` and `Timestamp`. Every class keeps
+  unknown and vendor-specific properties in `extra` and writes them back (sections 1.7.4 and
+  1.8.1). Enumerated values such as `CardKind`, `ContactContext`, and `PhoneFeature` are value
+  classes that keep values they do not know. Every `Card` property is optional, so partial cards
+  from a JMAP `/get` decode, and a missing `version` reads as `1.0`. See
+  [contacts](docs/contacts.md).
+- Add `Card.validate`, which returns a `JsContactProblem` with a JSON Pointer for each rule of
+  RFC 9553 or RFC 9610 the card breaks.
+- Add `Card.localized` and `JsContactPatch.apply`, which apply a localization PatchObject
+  (RFC 9553, sections 1.4.3 and 2.7.1).
+- Add the `jmap-contacts` module (`com.otus:jmap-contacts`, decision 0016) for JMAP for Contacts
+  (RFC 9610): `ContactCardType`, `AddressBookType`, `AddressBook` with `AddressBookRights` and
+  `AddressBookOrder`, and `JmapAccount.contacts`, which reads `ContactsCapability`
+  (section 1.4.1). No app uses it yet.
+- Add `AddressBookSetMethod`, `NewAddressBook`, and `addressBookPatch` for `AddressBook/set`, with
+  `onDestroyRemoveContents`, `onSuccessSetIsDefault`, and per-Principal `shareWith` changes
+  (RFC 9610, section 2.3).
+- Add `ContactCardFilter` and `ContactCardSort` for `ContactCard/query` (RFC 9610, sections 3.3.1
+  and 3.3.2), and `contactCardPatch` and `Card.toCreation` for `ContactCard/set` (section 3.5).
+- Add `QueryChangesMethod`, `QueryChangesResult`, and `AddedItem` for `/queryChanges` (RFC 8620,
+  section 5.6).
+- Add `CopyMethod` and `CopyResult` for `/copy` (RFC 8620, section 5.4). The client checks the
+  type's capability in both accounts before sending.
+- Add `JmapFilter`, `FilterOperator`, `allOf`, `anyOf`, `noneOf`, `and`, and `or`, which build
+  `/query` filters with FilterOperators (RFC 8620, section 5.5).
+- Add `jmapPatch`, `JmapPatchBuilder`, and `patchPath`, which build a `/set` PatchObject with
+  escaped JSON Pointer keys and reject overlapping paths before sending (RFC 8620, section 5.3).
+- Add `JmapSort.collation`, sent only when set, and `QueryResult.canCalculateChanges` and
+  `QueryResult.limit` (RFC 8620, section 5.5). A `limit` outside 0 to 2^53 - 1 fails decoding.
+  Existing calls compile unchanged.
+- Add `JmapSession.maxObjectsInGet`, read from the core capability (RFC 8620, section 2).
+- Add `UtcDateSerializer`, which reads and writes a UTCDate (RFC 8620, section 1.4) as a
+  `kotlin.time.Instant`. It writes the `Z` form without trailing fraction zeros, such as
+  `2014-10-30T06:12:00.5Z`, and reads any RFC 3339 offset. A leap second reads as the last
+  nanosecond before it, and a year outside 0000 to 9999 fails in both directions.
+- Add the `com.otus.jmap.sharing` package for RFC 9670: `Principal`, `PrincipalKind`,
+  `PrincipalAccount`, `PrincipalType`, `PrincipalFilter`, `ShareNotification`, `ShareEntity`,
+  `ShareNotificationType`, `ShareNotificationFilter`, `ShareNotificationSort`,
+  `PrincipalsCapability`, `PrincipalOwner`, `JmapAccount.principals`, and
+  `JmapAccount.principalOwner`. Add `JmapCapability.PRINCIPALS` and
+  `JmapCapability.PRINCIPALS_OWNER` (sections 1.5.1 and 1.5.2). `Principal.type` and the
+  properties RFC 9670 requires on a `ShareNotification` are nullable, so a `/get` with
+  `properties` that leaves them out decodes.
 - Add the read view parts. Strips above the action bar: `StripCard`, `PositionStrip` with
   `PageDots`, `ThreadList`, `AlsoInStrip` with `FolderHint` and `FolderName`, `InfoStrip` with
   `StripAction`, and `AttachmentStrip` with `AttachmentFile`, `AttachmentKind`, and
