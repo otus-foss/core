@@ -80,8 +80,7 @@ public data class SetResult(
     val notDestroyed: Map<String, SetError>,
 ) {
     /** The id the server gave the object created as [creationId], or null when it was not created. */
-    public fun createdId(creationId: String): String? =
-        (created[creationId]?.get("id") as? JsonPrimitive)?.takeIf { it.isString }?.content
+    public fun createdId(creationId: String): String? = created.idCreatedAs(creationId)
 
     /** The first rejection, checking creations, then updates, then destructions. */
     public val firstError: SetError?
@@ -122,6 +121,10 @@ private fun SetResult.validateOutcomes(
     checkOutcomes(destructions.mapNotNull(::resolveCreatedId), destroyed.toSet(), notDestroyed.keys)
     if (created.keys.any { createdId(it) == null }) throw JmapException.NotJmap("created object has no id")
 }
+
+/** The server id in a `/set` or `/copy` `created` entry; both report it as the entry's `id`. */
+internal fun Map<String, JsonObject>.idCreatedAs(creationId: String): String? =
+    (get(creationId)?.get("id") as? JsonPrimitive)?.takeIf { it.isString }?.content
 
 private fun SetResult.resolveCreatedId(id: String): String? =
     // A creation reference from an earlier method may resolve to an id unknown to this method.
