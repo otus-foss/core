@@ -38,6 +38,37 @@ public object FilterTokens {
     public val folderRowHeight: Dp = 48.dp
     public val folderIndent: Dp = 16.dp
 
+    /** How many levels a folder tree indents; deeper folders line up with the last level. */
+    public const val FOLDER_MAX_DEPTH: Int = 5
+
+    /** A row that opens a filter page and shows its current value. */
+    public val valueRowHeight: Dp = 52.dp
+    public val rowTitleSize: TextUnit = 15.sp
+
+    /** A person, address, or account to pick on a filter page. */
+    public val pickRowHeight: Dp = 56.dp
+    public val pickAvatarSize: Dp = 36.dp
+
+    /** The From and To column of a line of picked people. */
+    public val peopleLabelWidth: Dp = 40.dp
+
+    /** The least room the placeholder after picked people keeps, such as "Add people…". */
+    public val placeholderMinWidth: Dp = 80.dp
+
+    /** A picked person's name in a chip ends in an ellipsis past this width. */
+    public val personChipNameMaxWidth: Dp = 160.dp
+    public val cardRadius: Dp = CornerTokens.panel
+
+    /** A date range calendar shown inline on a filter page: its heading, weekdays, and about four weeks. */
+    public val rangeCalendarHeight: Dp = 360.dp
+
+    /** A small note under a filter page's choices, such as which folders are left out. */
+    public val noteSize: TextUnit = 12.sp
+
+    /** How far each folder in a pill's stack overlaps the one before it. */
+    public val folderStackOverlap: Dp = 8.dp
+    public const val FOLDER_STACK_LIMIT: Int = 3
+
     /** How far the panel keeps from the window's top and bottom edges. */
     public val screenInset: Dp = 16.dp
 

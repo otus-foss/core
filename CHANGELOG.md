@@ -4,6 +4,23 @@
 
 - `OptionsMenu` and the menus of action bar buttons, such as ⋯, open at once instead of unrolling.
   `Dropdown` takes `unrolls`, which is true by default. Add the `symbol_self_improvement` drawable.
+- Add the parts of the compact filter panel: `FilterRowCard`, `FilterValueRow`, `PeopleLine`
+  with `RemovablePersonChip`, and `FilterPickRow`, plus `FilterTokens` for their sizes and
+  `FilterTokens.FOLDER_MAX_DEPTH`.
+- Add `FilterNote` for a small note under a filter page's choices, and `FolderStackChip` (with
+  `StackedFolder`), the pill for chosen folders. `AvatarStackChip` takes a `prefix`, such as "To".
+- `FilterPanel` always takes its full height, so short pages keep the height of long ones.
+- `FilterPanel` draws a plain ✕ at its top end that calls `onDismiss`. Its footer floats at the
+  bottom, and the body scrolls under it and fades out over `PanelTokens.fadeWidth` just above it.
+  A disabled `FilterPanelFooter` button dims only its label, so the pill hides the body behind it.
+- `FilterPanelHeader` drops `onClose` and `closeDescription`, since the panel draws the ✕. Remove
+  those arguments; the header keeps room for the ✕ at its end.
+- `RecipientLine` with the default `collapsedAfter` no longer folds into a "+0 more" chip, which
+  hid its address field.
+- Add `DateRangeCalendar`, the calendar of `DateRangePicker` on its own, to embed in a page.
+- `FilterFolderRow` ends in the same check circle as `FilterPickRow` instead of a checkbox.
+- Add the `symbol_check_circle_fill`, `symbol_radio_button_unchecked`, `symbol_hourglass_empty`,
+  and `symbol_account_circle` symbols (Material Symbols Rounded, Apache 2.0).
 - Add the read view parts. Strips above the action bar: `StripCard`, `PositionStrip` with
   `PageDots`, `ThreadList`, `AlsoInStrip` with `FolderHint` and `FolderName`, `InfoStrip` with
   `StripAction`, and `AttachmentStrip` with `AttachmentFile`, `AttachmentKind`, and
@@ -46,7 +63,6 @@
   `symbol_pdf`, the "PDF" letters of `picture_as_pdf` on their own. `AttachmentKind` also covers
   slides, archives, audio, video, calendar events, contacts, and code, and files sit on round
   tiles, like avatars.
-
 - `IconButton` takes a `badgeCount` and draws it outside its circle, so the filter button's count
   is no longer cut off. It replaces `BadgedSymbol`, which is removed.
 - A swipe reveal shrinks its edge fillet and free-end corner together while it is narrow, so it

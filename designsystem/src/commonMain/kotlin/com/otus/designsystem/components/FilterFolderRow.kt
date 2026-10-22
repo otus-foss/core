@@ -39,7 +39,8 @@ import com.otus.designsystem.theme.panelTextStyle
 /**
  * One folder of a checkable folder tree, 48 dp tall: a chevron for folders with subfolders
  * ([expanded] is null for others), the [glyph], the [folder]'s name after its `text3` path, and a
- * checkbox at the end. Each depth level indents [FilterTokens.folderIndent], up to five levels.
+ * check circle at the end. Each depth level indents [FilterTokens.folderIndent], up to
+ * [FilterTokens.FOLDER_MAX_DEPTH] levels.
  */
 @Composable
 public fun FilterFolderRow(
@@ -57,25 +58,12 @@ public fun FilterFolderRow(
         modifier
             .fillMaxWidth()
             .height(FilterTokens.folderRowHeight)
-            .semantics(mergeDescendants = true) {
-                role = Role.Checkbox
-                toggleableState = if (check == FolderCheck.Off) ToggleableState.Off else ToggleableState.On
-                stateDescription = folderState(check, depth, expanded)
-                if (!enabled) disabled()
-                if (expanded == false) {
-                    expand {
-                        onExpandedChange(true)
-                        true
-                    }
-                }
-                if (expanded == true) {
-                    collapse {
-                        onExpandedChange(false)
-                        true
-                    }
-                }
-            }.clickable(enabled = enabled, onClick = onCheck)
-            .padding(start = FilterTokens.folderIndent * depth.coerceIn(0, MAX_INDENT), end = FilterTokens.bodyInset),
+            .folderSemantics(check, depth, expanded, onExpandedChange)
+            .clickable(enabled = enabled, onClick = onCheck)
+            .padding(
+                start = FilterTokens.folderIndent * depth.coerceIn(0, FilterTokens.FOLDER_MAX_DEPTH - 1),
+                end = FilterTokens.bodyInset,
+            ),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FilterTokens.chipIconGap),
     ) {
@@ -103,7 +91,7 @@ public fun FilterFolderRow(
         )
         Spacer(Modifier.width(PanelTokens.iconGap))
         Box(Modifier.alpha(if (enabled) 1f else OtusAlpha.DISABLED)) {
-            PickMarkView(PickMark(selected = check != FolderCheck.Off, multiple = true))
+            FilterPickMark(selected = check != FolderCheck.Off)
         }
     }
 }
@@ -123,4 +111,28 @@ private fun folderState(
         "included with parent".takeIf { check == FolderCheck.Included },
     ).joinToString(", ")
 
-private const val MAX_INDENT = 4
+/** Reads the row as a checkbox, with its state and, for parents, expand and collapse actions. */
+private fun Modifier.folderSemantics(
+    check: FolderCheck,
+    depth: Int,
+    expanded: Boolean?,
+    onExpandedChange: (Boolean) -> Unit,
+): Modifier =
+    semantics(mergeDescendants = true) {
+        role = Role.Checkbox
+        toggleableState = if (check == FolderCheck.Off) ToggleableState.Off else ToggleableState.On
+        stateDescription = folderState(check, depth, expanded)
+        if (check == FolderCheck.Included) disabled()
+        if (expanded == false) {
+            expand {
+                onExpandedChange(true)
+                true
+            }
+        }
+        if (expanded == true) {
+            collapse {
+                onExpandedChange(false)
+                true
+            }
+        }
+    }
