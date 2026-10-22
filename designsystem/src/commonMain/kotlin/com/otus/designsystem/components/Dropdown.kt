@@ -50,7 +50,8 @@ import com.otus.designsystem.theme.panelTextStyle
  * keyboard. [width] fixes its width; without it the list spans the window, inside
  * the menu edge. A tap outside or Back runs [onDismiss]. A dropdown that must leave the keyboard
  * to a field, such as suggestions while typing, is not [focusable]: it stays open while the user
- * types, and the field closes it. Its height animates as its rows change.
+ * types, and the field closes it. It [unrolls] as it opens, unless a ⋯ button opens it, and its
+ * height animates as its rows change.
  */
 @Composable
 public fun Dropdown(
@@ -59,6 +60,7 @@ public fun Dropdown(
     alignEnd: Boolean = false,
     width: Dp? = null,
     focusable: Boolean = true,
+    unrolls: Boolean = true,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val density = LocalDensity.current
@@ -72,7 +74,7 @@ public fun Dropdown(
             LocalWindowInfo.current.containerSize.width
                 .toDp()
         }
-    MenuPopup(position, onDismiss, focusable) {
+    MenuPopup(position, onDismiss, focusable, unrolls) {
         Column(
             modifier
                 .width(width ?: (window - MenuTokens.edge * 2))
