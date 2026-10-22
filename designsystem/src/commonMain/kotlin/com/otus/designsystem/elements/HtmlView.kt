@@ -5,7 +5,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.unit.LayoutDirection
 import com.otus.designsystem.theme.OtusPalette
+import kotlin.math.roundToInt
 
 /**
  * Shows an HTML document, such as a message body, and scrolls it inside its own bounds. Scripts
@@ -67,6 +69,7 @@ internal fun sandboxedHtml(
     val blocked = !loadRemote && placeholders
     val inert = if (loadRemote) document else document.replace(LINK_TAG, "<otus-inert-link")
     val body = if (blocked) withImagePlaceholders(inert, key) else inert
+    val margin = if (hasOwnLayout(html)) "0" else "0 ${spacers.right}px 0 ${spacers.left}px"
     val page =
         if (hasOwnColors(html) || quote?.html?.let(::hasOwnColors) == true) {
             "body{color:#000;background:#fff}"
@@ -77,7 +80,7 @@ internal fun sandboxedHtml(
     return "<meta http-equiv=\"Content-Security-Policy\" content=\"$policy\">" +
         prefetch +
         "<meta name=\"viewport\" content=\"width=device-width\">" +
-        "<style>body{margin:0;overflow-wrap:anywhere}img{max-width:100%;height:auto}$page" +
+        "<style>body{margin:$margin;overflow-wrap:anywhere}img{max-width:100%;height:auto}$page" +
         (if (blocked) placeholderStyle(palette, key) else "") +
         "</style>" +
         // Spacers, not body padding, since a mail's own styles may reset the body's padding.
@@ -86,11 +89,25 @@ internal fun sandboxedHtml(
         spacer(spacers.bottom)
 }
 
-/** Empty space above and under a page, in CSS pixels, which are dp at a device-width viewport. */
+/**
+ * Empty space above and under a page, and beside one without a layout of its own, in CSS pixels,
+ * which are dp at a device-width viewport.
+ */
 internal data class HtmlSpacers(
     val top: Int = 0,
     val bottom: Int = 0,
+    val left: Int = 0,
+    val right: Int = 0,
 )
+
+/** [HtmlView]'s insets as spacers. */
+internal fun PaddingValues.spacers(): HtmlSpacers =
+    HtmlSpacers(
+        calculateTopPadding().value.roundToInt(),
+        calculateBottomPadding().value.roundToInt(),
+        calculateLeftPadding(LayoutDirection.Ltr).value.roundToInt(),
+        calculateRightPadding(LayoutDirection.Ltr).value.roundToInt(),
+    )
 
 private fun spacer(height: Int): String = if (height > 0) "<div style=\"height:${height}px\"></div>" else ""
 
@@ -98,6 +115,16 @@ private fun spacer(height: Int): String = if (height > 0) "<div style=\"height:$
 internal fun hasOwnColors(html: String): Boolean =
     COLOR_ATTRIBUTE.containsMatchIn(html) ||
         STYLES.findAll(html).any { styles -> styles.groupValues.drop(1).any(CSS_COLOR::containsMatchIn) }
+
+/** Whether [html] lays itself out, in a table or on a background of its own, as designed mail does. */
+internal fun hasOwnLayout(html: String): Boolean =
+    TABLE_TAG.containsMatchIn(html) ||
+        BACKGROUND_ATTRIBUTE.containsMatchIn(html) ||
+        STYLES.findAll(html).any { styles -> styles.groupValues.drop(1).any(CSS_BACKGROUND::containsMatchIn) }
+
+private val TABLE_TAG = Regex("<table(?=[\\s/>])", RegexOption.IGNORE_CASE)
+private val BACKGROUND_ATTRIBUTE = Regex("""(?i)<[^>]*\s(?:bgcolor|background)\s*=""")
+private val CSS_BACKGROUND = Regex("""(?i)(?:^|[\s;{])background(?:-color|-image)?\s*:""")
 
 private val COLOR_ATTRIBUTE = Regex("""(?i)<[^>]*\s(?:bg)?color\s*=""")
 private val STYLES = Regex("""(?is)<style\b[^>]*>(.*?)</style>|\sstyle\s*=\s*(?:"([^"]*)"|'([^']*)')""")
