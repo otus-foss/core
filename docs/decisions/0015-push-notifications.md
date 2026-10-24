@@ -18,13 +18,15 @@ Each app offers these delivery modes under Settings, Notifications. The user pic
 | --- | --- | --- |
 | Background check | Android WorkManager checks for changes about every 15 minutes. | Nothing. This is the default. |
 | UnifiedPush | The server POSTs to the user's UnifiedPush distributor, such as ntfy, Sunup, or NextPush, which wakes the app. | A distributor app, and a server with `PushSubscription`. |
-| Google | UnifiedPush's embedded FCM distributor, built into the Play build, receives the push through Google's FCM. | A server that advertises VAPID (RFC 9749), or a gateway URL the user enters. |
+| Google | UnifiedPush's embedded FCM distributor, built into the Android app, receives the push through Google's FCM. | A server that advertises VAPID (RFC 9749). User-configured gateways are not built yet. |
 | Always connected | A foreground service keeps an EventSource stream open. | A server with EventSource. Experimental; see below. |
 
 UnifiedPush is the custom setup. A user who self-hosts runs their own ntfy or Sunup server and
 points the distributor at it; Otus only sees the endpoint URL the distributor hands over. Google
-needs no setup when the server signs pushes with VAPID. Otherwise FCM rejects the push, and the
-user can enter the URL of a gateway they run. Otus does not offer a public gateway.
+needs no setup when the server signs pushes with VAPID. Otherwise FCM rejects the push. A
+user-configured gateway remains planned; until then Mail shows that Google delivery is
+unsupported and keeps background checks. Otus does not offer a
+public gateway.
 
 The Settings page shows the active mode and whether each account's server pushes. Planned
 additions: when the last push arrived, and a button that sends a test notification, so a
@@ -32,8 +34,11 @@ self-hosted setup can be checked.
 
 ## Builds
 
-Android gets two product flavors. The Play flavor includes the Google mode. The F-Droid flavor
-leaves out Google's proprietary FCM library; its other modes are the same.
+The original plan split Play and F-Droid builds to exclude Google's proprietary FCM SDK. The
+embedded distributor's current release, 3.1.0, contains no proprietary SDK and needs no Firebase
+project configuration. Mail's `feat/google-push` includes it in existing Android builds and only
+offers Google delivery on devices with Play services. Separate product flavors are unnecessary
+for this integration. See the [upstream library](https://unifiedpush.org/kdoc/embedded_fcm_distributor/).
 
 iOS gets the background check only. Apple's push service needs a server that holds the app's
 Apple credentials, which this decision rules out.
@@ -46,8 +51,8 @@ Apple credentials, which this decision rules out.
   Each app passes the data types it watches. The UnifiedPush connector library decrypts Web Push
   messages, so Otus has no crypto code. The Android receiver and the background check stay in
   Mail until Calendar needs them.
-- A separate `com.otus:push-fcm` artifact will hold the embedded FCM distributor, so the F-Droid
-  flavor can leave it out.
+- Mail owns the embedded FCM dependency and Android registration. Extract shared code when
+  Calendar consumes it, as the library architecture rules require.
 - `com.otus:settings` will hold the Notifications page.
 - Each app owns its notifications: channels, grouping, preview privacy, actions, and what a tap
   opens. Mail and Calendar do not merge notifications, and Calendar reminders stay local.
@@ -80,6 +85,8 @@ everything since the last saved state.
    `Email/changes`. Done.
 3. UnifiedPush. Built with `com.otus:push`; the device test against a self-hosted ntfy, ntfy.sh,
    and Sunup is still open.
-4. The Google mode and the two build flavors.
+4. Google delivery is implemented on Mail `feat/google-push`, pending merge and a device test.
+   It reads each server's VAPID key, replaces registration after key rotation, and shows account
+   registration failures. Gateways remain unimplemented.
 5. A device test of the always connected mode.
 6. Calendar uses `com.otus:push`.
