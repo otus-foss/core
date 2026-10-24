@@ -36,9 +36,12 @@ Detekt is skipped while the repository has no library module, because it has no 
 read. Kotlin/Native tests for iOS run only on macOS. On Linux, compile the iOS sources of a module
 with `./gradlew :<module>:compileKotlinIosSimulatorArm64`; this does not run them.
 
-The versioned Git hooks are the main gate. `pre-commit` runs the Spotless and Ruff checks, and
-`pre-push` runs `checkAll` before every push that sends commits, including tags. Both check the
-working tree, so stash unrelated changes first. Do not skip them with `--no-verify`.
+The versioned Git hooks are the main gate. `pre-commit` runs the Spotless and Ruff checks on the
+working tree, so stash unrelated changes first. `commit-msg` checks the message and removes AI
+attribution lines, such as `Co-authored-by` trailers that name Claude, Anthropic, or Cursor. No
+hook runs `checkAll`, because a full build on every push is too heavy for a laptop. Run
+`./gradlew checkAll` before pushing work that needs it, such as a direct push to `main` or a
+release tag. Do not skip the hooks with `--no-verify`.
 
 **CI runs once per pull request,** on Ubicloud runners. The `quality` workflow starts when a pull
 request that is not a draft opens, or when a draft is marked ready for review. Later pushes do not
