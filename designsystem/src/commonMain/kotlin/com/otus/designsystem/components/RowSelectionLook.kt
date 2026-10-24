@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.otus.designsystem.elements.Symbol
@@ -21,6 +22,7 @@ import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_check
 import com.otus.designsystem.theme.ActionBarTokens
 import com.otus.designsystem.theme.InboxTokens
+import com.otus.designsystem.theme.OtusAlpha
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.motionTween
 
@@ -52,18 +54,26 @@ internal fun SelectableLeading(
 
 /**
  * A card on the theme's raised color behind a list row, filled with the selection tint while the
- * row is selected. The gaps between cards keep selected neighbors apart, so corners never join.
- * On a theme whose raised color is its page color, such as Black, an outline marks the card.
+ * row is selected. A [dimmed] row's card fades toward the page as much as its text fades, so read
+ * and unread rows differ in both. The gaps between cards keep selected neighbors apart, so corners
+ * never join. On a theme whose raised color is its page color, such as Black, an outline marks the card.
  */
 @Composable
-internal fun Modifier.rowCard(selection: RowSelection?): Modifier {
+internal fun Modifier.rowCard(
+    selection: RowSelection?,
+    dimmed: Boolean,
+): Modifier {
     val selected = selection?.selected == true
-    val fill = animateColorAsState(if (selected) OtusColors.accentDark else OtusColors.bgDark, motionTween()).value
+    val strength = if (dimmed) OtusAlpha.DIMMED else 1f
+    val raised = lerp(OtusColors.bgRegular, OtusColors.bgDark, strength)
+    val fill = animateColorAsState(if (selected) OtusColors.accentDark else raised, motionTween()).value
     val shape = RoundedCornerShape(InboxTokens.selectionRadius)
+    val outline = OtusColors.strokeBgDark.copy(alpha = strength)
     val outlined = !selected && OtusColors.bgDark == OtusColors.bgRegular
-    return clip(shape)
-        .background(fill)
-        .then(if (outlined) Modifier.border(InboxTokens.cardOutline, OtusColors.strokeBgDark, shape) else Modifier)
+    // Drawn as a shape rather than inside a clip layer, and clipped afterwards for the press ripple.
+    return background(fill, shape)
+        .then(if (outlined) Modifier.border(InboxTokens.cardOutline, outline, shape) else Modifier)
+        .clip(shape)
 }
 
 @Composable
