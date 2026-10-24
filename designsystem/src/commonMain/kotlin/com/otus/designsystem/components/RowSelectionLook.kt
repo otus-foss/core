@@ -4,6 +4,7 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -47,6 +48,22 @@ internal fun SelectableLeading(
     leading: @Composable () -> Unit,
 ) {
     Crossfade(selected, animationSpec = motionTween()) { if (it) SelectedMark(markSize) else leading() }
+}
+
+/**
+ * A card on the theme's raised color behind a list row, filled with the selection tint while the
+ * row is selected. The gaps between cards keep selected neighbors apart, so corners never join.
+ * On a theme whose raised color is its page color, such as Black, an outline marks the card.
+ */
+@Composable
+internal fun Modifier.rowCard(selection: RowSelection?): Modifier {
+    val selected = selection?.selected == true
+    val fill = animateColorAsState(if (selected) OtusColors.accentDark else OtusColors.bgDark, motionTween()).value
+    val shape = RoundedCornerShape(InboxTokens.selectionRadius)
+    val outlined = !selected && OtusColors.bgDark == OtusColors.bgRegular
+    return clip(shape)
+        .background(fill)
+        .then(if (outlined) Modifier.border(InboxTokens.cardOutline, OtusColors.strokeBgDark, shape) else Modifier)
 }
 
 @Composable
