@@ -12,7 +12,9 @@ the changes itself. With `PushSubscription`, the server POSTs each message to a 
 (RFC 8030). The app always sends encryption keys (RFC 8291) when it subscribes, so a push service
 such as ntfy.sh or Google sees only ciphertext, size, and timing.
 
-Each app offers these delivery modes under Settings, Notifications. The user picks one per app.
+The Android delivery modes are listed below. Mail implements background checks, UnifiedPush,
+and Google delivery on `feat/google-push`. Calendar adoption and always connected mode remain
+planned. The user picks one delivery mode per app.
 
 | Mode | How it works | Needs |
 | --- | --- | --- |
@@ -40,8 +42,37 @@ project configuration. Mail's `feat/google-push` includes it in existing Android
 offers Google delivery on devices with Play services. Separate product flavors are unnecessary
 for this integration. See the [upstream library](https://unifiedpush.org/kdoc/embedded_fcm_distributor/).
 
-iOS gets the background check only. Apple's push service needs a server that holds the app's
-Apple credentials, which this decision rules out.
+Mail's iOS app has no remote-push registration or scheduled notification check yet. Background
+checks were the intended fallback under this decision, not implemented iOS behavior.
+
+## iOS follow-up, proposed
+
+Native iOS remote notifications use Apple's APNs. A UnifiedPush distributor cannot run on
+ordinary iOS installations; see the [UnifiedPush FAQ](https://unifiedpush.org/users/faq/#q-will-unifiedpush-ever-work-on-ios).
+Sunup is an Android distributor. ntfy has an iOS app, but its
+[instant delivery also uses APNs](https://docs.ntfy.sh/config/#ios-instant-notifications), and it
+does not distribute pushes to Otus as its Android app does.
+
+Supporting native iOS push would require:
+
+- APNs entitlements, notification permission, device-token registration and renewal in each app.
+- A bridge that accepts JMAP Web Push and sends APNs requests with the app's Apple credentials.
+  VAPID support alone does not make a JMAP endpoint compatible with native APNs. Keep mail
+  credentials and message contents out of the bridge; forward encrypted change notices.
+- A notification service extension to decrypt the notice and fetch notification details, with
+  a generic alert if the extension cannot finish. Design shared key and account access between
+  the app and extension, and handle subscription verification, expiry and account removal.
+- Xcode signing and tests on iOS for locked devices, background delivery, offline recovery and
+  notification actions. The existing Kotlin iOS compilation check does not validate these.
+
+Apple documents the [provider server](https://developer.apple.com/documentation/usernotifications/setting-up-a-remote-notification-server)
+and [notification service extension](https://developer.apple.com/documentation/usernotifications/modifying-content-in-newly-delivered-notifications).
+[Silent background pushes](https://developer.apple.com/documentation/usernotifications/pushing-background-updates-to-your-app)
+may be throttled or dropped, so they cannot be the only path for timely new-mail alerts.
+
+Bridge hosting and Apple credential ownership are unresolved. An Otus-operated bridge would
+change the no-Otus-server decision above; a self-hosted build could use its owner's Apple
+credentials. This section records the work needed, not approval to deploy a bridge.
 
 ## Structure
 
@@ -61,9 +92,9 @@ Apple credentials, which this decision rules out.
 
 Real servers differ, and the app must read the session before choosing a mode. Known so far:
 
-- Stalwart supports `PushSubscription` but not VAPID, according to a
-  [report on its forum](https://support.stalw.art/t/implement-rfc-9749-vapid-for-jmap-web-push-without-it-chromium-and-safari-cannot-receive-push-at-all/1073)
-  from July 2026. The Google mode needs a gateway with Stalwart until that changes.
+- Stalwart added VAPID in [0.16.14, released July 20, 2026](https://github.com/stalwartlabs/stalwart/releases/tag/v0.16.14).
+  Earlier reports that it lacked VAPID are outdated. Mail still checks the advertised session
+  capability; the user's installed version and live Google delivery have not been verified.
 - Fastmail, Cyrus, and Apache James are not checked yet. Record their push capabilities here
   before Mail ships a push mode.
 - The [JMAP emailpush draft](https://datatracker.ietf.org/doc/draft-ietf-jmap-emailpush/) would let
