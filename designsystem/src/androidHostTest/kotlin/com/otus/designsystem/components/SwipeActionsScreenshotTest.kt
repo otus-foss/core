@@ -1,9 +1,11 @@
 package com.otus.designsystem.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -18,6 +20,7 @@ import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_archive
 import com.otus.designsystem.resources.symbol_delete
 import com.otus.designsystem.screenshot.screenshot
+import com.otus.designsystem.theme.InboxTokens
 import com.otus.designsystem.theme.OtusColors
 import org.junit.Rule
 import org.junit.runner.RunWith
@@ -57,8 +60,11 @@ class SwipeActionsScreenshotTest {
 
     @Composable
     private fun Rows() =
-        // The list's own surface, which shows around the revealed area's rounded corners.
-        Column(Modifier.background(OtusColors.bgRegular)) {
+        // The list's own surface and spacing, which show around the cards.
+        Column(
+            Modifier.background(OtusColors.bgRegular).padding(InboxTokens.pageInset),
+            verticalArrangement = Arrangement.spacedBy(InboxTokens.rowGap),
+        ) {
             Row("Mira Chen", "Lunch on Friday?")
             Row("Tomas Berg", "Invoice 2026-031", Modifier.testTag(SWIPED))
             Row("Lena Park", "Trip photos")
@@ -74,7 +80,12 @@ class SwipeActionsScreenshotTest {
         SwipeAction("Delete", Res.drawable.symbol_delete, dismisses = true) {},
         modifier,
     ) {
-        Column(Modifier.fillMaxWidth().padding(16.dp, 12.dp)) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .background(OtusColors.bgDark, RoundedCornerShape(InboxTokens.selectionRadius))
+                .padding(16.dp, 12.dp),
+        ) {
             Text(sender)
             Text(subject, color = OtusColors.text2)
         }
