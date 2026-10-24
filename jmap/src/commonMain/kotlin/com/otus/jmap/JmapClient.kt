@@ -22,14 +22,23 @@ import kotlinx.serialization.json.jsonObject
 
 /**
  * Provider-independent JMAP core client (RFC 8620). One instance per app is enough; it is safe to
- * share. Pass [engine] in tests; otherwise the platform engine on the classpath is used.
+ * share. Call [close] when its owner ends. An injected [engine] stays caller-owned and must be
+ * closed separately; without one, the client owns the platform engine on the classpath.
  */
 public class JmapClient(
     engine: HttpClientEngine? = null,
     private val policy: JmapPolicy = JmapPolicy(),
-) {
+) : AutoCloseable {
     private val http = if (engine == null) HttpClient { configure() } else HttpClient(engine) { configure() }
     private val urls = JmapUrls(policy)
+
+    /**
+     * Stops accepting requests and releases this client's resources when active requests finish.
+     * Safe to call repeatedly. An injected engine remains open for its caller to close or reuse.
+     */
+    public override fun close() {
+        http.close()
+    }
 
     /**
      * Authenticated, bounded blob download (RFC 8620, section 6.2). No redirect receives credentials.
@@ -150,11 +159,6 @@ public class JmapClient(
         )
     }
 
-    private fun decode(response: RawResponse): JsonObject {
-        response.failure()?.let { throw it }
-        return jmapDecoding { JmapJson.parseToJsonElement(response.text).jsonObject }
-    }
-
     private suspend fun exchange(
         method: HttpMethod,
         target: Url,
@@ -220,3 +224,8 @@ private fun JmapCall<*>.toJson() =
         add(method.arguments())
         add(JsonPrimitive(id))
     }
+
+private fun decode(response: RawResponse): JsonObject {
+    response.failure()?.let { throw it }
+    return jmapDecoding { JmapJson.parseToJsonElement(response.text).jsonObject }
+}
