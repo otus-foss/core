@@ -7,12 +7,15 @@ Each app connects its own push service, such as a UnifiedPush receiver on Androi
 
 ## API
 
-- `PushSubscriptions(connections, logins, store, deviceClientId, types)`: create one per process,
+- `PushSubscriptions(connections, logins, store, deviceClientId, types, beforeCreate = { ... })`: create one per process,
   so its lock covers every caller.
   - `setEndpoint(loginId, PushEndpoint(url, keys))` and `clearEndpoint(loginId)` save what the
     push service reported.
   - `receive(loginId, verification)` keeps the code of a `PushVerification` push for the
     current subscription.
+  - `beforeCreate(loginId)` runs immediately before creating a subscription that sends a
+    verification notice. Apple uses it to pause alerts. Throwing aborts creation; do not call
+    subscription methods from the callback, since the sync lock is held.
   - `sync()` makes each server match, asking all servers in parallel. It creates or replaces
     subscriptions, sends verification codes, renews subscriptions past half their granted
     lifetime for another 7 days, and deletes them when the endpoint is cleared.

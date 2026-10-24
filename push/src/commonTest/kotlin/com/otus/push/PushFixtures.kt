@@ -53,6 +53,7 @@ internal fun subscriptions(
     store: Store,
     at: Instant = now,
     logins: LoginStore = InMemoryLoginStore().apply { save(login, "secret") },
+    beforeCreate: suspend (String) -> Unit = {},
 ): PushSubscriptions {
     val clock =
         object : Clock {
@@ -65,6 +66,7 @@ internal fun subscriptions(
         deviceClientId = "otus-mail-device",
         types = listOf("EmailDelivery"),
         clock = clock,
+        beforeCreate = beforeCreate,
     )
 }
 

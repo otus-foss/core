@@ -39,5 +39,6 @@
 - [0012: GitHub as the primary host again](decisions/0012-github-primary.md)
 - [0013: Local hooks as the quality gate](decisions/0013-local-quality-gate.md)
 - [0015: Push notifications without an Otus server](decisions/0015-push-notifications.md)
+- [0016: Apple push through an APNs bridge](decisions/0016-apple-push.md)
 
 Decisions 0001 to 0004 were made in the app repositories and apply to every Otus repository.

@@ -35,6 +35,8 @@ public class PushSubscriptions(
     private val deviceClientId: String,
     private val types: List<String>,
     private val clock: Clock = Clock.System,
+    /** Pauses alert delivery before a new subscription sends its verification message. */
+    private val beforeCreate: suspend (loginId: String) -> Unit = {},
 ) {
     private val lock = Mutex()
 
@@ -115,7 +117,8 @@ public class PushSubscriptions(
         record: PushRecord,
     ): PushRecord? =
         try {
-            ServerSubscription(connections.connection(login), deviceClientId, types, clock).synced(record)
+            ServerSubscription(connections.connection(login), deviceClientId, types, clock) { beforeCreate(login.id) }
+                .synced(record)
         } catch (_: JmapException) {
             record
         } catch (_: LoginStoreException) {
