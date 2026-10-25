@@ -20,7 +20,7 @@ class AvatarServiceTest {
         runTest {
             val service =
                 AvatarService(
-                    ContactPhotoSource {
+                    photoSource {
                         _,
                         _,
                         ->
@@ -39,7 +39,7 @@ class AvatarServiceTest {
         runTest {
             val service =
                 AvatarService(
-                    ContactPhotoSource { _, external ->
+                    photoSource { _, external ->
                         assertEquals(false, external)
                         null
                     },
@@ -71,9 +71,9 @@ class AvatarServiceTest {
     @Test
     fun failuresRetainInitialsAndCancellationPropagates() =
         runTest {
-            val failed = AvatarService(ContactPhotoSource { _, _ -> error("Offline") })
+            val failed = AvatarService(photoSource { _, _ -> error("Offline") })
             assertNull(failed.resolve(request).image)
-            val cancelled = AvatarService(ContactPhotoSource { _, _ -> throw CancellationException("Refresh") })
+            val cancelled = AvatarService(photoSource { _, _ -> throw CancellationException("Refresh") })
             assertFailsWith<CancellationException> { cancelled.resolve(request) }
         }
 
@@ -83,7 +83,7 @@ class AvatarServiceTest {
             val calls = mutableListOf<AvatarRequest>()
             val service =
                 AvatarService(
-                    ContactPhotoSource { subject, _ ->
+                    photoSource { subject, _ ->
                         calls += subject
                         image
                     },
@@ -105,7 +105,7 @@ class AvatarServiceTest {
             var calls = 0
             val service =
                 AvatarService(
-                    ContactPhotoSource { _, _ ->
+                    photoSource { _, _ ->
                         calls++
                         null
                     },
@@ -133,7 +133,7 @@ class AvatarServiceTest {
             var calls = 0
             val service =
                 AvatarService(
-                    ContactPhotoSource {
+                    photoSource {
                         _,
                         _,
                         ->
@@ -159,7 +159,7 @@ class AvatarServiceTest {
             var calls = 0
             val service =
                 AvatarService(
-                    ContactPhotoSource {
+                    photoSource {
                         _,
                         _,
                         ->
@@ -212,7 +212,7 @@ class AvatarServiceTest {
     @Test
     fun missingAddressDoesNotTriggerAnyLookup() =
         runTest {
-            val service = AvatarService(ContactPhotoSource { _, _ -> error("Missing email") })
+            val service = AvatarService(photoSource { _, _ -> error("Missing email") })
             assertEquals("AL", service.resolve(request.copy(email = "")).fallback.initials)
         }
 }

@@ -144,7 +144,7 @@ class AvatarDomainIconTest {
             var calls = 0
             val service =
                 AvatarService(
-                    contacts = ContactPhotoSource { _, _ -> image },
+                    contacts = photoSource { _, _ -> image },
                     domains =
                         AvatarDomainResolver {
                             calls++

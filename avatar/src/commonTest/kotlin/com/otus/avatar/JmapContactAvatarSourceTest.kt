@@ -18,14 +18,14 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-class JmapContactPhotoSourceTest {
+class JmapContactAvatarSourceTest {
     private val request = AvatarRequest("ada", "grace@example.org", "Grace Hopper")
 
     @Test
     fun downloadsAContactBlobFromTheSeparateContactsAccount() =
         runTest {
             val fixture = ContactFixture()
-            val result = fixture.source.photo(request, false)
+            val result = fixture.source.photoOf(request, false)
             assertContentEquals(byteArrayOf(1, 2, 3), result?.bytes)
             assertEquals(1, fixture.downloads)
             assertTrue(fixture.apiBodies.all { "\"accountId\":\"contacts\"" in it })
@@ -37,7 +37,7 @@ class JmapContactPhotoSourceTest {
     fun missingContactsCapabilityDoesNotCallAnyContactMethods() =
         runTest {
             val fixture = ContactFixture(session = MAIL_ONLY_SESSION)
-            assertNull(fixture.source.photo(request, false))
+            assertNull(fixture.source.photoOf(request, false))
             assertEquals(0, fixture.apiBodies.size)
         }
 
@@ -45,7 +45,7 @@ class JmapContactPhotoSourceTest {
     fun unknownLoginDoesNotSearchAnotherAccountsContacts() =
         runTest {
             val fixture = ContactFixture()
-            assertNull(fixture.source.photo(request.copy(accountKey = "missing"), false))
+            assertNull(fixture.source.photoOf(request.copy(accountKey = "missing"), false))
             assertEquals(0, fixture.apiBodies.size)
         }
 
@@ -54,13 +54,13 @@ class JmapContactPhotoSourceTest {
         runTest {
             for (address in listOf("grace+tag@example.org", "g.race@example.org", "other@example.org")) {
                 val fixture = ContactFixture(cardEmail = address)
-                assertNull(fixture.source.photo(request, false))
+                assertNull(fixture.source.photoOf(request, false))
                 assertEquals(0, fixture.downloads)
             }
             for (address in listOf("grace@EXAMPLE.ORG", "Grace@example.org")) {
                 assertContentEquals(
                     byteArrayOf(1, 2, 3),
-                    ContactFixture(cardEmail = address).source.photo(request, false)?.bytes,
+                    ContactFixture(cardEmail = address).source.photoOf(request, false)?.bytes,
                     address,
                 )
             }
@@ -71,7 +71,7 @@ class JmapContactPhotoSourceTest {
         runTest {
             for (book in listOf("hidden", "denied")) {
                 val fixture = ContactFixture(cardBook = book)
-                assertNull(fixture.source.photo(request, false))
+                assertNull(fixture.source.photoOf(request, false))
                 assertEquals(0, fixture.downloads)
             }
         }
@@ -80,7 +80,7 @@ class JmapContactPhotoSourceTest {
     fun inlineContactImageNeedsNoExternalPermission() =
         runTest {
             val fixture = ContactFixture(media = """{"kind":"photo","uri":"data:image/png;base64,AQID"}""")
-            assertContentEquals(byteArrayOf(1, 2, 3), fixture.source.photo(request, false)?.bytes)
+            assertContentEquals(byteArrayOf(1, 2, 3), fixture.source.photoOf(request, false)?.bytes)
             assertEquals(0, fixture.downloads)
         }
 
@@ -97,20 +97,20 @@ class JmapContactPhotoSourceTest {
                             AvatarImage(byteArrayOf(9))
                         },
                 )
-            assertNull(fixture.source.photo(request, false))
+            assertNull(fixture.source.photoOf(request, false))
             assertEquals(0, calls)
-            assertContentEquals(byteArrayOf(9), fixture.source.photo(request, true)?.bytes)
+            assertContentEquals(byteArrayOf(9), fixture.source.photoOf(request, true)?.bytes)
             assertEquals(1, calls)
         }
 
     @Test
     fun deniedBlobAndMalformedInlineDataRetainTheFallback() =
         runTest {
-            assertNull(ContactFixture(downloadStatus = HttpStatusCode.Forbidden).source.photo(request, false))
+            assertNull(ContactFixture(downloadStatus = HttpStatusCode.Forbidden).source.photoOf(request, false))
             assertNull(
                 ContactFixture(media = """{"kind":"photo","uri":"data:image/png;base64,***"}""")
                     .source
-                    .photo(request, false),
+                    .photoOf(request, false),
             )
         }
 
@@ -120,7 +120,7 @@ class JmapContactPhotoSourceTest {
             val media = """{"a":{"kind":"logo","uri":"data:image/png;base64,CQ=="},
             "b":{"kind":"photo","pref":2,"uri":"data:image/png;base64,Ag=="},
             "c":{"kind":"photo","pref":1,"uri":"data:image/png;base64,AQ=="}}"""
-            assertContentEquals(byteArrayOf(1), ContactFixture(mediaMap = media).source.photo(request, false)?.bytes)
+            assertContentEquals(byteArrayOf(1), ContactFixture(mediaMap = media).source.photoOf(request, false)?.bytes)
         }
 }
 
@@ -178,7 +178,7 @@ private class ContactFixture(
         InMemoryLoginStore().apply {
             save(JmapLogin("ada", "https://mail.example.org/jmap/session", "ada@example.org", "Ada"), "secret")
         }
-    val source = JmapContactPhotoSource(JmapConnections(JmapClient(engine), store), store, images)
+    val source = JmapContactAvatarSource(JmapConnections(JmapClient(engine), store), store, images)
 }
 
 private const val CONTACT_SESSION = """

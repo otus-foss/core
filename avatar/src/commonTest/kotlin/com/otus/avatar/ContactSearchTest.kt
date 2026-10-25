@@ -21,7 +21,7 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-class ContactPhotoSearchTest {
+class ContactSearchTest {
     @Test
     fun findsTheExactAddressAfterThirtyTwoLabelMatches() =
         runTest {
@@ -134,7 +134,7 @@ private class SearchFixture(
         )
 
     suspend fun search(load: suspend (ContactCard) -> AvatarImage? = { AvatarImage(byteArrayOf(1)) }): AvatarImage? =
-        findContactPhoto(connection, "a", "target@example.org", setOf("book"), load)
+        findContactAvatar(connection, "a", "target@example.org", setOf("book"), load)
 
     private fun page(position: Long): String {
         val start = if (ignorePosition) 0 else position.toInt()
