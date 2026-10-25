@@ -15,11 +15,15 @@ import com.otus.avatar.ResolvedAvatar
 import com.otus.avatar.generatedAvatar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 /**
  * The avatar of each of the user's own addresses. A save shows the new avatar at once and puts the
- * old one back if the server refuses it. [onChange] runs after a save, so the app can redraw the
- * avatars it already shows. Without [photos], the sheet offers no Photo choice.
+ * last saved one back if the server refuses it. Saves run one at a time, so a quick second save
+ * finds the self card the first one made instead of making another. [onChange] runs after a save,
+ * so the app can redraw the avatars it already shows. Without [photos], the sheet offers no Photo
+ * choice.
  */
 public class OwnAvatarsState(
     private val avatars: OwnAvatars,
@@ -28,6 +32,14 @@ public class OwnAvatarsState(
     private val onChange: () -> Unit = {},
 ) {
     private var shown: Map<AddressKey, ResolvedAvatar> by mutableStateOf(emptyMap())
+
+    /** What the server holds, as last loaded or saved, to roll a failed save back to. */
+    private var saved: Map<AddressKey, ResolvedAvatar> = emptyMap()
+
+    /** The newest save of each address; an older save that finishes later leaves the screen alone. */
+    private var newest: Map<AddressKey, Any> = emptyMap()
+
+    private val saving = Mutex()
 
     public var error: String? by mutableStateOf(null)
         private set
@@ -38,13 +50,13 @@ public class OwnAvatarsState(
     public fun avatar(
         account: ConnectedAccount,
         email: String,
-    ): ResolvedAvatar? = shown[AddressKey(account.id, email.lowercase())]
+    ): ResolvedAvatar? = shown[key(account, email)]
 
     /** Loads the avatar of every address of [accounts]. */
     public fun load(accounts: List<ConnectedAccount>) {
         accounts.forEach { account ->
             account.ownAddresses.forEach { email ->
-                scope.launch { show(account, email, avatars.avatar(account.id, email, account.name)) }
+                scope.launch { confirm(key(account, email), avatars.avatar(account.id, email, account.name)) }
             }
         }
     }
@@ -57,31 +69,48 @@ public class OwnAvatarsState(
         email: String,
         avatar: ContactAvatar?,
     ) {
-        val before = avatar(account, email)
-        val fallback = before?.fallback ?: generatedAvatar(account.name, email)
+        val key = key(account, email)
+        val fallback = shown[key]?.fallback ?: generatedAvatar(account.name, email)
+        val save = Any()
+        newest = newest + (key to save)
         error = null
-        show(account, email, avatar.resolved(fallback))
+        show(key, avatar.resolved(fallback))
         scope.launch {
-            try {
-                avatars.save(account.id, email, account.name, avatar)
-                onChange()
-                val saved = avatars.avatar(account.id, email, account.name)
-                // Same-looking bytes from the server would decode again and flash the initials.
-                if (!saved.looksLike(avatar(account, email))) show(account, email, saved)
-            } catch (failure: OwnAvatarException) {
-                before?.let { show(account, email, it) }
-                error = failure.reason.message()
+            saving.withLock {
+                try {
+                    avatars.save(account.id, email, account.name, avatar)
+                    onChange()
+                    confirm(key, avatars.avatar(account.id, email, account.name), save)
+                } catch (failure: OwnAvatarException) {
+                    if (newest[key] === save) saved[key]?.let { show(key, it) }
+                    error = failure.reason.message()
+                }
             }
         }
     }
 
+    /** Records what the server holds, and shows it unless a newer save is on screen. */
+    private fun confirm(
+        key: AddressKey,
+        avatar: ResolvedAvatar,
+        save: Any? = null,
+    ) {
+        saved = saved + (key to avatar)
+        // Same-looking bytes from the server would decode again and flash the initials.
+        if (newest[key] === save && !avatar.looksLike(shown[key])) show(key, avatar)
+    }
+
     private fun show(
-        account: ConnectedAccount,
-        email: String,
+        key: AddressKey,
         avatar: ResolvedAvatar,
     ) {
-        shown = shown + (AddressKey(account.id, email.lowercase()) to avatar)
+        shown = shown + (key to avatar)
     }
+
+    private fun key(
+        account: ConnectedAccount,
+        email: String,
+    ) = AddressKey(account.id, email.lowercase())
 
     private data class AddressKey(
         val account: String,
