@@ -53,14 +53,21 @@ public data class GetResult<T>(
     val notFound: List<String>,
 )
 
+/**
+ * A Comparator (RFC 8620, section 5.5): sort by [property], reversed when [isAscending] is false.
+ * [collation] names an RFC 4790 algorithm from the core capability's `collationAlgorithms`; null
+ * lets the server choose, and only string properties use it.
+ */
 public data class JmapSort(
     val property: String,
     val isAscending: Boolean = true,
+    val collation: String? = null,
 )
 
 /**
- * `Foo/query` (RFC 8620, section 5.5). [filter] is type-specific. [extra] carries other arguments,
- * such as `position`, and must not name `accountId`, `filter`, `sort`, or `limit`.
+ * `Foo/query` (RFC 8620, section 5.5). [filter] is type-specific; build it with [JmapFilter]. [extra]
+ * carries other arguments, such as `position`, and must not name `accountId`, `filter`, `sort`, or
+ * `limit`.
  */
 public class QueryMethod(
     type: JmapType<*>,
@@ -78,19 +85,7 @@ public class QueryMethod(
         buildJsonObject {
             put("accountId", JsonPrimitive(accountId))
             filter?.let { put("filter", it) }
-            if (sort.isNotEmpty()) {
-                put(
-                    "sort",
-                    JsonArray(
-                        sort.map {
-                            buildJsonObject {
-                                put("property", JsonPrimitive(it.property))
-                                put("isAscending", JsonPrimitive(it.isAscending))
-                            }
-                        },
-                    ),
-                )
-            }
+            if (sort.isNotEmpty()) put("sort", sortJson(sort))
             limit?.let { put("limit", JsonPrimitive(it)) }
             extra.forEach { (key, value) -> put(key, value) }
         }
@@ -99,20 +94,40 @@ public class QueryMethod(
         JmapJson.decodeFromJsonElement(QueryResult.serializer(), arguments)
 }
 
+/** A `/query` response (RFC 8620, section 5.5). [ids] start at [position] in the full results. */
 @Serializable
 public data class QueryResult(
     val queryState: String = "",
     val ids: List<String>,
     val position: Long = 0,
+    /** Present only when the request set `calculateTotal`. */
     val total: Long? = null,
+    /** Whether `/queryChanges` can follow this filter and sort; a later call may still fail. */
+    val canCalculateChanges: Boolean = false,
+    /** The limit the server applied, present only when it set or changed one. Page by this size. */
+    val limit: Long? = null,
 ) {
     init {
         require(position in 0..MAX_JMAP_UNSIGNED_INT) { "Invalid query position" }
         require(total == null || total in 0..MAX_JMAP_UNSIGNED_INT) { "Invalid query total" }
+        require(limit == null || limit in 0..MAX_JMAP_UNSIGNED_INT) { "Invalid query limit" }
     }
 }
 
-private const val MAX_JMAP_UNSIGNED_INT = 9_007_199_254_740_991L
+/** Comparators as `/query` and `/queryChanges` send them; `collation` only when one is chosen. */
+internal fun sortJson(sort: List<JmapSort>): JsonArray =
+    JsonArray(
+        sort.map { comparator ->
+            buildJsonObject {
+                put("property", JsonPrimitive(comparator.property))
+                put("isAscending", JsonPrimitive(comparator.isAscending))
+                comparator.collation?.let { put("collation", JsonPrimitive(it)) }
+            }
+        },
+    )
+
+/** The largest UnsignedInt (RFC 8620, section 1.3): 2^53 - 1, the safe integer range of a double. */
+internal const val MAX_JMAP_UNSIGNED_INT: Long = 9_007_199_254_740_991L
 
 /** `Foo/changes` (RFC 8620, section 5.2), for incremental sync. */
 public class ChangesMethod(

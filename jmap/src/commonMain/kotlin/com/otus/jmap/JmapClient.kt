@@ -201,7 +201,7 @@ public class JmapClient(
     }
 }
 
-/** Checks the session and each call's account before anything is sent. */
+/** Checks the session and every account each call touches before anything is sent. */
 private fun checkSupported(
     session: JmapSession,
     calls: List<JmapCall<*>>,
@@ -213,10 +213,8 @@ private fun checkSupported(
     if (missing != null) throw JmapException.Unsupported(missing)
 }
 
-private fun JmapCall<*>.lacksAccountCapability(session: JmapSession): Boolean {
-    val accountId = method.accountId ?: return false
-    return method.capability !in session.accounts[accountId]?.capabilities.orEmpty()
-}
+private fun JmapCall<*>.lacksAccountCapability(session: JmapSession): Boolean =
+    method.accountIds.any { method.capability !in session.accounts[it]?.capabilities.orEmpty() }
 
 private fun JmapCall<*>.toJson() =
     buildJsonArray {
