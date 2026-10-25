@@ -1,6 +1,7 @@
 package com.otus.designsystem.components
 
 import androidx.compose.animation.core.animate
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.ScrollScope
@@ -10,19 +11,20 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithCache
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.drawscope.clipPath
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import com.otus.designsystem.elements.Symbol
+import com.otus.designsystem.theme.InboxTokens
 import com.otus.designsystem.theme.Motion
 import com.otus.designsystem.theme.MotionSpeed
 import com.otus.designsystem.theme.OtusColors
@@ -30,15 +32,15 @@ import com.otus.designsystem.theme.SwipeTokens
 import kotlin.math.abs
 
 /**
- * The accent area a swiped row uncovers, [reveal] wide, shaped by [swipeReveal]. The action's icon
- * and label stay anchored at the revealed edge and are clipped to it. The icon grows and slides in
- * until the drag [distance] reaches the threshold. [onMeasured] reports the width the label needs.
+ * The accent card behind a swiped row, the row card's full size and shape, which the row slides
+ * off. The action's icon and label sit at the edge the row uncovers. The icon grows and slides in
+ * until the drag [distance] reaches the threshold. A release that commits brightens the card by
+ * [flash]. [onMeasured] reports the width the label needs.
  */
 @Composable
 internal fun SwipeBackdrop(
     action: SwipeAction,
     distance: Float,
-    reveal: Float,
     fromStart: Boolean,
     flash: Float,
     modifier: Modifier,
@@ -49,9 +51,12 @@ internal fun SwipeBackdrop(
     val progress = swipeProgress(distance, with(density) { SwipeTokens.threshold.toPx() })
     val scale = SwipeTokens.ICON_START_SCALE + progress * (1f - SwipeTokens.ICON_START_SCALE)
     val shift = with(density) { SwipeTokens.iconEntry.toPx() } * (1f - progress) * if (fromLeft) -1f else 1f
-    val fillet = with(density) { SwipeTokens.filletRadius.toPx() }
-    val corner = with(density) { SwipeTokens.cornerRadius.toPx() }
-    Box(modifier.revealArea(reveal, fromLeft, fillet, corner, flash)) {
+    Box(
+        modifier
+            .clip(RoundedCornerShape(InboxTokens.selectionRadius))
+            .background(OtusColors.accentRegular)
+            .drawBehind { if (flash > 0f) drawRect(OtusColors.text1.copy(alpha = flash)) },
+    ) {
         Row(
             Modifier
                 .align(if (fromStart) Alignment.CenterStart else Alignment.CenterEnd)
@@ -73,27 +78,6 @@ internal fun SwipeBackdrop(
         }
     }
 }
-
-/**
- * Fills the uncovered area with the accent, brightened by [flash] when a release commits, and
- * draws the content only inside it.
- */
-private fun Modifier.revealArea(
-    reveal: Float,
-    fromLeft: Boolean,
-    fillet: Float,
-    corner: Float,
-    flash: Float,
-): Modifier =
-    drawWithCache {
-        val area = Path()
-        area.swipeReveal(size, reveal, fromLeft, revealRadii(reveal, size.height, fillet, corner))
-        onDrawWithContent {
-            drawPath(area, OtusColors.accentRegular)
-            if (flash > 0f) drawPath(area, OtusColors.text1.copy(alpha = flash))
-            clipPath(area) { this@onDrawWithContent.drawContent() }
-        }
-    }
 
 /**
  * Settles a release by distance alone. Past [threshold], [commit] takes over the row and moves it
@@ -177,25 +161,3 @@ internal fun boundedRevealOffset(
     offset: Float,
     maxDistance: Float,
 ): Float = offset.coerceIn(-maxDistance, maxDistance)
-
-/** The corner radii a revealed area can use at its current size. */
-internal data class RevealRadii(
-    /** Concave radius where the area meets the row's edge, reaching this far past the row. */
-    val fillet: Float,
-    /** Convex radius of the body's free end, next to the moving row. */
-    val corner: Float,
-)
-
-/**
- * Shrinks [fillet] and [corner] together to fit a revealed area [width] wide in a row [height]
- * tall, so a narrow area keeps a rounded free end while it grows into the full shape.
- */
-internal fun revealRadii(
-    width: Float,
-    height: Float,
-    fillet: Float,
-    corner: Float,
-): RevealRadii {
-    val share = (width / (fillet + corner)).coerceIn(0f, 1f)
-    return RevealRadii(fillet * share, minOf(corner * share, height / 2f))
-}
