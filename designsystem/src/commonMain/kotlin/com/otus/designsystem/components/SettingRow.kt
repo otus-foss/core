@@ -45,8 +45,7 @@ import kotlin.math.min
  * [onClick] the whole row is one button; without it, only its trailing controls act. A
  * [RowDensity.Compact] row drops the hairline and fits one line in
  * [PanelTokens.compactRowHeight]; a taller trailing control reaches into its padding instead of
- * making it taller. An [info] button after the title explains the setting on request, so the
- * [description] can stay one short line.
+ * making it taller.
  */
 @Composable
 public fun SettingRow(
@@ -56,18 +55,16 @@ public fun SettingRow(
     description: String? = null,
     icon: DrawableResource? = null,
     density: RowDensity = RowDensity.Regular,
-    info: InfoText? = null,
     trailing: @Composable () -> Unit = {},
 ) {
     SettingRowLayout(
-        title,
+        RowTitle(title),
         description,
         person = null,
         icon,
         trailing,
         density,
         onClick?.let { modifier.rowButton(it) } ?: modifier,
-        info,
     )
 }
 
@@ -85,7 +82,7 @@ public fun SettingRow(
     icon: DrawableResource? = null,
     density: RowDensity = RowDensity.Regular,
 ) {
-    SettingRowLayout(title, description, person, icon, trailing = {}, density, modifier.rowButton(onClick))
+    SettingRowLayout(RowTitle(title), description, person, icon, trailing = {}, density, modifier.rowButton(onClick))
 }
 
 /** Makes the whole row one button with the shared press feedback. */
@@ -96,7 +93,10 @@ private fun Modifier.rowButton(onClick: () -> Unit): Modifier {
         .controlPressFeedback(interactions, RoundedCornerShape(SheetTokens.rowRadius))
 }
 
-/** A settings row that turns something on or off; the whole row is the switch. [info] is as on [SettingRow]. */
+/**
+ * A settings row that turns something on or off; the whole row is the switch. An [info] button
+ * after the title explains the setting on request, so the [description] can stay one short line.
+ */
 @Composable
 public fun SettingToggleRow(
     title: String,
@@ -109,7 +109,7 @@ public fun SettingToggleRow(
 ) {
     val interactions = remember { MutableInteractionSource() }
     SettingRowLayout(
-        title,
+        RowTitle(title, info),
         description,
         person = null,
         icon,
@@ -124,20 +124,18 @@ public fun SettingToggleRow(
                     role = Role.Switch,
                     onValueChange = onCheckedChange,
                 ).controlPressFeedback(interactions, RoundedCornerShape(SheetTokens.rowRadius)),
-        info = info,
     )
 }
 
 @Composable
 private fun SettingRowLayout(
-    title: String,
+    title: RowTitle,
     description: String?,
     person: NamedAvatar?,
     icon: DrawableResource?,
     trailing: @Composable () -> Unit,
     density: RowDensity,
     modifier: Modifier,
-    info: InfoText? = null,
 ) {
     val compact = density == RowDensity.Compact
     var first by remember { mutableStateOf(false) }
@@ -163,7 +161,7 @@ private fun SettingRowLayout(
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(SettingTokens.textGap)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    title,
+                    title.text,
                     Modifier.weight(1f, fill = false),
                     fontSize = SettingTokens.titleSize,
                     lineHeight = SettingTokens.titleLineHeight,
@@ -171,7 +169,7 @@ private fun SettingRowLayout(
                     overflow = TextOverflow.Ellipsis,
                 )
                 // The button's touch target reaches into the row's padding rather than making it taller.
-                info?.let { InfoTip(it, Modifier.overlapHeight(PanelTokens.iconSize)) }
+                title.info?.let { InfoTip(it, Modifier.overlapHeight(PanelTokens.iconSize)) }
             }
             description?.let {
                 PersonText(
@@ -199,3 +197,9 @@ private fun Modifier.overlapHeight(height: Dp): Modifier =
         val shown = min(placeable.height, height.roundToPx())
         layout(placeable.width, shown) { placeable.place(0, (shown - placeable.height) / 2) }
     }
+
+/** A row's title and the [info] button after it, if any. */
+private class RowTitle(
+    val text: String,
+    val info: InfoText? = null,
+)
