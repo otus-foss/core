@@ -4,6 +4,7 @@ import com.otus.jmap.GetMethod
 import com.otus.jmap.GetResult
 import com.otus.jmap.JmapCall
 import com.otus.jmap.JmapConnection
+import com.otus.jmap.JmapException
 import com.otus.jmap.JmapIds
 import com.otus.jmap.QueryMethod
 import com.otus.jmap.QueryResult
@@ -13,14 +14,17 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 
-/** Search each page without retaining the whole address book or trusting fuzzy email matches. */
-internal suspend fun findContactPhoto(
+/**
+ * Search each page without retaining the whole address book or trusting fuzzy email matches. Cards
+ * with an [AvatarStyle] come first on each page, so a style the user built wins over older photos.
+ */
+internal suspend fun <T : Any> findContactAvatar(
     connection: JmapConnection,
     account: String,
     email: String,
     books: Set<String>,
-    load: suspend (ContactCard) -> AvatarImage?,
-): AvatarImage? =
+    load: suspend (ContactCard) -> T?,
+): T? =
     withTimeoutOrNull(CONTACT_SEARCH_TIMEOUT_MILLIS) {
         var position = 0L
         var state: String? = null
@@ -30,14 +34,14 @@ internal suspend fun findContactPhoto(
             val queryChanged = state != null && state != query.queryState
             if (query.position != position || queryChanged || query.ids.isEmpty()) break
             state = query.queryState
-            val photo =
+            val found =
                 cards
                     .filter { card ->
                         card.addressBookIds.any { it.value && it.key in books } &&
                             card.emails.values.any { avatarEmailKey(it.address) == avatarEmailKey(email) }
-                    }.sortedBy { it.id }
+                    }.sortedWith(compareBy({ it.style == null }, { it.id }))
                     .firstNotNullOfOrNull { load(it) }
-            if (photo != null) return@withTimeoutOrNull photo
+            if (found != null) return@withTimeoutOrNull found
             position += query.ids.size
         }
         null
@@ -49,25 +53,40 @@ private suspend fun contactPage(
     email: String,
     books: Set<String>,
     position: Long,
-): Pair<QueryResult, List<ContactCard>> {
-    lateinit var query: JmapCall<QueryResult>
-    lateinit var get: JmapCall<GetResult<ContactCard>>
-    val response =
-        connection.send {
-            query =
-                call(
-                    QueryMethod(
-                        ContactCardType,
-                        account,
-                        contactFilter(email, books),
-                        limit = CONTACT_PAGE_SIZE,
-                        extra = mapOf("position" to JsonPrimitive(position)),
-                    ),
-                )
-            get = call(GetMethod(ContactCardType, account, JmapIds.Result(query.resultOf("/ids")), CARD_PROPERTIES))
-        }
-    return response[query] to response[get].list
-}
+): Pair<QueryResult, List<ContactCard>> =
+    withCardProperties { properties ->
+        lateinit var query: JmapCall<QueryResult>
+        lateinit var get: JmapCall<GetResult<ContactCard>>
+        val response =
+            connection.send {
+                query =
+                    call(
+                        QueryMethod(
+                            ContactCardType,
+                            account,
+                            contactFilter(email, books),
+                            limit = CONTACT_PAGE_SIZE,
+                            extra = mapOf("position" to JsonPrimitive(position)),
+                        ),
+                    )
+                get = call(GetMethod(ContactCardType, account, JmapIds.Result(query.resultOf("/ids")), properties))
+            }
+        response[query] to response[get].list
+    }
+
+/**
+ * Runs [load] asking for the card properties avatars need, including `vCard`, which holds the
+ * style. Stalwart returns a card's extra vCard properties only when `vCard` is asked for by name. A
+ * server that does not know `vCard` rejects the call (RFC 8620, section 5.1), so [load] then runs
+ * again without it.
+ */
+internal suspend fun <T> withCardProperties(load: suspend (List<String>) -> T): T =
+    try {
+        load(CARD_PROPERTIES + VCARD_PROPERTY)
+    } catch (error: JmapException.MethodError) {
+        if (error.type != "invalidArguments") throw error
+        load(CARD_PROPERTIES)
+    }
 
 private fun contactFilter(
     email: String,
@@ -97,5 +116,6 @@ private fun contactFilter(
     }
 
 private const val CONTACT_PAGE_SIZE = 32
-private const val CONTACT_SEARCH_TIMEOUT_MILLIS = 10_000L
+private const val VCARD_PROPERTY = "vCard"
 private val CARD_PROPERTIES = listOf("id", "addressBookIds", "emails", "media")
+private const val CONTACT_SEARCH_TIMEOUT_MILLIS = 10_000L

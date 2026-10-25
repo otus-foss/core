@@ -24,9 +24,11 @@ public data class AvatarCacheKey(
     val value: String,
 )
 
+/** A lookup result: an [image], a [style] from a contact card, or neither for a miss. */
 public data class StoredAvatar(
     val image: AvatarImage?,
     val created: Long,
+    val style: AvatarStyle? = null,
 )
 
 /** Optional encoded-image storage. Implementations bound disk usage and tolerate corrupt records. */

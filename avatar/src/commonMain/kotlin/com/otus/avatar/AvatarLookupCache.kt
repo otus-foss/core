@@ -26,7 +26,7 @@ internal class AvatarLookupCache(
     suspend fun load(
         key: AvatarCacheKey,
         started: Long,
-        fetch: suspend () -> AvatarImage?,
+        fetch: suspend () -> StoredAvatar?,
     ): StoredAvatar {
         while (true) {
             var owner = false
@@ -71,7 +71,7 @@ internal class AvatarLookupCache(
     private suspend fun fetchShared(
         key: AvatarCacheKey,
         lookup: Lookup,
-        fetch: suspend () -> AvatarImage?,
+        fetch: suspend () -> StoredAvatar?,
     ): StoredAvatar {
         var result: StoredAvatar? = null
         try {
@@ -80,7 +80,8 @@ internal class AvatarLookupCache(
                     if (lock.withLock { generation == lookup.generation }) peekStored(key) else null
                 }
             if (saved != null && fresh(saved)) return saved.also { result = it }
-            val entry = StoredAvatar(fetch() ?: saved?.image, now())
+            // A failed or empty fetch keeps the stale result rather than dropping a known avatar.
+            val entry = (fetch() ?: saved)?.copy(created = now()) ?: StoredAvatar(null, now())
             storageLock.withLock {
                 val current =
                     lock.withLock {
@@ -104,7 +105,7 @@ internal class AvatarLookupCache(
 
     private fun fresh(entry: StoredAvatar): Boolean {
         val age = now() - entry.created
-        val ttl = if (entry.image == null) minOf(lifetime, MISS_LIFETIME) else lifetime
+        val ttl = if (entry.image == null && entry.style == null) minOf(lifetime, MISS_LIFETIME) else lifetime
         return age >= 0 && age < ttl
     }
 

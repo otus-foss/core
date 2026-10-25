@@ -10,29 +10,32 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 import kotlin.io.encoding.Base64
 
-/** Uses standard contacts capabilities only. Never searches another saved login's address books. */
-public class JmapContactPhotoSource(
+/**
+ * Uses standard contacts capabilities, plus the [AVATAR_STYLE_PROPERTY] Otus writes. Never searches
+ * another saved login's address books.
+ */
+public class JmapContactAvatarSource(
     private val connections: JmapConnections,
     private val logins: LoginStore,
     private val images: AvatarImageLoader,
-) : ContactPhotoSource {
-    override suspend fun photo(
+) : ContactAvatarSource {
+    override suspend fun avatar(
         request: AvatarRequest,
         allowExternalImages: Boolean,
-    ): AvatarImage? =
-        avatarOrNull {
+    ): ContactAvatar? =
+        nullOnFailure {
             val login =
                 withContext(Dispatchers.IO) { logins.logins().firstOrNull { it.id == request.accountKey } }
-                    ?: return@avatarOrNull null
+                    ?: return@nullOnFailure null
             val connection = connections.connection(login)
             val session = connection.session()
-            if (JmapCapability.CONTACTS !in session.capabilities) return@avatarOrNull null
+            if (JmapCapability.CONTACTS !in session.capabilities) return@nullOnFailure null
             // Contacts may live in a separate JMAP account from mail, within the same login.
-            val account = session.accountFor(JmapCapability.CONTACTS) ?: return@avatarOrNull null
+            val account = session.accountFor(JmapCapability.CONTACTS) ?: return@nullOnFailure null
             val books = subscribedBooks(connection, account)
-            if (books.isEmpty()) return@avatarOrNull null
-            findContactPhoto(connection, account, request.email, books) {
-                loadCard(connection, account, it, allowExternalImages)
+            if (books.isEmpty()) return@nullOnFailure null
+            findContactAvatar(connection, account, request.email, books) { card ->
+                card.style?.let(ContactAvatar::Styled) ?: loadCard(connection, account, card, allowExternalImages)
             }
         }
 
@@ -41,7 +44,11 @@ public class JmapContactPhotoSource(
         account: String,
     ): Set<String> {
         val books = connection.call(GetMethod(AddressBookType, account)).list
-        return books.filter { it.isSubscribed && it.myRights.mayRead }.map { it.id }.toSet()
+        // Servers such as Stalwart may leave the user's own books unsubscribed (RFC 9610, section 2).
+        return books
+            .filter { it.myRights.mayRead && (it.isSubscribed || it.myRights.mayWrite) }
+            .map { it.id }
+            .toSet()
     }
 
     private suspend fun loadCard(
@@ -49,11 +56,15 @@ public class JmapContactPhotoSource(
         account: String,
         card: ContactCard,
         external: Boolean,
-    ): AvatarImage? =
+    ): ContactAvatar.Photo? =
         card.media.values
             .filter { it.kind == "photo" || it.kind == "logo" }
             .sortedWith(compareBy({ it.kind != "photo" }, { it.pref ?: Int.MAX_VALUE }, { it.blobId ?: it.uri }))
-            .firstNotNullOfOrNull { photo -> avatarOrNull { load(connection, account, photo, external) } }
+            .firstNotNullOfOrNull { photo ->
+                avatarOrNull { load(connection, account, photo, external) }?.let {
+                    ContactAvatar.Photo(it, photo.mediaType ?: DEFAULT_PHOTO_TYPE)
+                }
+            }
 
     private suspend fun load(
         connection: JmapConnection,
@@ -100,4 +111,5 @@ private fun inlineContactImage(uri: String): AvatarImage? {
 
 private const val MAX_INLINE_IMAGE_CHARS = 700_000
 private const val AVATAR_DOWNLOAD_NAME = "avatar"
+private const val DEFAULT_PHOTO_TYPE = "image/jpeg"
 private val CONTACT_RASTER_TYPES = setOf("image/png", "image/jpeg", "image/webp")

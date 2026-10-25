@@ -26,18 +26,35 @@ public class AvatarImage(
     public val bytes: ByteArray,
 )
 
+/**
+ * [style] is set instead of [image] when a contact card holds an [AvatarStyle], or beside the
+ * website icon when the style is [AvatarMark.Website].
+ */
 public data class ResolvedAvatar(
     val fallback: GeneratedAvatar,
     val image: AvatarImage? = null,
     val origin: AvatarOrigin? = null,
+    val style: AvatarStyle? = null,
 )
 
-public fun interface ContactPhotoSource {
-    /** Return null for unavailable photos. External URIs require [allowExternalImages]. */
-    public suspend fun photo(
+/** What a contact card shows for an address: its photo, or a style the user built in Otus. */
+public sealed interface ContactAvatar {
+    public class Photo(
+        public val image: AvatarImage,
+        public val mediaType: String,
+    ) : ContactAvatar
+
+    public data class Styled(
+        val style: AvatarStyle,
+    ) : ContactAvatar
+}
+
+public fun interface ContactAvatarSource {
+    /** Return null when no card has an avatar. External URIs require [allowExternalImages]. */
+    public suspend fun avatar(
         request: AvatarRequest,
         allowExternalImages: Boolean,
-    ): AvatarImage?
+    ): ContactAvatar?
 }
 
 public fun interface AvatarImageLoader {
