@@ -174,7 +174,7 @@ internal fun DatePickerHeading(
             fontSize = SheetTokens.titleSize,
             fontWeight = FontWeight.SemiBold,
         )
-        IconButton("Close", onDismiss) { Symbol(Res.drawable.symbol_close) }
+        IconButton("Close date chooser", onDismiss) { Symbol(Res.drawable.symbol_close) }
     }
     Text(
         note,
