@@ -14,7 +14,8 @@
   books, since Stalwart leaves the user's own books unsubscribed; contact photos in own books now
   show up.
 - Breaking: `AccountSetupScreen` takes an `OwnAvatarsState`. Each account lists its addresses as
-  pills with their avatars, and tapping one opens a sheet that edits the avatar. The account row's
+  pills with their avatars, and tapping one opens a sheet that edits the avatar or resets it to
+  the generated one. `OwnAvatarsState` runs saves one at a time. The account row's
   detail no longer repeats those addresses. "Connect an account" and the avatar note stay pinned
   at the bottom of the page. `accounts` now depends on `avatar` and adds
   `ResolvedAvatar.toChipAvatar`, `AvatarStyle.toChipAvatar`, and `ConnectedAccount.ownAddresses`.

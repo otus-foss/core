@@ -15,14 +15,16 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 
 /**
- * Search each page without retaining the whole address book or trusting fuzzy email matches. Cards
- * with an [AvatarStyle] come first on each page, so a style the user built wins over older photos.
+ * Search each page without retaining the whole address book or trusting fuzzy email matches. On
+ * each page, cards in the [own] books the user may write come first, so a shared card never hides
+ * the user's own; then the cards Otus wrote, so an avatar the user set wins over older photos.
  */
 internal suspend fun <T : Any> findContactAvatar(
     connection: JmapConnection,
     account: String,
     email: String,
     books: Set<String>,
+    own: Set<String>,
     load: suspend (ContactCard) -> T?,
 ): T? =
     withTimeoutOrNull(CONTACT_SEARCH_TIMEOUT_MILLIS) {
@@ -39,7 +41,7 @@ internal suspend fun <T : Any> findContactAvatar(
                     .filter { card ->
                         card.addressBookIds.any { it.value && it.key in books } &&
                             card.emails.values.any { avatarEmailKey(it.address) == avatarEmailKey(email) }
-                    }.sortedWith(compareBy({ it.style == null }, { it.id }))
+                    }.sortedWith(compareBy({ !it.isIn(own) }, { !it.isOtusAvatar }, { it.id }))
                     .firstNotNullOfOrNull { load(it) }
             if (found != null) return@withTimeoutOrNull found
             position += query.ids.size

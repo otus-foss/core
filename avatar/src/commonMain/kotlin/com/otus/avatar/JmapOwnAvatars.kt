@@ -109,7 +109,7 @@ public class JmapOwnAvatars(
         return connection to account
     }
 
-    /** A card with [email] in a writable book, preferring one that already holds a style. */
+    /** A card with [email] in a writable book, preferring one whose avatar Otus wrote. */
     private suspend fun selfCard(
         connection: JmapConnection,
         account: String,
@@ -134,8 +134,9 @@ public class JmapOwnAvatars(
                         .orEmpty()
                         .values
                         .any { avatarEmailKey(it.address) == email }
-            }.sortedWith(compareBy({ !hasAvatarStyle(it.extra[VCARD]) }, { it.id }))
-            .firstOrNull()
+            }.sortedWith(
+                compareBy({ !hasAvatarStyle(it.extra[VCARD]) && OWN_PHOTO_KEY !in it.media.orEmpty() }, { it.id }),
+            ).firstOrNull()
     }
 }
 
@@ -149,17 +150,23 @@ private fun Card.patch(
     val oldPhotos =
         media
             .orEmpty()
-            .filter { (key, value) -> value.kind == MediaKind.Photo && !(photo != null && key == PHOTO_KEY) }
+            .filter { (key, value) -> value.kind == MediaKind.Photo && !(photo != null && key == OWN_PHOTO_KEY) }
             .keys
+    val hasMedia = media != null
     val vCard = extra[VCARD]
     val style = (avatar as? ContactAvatar.Styled)?.style
     return contactCardPatch {
         oldPhotos.forEach { media.remove(it) }
-        photo?.let { media.put(PHOTO_KEY, it) }
+        // A patch path needs its parent on the server, so a card without `media` gets the whole map.
+        when {
+            photo == null -> Unit
+            !hasMedia -> media.set(mapOf(OWN_PHOTO_KEY to photo))
+            else -> media.put(OWN_PHOTO_KEY, photo)
+        }
         if (style != null || hasAvatarStyle(vCard)) {
             raw {
                 val properties = avatarPropertiesWith(vCard, style)
-                // A patch path needs its parent on the server, so a card without `vCard` gets the whole object.
+                // The same goes for `vCard`.
                 if (vCard is JsonObject) {
                     set(properties, VCARD, PROPERTIES)
                 } else {
@@ -185,7 +192,7 @@ private fun newCard(
     kind = CardKind.Individual,
     name = name.trim().takeIf { it.isNotEmpty() }?.let { Name(full = it) },
     emails = mapOf(EMAIL_KEY to EmailAddress(email)),
-    media = photo?.let { mapOf(PHOTO_KEY to it) },
+    media = photo?.let { mapOf(OWN_PHOTO_KEY to it) },
     addressBookIds = mapOf(book to true),
     extra =
         (avatar as? ContactAvatar.Styled)
@@ -198,6 +205,5 @@ private fun ContactAvatar.Photo.toMedia() =
 
 private const val NEW_CARD = "self"
 private const val EMAIL_KEY = "e1"
-private const val PHOTO_KEY = "otus"
 private const val VCARD = "vCard"
 private const val PROPERTIES = "properties"

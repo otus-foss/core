@@ -12,7 +12,8 @@ import kotlin.io.encoding.Base64
 
 /**
  * Uses standard contacts capabilities, plus the [AVATAR_STYLE_PROPERTY] Otus writes. Never searches
- * another saved login's address books.
+ * another saved login's address books. A Website style counts only in the user's own books: it
+ * fetches the website icon even with website icons off, which a shared card must not turn on.
  */
 public class JmapContactAvatarSource(
     private val connections: JmapConnections,
@@ -32,24 +33,26 @@ public class JmapContactAvatarSource(
             if (JmapCapability.CONTACTS !in session.capabilities) return@nullOnFailure null
             // Contacts may live in a separate JMAP account from mail, within the same login.
             val account = session.accountFor(JmapCapability.CONTACTS) ?: return@nullOnFailure null
-            val books = subscribedBooks(connection, account)
+            val books = readableBooks(connection, account)
             if (books.isEmpty()) return@nullOnFailure null
-            findContactAvatar(connection, account, request.email, books) { card ->
-                card.style?.let(ContactAvatar::Styled) ?: loadCard(connection, account, card, allowExternalImages)
+            val own = books.filter { it.myRights.mayWrite }.map { it.id }.toSet()
+            findContactAvatar(connection, account, request.email, books.map { it.id }.toSet(), own) { card ->
+                card.style
+                    ?.takeIf { card.isIn(own) || it.mark != AvatarMark.Website }
+                    ?.let(ContactAvatar::Styled)
+                    ?: loadCard(connection, account, card, allowExternalImages)
             }
         }
 
-    private suspend fun subscribedBooks(
+    // Servers such as Stalwart may leave the user's own books unsubscribed (RFC 9610, section 2).
+    private suspend fun readableBooks(
         connection: JmapConnection,
         account: String,
-    ): Set<String> {
-        val books = connection.call(GetMethod(AddressBookType, account)).list
-        // Servers such as Stalwart may leave the user's own books unsubscribed (RFC 9610, section 2).
-        return books
+    ): List<AvatarAddressBook> =
+        connection
+            .call(GetMethod(AddressBookType, account))
+            .list
             .filter { it.myRights.mayRead && (it.isSubscribed || it.myRights.mayWrite) }
-            .map { it.id }
-            .toSet()
-    }
 
     private suspend fun loadCard(
         connection: JmapConnection,
