@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add `PushSubscriptions.beforeCreate` so Apple delivery can buffer verification messages without
+  displaying a new-mail alert, including when an expired subscription must be replaced.
 - Users can give each of their own addresses an avatar: a photo, the website icon of its domain,
   or an icon or up to three letters on a folder color or a custom color. The `avatar` module adds
   `OwnAvatars` and `JmapOwnAvatars`, which keep it on a self card in the user's address book

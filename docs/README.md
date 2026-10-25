@@ -43,5 +43,6 @@
 - [0014: User themes and accent colors](decisions/0014-user-themes.md)
 - [0015: Push notifications without an Otus server](decisions/0015-push-notifications.md)
 - [0016: JMAP contacts modules](decisions/0016-contacts-modules.md)
+- [0017: Apple push through an APNs bridge](decisions/0017-apple-push.md)
 
 Decisions 0001 to 0004 were made in the app repositories and apply to every Otus repository.
