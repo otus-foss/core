@@ -21,6 +21,7 @@ internal class ServerSubscription(
     private val deviceClientId: String,
     private val types: List<String>,
     private val clock: Clock,
+    private val beforeCreate: suspend () -> Unit = {},
 ) {
     /** The record after syncing, or null once the subscription is gone and nothing is wanted. */
     suspend fun synced(record: PushRecord): PushRecord? {
@@ -119,6 +120,7 @@ internal class ServerSubscription(
                     .list
                     .filter { it.deviceClientId == deviceClientId }
                     .map { it.id } + listOfNotNull(replacing)
+            beforeCreate()
             connection.call(
                 PushSubscriptionSetMethod(create = mapOf(CREATION to subscription), destroy = stale.distinct()),
             )

@@ -3,7 +3,8 @@
 ## Decision
 
 Mail and Calendar learn about new data straight from the user's JMAP server. Otus runs no push
-server or gateway, and no mode depends on one. This follows
+server or gateway for Android delivery. The Apple implementation on `feat/apple-push` adds an
+optional APNs bridge, as [decision 0017](0017-apple-push.md) records. The Android decision follows
 [Mail #18](https://github.com/reazndev/otus-mail/issues/18).
 
 The server tells the app that data changed through JMAP push (RFC 8620, section 7). A push holds
@@ -42,37 +43,9 @@ project configuration. Mail's `feat/google-push` includes it in existing Android
 offers Google delivery on devices with Play services. Separate product flavors are unnecessary
 for this integration. See the [upstream library](https://unifiedpush.org/kdoc/embedded_fcm_distributor/).
 
-Mail's iOS app has no remote-push registration or scheduled notification check yet. Background
-checks were the intended fallback under this decision, not implemented iOS behavior.
-
-## iOS follow-up, proposed
-
-Native iOS remote notifications use Apple's APNs. A UnifiedPush distributor cannot run on
-ordinary iOS installations; see the [UnifiedPush FAQ](https://unifiedpush.org/users/faq/#q-will-unifiedpush-ever-work-on-ios).
-Sunup is an Android distributor. ntfy has an iOS app, but its
-[instant delivery also uses APNs](https://docs.ntfy.sh/config/#ios-instant-notifications), and it
-does not distribute pushes to Otus as its Android app does.
-
-Supporting native iOS push would require:
-
-- APNs entitlements, notification permission, device-token registration and renewal in each app.
-- A bridge that accepts JMAP Web Push and sends APNs requests with the app's Apple credentials.
-  VAPID support alone does not make a JMAP endpoint compatible with native APNs. Keep mail
-  credentials and message contents out of the bridge; forward encrypted change notices.
-- A notification service extension to decrypt the notice and fetch notification details, with
-  a generic alert if the extension cannot finish. Design shared key and account access between
-  the app and extension, and handle subscription verification, expiry and account removal.
-- Xcode signing and tests on iOS for locked devices, background delivery, offline recovery and
-  notification actions. The existing Kotlin iOS compilation check does not validate these.
-
-Apple documents the [provider server](https://developer.apple.com/documentation/usernotifications/setting-up-a-remote-notification-server)
-and [notification service extension](https://developer.apple.com/documentation/usernotifications/modifying-content-in-newly-delivered-notifications).
-[Silent background pushes](https://developer.apple.com/documentation/usernotifications/pushing-background-updates-to-your-app)
-may be throttled or dropped, so they cannot be the only path for timely new-mail alerts.
-
-Bridge hosting and Apple credential ownership are unresolved. An Otus-operated bridge would
-change the no-Otus-server decision above; a self-hosted build could use its owner's Apple
-credentials. This section records the work needed, not approval to deploy a bridge.
+The Apple implementation on `feat/apple-push` adds APNs registration, an embedded notification
+extension and a deployable bridge. It is not deployed or device-verified. See
+[decision 0017](0017-apple-push.md) for the platform requirements and limits.
 
 ## Structure
 
