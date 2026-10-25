@@ -78,9 +78,13 @@ public class JmapAccountRepository(
 
     override suspend fun remove(id: String) {
         beforeRemove(id)
-        storage { logins.remove(id) }
-        connections.forget(id)
-        onAccountChanged(id)
+        currentCoroutineContext().ensureActive()
+        // Credential deletion commits the removal, so its local cleanup must finish too.
+        withContext(NonCancellable) {
+            storage { logins.remove(id) }
+            connections.forget(id)
+            onAccountChanged(id)
+        }
     }
 
     private suspend fun <T> storage(read: () -> T): T =
