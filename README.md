@@ -20,7 +20,10 @@ setup screens receive app-owned state and callbacks.
 
 | Module | Artifact | Contents |
 | --- | --- | --- |
-| [`jmap`](docs/jmap.md) | `com.otus:jmap` | JMAP client (RFC 8620) and protected login storage |
+| [`jmap`](docs/jmap.md) | `com.otus:jmap` | JMAP client (RFC 8620), sharing types (RFC 9670), and protected login storage |
+| [`jscontact`](docs/contacts.md) | `com.otus:jscontact` | JSContact cards (RFC 9553), not released yet and not used by an app |
+| [`jmap-contacts`](docs/contacts.md) | `com.otus:jmap-contacts` | JMAP for Contacts (RFC 9610), not released yet and not used by an app |
+| [`push`](docs/push.md) | `com.otus:push` | JMAP push subscriptions, not released yet |
 | [`dateformat`](docs/dateformat.md) | `com.otus:dateformat` | Date display and the date-format preference |
 | [`avatar`](docs/avatar.md) | `com.otus:avatar` | Contact photos, website icons, and generated initials |
 | [`designsystem`](docs/designsystem.md) | `com.otus:designsystem` | Theme, elements, and components |

@@ -34,6 +34,7 @@ kotlin {
         commonMain.dependencies {
             api(projects.jmap)
             api(projects.designsystem)
+            api(projects.avatar)
             implementation(libs.compose.resources)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serialization.json)

@@ -30,8 +30,8 @@ import com.otus.designsystem.theme.OtusColors
  * [InboxTokens.rowGap] apart. A selected row fills its card with the selection tint.
  *
  * [dimmed] fades the content and the card by the same amount, but never the selection tint; pass
- * false for a selected row, so it reads clearly. Accessibility services read [CompactRowText.description] instead of the visible
- * text, because the marks and pills are icons.
+ * false for a selected row, so it reads clearly. Accessibility services read
+ * [CompactRowText.description] instead of the visible text, because the marks and pills are icons.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

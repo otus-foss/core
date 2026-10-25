@@ -7,9 +7,15 @@ import kotlin.test.assertEquals
 
 class ConnectedAccountDetailTest {
     @Test
-    fun aDisplayNameKeepsTheUsernameBelowIt() {
+    fun anAddressUsernameMovesToItsPill() {
         val account = ConnectedAccount("ada", "Ada Lovelace", "ada@example.org", "mail.example.org")
-        assertEquals("ada@example.org\nmail.example.org", connectedAccountDetail(account))
+        assertEquals("mail.example.org", connectedAccountDetail(account))
+    }
+
+    @Test
+    fun aUsernameThatIsNoAddressStaysInTheDetail() {
+        val account = ConnectedAccount("ada", "Ada Lovelace", "ada", "mail.example.org")
+        assertEquals("ada\nmail.example.org", connectedAccountDetail(account))
     }
 
     @Test
@@ -19,7 +25,7 @@ class ConnectedAccountDetailTest {
     }
 
     @Test
-    fun multipleAddressesAppearOnceBelowTheDisplayName() {
+    fun onlyWildcardAddressesStayInTheDetail() {
         val account =
             ConnectedAccount(
                 "ada",
@@ -29,13 +35,13 @@ class ConnectedAccountDetailTest {
                 emailAddresses = listOf("Ada@example.org", "work@other.example", "work@other.example", "*@example.org"),
             )
         assertEquals(
-            "ada@example.org\nwork@other.example\n*@example.org\nmail.example.org",
+            "*@example.org\nmail.example.org",
             connectedAccountDetail(account),
         )
     }
 
     @Test
-    fun theAccountNameDoesNotRepeatInItsAddressList() {
+    fun addressesWithPillsLeaveOnlyTheServer() {
         val account =
             ConnectedAccount(
                 "ada",
@@ -44,6 +50,6 @@ class ConnectedAccountDetailTest {
                 "mail.example.org",
                 emailAddresses = listOf("ada@example.org", "ada@other.example"),
             )
-        assertEquals("ada@other.example\nmail.example.org", connectedAccountDetail(account))
+        assertEquals("mail.example.org", connectedAccountDetail(account))
     }
 }

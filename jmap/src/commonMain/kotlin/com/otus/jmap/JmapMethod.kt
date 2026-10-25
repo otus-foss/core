@@ -16,6 +16,13 @@ public abstract class JmapMethod<out T>(
     public val capability: String,
     public val accountId: String?,
 ) {
+    /**
+     * Every account the call reads or writes. The client checks [capability] in each before
+     * sending, so a `/copy` cannot reach an account that lacks the type.
+     */
+    internal open val accountIds: List<String>
+        get() = listOfNotNull(accountId)
+
     public abstract fun arguments(): JsonObject
 
     /**

@@ -17,13 +17,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.otus.accounts.domain.AccountService
 import com.otus.accounts.domain.ConnectFailure
+import com.otus.accounts.domain.ConnectedAccount
 import com.otus.accounts.domain.JmapAccountDraft
 import com.otus.accounts.domain.JmapServerAddress
 import com.otus.accounts.domain.isValidUsername
 import com.otus.accounts.domain.parseJmapServer
 import com.otus.accounts.presentation.AccountsState
 import com.otus.accounts.presentation.ConnectStatus
+import com.otus.accounts.presentation.OwnAvatarsState
 import com.otus.accounts.presentation.components.ConnectedAccountRow
+import com.otus.accounts.presentation.components.OwnAvatarSheet
 import com.otus.accounts.presentation.confirmHostMessage
 import com.otus.accounts.presentation.message
 import com.otus.designsystem.components.ConfirmDialog
@@ -41,30 +44,41 @@ import com.otus.designsystem.theme.SheetTokens
 @Composable
 public fun AccountSetupScreen(
     state: AccountsState,
+    avatars: OwnAvatarsState,
     title: String,
     service: AccountService,
     onBack: () -> Unit,
 ) {
     var removing by rememberSaveable { mutableStateOf<String?>(null) }
     var adding by rememberSaveable { mutableStateOf(false) }
+    var editing by rememberSaveable { mutableStateOf<Pair<String, String>?>(null) }
     LaunchedEffect(state.status) {
         if (state.status is ConnectStatus.Connected) adding = false
     }
-    Subpage(title, onBack) {
+    LaunchedEffect(state.accounts) { avatars.load(state.accounts) }
+    Subpage(
+        title,
+        onBack,
+        footer = {
+            AccountsFooter(showNote = state.accounts.isNotEmpty()) {
+                state.cancelConnect()
+                adding = true
+            }
+        },
+    ) {
         state.storageError?.let {
             PageNote(it)
             ActionButton("Reload accounts", state::reload)
         }
-        SettingsSection("Connected accounts") {
-            if (state.accounts.isEmpty() && state.storageError == null) {
-                PageNote(if (state.loading) "Loading accounts…" else "No accounts connected yet.")
-            }
-            state.accounts.forEach { account -> ConnectedAccountRow(account) { removing = account.id } }
+        ConnectedAccounts(state, avatars, onRemove = { removing = it }, onEditAvatar = { id, email ->
+            editing =
+                id to email
+        })
+    }
+    editing?.let { (accountId, email) ->
+        state.accounts.firstOrNull { it.id == accountId }?.let { account ->
+            AvatarEditor(avatars, account, email) { editing = null }
         }
-        ActionButton("Connect an account", {
-            state.cancelConnect()
-            adding = true
-        }, Modifier.fillMaxWidth(), primary = true)
     }
     if (adding) {
         SheetFrame("Connect an account", onDismiss = {
@@ -86,6 +100,60 @@ public fun AccountSetupScreen(
             onDismiss = { removing = null },
         )
     }
+}
+
+/** Each account with its address pills, or why there are none yet. */
+@Composable
+private fun ConnectedAccounts(
+    state: AccountsState,
+    avatars: OwnAvatarsState,
+    onRemove: (String) -> Unit,
+    onEditAvatar: (account: String, email: String) -> Unit,
+) {
+    SettingsSection("Connected accounts") {
+        if (state.accounts.isEmpty() && state.storageError == null) {
+            PageNote(if (state.loading) "Loading accounts…" else "No accounts connected yet.")
+        }
+        state.accounts.forEach { account ->
+            ConnectedAccountRow(
+                account,
+                avatar = { avatars.avatar(account, it) },
+                onRemove = { onRemove(account.id) },
+                onEditAvatar = { onEditAvatar(account.id, it) },
+            )
+        }
+        avatars.error?.let { PageNote(it) }
+    }
+}
+
+/** The note about avatars, once there are accounts, and the button that connects one. */
+@Composable
+private fun AccountsFooter(
+    showNote: Boolean,
+    onConnect: () -> Unit,
+) {
+    if (showNote) {
+        PageNote(
+            "Give each address its own avatar. Otus shows it wherever it marks which address a message was sent to.",
+        )
+    }
+    ActionButton("Connect an account", onConnect, Modifier.fillMaxWidth(), primary = true)
+}
+
+@Composable
+private fun AvatarEditor(
+    avatars: OwnAvatarsState,
+    account: ConnectedAccount,
+    email: String,
+    onDismiss: () -> Unit,
+) {
+    OwnAvatarSheet(
+        email,
+        avatars.avatar(account, email),
+        pickPhoto = if (avatars.canPickPhoto) avatars::pickPhoto else null,
+        onSave = { avatars.save(account, email, it) },
+        onDismiss = onDismiss,
+    )
 }
 
 @Composable
