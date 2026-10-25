@@ -29,8 +29,8 @@ Ubicloud's `ubicloud-standard-2` Linux runner. See [hosting and CI](hosting.md).
 Publishing works like this:
 
 1. Merge the changelog entry and version bump in `gradle.properties` to `main`.
-2. Push the tag `v<version>` on a commit that is already on `main`. The pre-push hook runs
-   `checkAll` first.
+2. Run `./gradlew checkAll` on a commit that is already on `main`, then push the tag
+   `v<version>` on it. No hook runs `checkAll`, and the workflow below skips part of it.
 3. The `publish` workflow's `build` job checks that the tag matches `gradle.properties` and that
    the tagged commit is an ancestor of `main`, so a tag on an unmerged branch never publishes.
    It runs `./gradlew testAndroidHostTest`, which covers every module's common and Android host
