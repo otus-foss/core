@@ -38,7 +38,7 @@ class JmapOwnAvatarsTest {
                 patch
                     .getValue("media")
                     .jsonObject
-                    .getValue(OWN_PHOTO_KEY)
+                    .getValue(AVATAR_PHOTO_KEY)
                     .jsonObject
             assertEquals(JsonPrimitive("data:image/png;base64,AQID"), media["uri"])
         }
@@ -50,7 +50,7 @@ class JmapOwnAvatarsTest {
             val server = SelfCardServer(card = """{"id":"c","addressBookIds":{"own":true},$ADA_EMAIL,$media}""")
             server.avatars.save("ada", "ada@example.org", "Ada", photo)
             val patch = server.update()
-            assertEquals(setOf("media/p", "media/$OWN_PHOTO_KEY"), patch.keys)
+            assertEquals(setOf("media/p", "media/$AVATAR_PHOTO_KEY"), patch.keys)
             assertEquals("null", patch.getValue("media/p").toString())
         }
 
@@ -69,11 +69,11 @@ class JmapOwnAvatarsTest {
             val style = avatarPropertiesWith(null, letters.style)
             val card =
                 """{"id":"c","addressBookIds":{"own":true},$ADA_EMAIL,
-                "media":{"$OWN_PHOTO_KEY":{"kind":"photo","uri":"data:,"}},"vCard":{"properties":$style}}"""
+                "media":{"$AVATAR_PHOTO_KEY":{"kind":"photo","uri":"data:,"}},"vCard":{"properties":$style}}"""
             val server = SelfCardServer(card = card)
             server.avatars.save("ada", "ada@example.org", "Ada", null)
             val patch = server.update()
-            assertEquals("null", patch.getValue("media/$OWN_PHOTO_KEY").toString())
+            assertEquals("null", patch.getValue("media/$AVATAR_PHOTO_KEY").toString())
             assertTrue(patch.getValue("vCard/properties").jsonArray.isEmpty())
         }
 
