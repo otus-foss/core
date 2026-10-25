@@ -9,6 +9,12 @@ internal object ToastTokens {
     /** Space between the toast's edge and its text, and inside the dismiss area behind it. */
     val textInset = 20.dp
 
+    /** Space above and below the text, so a toast of several lines keeps air around them. */
+    val textPadding = 14.dp
+
+    /** Longer messages are cut after this many lines. */
+    const val MAX_LINES = 3
+
     /** Space around the action button inside the toast; the button's touch area still fills the toast's height. */
     val actionInset = 6.dp
     val actionPadding = 12.dp
@@ -17,7 +23,7 @@ internal object ToastTokens {
     val ringStroke = 2.dp
 
     /** How far each toast behind the front one peeks out above it while the group is stacked. */
-    val peek = 6.dp
+    val peek = 10.dp
 
     /** Space between toasts once the group fans out. */
     val gap = 8.dp

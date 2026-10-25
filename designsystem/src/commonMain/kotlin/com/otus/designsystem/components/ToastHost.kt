@@ -1,19 +1,15 @@
 package com.otus.designsystem.components
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -27,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.AccessibilityManager
 import androidx.compose.ui.platform.LocalAccessibilityManager
 import androidx.compose.ui.platform.LocalDensity
@@ -36,8 +33,8 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.util.lerp
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
@@ -72,63 +69,87 @@ public fun ToastHost(
         isBackEnabled = state.expanded,
         onBackCompleted = { state.expanded = false },
     )
-    val count = state.entries.size
-    val height by animateDpAsState(
-        if (count == 0) {
-            0.dp
-        } else if (state.expanded) {
-            ToastTokens.height * count + ToastTokens.gap * (count - 1)
-        } else {
-            ToastTokens.height + ToastTokens.peek * minOf(count - 1, ToastTokens.PEEK_LIMIT)
-        },
-        motionTween(MotionSpeed.Normal),
-        label = "Toast group height",
-    )
+    // 0 while the toasts are stacked, 1 once they fan out into a list.
+    val fan by animateFloatAsState(if (state.expanded) 1f else 0f, motionTween(MotionSpeed.Normal), label = "Toast fan")
     Box(modifier.fillMaxWidth().screenEdgeFade().aboveBottomBars(), contentAlignment = Alignment.BottomCenter) {
-        ToastGroup(state, height)
+        ToastGroup(state) { fan }
     }
 }
 
-/** The toasts themselves, as wide as the widest one, as far from the screen's sides as the bar. */
+/**
+ * The toasts themselves, as wide as the widest one, as far from the screen's sides as the bar.
+ * They are placed by their measured heights in one layout pass, so a toast whose text wraps onto
+ * more lines keeps the ones behind it peeking out above it while stacked, and below one another
+ * once fanned out. Stacked, the toasts behind take the front one's height, so only their top edges
+ * show; [fan] moves each to its own height and place in the list.
+ */
 @Composable
 private fun ToastGroup(
     state: ToastState,
-    height: Dp,
+    fan: () -> Float,
 ) {
     val count = state.entries.size
     // As far from the sides as the action bar, which matches its gap to the bottom of the screen.
     val navigation = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
-    Box(
-        Modifier
-            .padding(horizontal = ActionBarTokens.barInset + navigation)
-            .width(IntrinsicSize.Max)
-            .height(height),
-    ) {
-        state.entries.forEachIndexed { index, entry ->
-            key(entry.id) {
-                ToastItem(state, entry, depth = count - 1 - index, Modifier.align(Alignment.BottomCenter))
+    Layout(
+        content = {
+            state.entries.forEachIndexed { index, entry ->
+                key(entry.id) { ToastItem(state, entry, depth = count - 1 - index, fan) }
+            }
+        },
+        modifier = Modifier.padding(horizontal = ActionBarTokens.barInset + navigation),
+    ) { measurables, constraints ->
+        if (measurables.isEmpty()) return@Layout layout(0, 0) {}
+        val progress = fan()
+        val width = measurables.maxOf { it.maxIntrinsicWidth(Constraints.Infinity) }.coerceAtMost(constraints.maxWidth)
+        val front = measurables.last().measure(Constraints.fixedWidth(width))
+        val own = measurables.map { if (it == measurables.last()) front.height else it.minIntrinsicHeight(width) }
+        val heights = own.map { lerp(front.height, it, progress) }
+        val placeables =
+            measurables.mapIndexed { index, measurable ->
+                if (index ==
+                    measurables.lastIndex
+                ) {
+                    front
+                } else {
+                    measurable.measure(Constraints.fixed(width, heights[index]))
+                }
+            }
+        val gap = ToastTokens.gap.roundToPx()
+        val peek = ToastTokens.peek.roundToPx()
+        val stacked = front.height + peek * minOf(count - 1, ToastTokens.PEEK_LIMIT)
+        val listed = own.sum() + gap * (count - 1)
+        val height = lerp(stacked, listed, progress)
+        layout(width, height) {
+            placeables.forEachIndexed { index, placeable ->
+                val depth = count - 1 - index
+                val collapsed = height - front.height - peek * minOf(depth, ToastTokens.PEEK_LIMIT)
+                val inFront = heights.drop(index + 1).sum() + gap * depth
+                val expanded = height - inFront - placeable.height
+                placeable.place(0, lerp(collapsed, expanded, progress))
             }
         }
     }
 }
 
-/** One toast at [depth] places behind the front, positioned for the stacked or fanned-out group. */
+/** One toast at [depth] places behind the front, drawn for the stacked or fanned-out group. */
 @Composable
 private fun ToastItem(
     state: ToastState,
     entry: ToastEntry,
     depth: Int,
-    modifier: Modifier,
+    fan: () -> Float,
 ) {
-    val density = LocalDensity.current
     val expanded = state.expanded
     val reachable = expanded || depth == 0
-    val rise = if (expanded) (ToastTokens.height + ToastTokens.gap) * depth else ToastTokens.peek * depth
-    val lift by animateFloatAsState(
-        with(density) { rise.toPx() },
+    // The group places a stacked toast at its new depth at once; this eases it there, so a toast that
+    // a newer one pushes back rises smoothly instead of jumping.
+    val shownDepth by animateFloatAsState(
+        minOf(depth, ToastTokens.PEEK_LIMIT).toFloat(),
         motionTween(MotionSpeed.Normal),
-        label = "Toast lift",
+        label = "Toast depth",
     )
+    val peek = with(LocalDensity.current) { ToastTokens.peek.toPx() }
     val scale by animateFloatAsState(
         if (expanded) 1f else 1f - ToastTokens.PEEK_SCALE_STEP * depth,
         motionTween(MotionSpeed.Normal),
@@ -156,14 +177,16 @@ private fun ToastItem(
         onHeld = { entry.held = it },
         onDismiss = { state.remove(entry) },
         modifier =
-            modifier
+            Modifier
                 .fillMaxWidth()
                 .graphicsLayer {
-                    // Scaled about its center, so it moves up by the height it loses to keep its top edge at the peek.
+                    // Scaled about its center, so it moves up by the height it loses to keep its top edge where
+                    // the group placed it.
                     // Arriving and leaving, it rises from or sinks below the group's bottom, behind any bar.
                     val away = 1f - presence.value
                     val shown = scale * (1f - (1f - ToastTokens.AWAY_SCALE) * away)
-                    translationY = -lift - size.height * (1f - scale) / 2f + away * (size.height + sink.toPx())
+                    val settling = peek * (minOf(depth, ToastTokens.PEEK_LIMIT) - shownDepth) * (1f - fan())
+                    translationY = settling - size.height * (1f - scale) / 2f + away * (size.height + sink.toPx())
                     scaleX = shown
                     scaleY = shown
                     alpha = peeking * presence.value
