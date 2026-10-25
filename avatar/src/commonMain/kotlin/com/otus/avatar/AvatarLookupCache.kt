@@ -87,6 +87,22 @@ internal class AvatarLookupCache(
         }
     }
 
+    /**
+     * Makes the next lookup of [key] fetch again, and stops lookups that started earlier from
+     * storing their result. The stored record stays as a stale miss rather than an old image, so a
+     * removed photo is not brought back when the fetch finds nothing.
+     */
+    suspend fun expire(key: AvatarCacheKey) {
+        storageLock.withLock {
+            lock.withLock {
+                generation++
+                pending.remove(key)
+                entries.remove(key)
+            }
+            store.write(key, StoredAvatar(null, EXPIRED))
+        }
+    }
+
     private suspend fun fetchShared(
         key: AvatarCacheKey,
         lookup: Lookup,
@@ -144,5 +160,8 @@ internal class AvatarLookupCache(
 
     private companion object {
         const val MISS_LIFETIME = 5 * 60 * 1000L
+
+        /** A creation time old enough that the record never counts as fresh. */
+        const val EXPIRED = 0L
     }
 }
