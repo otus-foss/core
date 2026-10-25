@@ -13,7 +13,6 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import com.otus.designsystem.elements.Avatar
-import com.otus.designsystem.elements.rememberAvatarImage
 import com.otus.designsystem.theme.PageTokens
 import com.otus.designsystem.theme.SettingTokens
 
@@ -37,12 +36,7 @@ public fun SettingsSection(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             avatar?.let {
-                Avatar(
-                    it.initials,
-                    image = rememberAvatarImage(it.imageBytes),
-                    colorIndex = it.colorIndex,
-                    size = SettingTokens.sectionAvatar,
-                )
+                PersonAvatar(it, SettingTokens.sectionAvatar)
             }
             Text(
                 title,

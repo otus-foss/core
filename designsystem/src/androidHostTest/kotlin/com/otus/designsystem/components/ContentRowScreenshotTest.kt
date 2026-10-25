@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import com.otus.designsystem.elements.Avatar
+import com.otus.designsystem.elements.avatarFill
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_attach_file
 import org.junit.Rule
@@ -73,7 +74,7 @@ class ContentRowScreenshotTest {
     ) {
         val sender = if (text.subtitle.startsWith("Ada")) DemoPeople.ada else DemoPeople.grace
         ContentRow(text, emphasized, if (emphasized) "Unread" else "Read", {}, selection) {
-            Avatar(sender.initials, colorIndex = sender.colorIndex)
+            Avatar(sender.initials, fill = avatarFill(sender.colorIndex))
         }
     }
 }

@@ -23,7 +23,7 @@ class SummaryCardScreenshotTest {
     @Test
     fun withLeading() =
         compose.screenshot("summary_card_leading") {
-            SummaryCard("Lunch on Friday?", "Mira Chen · 9:41") { Avatar("MC", colorIndex = 0) }
+            SummaryCard("Lunch on Friday?", "Mira Chen · 9:41") { Avatar("MC") }
         }
 
     @Test

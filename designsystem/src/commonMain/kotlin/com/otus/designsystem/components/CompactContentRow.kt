@@ -25,12 +25,13 @@ import com.otus.designsystem.theme.OtusAlpha
 import com.otus.designsystem.theme.OtusColors
 
 /**
- * A two-line list row: [CompactRowText.first] and the date, then [CompactRowText.second] with its
- * marks and folders, and an optional preview. Selection works as in [ContentRow].
+ * A two-line list row on its own card: [CompactRowText.first] and the date, then
+ * [CompactRowText.second] with its marks and folders, and an optional preview. Space the rows
+ * [InboxTokens.rowGap] apart. A selected row fills its card with the selection tint.
  *
- * [dimmed] fades the content but never the selection tint; pass false for a selected row, so it
- * reads clearly. Accessibility services read [CompactRowText.description] instead of the visible
- * text, because the marks and pills are icons.
+ * [dimmed] fades the content and the card by the same amount, but never the selection tint; pass
+ * false for a selected row, so it reads clearly. Accessibility services read
+ * [CompactRowText.description] instead of the visible text, because the marks and pills are icons.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -47,7 +48,7 @@ public fun CompactContentRow(
     Row(
         modifier
             .fillMaxWidth()
-            .selectionTint(selection)
+            .rowCard(selection, dimmed)
             .semantics(mergeDescendants = true) {
                 contentDescription = text.description
                 stateDescription = text.stateLabel

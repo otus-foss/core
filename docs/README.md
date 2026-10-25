@@ -14,6 +14,8 @@
 
 - [Architecture](architecture.md): module ownership, planned extraction, and dependency rules.
 - [JMAP](jmap.md): the `jmap` module's API, security rules, protocol coverage, and checks.
+- [Contacts](contacts.md): the `jscontact` and `jmap-contacts` modules for JSContact cards and
+  JMAP for Contacts, with their RFC coverage. No app uses them yet.
 - [Push subscriptions](push.md): the `push` module that keeps JMAP push subscriptions current.
 - [Date formatting](dateformat.md): the `dateformat` module's choices, API, and storage.
 - [Avatars](avatar.md): the `avatar` module's lookup order, caching, and privacy limits.
@@ -38,7 +40,9 @@
 - [0011: Complete library publication from Linux](decisions/0011-linux-library-publication.md)
 - [0012: GitHub as the primary host again](decisions/0012-github-primary.md)
 - [0013: Local hooks as the quality gate](decisions/0013-local-quality-gate.md)
+- [0014: User themes and accent colors](decisions/0014-user-themes.md)
 - [0015: Push notifications without an Otus server](decisions/0015-push-notifications.md)
-- [0016: Apple push through an APNs bridge](decisions/0016-apple-push.md)
+- [0016: JMAP contacts modules](decisions/0016-contacts-modules.md)
+- [0017: Apple push through an APNs bridge](decisions/0017-apple-push.md)
 
 Decisions 0001 to 0004 were made in the app repositories and apply to every Otus repository.

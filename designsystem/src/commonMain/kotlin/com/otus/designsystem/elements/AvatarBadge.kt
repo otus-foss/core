@@ -1,5 +1,6 @@
 package com.otus.designsystem.elements
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -7,14 +8,22 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import com.otus.designsystem.theme.AvatarTokens
 import com.otus.designsystem.theme.InboxTokens
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PanelTokens
+import org.jetbrains.compose.resources.DrawableResource
 
 /**
  * [avatar] with [badge] on its bottom-right edge. The badge sits outside the avatar's clip, so it
@@ -43,6 +52,10 @@ public fun AvatarBadge(
     initials: String,
     colorIndex: Int,
     modifier: Modifier = Modifier,
+    image: ImageBitmap? = null,
+    fill: Color = avatarFill(colorIndex),
+    symbol: DrawableResource? = null,
+    content: Color = OtusColors.text1,
 ) {
     Box(
         modifier
@@ -51,16 +64,31 @@ public fun AvatarBadge(
             .padding(InboxTokens.badgeRing)
             .border(PanelTokens.borderWidth, OtusColors.bgLight, CircleShape)
             .padding(PanelTokens.borderWidth)
-            .background(avatarFill(colorIndex), CircleShape),
+            .clip(CircleShape)
+            .background(fill),
         contentAlignment = Alignment.Center,
     ) {
-        Text(
-            initials,
-            color = OtusColors.text1,
-            fontSize = InboxTokens.badgeInitialsSize,
-            lineHeight = InboxTokens.badgeInitialsSize,
-            fontWeight = FontWeight.SemiBold,
-            maxLines = 1,
-        )
+        when {
+            image != null -> {
+                Image(image, contentDescription = null, Modifier.matchParentSize(), contentScale = ContentScale.Crop)
+            }
+
+            symbol != null -> {
+                CompositionLocalProvider(LocalContentColor provides content) {
+                    Symbol(symbol, size = InboxTokens.badgeSize * AvatarTokens.SYMBOL_SCALE)
+                }
+            }
+
+            else -> {
+                Text(
+                    initials,
+                    color = content,
+                    fontSize = InboxTokens.badgeInitialsSize,
+                    lineHeight = InboxTokens.badgeInitialsSize,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 1,
+                )
+            }
+        }
     }
 }

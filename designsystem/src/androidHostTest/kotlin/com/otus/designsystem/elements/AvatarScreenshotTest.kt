@@ -7,9 +7,12 @@ import android.graphics.LinearGradient
 import android.graphics.Paint
 import android.graphics.Shader
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.unit.dp
 import com.otus.designsystem.screenshot.screenshot
@@ -36,7 +39,7 @@ class AvatarScreenshotTest {
     fun initialsByColor() =
         compose.screenshot("avatar_initials_colors") {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                repeat(3) { Avatar("AL", colorIndex = it) }
+                repeat(3) { Avatar("AL", fill = avatarFill(it)) }
             }
         }
 
@@ -51,7 +54,7 @@ class AvatarScreenshotTest {
     @Test
     fun ring() =
         compose.screenshot("avatar_ring") {
-            Avatar("GH", ring = BorderStroke(2.dp, OtusColors.accentLight))
+            Avatar("GH", Modifier.border(BorderStroke(2.dp, OtusColors.accentLight), CircleShape))
         }
 
     @Test

@@ -49,21 +49,4 @@ class SwipeGeometryTest {
         assertFalse(revealFromLeft(fromStart = true, isLtr = false))
         assertTrue(revealFromLeft(fromStart = false, isLtr = false))
     }
-
-    @Test
-    fun aWideRevealUsesTheFullFilletAndCorner() {
-        assertEquals(RevealRadii(fillet = 8f, corner = 12f), revealRadii(200f, 88f, fillet = 8f, corner = 12f))
-    }
-
-    @Test
-    fun aNarrowRevealShrinksBothRadiiTogether() {
-        assertEquals(RevealRadii(fillet = 2f, corner = 3f), revealRadii(5f, 88f, fillet = 8f, corner = 12f))
-        assertEquals(RevealRadii(fillet = 4f, corner = 6f), revealRadii(10f, 88f, fillet = 8f, corner = 12f))
-        assertEquals(RevealRadii(fillet = 0f, corner = 0f), revealRadii(0f, 88f, fillet = 8f, corner = 12f))
-    }
-
-    @Test
-    fun aShortRowKeepsItsEndCornersWithinItsHeight() {
-        assertEquals(RevealRadii(fillet = 8f, corner = 10f), revealRadii(200f, 20f, fillet = 8f, corner = 12f))
-    }
 }

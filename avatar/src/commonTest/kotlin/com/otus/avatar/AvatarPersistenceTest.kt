@@ -44,7 +44,7 @@ class AvatarPersistenceTest {
             val service =
                 AvatarService(
                     contacts =
-                        ContactPhotoSource { sender, _ ->
+                        photoSource { sender, _ ->
                             if (sender.email.startsWith("contact")) image else null
                         },
                     images = AvatarImageLoader { image },
@@ -55,7 +55,7 @@ class AvatarPersistenceTest {
             val restored =
                 AvatarService(
                     contacts =
-                        ContactPhotoSource { _, _ ->
+                        photoSource { _, _ ->
                             error("Stored contact/miss must be reused")
                         },
                     images = AvatarImageLoader { error("Stored icon must be reused") },
@@ -77,7 +77,7 @@ class AvatarPersistenceTest {
             val service =
                 AvatarService(
                     contacts =
-                        ContactPhotoSource { sender, _ ->
+                        photoSource { sender, _ ->
                             when (sender.email.substringBefore('@')) {
                                 "alice" -> image
                                 "bob" -> other

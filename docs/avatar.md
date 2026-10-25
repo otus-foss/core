@@ -10,7 +10,8 @@ It moved here from otus-mail in version 0.2.0.
 `AvatarService` (`com.otus.avatar`) is common Kotlin, independent of mail, calendar, Compose, and platform
 image types. It resolves an `AvatarRequest(accountKey, email, name)` in this order:
 
-1. A contact photo or logo through the injected `ContactPhotoSource`.
+1. A contact card's avatar through the injected `ContactAvatarSource`: an `AvatarStyle` the user
+   built in Otus, or else a photo or logo. A style comes back in `ResolvedAvatar.style`.
 2. A website-domain icon through `AvatarImageLoader`, when `AvatarOptions.domainIcons` is enabled.
    An injected `DomainIconSource` can supply a cached favicon when `domainIconProxy` is also enabled.
 3. Generated initials, with an email-derived index for the app's named theme colors.
@@ -137,13 +138,18 @@ in each platform's HTTP engine, which the module does not have yet.
 
 Each app creates one `AvatarService` per process and passes its own login IDs as `accountKey`.
 The app chooses which remote requests to allow through `AvatarOptions`, supplies the Public Suffix
-List bytes, and injects any `DomainIconSource`. `JmapContactPhotoSource` uses the app's
+List bytes, and injects any `DomainIconSource`. `JmapContactAvatarSource` uses the app's
 `JmapConnections` and `LoginStore`, so contact lookups never cross apps. Calendar still carries an
 older copy of this code until it adopts the module.
 
-Contact queries filter to readable, subscribed address books and fetch up to 32 candidates per
+Contact queries ask for `id`, `addressBookIds`, `emails`, `media`, and `vCard`. Stalwart returns a
+card's extra vCard properties, where the style lives, only when `vCard` is asked for by name; a
+server that rejects `vCard` with `invalidArguments` gets the query again without it. They search
+readable address books that are subscribed or writable, because Stalwart leaves the user's own
+books unsubscribed, and fetch up to 32 candidates per
 page. Each candidate must contain the exact normalized email address; server searches may also
-match email labels. Lookup continues across pages until it finds a usable photo or reaches an empty
+match email labels. On each page, cards in the user's writable books come first, then cards whose
+avatar Otus wrote, so a shared card never hides the user's own. Lookup continues across pages until it finds a usable photo or reaches an empty
 page, including when the server returns fewer candidates than requested. It retains one page at a
 time and stops if the query state changes, the server ignores the requested position, or the
 10-second search deadline expires. Cancellation from the caller propagates. These bounds can
@@ -167,3 +173,34 @@ Mail's inbox tests cover restoring avatars before network work; see
 [Mail's avatar guide](https://github.com/reazndev/otus-mail/blob/main/docs/avatars.md).
 `RememberAvatarImageTest` and `DecodedAvatarCacheTest` in the design system cover decoding.
 iOS runtime validation requires macOS/Xcode.
+
+## Avatars of the user's own addresses
+
+`OwnAvatars` reads and saves the avatar of one of the user's own addresses, and `JmapOwnAvatars`
+keeps it on a self card: a contact card in the user's own address book with that address. Saving
+finds a card with the address in a writable book, preferring one whose avatar Otus wrote, or
+creates one in the default book with the address and the account name. A patch path needs its
+parent on the server (RFC 8620, section 5.3), so a card without `media` or `vCard` gets the whole
+map or object instead.
+
+- A photo is a JSContact `media` entry of kind `photo` with a `data:` URI, so other contact apps
+  show it too. Stalwart refuses a `blobId` in `media` ("blobIds in media is not supported"). Saving a
+  photo replaces the card's other photos and drops the style.
+- An `AvatarStyle` is a color and an `AvatarMark`. The color is a folder color name or a custom
+  `#RRGGBB`. The mark is up to `MAX_AVATAR_LETTERS` letters, an icon name from `AvatarSymbols`, or
+  `Website`. `Website` shows the website icon of the address's domain even when
+  `AvatarOptions.domainIcons` is off, because the user picked it for their own address;
+  `ResolvedAvatar` then has both the icon and the style. Lookups honor `Website` only on cards in
+  books the user may write, so a shared card cannot turn website icons on. A style is stored as the vCard extension
+  property `AVATAR_STYLE_PROPERTY` (`x-otus-avatar`) in the card's `vCard.properties` (RFC 9555),
+  with a JSON text value such as `{"color": "Blue", "icon": "work"}`. Stalwart refuses unknown
+  top-level card properties ("Invalid property."), so a JSContact vendor property does not work there.
+  Saving a style removes the card's photos, so every app agrees there is none. Other contact apps
+  keep the property but show no avatar.
+- Saving null removes the photos and the style but keeps the card.
+- `OwnAvatarException` names why a save failed: `NoContacts`, `ReadOnly`, or `Failed`.
+
+A save clears the login's cached avatars, so the next `resolve` reads the new one. The disk cache
+stores a style as its JSON. The apps map color names to `FolderColor` and mark names to
+`AvatarSymbols`, so the module stays free of UI types. An `AvatarPhotoPicker` from the app supplies
+photos, already cropped and small enough to upload.
