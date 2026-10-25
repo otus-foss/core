@@ -17,6 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import com.otus.designsystem.components.ColorSheet
+import com.otus.designsystem.components.InfoText
+import com.otus.designsystem.components.InfoTip
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.OtusPalette
 import com.otus.designsystem.theme.PanelTokens
@@ -35,20 +37,17 @@ internal fun CustomAccentSheet(
     onDismiss: () -> Unit,
 ) {
     ColorSheet("Custom color", choice.accent, onPick, onDismiss) { color ->
-        Text(
-            "How it looks in each theme",
-            Modifier.padding(horizontal = PanelTokens.iconGap),
-            color = OtusColors.text2,
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                "How it looks in each theme",
+                Modifier.padding(horizontal = PanelTokens.iconGap),
+                color = OtusColors.text2,
+            )
+            InfoTip(AccentInfo)
+        }
         PairedGrid(choice.options) { option, modifier ->
             ThemePreview(option.title, option.choice.withAccent(color).palette, modifier)
         }
-        Text(
-            "You pick one color. Otus makes a fill, an outline and a text shade for each theme, and keeps " +
-                "text readable on every one.",
-            Modifier.padding(horizontal = PanelTokens.iconGap),
-            color = OtusColors.text2,
-        )
     }
 }
 
@@ -96,3 +95,9 @@ private fun ThemePreview(
         }
     }
 }
+
+private val AccentInfo =
+    InfoText(
+        "Custom color",
+        "You pick one color. Otus makes a fill, an outline and a text shade for each theme, and keeps text readable on every one.",
+    )
