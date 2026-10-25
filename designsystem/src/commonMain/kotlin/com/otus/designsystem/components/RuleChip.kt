@@ -34,7 +34,6 @@ import androidx.compose.ui.unit.TextUnit
 import com.otus.designsystem.elements.Avatar
 import com.otus.designsystem.elements.Symbol
 import com.otus.designsystem.elements.controlPressFeedback
-import com.otus.designsystem.elements.rememberAvatarImage
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.RuleChipTokens
 
@@ -168,7 +167,7 @@ private fun RuleAvatar(
     avatar: ChipAvatar,
     size: Dp,
 ) {
-    Avatar(avatar.initials, image = rememberAvatarImage(avatar.imageBytes), colorIndex = avatar.colorIndex, size = size)
+    PersonAvatar(avatar, size)
 }
 
 @Composable

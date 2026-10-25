@@ -1,11 +1,12 @@
 package com.otus.designsystem.components
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -14,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import com.otus.designsystem.elements.Avatar
-import com.otus.designsystem.elements.rememberAvatarImage
 import com.otus.designsystem.theme.ActionBarTokens
 import com.otus.designsystem.theme.OtusColors
 
@@ -89,12 +89,10 @@ private fun TokenAvatar(avatar: ChipAvatar) {
 /** An avatar with a `bgDark` ring, which separates it from the avatar it overlaps. */
 @Composable
 private fun RingedAvatar(avatar: ChipAvatar) {
-    Avatar(
-        avatar.initials,
-        image = rememberAvatarImage(avatar.imageBytes),
-        colorIndex = avatar.colorIndex,
-        size = ActionBarTokens.tokenSize,
-        ring = BorderStroke(ActionBarTokens.tokenRing, OtusColors.bgDark),
+    PersonAvatar(
+        avatar,
+        ActionBarTokens.tokenSize,
+        Modifier.border(ActionBarTokens.tokenRing, OtusColors.bgDark, CircleShape),
     )
 }
 
@@ -106,9 +104,9 @@ private fun NumberCircle(
 ) {
     Avatar(
         text,
+        if (ring) Modifier.border(ActionBarTokens.tokenRing, OtusColors.bgDark, CircleShape) else Modifier,
         fill = OtusColors.bgLight,
         size = ActionBarTokens.tokenSize,
-        ring = BorderStroke(ActionBarTokens.tokenRing, OtusColors.bgDark).takeIf { ring },
     )
 }
 

@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import com.otus.designsystem.components.ColorSheet
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.OtusPalette
 import com.otus.designsystem.theme.PanelTokens

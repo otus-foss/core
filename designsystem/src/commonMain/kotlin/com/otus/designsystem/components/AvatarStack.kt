@@ -1,8 +1,9 @@
 package com.otus.designsystem.components
 
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -13,7 +14,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import com.otus.designsystem.elements.Avatar
-import com.otus.designsystem.elements.rememberAvatarImage
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PanelTokens
 import com.otus.designsystem.theme.panelTextStyle
@@ -41,13 +41,7 @@ public fun AvatarStack(
     ) {
         Row(horizontalArrangement = Arrangement.spacedBy(-overlap)) {
             avatars.take(PanelTokens.CHIP_AVATAR_LIMIT).forEach { avatar ->
-                Avatar(
-                    avatar.initials,
-                    image = rememberAvatarImage(avatar.imageBytes),
-                    colorIndex = avatar.colorIndex,
-                    size = size,
-                    ring = BorderStroke(PanelTokens.borderWidth, ring),
-                )
+                PersonAvatar(avatar, size, Modifier.border(PanelTokens.borderWidth, ring, CircleShape))
             }
         }
         label?.let {

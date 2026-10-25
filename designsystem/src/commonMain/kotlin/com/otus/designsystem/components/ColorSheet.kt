@@ -1,4 +1,4 @@
-package com.otus.settings.presentation.components
+package com.otus.designsystem.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -21,8 +21,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import com.otus.designsystem.components.SheetFrame
-import com.otus.designsystem.components.SheetHeaderAction
 import com.otus.designsystem.elements.ColorSlider
 import com.otus.designsystem.elements.InputField
 import com.otus.designsystem.theme.Hsl
@@ -42,7 +40,7 @@ import com.otus.designsystem.theme.toHsl
  * can remove it. [footer] follows the sliders and sees the color as it changes.
  */
 @Composable
-internal fun ColorSheet(
+public fun ColorSheet(
     title: String,
     initial: Color,
     onPick: (Color) -> Unit,
@@ -131,7 +129,6 @@ private val hueTrack =
         (0..HUE_STOPS).map { hslColor(MAX_HUE * it / HUE_STOPS, TRACK_SATURATION, TRACK_LIGHTNESS) },
     )
 
-private const val HALF = 0.5f
 private const val MAX_HUE = 359f
 private const val HUE_STOPS = 6
 private const val TRACK_SATURATION = 0.55f
