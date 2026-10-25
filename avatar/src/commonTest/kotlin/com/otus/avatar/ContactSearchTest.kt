@@ -134,7 +134,7 @@ private class SearchFixture(
         )
 
     suspend fun search(load: suspend (ContactCard) -> AvatarImage? = { AvatarImage(byteArrayOf(1)) }): AvatarImage? =
-        findContactAvatar(connection, "a", "target@example.org", setOf("book"), load)
+        findContactAvatar(connection, "a", "target@example.org", setOf("book"), own = emptySet(), load)
 
     private fun page(position: Long): String {
         val start = if (ignorePosition) 0 else position.toInt()

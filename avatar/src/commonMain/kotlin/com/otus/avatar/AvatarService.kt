@@ -83,34 +83,13 @@ public class AvatarService(
         val iconOptions = iconOptions(style, options)
         val site = if (contact?.image == null && style.wantsIcon()) iconDomain(normalized.email, iconOptions) else null
         val domain = site?.let { cache.peek(domainKey(it, iconOptions)) }
+        // Keep the style when the icon is not cached yet, so a Website avatar draws its color.
         return when {
-            !style.wantsIcon() -> {
-                ResolvedAvatar(
-                    fallback,
-                    origin = AvatarOrigin.Contact,
-                    style = style,
-                )
-            }
-
-            domain?.image != null && style != null -> {
-                ResolvedAvatar(fallback, domain.image, AvatarOrigin.Domain, style)
-            }
-
-            contact?.image != null -> {
-                ResolvedAvatar(fallback, contact.image, AvatarOrigin.Contact)
-            }
-
-            domain?.image != null -> {
-                ResolvedAvatar(fallback, domain.image, AvatarOrigin.Domain)
-            }
-
-            contact != null || domain != null -> {
-                ResolvedAvatar(fallback)
-            }
-
-            else -> {
-                null
-            }
+            !style.wantsIcon() -> ResolvedAvatar(fallback, origin = AvatarOrigin.Contact, style = style)
+            contact?.image != null -> ResolvedAvatar(fallback, contact.image, AvatarOrigin.Contact)
+            domain?.image != null -> ResolvedAvatar(fallback, domain.image, AvatarOrigin.Domain, style)
+            contact != null || domain != null -> ResolvedAvatar(fallback, style = style)
+            else -> null
         }
     }
 
