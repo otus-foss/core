@@ -244,5 +244,6 @@ private fun serverHint(address: JmapServerAddress): String =
 private val AvatarsInfo =
     InfoText(
         "Address avatars",
-        "Tap an address to give it its own avatar. Otus shows it wherever it marks which address a message was sent to.",
+        "Tap an address to give it its own avatar. Otus shows it wherever it marks which address a " +
+            "message was sent to.",
     )
