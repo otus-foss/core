@@ -165,7 +165,8 @@ class JmapOwnAvatarsTest {
 private class SelfCardServer(
     card: String?,
     books: String = "$OWN_BOOK,$SHARED_BOOK",
-    setResult: String = """{"newState":"2","updated":{"c":null},"created":{"self":{"id":"n"}}}""",
+    /** A fixed answer to every set; by default each set is answered with exactly what it asked. */
+    setResult: String? = null,
 ) {
     val sets = mutableListOf<JsonObject>()
     private var made: String? = null
@@ -203,7 +204,7 @@ private class SelfCardServer(
                                 "ContactCard/set" -> {
                                     sets += arguments.jsonObject
                                     if ("create" in arguments.jsonObject) made = MADE_CARD
-                                    setResult
+                                    setResult ?: accepted(arguments.jsonObject)
                                 }
 
                                 else -> {
@@ -241,3 +242,20 @@ private const val SESSION = """
  "accounts":{"contacts":{"accountCapabilities":{"urn:ietf:params:jmap:contacts":{}}}},
  "primaryAccounts":{"urn:ietf:params:jmap:contacts":"contacts"},"apiUrl":"/jmap/"}
 """
+
+/** A set answer that creates and updates exactly what [arguments] asked, as a server must (RFC 8620, section 5.3). */
+private fun accepted(arguments: JsonObject): String {
+    val created =
+        arguments["create"]
+            ?.jsonObject
+            ?.keys
+            .orEmpty()
+            .joinToString(",") { """"$it":{"id":"n"}""" }
+    val updated =
+        arguments["update"]
+            ?.jsonObject
+            ?.keys
+            .orEmpty()
+            .joinToString(",") { """"$it":null""" }
+    return """{"newState":"2","created":{$created},"updated":{$updated}}"""
+}
