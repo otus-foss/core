@@ -54,33 +54,6 @@ public fun PickRow(
     }
 }
 
-/**
- * A [PickRow] whose choice is an address: the [person] pill, so a long address stays on one line,
- * over a smaller `text2` [subtitle], such as which card it comes from.
- */
-@Composable
-public fun PersonPickRow(
-    person: Recipient,
-    subtitle: String?,
-    mark: PickMark,
-    onClick: (() -> Unit)?,
-    modifier: Modifier = Modifier,
-    density: RowDensity = RowDensity.Regular,
-) {
-    PickRowFrame(mark, onClick, modifier.heightIn(min = density.pickRowHeight), leading = null) {
-        PersonChip(person)
-        subtitle?.let {
-            Text(
-                it,
-                style = panelTextStyle(),
-                color = OtusColors.text2,
-                fontSize = SheetTokens.detailSize,
-                maxLines = 1,
-            )
-        }
-    }
-}
-
 /** The [title] and smaller `text2` [subtitle] of a [PickRow] or [FilterPickRow]. */
 @Composable
 internal fun PickRowText(

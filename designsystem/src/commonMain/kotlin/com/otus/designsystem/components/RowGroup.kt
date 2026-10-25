@@ -32,30 +32,21 @@ import org.jetbrains.compose.resources.DrawableResource
 /**
  * [rows] on one `bgRegular` card with rounded corners, a `bgLight` line between each two. A
  * [raised] group sits on a page instead of a sheet, so it takes `bgDark` with a `strokeBgDark` outline.
- * A [highlighted] group takes `accentDark` with an `accentRegular` outline, for the one entry that
- * comes first, such as a contact's primary address.
  */
 @Composable
 public fun RowGroup(
     rows: List<@Composable () -> Unit>,
     modifier: Modifier = Modifier,
     raised: Boolean = false,
-    highlighted: Boolean = false,
 ) {
     val shape = RoundedCornerShape(SheetTokens.rowRadius)
     val line = if (raised) OtusColors.strokeBgDark else OtusColors.bgLight
-    val outline = if (highlighted) OtusColors.accentRegular else OtusColors.strokeBgDark
     Column(
         modifier
             .fillMaxWidth()
             .clip(shape)
-            .background(
-                when {
-                    highlighted -> OtusColors.accentDark
-                    raised -> OtusColors.bgDark
-                    else -> OtusColors.bgRegular
-                },
-            ).then(if (raised || highlighted) Modifier.border(PanelTokens.borderWidth, outline, shape) else Modifier),
+            .background(if (raised) OtusColors.bgDark else OtusColors.bgRegular)
+            .then(if (raised) Modifier.border(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape) else Modifier),
     ) {
         rows.forEachIndexed { index, row ->
             if (index > 0) Box(Modifier.fillMaxWidth().height(PanelTokens.borderWidth).background(line))

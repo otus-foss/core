@@ -29,11 +29,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.offset
 import com.otus.designsystem.elements.IconButton
 import com.otus.designsystem.elements.InputKind
+import com.otus.designsystem.elements.RemoveFieldButton
 import com.otus.designsystem.elements.Symbol
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_star
@@ -44,6 +48,7 @@ import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PanelTokens
 import com.otus.designsystem.theme.SheetTokens
 import com.otus.designsystem.theme.panelTextStyle
+import org.jetbrains.compose.resources.DrawableResource
 
 /**
  * One editable address or number of a contact: the field, a [label] button that opens
@@ -51,7 +56,8 @@ import com.otus.designsystem.theme.panelTextStyle
  * makes this the value Mail uses first. The preferred field fills with the accent so it stands out
  * among the others. [description] names the field to screen readers, such as "Email 2". An
  * [error], such as an address that is not valid, shows below the field once focus leaves it, so
- * it never interrupts typing.
+ * it never interrupts typing. An [icon], such as a phone, names the kind of value as the contact
+ * page does, and [onRemove] puts a ✕ at the end that removes the field.
  */
 @Composable
 public fun ContactFieldRow(
@@ -66,6 +72,8 @@ public fun ContactFieldRow(
     preferred: Boolean? = null,
     onPreferredClick: () -> Unit = {},
     error: String? = null,
+    icon: DrawableResource? = null,
+    onRemove: (() -> Unit)? = null,
 ) {
     var focused by remember { mutableStateOf(false) }
     val style = panelTextStyle()
@@ -82,10 +90,20 @@ public fun ContactFieldRow(
                         if (preferred == true) OtusColors.accentRegular else OtusColors.strokeBgDark,
                     ),
                     shape,
-                ).padding(start = SheetTokens.inset, end = PanelTokens.iconGap),
+                )
+                // A trailing button's touch target spaces it from the edge; without one, the label needs the inset.
+                .padding(
+                    start = SheetTokens.inset,
+                    end = if (preferred == null && onRemove == null) SheetTokens.inset else PanelTokens.iconGap,
+                ),
             horizontalArrangement = Arrangement.spacedBy(PanelTokens.iconGap),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            icon?.let {
+                CompositionLocalProvider(LocalContentColor provides OtusColors.text2) {
+                    Box(Modifier.padding(end = SheetTokens.gap - PanelTokens.iconGap)) { Symbol(it) }
+                }
+            }
             BasicTextField(
                 value = value,
                 onValueChange = onValueChange,
@@ -104,19 +122,27 @@ public fun ContactFieldRow(
                 },
             )
             LabelButton(label, description, labelChoices)
-            preferred?.let { on ->
-                IconButton(
-                    if (on) "Primary" else "Make primary",
-                    onPreferredClick,
-                    outlined = false,
-                    fill = Color.Transparent,
-                ) {
-                    // accentLight is too faint on the accent fill, so the filled star takes text1.
-                    val tint = if (on) OtusColors.text1 else OtusColors.text2
-                    CompositionLocalProvider(LocalContentColor provides tint) {
-                        Symbol(if (on) Res.drawable.symbol_star_fill else Res.drawable.symbol_star)
+            // The star and ✕ keep 48 dp targets that overlap and reach past the group, so the icons
+            // themselves sit a row gap apart and as far from the edge as the text is.
+            Row(
+                Modifier.bleed(ContactTokens.trailingBleedStart, ContactTokens.trailingBleedEnd),
+                horizontalArrangement = Arrangement.spacedBy(-ContactTokens.trailingOverlap),
+            ) {
+                preferred?.let { on ->
+                    IconButton(
+                        if (on) "Primary" else "Make primary",
+                        onPreferredClick,
+                        outlined = false,
+                        fill = Color.Transparent,
+                    ) {
+                        // accentLight is too faint on the accent fill, so the filled star takes text1.
+                        val tint = if (on) OtusColors.text1 else OtusColors.text2
+                        CompositionLocalProvider(LocalContentColor provides tint) {
+                            Symbol(if (on) Res.drawable.symbol_star_fill else Res.drawable.symbol_star)
+                        }
                     }
                 }
+                onRemove?.let { RemoveFieldButton("Remove $description", it) }
             }
         }
         if (error != null && !focused) {
@@ -157,3 +183,15 @@ private fun LabelButton(
         if (open) OptionsMenu(choices) { open = false }
     }
 }
+
+/** Lays this out [start] and [end] wider than the room it takes, reaching past it on both sides. */
+private fun Modifier.bleed(
+    start: Dp,
+    end: Dp,
+): Modifier =
+    layout { measurable, constraints ->
+        val before = start.roundToPx()
+        val after = end.roundToPx()
+        val placeable = measurable.measure(constraints.offset(horizontal = before + after))
+        layout(placeable.width - before - after, placeable.height) { placeable.place(-before, 0) }
+    }
