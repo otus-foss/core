@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.round
 import androidx.compose.ui.window.PopupPositionProvider
 import com.otus.designsystem.elements.IconButton
+import com.otus.designsystem.elements.IconButtonLook
 import com.otus.designsystem.elements.Symbol
 import com.otus.designsystem.theme.MenuTokens
 
@@ -42,7 +43,7 @@ public fun QuickActionBar(
                         onDismiss()
                         action.onClick()
                     },
-                    outlined = false,
+                    look = IconButtonLook.Plain,
                 ) { action.icon?.let { Symbol(it) } }
             }
         }

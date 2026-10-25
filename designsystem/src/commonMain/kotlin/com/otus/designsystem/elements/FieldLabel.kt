@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.unit.Constraints
 import com.otus.designsystem.resources.Res
@@ -58,7 +57,7 @@ public fun RemoveFieldButton(
     description: String,
     onRemove: () -> Unit,
 ) {
-    IconButton(description, onRemove, outlined = false, fill = Color.Transparent) {
+    IconButton(description, onRemove, look = IconButtonLook.Bare) {
         CompositionLocalProvider(LocalContentColor provides OtusColors.text2) { Symbol(Res.drawable.symbol_close) }
     }
 }

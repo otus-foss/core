@@ -75,7 +75,7 @@ class SidebarEntryScreenshotTest {
         compose.screenshot("sidebar_heading") {
             Column(WIDTH) {
                 SidebarHeading("Folders", expanded = true, onExpandedChange = {}, action = {
-                    IconButton("Add folder", {}, outlined = false) { Symbol(Res.drawable.symbol_add) }
+                    IconButton("Add folder", {}, look = IconButtonLook.Plain) { Symbol(Res.drawable.symbol_add) }
                 })
                 SidebarHeading("Labels", expanded = false, onExpandedChange = {})
             }

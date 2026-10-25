@@ -50,8 +50,9 @@ public fun ContactRow(
 
 /**
  * A person or group in a contact list, on an [EntryCard] as mail is in the inbox: the [avatar],
- * the [title] over a `text2` [subtitle], then an optional `text2` [detail] such as "+1" for more
- * addresses and a [label] pill, such as the shared address book the card comes from. While
+ * the [title] over a `text2` [subtitle], then its [end]: a detail such as "+1" for more
+ * addresses and a pill, such as the shared address book the card comes from. [taps] says what a
+ * tap and a hold do. While
  * [selection] is not null the list is selecting, and a selected entry turns accent with a check in
  * place of the avatar.
  */
@@ -60,28 +61,31 @@ public fun ContactEntry(
     title: String,
     subtitle: String,
     avatar: ChipAvatar,
-    onClick: () -> Unit,
+    taps: EntryTaps,
     modifier: Modifier = Modifier,
-    onLongClick: (() -> Unit)? = null,
     selection: RowSelection? = null,
-    detail: String? = null,
-    label: ContactRowLabel? = null,
+    end: ContactEntryEnd = ContactEntryEnd(),
 ) {
     EntryCard(
-        onClick,
+        taps,
         { PersonAvatar(avatar, ContactTokens.avatarSize) },
         modifier,
         selection = selection,
-        onLongClick = onLongClick,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         ContactText(title, subtitle)
-        detail?.let {
+        end.detail?.let {
             Text(it, style = panelTextStyle(), color = OtusColors.text2, fontSize = ContactTokens.detailSize)
         }
-        label?.let { LabelPill(it.text, icon = it.icon) }
+        end.label?.let { LabelPill(it.text, icon = it.icon) }
     }
 }
+
+/** What a [ContactEntry] shows at its end: a `text2` [detail], such as "+2", and a [label] pill. */
+public class ContactEntryEnd(
+    public val detail: String? = null,
+    public val label: ContactRowLabel? = null,
+)
 
 /** A [ContactEntry]'s pill, such as the shared book "Team" with a group icon. */
 public class ContactRowLabel(

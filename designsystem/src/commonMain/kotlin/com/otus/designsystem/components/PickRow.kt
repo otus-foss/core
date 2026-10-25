@@ -33,10 +33,9 @@ import com.otus.designsystem.theme.SignatureTokens
 import com.otus.designsystem.theme.panelTextStyle
 
 /**
- * A choice in a sheet list: an optional [leading] avatar, the [title], a smaller `text2` [subtitle]
- * of up to [subtitleLines] lines, and a radio or checkbox in the selected-chip colors. A null
- * [onClick] shows the row disabled. A [RowDensity.Compact] row is only a touch target tall, for
- * long lists of short choices.
+ * A choice in a sheet list: an optional [leading] avatar, the [title], a smaller `text2` [subtitle],
+ * and a radio or checkbox in the selected-chip colors. A null [onClick] shows the row disabled.
+ * [layout] sets its height and how many lines the subtitle may take.
  */
 @Composable
 public fun PickRow(
@@ -45,12 +44,11 @@ public fun PickRow(
     mark: PickMark,
     onClick: (() -> Unit)?,
     modifier: Modifier = Modifier,
-    subtitleLines: Int = 1,
-    density: RowDensity = RowDensity.Regular,
+    layout: PickRowLayout = PickRowLayout(),
     leading: (@Composable () -> Unit)? = null,
 ) {
-    PickRowFrame(mark, onClick, modifier.heightIn(min = density.pickRowHeight), leading) {
-        PickRowText(title, subtitle, subtitleLines)
+    PickRowFrame(mark, onClick, modifier.heightIn(min = layout.density.pickRowHeight), leading) {
+        PickRowText(title, subtitle, layout.subtitleLines)
     }
 }
 
@@ -158,3 +156,12 @@ private const val CHECK_END_Y = 0.32f
 /** A pick row's least height: a full row, or a touch target for long lists of short choices. */
 private val RowDensity.pickRowHeight
     get() = if (this == RowDensity.Compact) PanelTokens.touchTarget else SheetTokens.rowHeight
+
+/**
+ * How a [PickRow] is laid out: a [RowDensity.Compact] row is only a touch target tall, for long
+ * lists of short choices, and the subtitle takes up to [subtitleLines] lines.
+ */
+public data class PickRowLayout(
+    val density: RowDensity = RowDensity.Regular,
+    val subtitleLines: Int = 1,
+)

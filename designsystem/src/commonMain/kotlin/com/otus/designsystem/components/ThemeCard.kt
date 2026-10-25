@@ -33,6 +33,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import com.otus.designsystem.elements.IconButton
+import com.otus.designsystem.elements.IconButtonLook
 import com.otus.designsystem.elements.Symbol
 import com.otus.designsystem.elements.controlPressFeedback
 import com.otus.designsystem.resources.Res
@@ -142,7 +143,12 @@ private fun MoreButton(
     onClick: () -> Unit,
 ) {
     Box(Modifier.size(PanelTokens.iconSize), contentAlignment = Alignment.Center) {
-        IconButton("Actions for $title", onClick, Modifier.requiredSize(PanelTokens.touchTarget), outlined = false) {
+        IconButton(
+            "Actions for $title",
+            onClick,
+            Modifier.requiredSize(PanelTokens.touchTarget),
+            look = IconButtonLook.Plain,
+        ) {
             Symbol(Res.drawable.symbol_more_horiz)
         }
     }
