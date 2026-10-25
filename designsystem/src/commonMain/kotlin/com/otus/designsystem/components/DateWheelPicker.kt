@@ -58,7 +58,11 @@ internal fun DateWheelPicker(
     val selectedDay = day?.coerceIn(allowedDays)
     val years = remember(minDate, maxDate) { (maxDate.year downTo minDate.year).map(Int::toString) }
     DatePickerDialog(onDismiss) {
-        DatePickerHeading(dayRequired, onDismiss)
+        DatePickerHeading(
+            "Choose date",
+            if (dayRequired) "Choose a day to continue." else "Leave day as Any to choose a month.",
+            onDismiss,
+        )
         Row(
             Modifier
                 .fillMaxWidth()
@@ -131,7 +135,7 @@ internal fun DatePickerColumn(
     }
 }
 
-private val MONTH_NAMES =
+internal val MONTH_NAMES =
     listOf(
         "January",
         "February",
@@ -147,22 +151,24 @@ private val MONTH_NAMES =
         "December",
     )
 
+/** A wheel picker's [title], its close button, and a `text2` [note] on how to choose. */
 @Composable
-private fun DatePickerHeading(
-    dayRequired: Boolean,
+internal fun DatePickerHeading(
+    title: String,
+    note: String,
     onDismiss: () -> Unit,
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
-            "Choose date",
+            title,
             Modifier.weight(1f).semantics { heading() },
             fontSize = SheetTokens.titleSize,
             fontWeight = FontWeight.SemiBold,
         )
-        IconButton("Close date chooser", onDismiss) { Symbol(Res.drawable.symbol_close) }
+        IconButton("Close", onDismiss) { Symbol(Res.drawable.symbol_close) }
     }
     Text(
-        if (dayRequired) "Choose a day to continue." else "Leave day as Any to choose a month.",
+        note,
         color = OtusColors.text2,
         fontSize = SheetTokens.detailSize,
     )

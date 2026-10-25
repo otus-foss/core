@@ -42,6 +42,39 @@ data types need too live in `jmap`: `/queryChanges`, `/copy`, filter operators, 
 - `JsContactPatch.apply(target, patch)` applies a JSContact PatchObject to a JSON object
   (section 1.4.3).
 
+#### vCard
+
+`VCard.parse(text)` reads a vCard file and returns a `VCardImport` with the cards it read and a
+`VCardFailure` for each entry it skipped. `VCard.write(cards)` writes vCard 4.0. Both map
+properties as RFC 9555 does.
+
+- Parsing reads vCard 3.0 and 4.0, and the quoted-printable values of vCard 2.1, from a file with
+  any number of entries. It unfolds lines, ignores the case of names and parameter keys, reads
+  `group.` prefixes, `TYPE` lists in any of their forms, `PREF`, backslash escapes, and RFC 6868
+  caret escapes.
+- It maps FN, N, NICKNAME, EMAIL, TEL, ORG, TITLE, ROLE, BDAY, ANNIVERSARY, DEATHDATE, NOTE, ADR,
+  UID, KIND, MEMBER, PHOTO, and URL. It also reads Apple's `X-ABLabel` labels, its
+  `X-APPLE-OMIT-YEAR` birthdays, and its vCard 3.0 group properties.
+- An entry becomes a card when it has FN, N, or an email address. Any other entry, or one without
+  `END:VCARD`, becomes a failure with its 1-based position and a reason such as "It has no name
+  and no email address." A card without FN gets its full name from N, and one without KIND is an
+  individual. Map keys are `e1`, `p1`, and so on, in file order.
+- Writing uses CRLF, folds lines at 75 octets, escapes text, and writes labels as `X-ABLabel` in a
+  group. `VCard.parse` reads the output back to the same card.
+
+Limits:
+
+- Other properties, such as IMPP, GEO, CATEGORIES, LOGO, and RELATED, are ignored, so a card read
+  and written again loses them. JSContact properties outside the list above are not written.
+- ADR reads and writes the seven RFC 6350 components. Writing puts room, floor, and building into
+  the extended address and the other street kinds into the street, so they read back as
+  `apartment` and `name`.
+- Quoted-printable text decodes as UTF-8 or ISO-8859-1, and other charsets decode as UTF-8.
+  Folded base64 data of vCard 2.1, which has no leading space, is not read.
+- A photo that has only a JMAP `blobId` is not written. Dates in free text, such as
+  `BDAY;VALUE=text:circa 1800`, are skipped, and a date with a time reads as a date unless it is
+  in UTC.
+
 ### jmap-contacts
 
 - `ContactCardType` is the `ContactCard` data type for the generic `GetMethod`, `ChangesMethod`,
@@ -273,8 +306,9 @@ top-level `newState`. `ContactsExamplesTest` checks this and also reads a correc
 | 2 | One card with every property, from the section 2 figures, round-trips and validates | `CardTest` |
 | 3.7 | Companion constants match the IANA registry for six enumerations: Card kinds, relation types, name component kinds, phonetic systems, grammatical genders, title kinds | `CardNamesRegistryTest` |
 
-Not implemented: conversion to and from vCard (RFC 9555). The checks `validate()` skips are listed
-under [Validation](#validation).
+vCard conversion (RFC 9555) covers the properties listed under [vCard](#vcard), and its tests are
+`VCardTest` and `VCardWriteTest`. The checks `validate()` skips are listed under
+[Validation](#validation).
 
 ## RFC 9610 conformance
 

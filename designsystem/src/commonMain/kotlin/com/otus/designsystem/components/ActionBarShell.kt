@@ -110,6 +110,31 @@ internal fun PrimaryShell(
             PrimaryLabel(front.face, Modifier.align(Alignment.CenterStart)) { 1f - progress() / fadeStart }
         }
         menu.Menu(primary, end = true)
+        context?.takeIf { it.choices.isNotEmpty() }?.let { ContextChoices(it, Modifier.matchParentSize()) }
+    }
+}
+
+/**
+ * A button over the context, apart from the action at the shell's end, that opens the context's
+ * choices in a menu lined up with the shell's start.
+ */
+@Composable
+private fun ContextChoices(
+    context: BarContext,
+    modifier: Modifier,
+) {
+    val menu = rememberBarMenu()
+    val interactions = remember { MutableInteractionSource() }
+    val shape = RoundedCornerShape(ActionBarTokens.radius)
+    Box(modifier.padding(end = ActionBarTokens.collapsedActionWidth)) {
+        Box(
+            Modifier
+                .matchParentSize()
+                .clickable(interactions, null, role = Role.Button, onClick = menu.click(context.choices))
+                .semantics { contentDescription = context.description }
+                .controlPressFeedback(interactions, shape),
+        )
+        menu.Menu(context.choices)
     }
 }
 
