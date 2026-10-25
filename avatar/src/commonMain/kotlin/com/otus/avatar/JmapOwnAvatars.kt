@@ -23,6 +23,8 @@ import com.otus.jscontact.Name
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonObject
 import kotlin.io.encoding.Base64
@@ -34,7 +36,9 @@ import com.otus.jmap.contacts.ContactCardType as CardType
  * that address. A photo is a standard JSContact `media` entry with a `data:` URI, because Stalwart
  * refuses `blobId` there, so other contact apps show it too. A style goes in the vCard property
  * [AVATAR_STYLE_PROPERTY], and saving one removes the card's photos so that every app agrees there
- * is none. Saving clears the login's cached avatars, so [service] reads the new one.
+ * is none. Saving clears the login's cached avatars and hands [service] the saved one, since a
+ * search right after a save may not find a new card while the server indexes it. For the same
+ * reason, a card made here is remembered, so the next save updates it instead of making another.
  */
 public class JmapOwnAvatars(
     private val connections: JmapConnections,
@@ -42,6 +46,10 @@ public class JmapOwnAvatars(
     private val service: AvatarService,
     private val options: () -> AvatarOptions,
 ) : OwnAvatars {
+    /** The id of each self card made here, by login and address, until a search finds it. */
+    private val made = mutableMapOf<Pair<String, String>, String>()
+    private val madeLock = Mutex()
+
     override suspend fun avatar(
         accountKey: String,
         email: String,
@@ -59,6 +67,7 @@ public class JmapOwnAvatars(
             throw OwnAvatarException(OwnAvatarFailure.Failed, error)
         }
         service.removeAccount(accountKey)
+        avatar?.let { service.saved(AvatarRequest(accountKey, email, name), it) }
     }
 
     private suspend fun write(
@@ -69,7 +78,8 @@ public class JmapOwnAvatars(
     ) {
         val (connection, account) = contactsAccount(accountKey)
         val books = connection.call(GetMethod(BookType, account)).list.filter { it.myRights.mayWrite }
-        val card = selfCard(connection, account, email, books.map { it.id }.toSet())
+        val madeId = madeLock.withLock { made[accountKey to email] }
+        val card = selfCard(connection, account, email, books.map { it.id }.toSet(), madeId)
         val photo = (avatar as? ContactAvatar.Photo)?.toMedia()
         val method =
             when {
@@ -91,10 +101,12 @@ public class JmapOwnAvatars(
                     )
                 }
             }
-        connection.call(method).firstError?.let { error ->
+        val result = connection.call(method)
+        result.firstError?.let { error ->
             val reason = if (error.type == "forbidden") OwnAvatarFailure.ReadOnly else OwnAvatarFailure.Failed
             throw OwnAvatarException(reason, IllegalStateException(error.description ?: error.type))
         }
+        result.createdId(NEW_CARD)?.let { id -> madeLock.withLock { made[accountKey to email] = id } }
     }
 
     /** The login's connection and the account that holds its contacts. */
@@ -109,23 +121,30 @@ public class JmapOwnAvatars(
         return connection to account
     }
 
-    /** A card with [email] in a writable book, preferring one whose avatar Otus wrote. */
+    /**
+     * A card with [email] in a writable book, preferring one whose avatar Otus wrote. The card
+     * [made] here is read by its id when the search does not find it yet.
+     */
     private suspend fun selfCard(
         connection: JmapConnection,
         account: String,
         email: String,
         writable: Set<String>,
+        made: String?,
     ): Card? {
         val cards =
             withCardProperties { properties ->
                 lateinit var get: JmapCall<GetResult<Card>>
+                lateinit var byId: JmapCall<GetResult<Card>>
                 val response =
                     connection.send {
                         val query =
                             call(QueryMethod(CardType, account, ContactCardFilter(email = email).toFilter().toJson()))
                         get = call(GetMethod(CardType, account, JmapIds.Result(query.resultOf("/ids")), properties))
+                        made?.let { byId = call(GetMethod(CardType, account, JmapIds.Of(listOf(it)), properties)) }
                     }
-                response[get].list
+                val found = if (made != null) response[byId].list else emptyList()
+                (response[get].list + found).distinctBy { it.id }
             }
         return cards
             .filter { card ->
