@@ -6,7 +6,7 @@ import com.otus.jmap.login.InMemoryLoginStore
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
+import kotlin.test.assertTrue
 
 class PushVerificationDeliveryTest {
     @Test
@@ -75,21 +75,24 @@ class PushVerificationDeliveryTest {
         }
 
     @Test
-    fun failedPauseDoesNotSendVerification() =
+    fun failedPauseSkipsOnlyThatLoginUntilTheNextSync() =
         runTest {
-            val server = Server { NO_SUBSCRIPTIONS }
-            val logins = InMemoryLoginStore().apply { save(login, "secret") }
+            val grace = login.copy(id = "grace")
+            val server = Server { if ("PushSubscription/get" in it) NO_SUBSCRIPTIONS else created() }
+            val logins =
+                InMemoryLoginStore().apply {
+                    save(login, "secret")
+                    save(grace, "secret")
+                }
+            val store = Store()
             val subscriptions =
-                PushSubscriptions(
-                    JmapConnections(JmapClient(server.engine), logins),
-                    logins,
-                    Store(),
-                    "device",
-                    listOf("EmailDelivery"),
-                    beforeCreate = { error("Bridge unavailable") },
-                )
+                subscriptions(server, store, logins = logins) { if (it == login.id) error("Bridge unavailable") }
             subscriptions.setEndpoint(login.id, endpoint)
-            assertFailsWith<IllegalStateException> { subscriptions.sync() }
-            assertEquals(1, server.sent.size)
+            subscriptions.setEndpoint(grace.id, endpoint)
+            subscriptions.sync()
+            assertEquals(1, server.sent.count { "\"create\"" in it })
+            // Grace's subscription is saved; Ada keeps her endpoint without one, to retry later.
+            assertTrue("ps1" in store.records.getValue(grace.id))
+            assertTrue("ps1" !in store.records.getValue(login.id))
         }
 }
