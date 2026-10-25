@@ -38,10 +38,27 @@ public class FileAvatarStore(
                 val kind = source.readByte().toInt()
                 val bytes = source.readByteArray()
                 when {
-                    created < 0 -> null
-                    kind == 0 && bytes.isEmpty() -> StoredAvatar(null, created)
-                    kind == 1 && bytes.isNotEmpty() -> StoredAvatar(AvatarImage(bytes), created)
-                    else -> null
+                    created < 0 -> {
+                        null
+                    }
+
+                    kind == 0 && bytes.isEmpty() -> {
+                        StoredAvatar(null, created)
+                    }
+
+                    kind == 1 && bytes.isNotEmpty() -> {
+                        StoredAvatar(AvatarImage(bytes), created)
+                    }
+
+                    kind == STYLE_RECORD -> {
+                        decodedAvatarStyle(
+                            bytes.decodeToString(),
+                        )?.let { StoredAvatar(null, created, it) }
+                    }
+
+                    else -> {
+                        null
+                    }
                 }
             }
         }
@@ -51,7 +68,7 @@ public class FileAvatarStore(
         entry: StoredAvatar,
     ) {
         access {
-            val bytes = entry.image?.bytes
+            val bytes = entry.image?.bytes ?: entry.style?.encoded()?.encodeToByteArray()
             if (bytes != null && (bytes.isEmpty() || bytes.size > MAX_AVATAR_BYTES)) return@access
             files.createDirectories(directory)
             val target = path(key)
@@ -59,7 +76,13 @@ public class FileAvatarStore(
             try {
                 files.sink(temporary).buffered().use { sink ->
                     sink.writeLong(entry.created)
-                    sink.writeByte(if (bytes == null) 0 else 1)
+                    sink.writeByte(
+                        when {
+                            bytes == null -> 0
+                            entry.image == null -> STYLE_RECORD
+                            else -> 1
+                        }.toByte(),
+                    )
                     if (bytes != null) sink.write(bytes)
                 }
                 files.atomicMove(temporary, target)
@@ -133,6 +156,7 @@ public class FileAvatarStore(
 
     private companion object {
         const val HEADER_BYTES = 9L
+        const val STYLE_RECORD = 2
         const val DEFAULT_MAX_BYTES = 32L * 1024 * 1024
     }
 }

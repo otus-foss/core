@@ -30,7 +30,8 @@ import com.otus.designsystem.theme.panelTextStyle
 /**
  * A page with a context panel header and a scrolling body. The leading chevron runs [onNavigation],
  * for example to open the sidebar on a top-level page. [chips], such as a [PickerChip], fill the
- * header's chip row.
+ * header's chip row. [footer] stays at the bottom below the body, so its primary action is always
+ * visible however long the body grows.
  */
 @Composable
 public fun PageScaffold(
@@ -38,6 +39,7 @@ public fun PageScaffold(
     navigationLabel: String,
     onNavigation: () -> Unit,
     chips: (@Composable ContextPanelScope.() -> Unit)? = null,
+    footer: (@Composable ColumnScope.() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     ProvideTextStyle(panelTextStyle()) {
@@ -67,26 +69,35 @@ public fun PageScaffold(
                 verticalArrangement = Arrangement.spacedBy(PageTokens.rowGap),
                 content = content,
             )
+            footer?.let { Column(verticalArrangement = Arrangement.spacedBy(PageTokens.rowGap), content = it) }
         }
     }
 }
 
 /**
  * A child page. The chevron and the system back gesture both return to its parent. [chips] fill the
- * header's chip row.
+ * header's chip row, and [footer] stays at the bottom, as on [PageScaffold].
  */
 @Composable
 public fun Subpage(
     title: String,
     onBack: () -> Unit,
     chips: (@Composable ContextPanelScope.() -> Unit)? = null,
+    footer: (@Composable ColumnScope.() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     NavigationBackHandler(
         state = rememberNavigationEventState(currentInfo = NavigationEventInfo.None),
         onBackCompleted = onBack,
     )
-    PageScaffold(title, navigationLabel = "Back", onNavigation = onBack, chips = chips, content = content)
+    PageScaffold(
+        title,
+        navigationLabel = "Back",
+        onNavigation = onBack,
+        chips = chips,
+        footer = footer,
+        content = content,
+    )
 }
 
 /** A titled group of rows on a page. */

@@ -19,6 +19,15 @@ public object JmapCapability {
 
     /** The server signs Web Push messages with VAPID (RFC 9749). */
     public const val WEBPUSH_VAPID: String = "urn:ietf:params:jmap:webpush-vapid"
+
+    /** Principals and the sharing of data between them (RFC 9670, section 1.5.1). */
+    public const val PRINCIPALS: String = "urn:ietf:params:jmap:principals"
+
+    /**
+     * Names the principal that owns an account (RFC 9670, section 1.5.2). It appears only among an
+     * account's capabilities, never the session's, so no method is sent with it.
+     */
+    public const val PRINCIPALS_OWNER: String = "urn:ietf:params:jmap:principals:owner"
 }
 
 /**
@@ -42,6 +51,10 @@ public data class JmapSession(
     /** Each session capability's object as the server sent it, such as the core limits. */
     val capabilityObjects: Map<String, JsonObject> = emptyMap(),
 ) {
+    /** The most objects one `/get` call may return (section 2), if the server says. */
+    public val maxObjectsInGet: Long?
+        get() = capabilityObjects[JmapCapability.CORE]?.unsigned("maxObjectsInGet")
+
     /** The most objects one `/set` call may create, update, and destroy (section 2), if the server says. */
     public val maxObjectsInSet: Long?
         get() = capabilityObjects[JmapCapability.CORE]?.unsigned("maxObjectsInSet")

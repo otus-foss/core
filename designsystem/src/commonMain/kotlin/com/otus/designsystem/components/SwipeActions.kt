@@ -34,11 +34,9 @@ import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
-import androidx.compose.ui.zIndex
 import com.otus.designsystem.theme.LocalMotionScale
 import com.otus.designsystem.theme.Motion
 import com.otus.designsystem.theme.MotionSpeed
-import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.SwipeTokens
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
@@ -48,8 +46,8 @@ import kotlin.math.roundToInt
 
 /**
  * Hosts a row that reveals [startToEnd] when dragged toward the end edge and [endToStart] when
- * dragged toward the start edge. The uncovered area is an accent shape that grows out of the row's
- * edge, joined to it by concave corners and rounded at its free end. The action's icon grows in
+ * dragged toward the start edge. An accent card the row's size waits behind it, so the row slides
+ * off it; give [content] an opaque background, such as a [CompactContentRow] card. The action's icon grows in
  * beside its label until the fixed threshold, where a haptic marks that release will act.
  * Releasing past it flashes and runs the action once; shorter drags spring back. The row stops
  * once its action is fully revealed, and drags cannot move it again until it is still. A null
@@ -102,8 +100,6 @@ public fun SwipeActions(
             .onSizeChanged { width = it.width }
             // Always claims horizontal drags, so a swipe toward a side without an action is not a tap.
             .anchoredDraggable(state, Orientation.Horizontal, flingBehavior = fling)
-            // A swiped row's revealed corners reach into its neighbors, so it draws above them.
-            .zIndex(if (direction == SwipeAnchor.Settled) 0f else 1f)
             .swipeAccessibility(startToEnd, endToStart),
     ) {
         val revealed = revealWidths[directionOf(offset)] ?: threshold
@@ -112,7 +108,6 @@ public fun SwipeActions(
             SwipeBackdrop(
                 action,
                 abs(offset),
-                abs(rowOffset),
                 direction == SwipeAnchor.StartToEnd,
                 flash.value,
                 Modifier.matchParentSize(),
@@ -218,8 +213,7 @@ private fun SwipeForeground(
     Box(
         Modifier
             .fillMaxWidth()
-            .offset { IntOffset((offset * sign).roundToInt(), 0) }
-            .background(OtusColors.bgRegular),
+            .offset { IntOffset((offset * sign).roundToInt(), 0) },
     ) { content() }
 }
 

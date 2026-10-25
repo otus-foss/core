@@ -43,3 +43,15 @@ Accepted by the user on 2026-10-18, after CI had been paused to manual runs.
   by hand to check again.
 - Mail's `check` job builds against Meta's source, from the Meta branch with the same name when one
   exists and from `main` otherwise, because Meta publishing is paused.
+
+## Amendment: no pre-push hook
+
+Accepted by the user on 2026-10-24, after a queue of pushes each ran a full `checkAll` build on a
+laptop shared with other work.
+
+- The repositories no longer version a `pre-push` hook. Run `./gradlew checkAll` by hand before a
+  push that needs it, such as a direct push to `main` or a Meta release tag.
+- The `commit-msg` hook removes AI attribution lines (`Co-authored-by` trailers that name Claude,
+  Anthropic, or Cursor, and "Generated with Claude Code" lines) before Git saves the commit.
+- Pushes after a pull request's one CI run, direct pushes to `main`, and release tags now go
+  unchecked unless someone runs `checkAll`. The `publish` workflow still runs the host tests.

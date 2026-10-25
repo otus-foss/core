@@ -22,14 +22,23 @@ import kotlinx.serialization.json.jsonObject
 
 /**
  * Provider-independent JMAP core client (RFC 8620). One instance per app is enough; it is safe to
- * share. Pass [engine] in tests; otherwise the platform engine on the classpath is used.
+ * share. Call [close] when its owner ends. An injected [engine] stays caller-owned and must be
+ * closed separately; without one, the client owns the platform engine on the classpath.
  */
 public class JmapClient(
     engine: HttpClientEngine? = null,
     private val policy: JmapPolicy = JmapPolicy(),
-) {
+) : AutoCloseable {
     private val http = if (engine == null) HttpClient { configure() } else HttpClient(engine) { configure() }
     private val urls = JmapUrls(policy)
+
+    /**
+     * Stops accepting requests and releases this client's resources when active requests finish.
+     * Safe to call repeatedly. An injected engine remains open for its caller to close or reuse.
+     */
+    public override fun close() {
+        http.close()
+    }
 
     /**
      * Authenticated, bounded blob download (RFC 8620, section 6.2). No redirect receives credentials.
@@ -150,11 +159,6 @@ public class JmapClient(
         )
     }
 
-    private fun decode(response: RawResponse): JsonObject {
-        response.failure()?.let { throw it }
-        return jmapDecoding { JmapJson.parseToJsonElement(response.text).jsonObject }
-    }
-
     private suspend fun exchange(
         method: HttpMethod,
         target: Url,
@@ -197,7 +201,7 @@ public class JmapClient(
     }
 }
 
-/** Checks the session and each call's account before anything is sent. */
+/** Checks the session and every account each call touches before anything is sent. */
 private fun checkSupported(
     session: JmapSession,
     calls: List<JmapCall<*>>,
@@ -209,10 +213,8 @@ private fun checkSupported(
     if (missing != null) throw JmapException.Unsupported(missing)
 }
 
-private fun JmapCall<*>.lacksAccountCapability(session: JmapSession): Boolean {
-    val accountId = method.accountId ?: return false
-    return method.capability !in session.accounts[accountId]?.capabilities.orEmpty()
-}
+private fun JmapCall<*>.lacksAccountCapability(session: JmapSession): Boolean =
+    method.accountIds.any { method.capability !in session.accounts[it]?.capabilities.orEmpty() }
 
 private fun JmapCall<*>.toJson() =
     buildJsonArray {
@@ -220,3 +222,8 @@ private fun JmapCall<*>.toJson() =
         add(method.arguments())
         add(JsonPrimitive(id))
     }
+
+private fun decode(response: RawResponse): JsonObject {
+    response.failure()?.let { throw it }
+    return jmapDecoding { JmapJson.parseToJsonElement(response.text).jsonObject }
+}

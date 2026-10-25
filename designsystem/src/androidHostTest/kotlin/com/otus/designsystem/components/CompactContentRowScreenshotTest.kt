@@ -1,16 +1,24 @@
 package com.otus.designsystem.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import com.otus.designsystem.elements.Avatar
 import com.otus.designsystem.elements.AvatarBadge
 import com.otus.designsystem.elements.BadgedAvatar
 import com.otus.designsystem.elements.FolderGlyphKind
+import com.otus.designsystem.elements.avatarFill
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_reply
 import com.otus.designsystem.theme.FolderColor
 import com.otus.designsystem.theme.InboxTokens
+import com.otus.designsystem.theme.OtusColors
+import com.otus.designsystem.theme.ThemeBase
+import com.otus.designsystem.theme.ThemeChoice
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -108,6 +116,30 @@ class CompactContentRowScreenshotTest {
     @Test
     fun previewTwoLines() = compose.pageScreenshot("compact_row_preview_two") { Row(invoice.copy(previewLines = 2)) }
 
+    @Test
+    fun cards() = compose.pageScreenshot("compact_row_cards") { Cards() }
+
+    @Test
+    fun cardsLight() =
+        compose.pageScreenshot("compact_row_cards_light", ThemeChoice(ThemeBase.Light).palette) { Cards() }
+
+    @Test
+    fun cardsBlack() =
+        compose.pageScreenshot("compact_row_cards_black", ThemeChoice(ThemeBase.Black).palette) { Cards() }
+
+    /** Unread, read, and selected rows on the page color, as a list shows them. */
+    @Composable
+    private fun Cards() {
+        Column(
+            Modifier.background(OtusColors.bgRegular).padding(InboxTokens.pageInset),
+            verticalArrangement = Arrangement.spacedBy(InboxTokens.rowGap),
+        ) {
+            Row(invoice)
+            Row(invoice.copy(first = line("Ada Lovelace"), count = null, marks = emptyList()), dimmed = true)
+            Row(invoice.copy(first = line("Linus Torvalds")), selection = RowSelection(selected = true))
+        }
+    }
+
     @Composable
     private fun Row(
         text: CompactRowText,
@@ -126,7 +158,7 @@ class CompactContentRowScreenshotTest {
             selection = selection,
         ) {
             BadgedAvatar(if (badge) ({ AvatarBadge("AL", colorIndex = 0) }) else null) {
-                Avatar(sender.initials, colorIndex = sender.colorIndex, size = InboxTokens.compactAvatarSize)
+                Avatar(sender.initials, fill = avatarFill(sender.colorIndex), size = InboxTokens.compactAvatarSize)
             }
         }
     }

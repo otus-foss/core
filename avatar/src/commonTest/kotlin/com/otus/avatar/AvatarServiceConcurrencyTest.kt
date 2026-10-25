@@ -20,7 +20,7 @@ class AvatarServiceConcurrencyTest {
             val release = CompletableDeferred<Unit>()
             val service =
                 AvatarService(
-                    ContactPhotoSource { subject, _ ->
+                    photoSource { subject, _ ->
                         if (subject.email.startsWith("slow")) release.await()
                         image
                     },
@@ -43,7 +43,7 @@ class AvatarServiceConcurrencyTest {
             var calls = 0
             val service =
                 AvatarService(
-                    ContactPhotoSource { _, _ ->
+                    photoSource { _, _ ->
                         calls++
                         if (calls == 1) {
                             entered.complete(Unit)
@@ -69,7 +69,7 @@ class AvatarServiceConcurrencyTest {
             var queuedCalls = 0
             val service =
                 AvatarService(
-                    ContactPhotoSource { request, _ ->
+                    photoSource { request, _ ->
                         if (request.email.startsWith("busy")) release.await() else queuedCalls++
                         image
                     },
@@ -121,7 +121,7 @@ class AvatarServiceConcurrencyTest {
             val service =
                 AvatarService(
                     contacts =
-                        ContactPhotoSource { _, _ ->
+                        photoSource { _, _ ->
                             entered.complete(Unit)
                             release.await()
                             null
