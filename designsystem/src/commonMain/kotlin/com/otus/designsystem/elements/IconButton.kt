@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -26,7 +27,7 @@ import com.otus.designsystem.theme.panelTextStyle
 /**
  * A round button around a symbol. A [badgeCount] above zero puts a small `accentLight` count on its
  * top end, such as the number of active filters on the filter button; the badge sits outside the
- * circle's clip, so it is never cut off.
+ * circle's clip, so it is never cut off. [fill] colors the circle, such as transparent on a colored row.
  */
 @Composable
 public fun IconButton(
@@ -36,6 +37,7 @@ public fun IconButton(
     enabled: Boolean = true,
     outlined: Boolean = true,
     badgeCount: Int = 0,
+    fill: Color = OtusColors.bgDark,
     content: @Composable () -> Unit,
 ) {
     val interactions = remember { MutableInteractionSource() }
@@ -61,7 +63,7 @@ public fun IconButton(
                         ).reportControlVisualBounds()
                         .controlPressFeedback(interactions),
                 shape = CircleShape,
-                color = OtusColors.bgDark,
+                color = fill,
                 contentColor = if (enabled) OtusColors.text1 else OtusColors.text3,
                 border = if (outlined) BorderStroke(PanelTokens.borderWidth, OtusColors.strokeBgDark) else null,
             ) {

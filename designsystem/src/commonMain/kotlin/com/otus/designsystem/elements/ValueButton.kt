@@ -26,8 +26,8 @@ import com.otus.designsystem.theme.contrast
  * The current value of a setting in an outlined chip, such as a choice or the word "Edit". A
  * [swatch] puts a dot of that color before the value, such as the current accent. A [fill] colors
  * the whole chip, such as a color shown by its hex code, and the text takes whichever of `text1`
- * and `bgDark` reads better on it. It only shows [value]; the enclosing row acts and supplies the
- * accessible name.
+ * and `bgDark` reads better on it. [outline] strokes it, such as `accentLight` on an accent fill.
+ * It only shows [value]; the enclosing row acts and supplies the accessible name.
  */
 @Composable
 public fun ValueButton(
@@ -35,13 +35,14 @@ public fun ValueButton(
     modifier: Modifier = Modifier,
     swatch: Color? = null,
     fill: Color? = null,
+    outline: Color = OtusColors.bgLight,
 ) {
     val shape = RoundedCornerShape(SettingTokens.valueRadius)
     Row(
         modifier
             .widthIn(max = SettingTokens.valueMaxWidth)
             .then(if (fill == null) Modifier else Modifier.background(fill, shape))
-            .border(PanelTokens.borderWidth, OtusColors.bgLight, shape)
+            .border(PanelTokens.borderWidth, outline, shape)
             .padding(
                 start = if (swatch == null) SettingTokens.valuePaddingHorizontal else SettingTokens.valuePaddingSwatch,
                 end = SettingTokens.valuePaddingHorizontal,
