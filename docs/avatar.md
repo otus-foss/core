@@ -148,7 +148,8 @@ server that rejects `vCard` with `invalidArguments` gets the query again without
 readable address books that are subscribed or writable, because Stalwart leaves the user's own
 books unsubscribed, and fetch up to 32 candidates per
 page. Each candidate must contain the exact normalized email address; server searches may also
-match email labels. Lookup continues across pages until it finds a usable photo or reaches an empty
+match email labels. On each page, cards in the user's writable books come first, then cards whose
+avatar Otus wrote, so a shared card never hides the user's own. Lookup continues across pages until it finds a usable photo or reaches an empty
 page, including when the server returns fewer candidates than requested. It retains one page at a
 time and stops if the query state changes, the server ignores the requested position, or the
 10-second search deadline expires. Cancellation from the caller propagates. These bounds can
@@ -177,8 +178,10 @@ iOS runtime validation requires macOS/Xcode.
 
 `OwnAvatars` reads and saves the avatar of one of the user's own addresses, and `JmapOwnAvatars`
 keeps it on a self card: a contact card in the user's own address book with that address. Saving
-finds a card with the address in a writable book, preferring one that already holds a style, or
-creates one in the default book with the address and the account name.
+finds a card with the address in a writable book, preferring one whose avatar Otus wrote, or
+creates one in the default book with the address and the account name. A patch path needs its
+parent on the server (RFC 8620, section 5.3), so a card without `media` or `vCard` gets the whole
+map or object instead.
 
 - A photo is a JSContact `media` entry of kind `photo` with a `data:` URI, so other contact apps
   show it too. Stalwart refuses a `blobId` in `media` ("blobIds in media is not supported"). Saving a
@@ -187,7 +190,8 @@ creates one in the default book with the address and the account name.
   `#RRGGBB`. The mark is up to `MAX_AVATAR_LETTERS` letters, an icon name from `AvatarSymbols`, or
   `Website`. `Website` shows the website icon of the address's domain even when
   `AvatarOptions.domainIcons` is off, because the user picked it for their own address;
-  `ResolvedAvatar` then has both the icon and the style. A style is stored as the vCard extension
+  `ResolvedAvatar` then has both the icon and the style. Lookups honor `Website` only on cards in
+  books the user may write, so a shared card cannot turn website icons on. A style is stored as the vCard extension
   property `AVATAR_STYLE_PROPERTY` (`x-otus-avatar`) in the card's `vCard.properties` (RFC 9555),
   with a JSON text value such as `{"color": "Blue", "icon": "work"}`. Stalwart refuses unknown
   top-level card properties ("Invalid property."), so a JSContact vendor property does not work there.
