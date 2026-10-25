@@ -27,6 +27,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import com.otus.designsystem.elements.IconButton
+import com.otus.designsystem.elements.IconButtonLook
 import com.otus.designsystem.elements.Symbol
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_attach_file
@@ -82,7 +83,7 @@ public fun AttachmentChip(
                 maxLines = 1,
             )
         }
-        IconButton("Remove $name", onRemove, outlined = false) {
+        IconButton("Remove $name", onRemove, look = IconButtonLook.Plain) {
             Symbol(Res.drawable.symbol_close, size = PanelTokens.iconSize)
         }
         if (open) ContextMenu(actions, Offset(0f, height.toFloat())) { open = false }

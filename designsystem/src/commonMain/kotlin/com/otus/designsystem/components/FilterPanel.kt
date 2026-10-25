@@ -45,6 +45,7 @@ import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
 import com.otus.designsystem.elements.IconButton
+import com.otus.designsystem.elements.IconButtonLook
 import com.otus.designsystem.elements.Symbol
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_close
@@ -106,7 +107,7 @@ public fun FilterPanel(
                     FloatingFooter(footer, Modifier.weight(1f), body)
                 }
                 // Over the header's end, or over the body's when there is no header row.
-                IconButton("Close filters", onDismiss, Modifier.align(Alignment.TopEnd), outlined = false) {
+                IconButton("Close filters", onDismiss, Modifier.align(Alignment.TopEnd), look = IconButtonLook.Plain) {
                     Symbol(Res.drawable.symbol_close, size = FilterTokens.closeIconSize)
                 }
             }

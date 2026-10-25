@@ -23,13 +23,6 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
 import kotlin.time.Clock
 
-/** A day of the year, and the [year] when it is known, such as a birthday without a year. */
-public data class YearlyDate(
-    val month: Int,
-    val day: Int,
-    val year: Int? = null,
-)
-
 /**
  * The date wheels for a birthday or another yearly date: day, month, and a year that may stay
  * "No year". Done confirms; [onRemove], when given, clears the date.
@@ -52,14 +45,7 @@ public fun BirthdayPicker(
     val shownDay = day.coerceIn(days)
     DatePickerDialog(onDismiss) {
         DatePickerHeading(title, "Leave the year as No year when you don’t know it.", onDismiss)
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .background(OtusColors.bgRegular, RoundedCornerShape(SheetTokens.radius))
-                .padding(SheetTokens.gap),
-            horizontalArrangement = Arrangement.spacedBy(SheetTokens.gap),
-        ) {
+        DateWheels(Modifier.weight(1f)) {
             DatePickerColumn("Day", days.map(Int::toString), shownDay - 1, { day = it + 1 }, Modifier.weight(1f))
             DatePickerColumn("Month", MONTH_NAMES, month - 1, {
                 month = it + 1

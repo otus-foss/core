@@ -27,7 +27,7 @@ import com.otus.designsystem.theme.panelTextStyle
 /**
  * A round button around a symbol. A [badgeCount] above zero puts a small `accentLight` count on its
  * top end, such as the number of active filters on the filter button; the badge sits outside the
- * circle's clip, so it is never cut off. [fill] colors the circle, such as transparent on a colored row.
+ * circle's clip, so it is never cut off. [look] sets what is behind the symbol.
  */
 @Composable
 public fun IconButton(
@@ -35,9 +35,8 @@ public fun IconButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    outlined: Boolean = true,
+    look: IconButtonLook = IconButtonLook.Outlined,
     badgeCount: Int = 0,
-    fill: Color = OtusColors.bgDark,
     content: @Composable () -> Unit,
 ) {
     val interactions = remember { MutableInteractionSource() }
@@ -63,9 +62,16 @@ public fun IconButton(
                         ).reportControlVisualBounds()
                         .controlPressFeedback(interactions),
                 shape = CircleShape,
-                color = fill,
+                color = if (look == IconButtonLook.Bare) Color.Transparent else OtusColors.bgDark,
                 contentColor = if (enabled) OtusColors.text1 else OtusColors.text3,
-                border = if (outlined) BorderStroke(PanelTokens.borderWidth, OtusColors.strokeBgDark) else null,
+                border =
+                    if (look ==
+                        IconButtonLook.Outlined
+                    ) {
+                        BorderStroke(PanelTokens.borderWidth, OtusColors.strokeBgDark)
+                    } else {
+                        null
+                    },
             ) {
                 Box(contentAlignment = Alignment.Center) { content() }
             }
@@ -95,4 +101,16 @@ private fun CountDot(
             maxLines = 1,
         )
     }
+}
+
+/** What is behind an [IconButton]'s symbol. */
+public enum class IconButtonLook {
+    /** A `bgDark` circle inside a `strokeBgDark` outline, the default. */
+    Outlined,
+
+    /** A `bgDark` circle without an outline, such as in a panel's header. */
+    Plain,
+
+    /** Nothing, for a field or row that has its own fill. */
+    Bare,
 }

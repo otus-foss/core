@@ -33,7 +33,8 @@ import com.otus.designsystem.theme.motionTween
 
 /**
  * One entry of a list, such as a mail or a person, on its own card: the [leading] avatar, which
- * turns into a check while the entry is selected, then the [content]. Space entries
+ * turns into a check while the entry is selected, then the [content]. [taps] says what a tap and
+ * a hold do. Space entries
  * [EntryTokens.gap] apart; [rowSelection] works out each entry's [selection].
  *
  * A selected card fills with the accent. Where [RowSelection.joinedAbove] or
@@ -46,12 +47,11 @@ import com.otus.designsystem.theme.motionTween
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 public fun EntryCard(
-    onClick: () -> Unit,
+    taps: EntryTaps,
     leading: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     selection: RowSelection? = null,
     dimmed: Boolean = false,
-    onLongClick: (() -> Unit)? = null,
     verticalAlignment: Alignment.Vertical = Alignment.Top,
     content: @Composable RowScope.() -> Unit,
 ) {
@@ -60,7 +60,7 @@ public fun EntryCard(
             .fillMaxWidth()
             .entryCard(selection, dimmed)
             .semantics { selection?.let { this.selected = it.selected } }
-            .combinedClickable(role = Role.Button, onLongClick = onLongClick, onClick = onClick)
+            .combinedClickable(role = Role.Button, onLongClick = taps.onLongClick, onClick = taps.onClick)
             // The fade's layer includes the padding, so an avatar's badge can overhang without being cut.
             .alpha(if (dimmed) OtusAlpha.DIMMED else 1f)
             .padding(
@@ -76,6 +76,12 @@ public fun EntryCard(
         content()
     }
 }
+
+/** What tapping an [EntryCard] does, and holding it, such as starting a selection. */
+public class EntryTaps(
+    public val onClick: () -> Unit,
+    public val onLongClick: (() -> Unit)? = null,
+)
 
 /**
  * The card on the theme's raised color, filled with the accent while selected. A [dimmed] card

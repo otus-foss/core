@@ -54,11 +54,13 @@ private class CardReader(
             addresses = named(ADR).mapNotNull { it.toAddress() }.keyed("a"),
             links = named(URL).map { it.toLink(labelOf(it)) }.keyed("l"),
             media = named(PHOTO).map { it.toPhoto() }.keyed("m"),
-            anniversaries = named(*DATE_PROPERTIES).mapNotNull { it.toAnniversary() }.keyed("d"),
+            anniversaries = namedIn(ANNIVERSARY_PROPERTIES.keys).mapNotNull { it.toAnniversary() }.keyed("d"),
             notes = named(NOTE).map { Note(it.text) }.keyed("n"),
         )
 
-    private fun named(vararg names: String): List<VCardProperty> =
+    private fun named(vararg names: String): List<VCardProperty> = namedIn(names.asList())
+
+    private fun namedIn(names: Collection<String>): List<VCardProperty> =
         properties.filter { it.name in names && it.text.isNotEmpty() }
 
     private fun first(name: String): VCardProperty? = named(name).firstOrNull()
@@ -111,8 +113,6 @@ private fun VCardProperty.inlineDataUri(): String {
     val mediaType = format?.let { if ('/' in it) it else "image/$it" } ?: UNKNOWN_MEDIA_TYPE
     return "data:$mediaType;base64,${value.filterNot { it.isWhitespace() }}"
 }
-
-private val DATE_PROPERTIES = ANNIVERSARY_PROPERTIES.keys.toTypedArray()
 
 /** TYPE values of an inline photo that do not name its format. */
 private val INLINE_PHOTO_TYPES = setOf("pref", "b", "base64", "work", "home")

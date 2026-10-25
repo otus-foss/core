@@ -31,10 +31,11 @@ private fun String.toAnniversaryDate(omittedYear: Long?): AnniversaryDate? =
 private fun String.toTimestamp(): Timestamp? =
     TIMESTAMP
         .matchEntire(this)
-        ?.destructured
-        ?.let { (year, month, day, hour, minute, second) ->
-            Instant.parseOrNull("$year-$month-${day}T$hour:$minute:${second}Z")
-        }?.let { Timestamp(it) }
+        ?.groupValues
+        ?.drop(1)
+        ?.chunked(DATE_PARTS)
+        ?.let { (date, time) -> Instant.parseOrNull("${date.joinToString("-")}T${time.joinToString(":")}Z") }
+        ?.let { Timestamp(it) }
 
 private fun String.toPartialDate(): PartialDate? {
     val date = substringBefore('T')
@@ -73,6 +74,9 @@ private fun PartialDate.toVCardPartialDate(): String? {
         else -> yearText
     }
 }
+
+/** A timestamp's groups: year, month, and day, then hour, minute, and second. */
+private const val DATE_PARTS = 3
 
 private val TIMESTAMP = Regex("""(\d{4})-?(\d{2})-?(\d{2})T(\d{2}):?(\d{2}):?(\d{2})Z""")
 

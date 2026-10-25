@@ -32,6 +32,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.otus.designsystem.elements.IconButton
+import com.otus.designsystem.elements.IconButtonLook
 import com.otus.designsystem.elements.Symbol
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_close
@@ -98,6 +99,6 @@ private fun DialogHeading(
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(title, Modifier.weight(1f).semantics { heading() }, fontSize = SheetTokens.titleSize)
-        onClose?.let { IconButton("Close", it, outlined = false) { Symbol(Res.drawable.symbol_close) } }
+        onClose?.let { IconButton("Close", it, look = IconButtonLook.Plain) { Symbol(Res.drawable.symbol_close) } }
     }
 }

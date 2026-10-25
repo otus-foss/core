@@ -32,7 +32,7 @@ public fun CompactContentRow(
     leading: @Composable () -> Unit,
 ) {
     EntryCard(
-        onClick,
+        EntryTaps(onClick, onLongClick),
         leading,
         modifier.semantics(mergeDescendants = true) {
             contentDescription = text.description
@@ -40,7 +40,6 @@ public fun CompactContentRow(
         },
         selection = selection,
         dimmed = dimmed,
-        onLongClick = onLongClick,
     ) {
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(InboxTokens.lineGap)) {
             FirstLine(text)

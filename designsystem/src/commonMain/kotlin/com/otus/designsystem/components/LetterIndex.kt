@@ -112,7 +112,7 @@ private fun LetterRow(
     progress: Float,
 ) {
     val active = letter.letter == state.active
-    val moving = 4f * progress * (1f - progress)
+    val moving = MOVE_PEAK * progress * (1f - progress)
     Box(
         Modifier
             .fillMaxWidth()
@@ -164,10 +164,14 @@ private fun LetterIndexState.originOf(
     val row = bounds[letter] ?: return null
     val heading = headings[letter]
     val target = row.center.y
-    if (heading != null) return heading.center.y - target
     val shown = letters.indexOfFirst { it.letter in headings }
-    val first = bounds.values.minOfOrNull { it.top } ?: return null
-    val last = bounds.values.maxOfOrNull { it.bottom } ?: return null
-    val before = shown < 0 || index < shown
-    return if (before) first - row.height - target else last + row.height - target
+    // bounds holds row, so it is never empty here.
+    return when {
+        heading != null -> heading.center.y - target
+        shown < 0 || index < shown -> bounds.values.minOf { it.top } - row.height - target
+        else -> bounds.values.maxOf { it.bottom } + row.height - target
+    }
 }
+
+/** `progress * (1 - progress)` peaks at a quarter, so this scales a letter's move to peak at 1. */
+private const val MOVE_PEAK = 4f

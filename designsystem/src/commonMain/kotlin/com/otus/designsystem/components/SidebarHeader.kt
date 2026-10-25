@@ -26,6 +26,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import com.otus.designsystem.elements.IconButton
+import com.otus.designsystem.elements.IconButtonLook
 import com.otus.designsystem.elements.Symbol
 import com.otus.designsystem.elements.controlPressFeedback
 import com.otus.designsystem.resources.Res
@@ -61,8 +62,8 @@ public fun SidebarHeader(
     ) {
         HeaderTitle(title, subtitle, avatars, pickLabel, onPick, Modifier.weight(1f))
         CompositionLocalProvider(LocalContentColor provides OtusColors.text2) {
-            IconButton(pickLabel, onPick, outlined = false) { Symbol(Res.drawable.symbol_unfold_more) }
-            IconButton("Settings", onSettings, outlined = false) { Symbol(Res.drawable.symbol_settings) }
+            IconButton(pickLabel, onPick, look = IconButtonLook.Plain) { Symbol(Res.drawable.symbol_unfold_more) }
+            IconButton("Settings", onSettings, look = IconButtonLook.Plain) { Symbol(Res.drawable.symbol_settings) }
         }
     }
 }

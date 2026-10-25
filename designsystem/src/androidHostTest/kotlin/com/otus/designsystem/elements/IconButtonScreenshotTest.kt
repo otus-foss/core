@@ -27,7 +27,7 @@ class IconButtonScreenshotTest {
     fun outlined() = compose.screenshot("icon_button_outlined") { Close() }
 
     @Test
-    fun plain() = compose.screenshot("icon_button_plain") { Close(outlined = false) }
+    fun plain() = compose.screenshot("icon_button_plain") { Close(look = IconButtonLook.Plain) }
 
     @Test
     fun disabled() = compose.screenshot("icon_button_disabled") { Close(enabled = false) }
@@ -43,6 +43,6 @@ class IconButtonScreenshotTest {
     @Composable
     private fun Close(
         enabled: Boolean = true,
-        outlined: Boolean = true,
-    ) = Row { IconButton("Close", {}, enabled = enabled, outlined = outlined) { Symbol(Res.drawable.symbol_close) } }
+        look: IconButtonLook = IconButtonLook.Outlined,
+    ) = Row { IconButton("Close", {}, enabled = enabled, look = look) { Symbol(Res.drawable.symbol_close) } }
 }

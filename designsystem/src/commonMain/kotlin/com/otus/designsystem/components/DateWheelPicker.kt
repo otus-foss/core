@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -58,19 +59,8 @@ internal fun DateWheelPicker(
     val selectedDay = day?.coerceIn(allowedDays)
     val years = remember(minDate, maxDate) { (maxDate.year downTo minDate.year).map(Int::toString) }
     DatePickerDialog(onDismiss) {
-        DatePickerHeading(
-            "Choose date",
-            if (dayRequired) "Choose a day to continue." else "Leave day as Any to choose a month.",
-            onDismiss,
-        )
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .background(OtusColors.bgRegular, RoundedCornerShape(SheetTokens.radius))
-                .padding(SheetTokens.gap),
-            horizontalArrangement = Arrangement.spacedBy(SheetTokens.gap),
-        ) {
+        DatePickerHeading("Choose date", if (dayRequired) DAY_REQUIRED else DAY_OPTIONAL, onDismiss)
+        DateWheels(Modifier.weight(1f)) {
             DatePickerColumn(
                 "Day",
                 days,
@@ -121,6 +111,22 @@ private fun DatePickerConfirm(
     ActionButton("Go", onConfirm, Modifier.fillMaxWidth(), primary = true, enabled = !dayRequired || day != null)
 }
 
+/** The wheels of a date picker side by side on a `bgRegular` card. */
+@Composable
+internal fun DateWheels(
+    modifier: Modifier,
+    wheels: @Composable RowScope.() -> Unit,
+) {
+    Row(
+        modifier
+            .fillMaxWidth()
+            .background(OtusColors.bgRegular, RoundedCornerShape(SheetTokens.radius))
+            .padding(SheetTokens.gap),
+        horizontalArrangement = Arrangement.spacedBy(SheetTokens.gap),
+        content = wheels,
+    )
+}
+
 @Composable
 internal fun DatePickerColumn(
     title: String,
@@ -134,6 +140,9 @@ internal fun DatePickerColumn(
         WheelPicker(title, options, selected, onSelect, Modifier.weight(1f))
     }
 }
+
+private const val DAY_REQUIRED = "Choose a day to continue."
+private const val DAY_OPTIONAL = "Leave day as Any to choose a month."
 
 internal val MONTH_NAMES =
     listOf(
