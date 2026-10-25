@@ -6,6 +6,7 @@ import com.otus.jmap.PushMessage
 import com.otus.jmap.login.JmapLogin
 import com.otus.jmap.login.LoginStore
 import com.otus.jmap.login.LoginStoreException
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.async
@@ -35,7 +36,10 @@ public class PushSubscriptions(
     private val deviceClientId: String,
     private val types: List<String>,
     private val clock: Clock = Clock.System,
-    /** Pauses alert delivery before a new subscription sends its verification message. */
+    /**
+     * Pauses alert delivery before a new subscription sends its verification message. When it
+     * throws, that login creates nothing and is tried again on the next [sync].
+     */
     private val beforeCreate: suspend (loginId: String) -> Unit = {},
 ) {
     private val lock = Mutex()
@@ -71,9 +75,10 @@ public class PushSubscriptions(
     /**
      * Creates, replaces, verifies, renews, or deletes each login's subscription so the server
      * matches the saved endpoints. Servers are asked in parallel. A login whose server cannot be
-     * reached, or whose credentials cannot be read, keeps its record and is tried again on the next
-     * sync. When the saved logins cannot be read, nothing changes. Records of removed logins are
-     * dropped; call [forget] before removing a login to delete its subscription too.
+     * reached, whose credentials cannot be read, or whose [beforeCreate] fails keeps its record and
+     * is tried again on the next sync, while the other logins sync as usual. When the saved logins
+     * cannot be read, nothing changes. Records of removed logins are dropped; call [forget] before
+     * removing a login to delete its subscription too.
      */
     public suspend fun sync(): Unit =
         lock.withLock {
@@ -117,9 +122,16 @@ public class PushSubscriptions(
         record: PushRecord,
     ): PushRecord? =
         try {
-            ServerSubscription(connections.connection(login), deviceClientId, types, clock) { beforeCreate(login.id) }
+            ServerSubscription(
+                connections.connection(login),
+                deviceClientId,
+                types,
+                clock,
+            ) { pauseOrSkip(beforeCreate, login.id) }
                 .synced(record)
         } catch (_: JmapException) {
+            record
+        } catch (_: PauseFailed) {
             record
         } catch (_: LoginStoreException) {
             // Reading the secret failed; try again on the next sync.
@@ -153,3 +165,18 @@ public class PushSubscriptions(
         val FORGET_WITHIN: Duration = 10.seconds
     }
 }
+
+/** Runs [beforeCreate], so that its failure skips only this login instead of the whole sync. */
+private suspend fun pauseOrSkip(
+    beforeCreate: suspend (String) -> Unit,
+    loginId: String,
+) {
+    runCatching { beforeCreate(loginId) }.onFailure { error ->
+        if (error is CancellationException) throw error
+        throw PauseFailed(error)
+    }
+}
+
+private class PauseFailed(
+    cause: Throwable,
+) : Exception(cause)
