@@ -4,7 +4,9 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Build
 import android.view.ContextThemeWrapper
+import android.webkit.CookieManager
 import android.webkit.WebResourceRequest
+import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.layout.PaddingValues
@@ -54,12 +56,15 @@ public actual fun HtmlView(
 
 /**
  * Sets scripts and file access off even where that is the default, so a platform change cannot
- * turn them on. Safe Browsing, which can send the addresses of remote images to Google, is off,
- * and remote images are fetched with a User-Agent that names neither the device model nor its
- * build. The view gets a light or dark platform theme by [darken], the theme the user
- * picked, because WebView darkens pages only under a dark platform theme, whatever the activity's.
+ * turn them on. Remote images skip the HTTP cache, which all of the app's WebViews share and keep
+ * on disk, and get no cookies, which are all third-party on a page without an origin, so a cached
+ * response or a tracker cookie cannot tie the user's opens of different messages together. Safe
+ * Browsing, which can send the addresses of remote images to Google, is off, and remote images are
+ * fetched with a User-Agent that names neither the device model nor its build. The view gets a
+ * light or dark platform theme by [darken], the theme the user picked, because WebView darkens
+ * pages only under a dark platform theme, whatever the activity's.
  */
-private fun sandboxedWebView(
+internal fun sandboxedWebView(
     context: Context,
     loadRemote: Boolean,
     darken: Boolean,
@@ -71,6 +76,8 @@ private fun sandboxedWebView(
         settings.allowFileAccess = false
         settings.allowContentAccess = false
         settings.blockNetworkLoads = !loadRemote
+        settings.cacheMode = WebSettings.LOAD_NO_CACHE
+        CookieManager.getInstance().setAcceptThirdPartyCookies(this, false)
         settings.loadWithOverviewMode = true
         settings.useWideViewPort = true
         settings.builtInZoomControls = true
@@ -99,7 +106,7 @@ private val CHROME_VERSION = Regex("""Chrome/(\d+)[\d.]*""")
  * Keeps every navigation out of the view; a tapped openable link goes to [onOpenLink], and a
  * tapped image placeholder to [onShowRemote].
  */
-private class LinkClient(
+internal class LinkClient(
     private val key: RenderKey,
     private val onOpenLink: (String) -> Unit,
     private val onShowRemote: () -> Unit,

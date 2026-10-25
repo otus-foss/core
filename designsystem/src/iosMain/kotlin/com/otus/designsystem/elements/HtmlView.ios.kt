@@ -60,6 +60,8 @@ public actual fun HtmlView(
                     }
                 WKWebView(CGRectZero.readValue(), configuration).apply {
                     navigationDelegate = delegate
+                    // A long-pressed link's preview would load the page, outside the delegate.
+                    allowsLinkPreview = false
                     setOpaque(false)
                     if (loadRemote) {
                         loadHTMLString(document, baseURL = null)

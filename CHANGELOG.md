@@ -10,6 +10,10 @@
 - On Android, `HtmlView` turns off Safe Browsing, which can send the addresses of remote images to
   Google, and fetches remote images with a reduced User-Agent that names neither the device model,
   the Android version, nor the WebView build.
+- On Android, `HtmlView` loads remote images without the HTTP cache that all of the app's WebViews
+  share on disk, and refuses their cookies, so a cached response or a tracker cookie cannot link
+  the user's opens of different messages. On iOS, it turns off link previews, whose long press
+  would load a link's page outside the view's navigation checks.
 - On iOS, `HtmlView` keeps each view's cookies and cache in memory, so what a message's remote
   images leave cannot follow the user to other messages. Without `loadRemote`, a WebKit content
   rule list also blocks every web request, as Android's `blockNetworkLoads` does, beneath the

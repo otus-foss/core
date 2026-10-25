@@ -6,7 +6,8 @@ components take values and callbacks; they own no ViewModels, navigation, networ
 `HtmlView` is the one exception: with `loadRemote`, its web view fetches the images, styles, and
 fonts the document names. Without it, the platform also blocks every web request beneath the
 document's Content Security Policy: `blockNetworkLoads` on Android, a content rule list on iOS. On
-iOS each view keeps cookies and cache in memory only. Without `loadRemote`, and with
+iOS each view keeps cookies and cache in memory only and shows no link previews; on Android remote
+loads skip the HTTP cache and get no cookies. Without `loadRemote`, and with
 `onShowRemote`, each remote image shows as a dashed placeholder of its size, and a tap on one runs
 `onShowRemote`. The placeholder link carries a key
 made for each render, so a link in the message cannot fake it. A `HtmlQuote` folds under the body
