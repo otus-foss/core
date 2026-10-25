@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- An own address's new avatar shows right after the first save. `JmapOwnAvatars` hands the saved
+  avatar to the new `AvatarService.saved` instead of reading it back with a contact search, which
+  a server that indexes in the background, such as Stalwart, may not answer with a new card yet.
+  It also remembers the cards it makes, so a quick second save updates the card instead of making
+  a duplicate.
 - On Android, `HtmlView` turns off Safe Browsing, which can send the addresses of remote images to
   Google, and fetches remote images with a reduced User-Agent that names neither the device model,
   the Android version, nor the WebView build.
