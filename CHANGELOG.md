@@ -3,8 +3,8 @@
 ## Unreleased
 
 - Add `InfoTip` and `InfoText`: a quiet question mark that opens a sheet with background a setting
-  or section explains on request. `SettingsSection`, `SettingRow`, and `SettingToggleRow` take an
-  `info` that places one after the title. Email accounts and the custom accent sheet move their long
+  or section explains on request. `SettingsSection` and `SettingToggleRow` take an `info` that places
+  one after the title. Email accounts and the custom accent sheet move their long
   notes behind it, and the Password field shows the app-password hint.
 - An own address's new avatar shows right after the first save. `JmapOwnAvatars` hands the saved
   avatar to the new `AvatarService.saved` instead of reading it back with a contact search, which
