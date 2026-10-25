@@ -14,6 +14,7 @@ import com.otus.designsystem.elements.FolderGlyphKind
 import com.otus.designsystem.elements.avatarFill
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_reply
+import com.otus.designsystem.theme.EntryTokens
 import com.otus.designsystem.theme.FolderColor
 import com.otus.designsystem.theme.InboxTokens
 import com.otus.designsystem.theme.OtusColors
@@ -132,7 +133,7 @@ class CompactContentRowScreenshotTest {
     private fun Cards() {
         Column(
             Modifier.background(OtusColors.bgRegular).padding(InboxTokens.pageInset),
-            verticalArrangement = Arrangement.spacedBy(InboxTokens.rowGap),
+            verticalArrangement = Arrangement.spacedBy(EntryTokens.gap),
         ) {
             Row(invoice)
             Row(invoice.copy(first = line("Ada Lovelace"), count = null, marks = emptyList()), dimmed = true)

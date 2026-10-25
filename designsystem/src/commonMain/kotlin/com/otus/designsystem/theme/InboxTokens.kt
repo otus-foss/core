@@ -19,20 +19,11 @@ public object InboxTokens {
     public val subjectLineHeight: TextUnit = 24.sp
     public val avatarRadius: Dp = 24.dp
 
-    /** Rounding of a row card and of a selected row's tint, matching the panels. */
+    /** Rounding of a selected flat row's tint, matching the panels. */
     public val selectionRadius: Dp = PanelTokens.panelRadius
 
-    /** The space between row cards in a list, so each mail reads as its own item. */
-    public val rowGap: Dp = 4.dp
-
-    /** The outline that marks a row card on a theme whose raised color is its page color, such as Black. */
-    public val cardOutline: Dp = 1.dp
-
     // The compact two-line row; see CompactContentRow.
-    public val compactAvatarSize: Dp = 40.dp
-    public val compactPaddingVertical: Dp = 10.dp
-    public val compactPaddingStart: Dp = 14.dp
-    public val compactPaddingEnd: Dp = 12.dp
+    public val compactAvatarSize: Dp = EntryTokens.avatarSize
     public val lineGap: Dp = 3.dp
     public val markSize: Dp = 16.dp
     public val markGap: Dp = 4.dp

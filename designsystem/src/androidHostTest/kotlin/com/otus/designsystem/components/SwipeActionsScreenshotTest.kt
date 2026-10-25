@@ -20,6 +20,7 @@ import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_archive
 import com.otus.designsystem.resources.symbol_delete
 import com.otus.designsystem.screenshot.screenshot
+import com.otus.designsystem.theme.EntryTokens
 import com.otus.designsystem.theme.InboxTokens
 import com.otus.designsystem.theme.OtusColors
 import org.junit.Rule
@@ -63,7 +64,7 @@ class SwipeActionsScreenshotTest {
         // The list's own surface and spacing, which show around the cards.
         Column(
             Modifier.background(OtusColors.bgRegular).padding(InboxTokens.pageInset),
-            verticalArrangement = Arrangement.spacedBy(InboxTokens.rowGap),
+            verticalArrangement = Arrangement.spacedBy(EntryTokens.gap),
         ) {
             Row("Mira Chen", "Lunch on Friday?")
             Row("Tomas Berg", "Invoice 2026-031", Modifier.testTag(SWIPED))
@@ -83,7 +84,7 @@ class SwipeActionsScreenshotTest {
         Column(
             Modifier
                 .fillMaxWidth()
-                .background(OtusColors.bgDark, RoundedCornerShape(InboxTokens.selectionRadius))
+                .background(OtusColors.bgDark, RoundedCornerShape(EntryTokens.radius))
                 .padding(16.dp, 12.dp),
         ) {
             Text(sender)
