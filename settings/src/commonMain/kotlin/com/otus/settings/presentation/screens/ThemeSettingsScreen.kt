@@ -15,6 +15,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import com.otus.designsystem.components.ColorSheet
 import com.otus.designsystem.components.PageSection
 import com.otus.designsystem.components.Subpage
 import com.otus.designsystem.elements.ActionButton
@@ -28,7 +29,6 @@ import com.otus.designsystem.theme.ThemeTokens
 import com.otus.designsystem.theme.get
 import com.otus.settings.presentation.ThemeSettingsState
 import com.otus.settings.presentation.components.AccentPicker
-import com.otus.settings.presentation.components.ColorSheet
 import com.otus.settings.presentation.components.CustomAccentSheet
 import com.otus.settings.presentation.components.ThemeCards
 import com.otus.settings.presentation.components.ThemeColorRows

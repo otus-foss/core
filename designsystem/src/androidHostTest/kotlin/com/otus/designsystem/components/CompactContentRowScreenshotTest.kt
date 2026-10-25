@@ -7,6 +7,7 @@ import com.otus.designsystem.elements.Avatar
 import com.otus.designsystem.elements.AvatarBadge
 import com.otus.designsystem.elements.BadgedAvatar
 import com.otus.designsystem.elements.FolderGlyphKind
+import com.otus.designsystem.elements.avatarFill
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_reply
 import com.otus.designsystem.theme.FolderColor
@@ -126,7 +127,7 @@ class CompactContentRowScreenshotTest {
             selection = selection,
         ) {
             BadgedAvatar(if (badge) ({ AvatarBadge("AL", colorIndex = 0) }) else null) {
-                Avatar(sender.initials, colorIndex = sender.colorIndex, size = InboxTokens.compactAvatarSize)
+                Avatar(sender.initials, fill = avatarFill(sender.colorIndex), size = InboxTokens.compactAvatarSize)
             }
         }
     }
