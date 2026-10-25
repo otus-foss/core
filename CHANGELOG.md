@@ -2,6 +2,33 @@
 
 ## Unreleased
 
+- Users can give each of their own addresses an avatar: a photo, the website icon of its domain,
+  or an icon or up to three letters on a folder color or a custom color. The `avatar` module adds
+  `OwnAvatars` and `JmapOwnAvatars`, which keep it on a self card in the user's address book
+  (RFC 9610), plus `AvatarStyle`, `AvatarMark`, `AVATAR_STYLE_PROPERTY`, `OwnAvatarException`, and
+  `AvatarPhotoPicker`. See [avatars](docs/avatar.md). `avatar` now depends on `jmap-contacts`.
+- Breaking: `ContactPhotoSource` becomes `ContactAvatarSource`, whose `avatar` returns a
+  `ContactAvatar` (`Photo` or `Styled`), and `JmapContactPhotoSource` becomes
+  `JmapContactAvatarSource`. Wrap an image in `ContactAvatar.Photo` to migrate. `ResolvedAvatar`
+  and `StoredAvatar` gain `style`. Contact lookups also ask for `vCard` and search writable address
+  books, since Stalwart leaves the user's own books unsubscribed; contact photos in own books now
+  show up.
+- Breaking: `AccountSetupScreen` takes an `OwnAvatarsState`. Each account lists its addresses as
+  pills with their avatars, and tapping one opens a sheet that edits the avatar. The account row's
+  detail no longer repeats those addresses. "Connect an account" and the avatar note stay pinned
+  at the bottom of the page. `accounts` now depends on `avatar` and adds
+  `ResolvedAvatar.toChipAvatar`, `AvatarStyle.toChipAvatar`, and `ConnectedAccount.ownAddresses`.
+- `PageScaffold` and `Subpage` take a `footer` that stays at the bottom below the scrolling body.
+- `Avatar` and `AvatarBadge` take a `symbol` and a `content` color, and `AvatarBadge` an `image`
+  and a `fill`. `ChipAvatar` takes a picked `FolderColor` or `customColor` and a `symbol`;
+  `PersonAvatar` draws them and the new `PersonBadge` draws a `ChipAvatar` as a badge. Add
+  `SymbolSwatch`, `AvatarSymbols` with 71 icons, and `AvatarTokens.editorSize`.
+- `ColorSheet` moves from `settings` to the design system's components and becomes public, so other
+  features can pick a custom color.
+- Add the Material Symbols behind `AvatarSymbols` that the bundle lacked, such as `symbol_home`,
+  `symbol_pets`, `symbol_rocket_launch`, and the filled shapes `symbol_circle_fill` and
+  `symbol_star_fill` (Material Symbols Rounded, Apache 2.0).
+
 - `OptionsMenu` and the menus of action bar buttons, such as ⋯, open at once instead of unrolling.
   `Dropdown` takes `unrolls`, which is true by default. Add the `symbol_self_improvement` drawable.
 - Add the parts of the compact filter panel: `FilterRowCard`, `FilterValueRow`, `PeopleLine`
