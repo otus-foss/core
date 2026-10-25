@@ -68,6 +68,25 @@ internal class AvatarLookupCache(
         }
     }
 
+    /**
+     * Stores [entry] for [key] as current, such as an avatar the user just saved. Lookups that
+     * started earlier can no longer overwrite it.
+     */
+    suspend fun put(
+        key: AvatarCacheKey,
+        entry: StoredAvatar,
+    ) {
+        storageLock.withLock {
+            val current = entry.copy(created = now())
+            lock.withLock {
+                generation++
+                pending.remove(key)
+                remember(key, current)
+            }
+            store.write(key, current)
+        }
+    }
+
     private suspend fun fetchShared(
         key: AvatarCacheKey,
         lookup: Lookup,

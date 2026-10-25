@@ -96,6 +96,26 @@ public class AvatarService(
     /** Explicit contact refresh invalidates stored results, including queued and running lookups. */
     public suspend fun clear(): Unit = cache.clear()
 
+    /**
+     * Makes [avatar], just saved on the user's own card for [request], what lookups find, so it
+     * shows at once. Reading it back would search the server, whose index may not have the card yet.
+     */
+    public suspend fun saved(
+        request: AvatarRequest,
+        avatar: ContactAvatar,
+    ) {
+        val normalized = request.copy(email = avatarEmailKey(request.email))
+        if (!isAvatarEmail(normalized.email)) return
+        val entry =
+            when (avatar) {
+                is ContactAvatar.Photo -> StoredAvatar(avatar.image, 0)
+                is ContactAvatar.Styled -> StoredAvatar(null, 0, avatar.style)
+            }
+        listOf(false, true).forEach { external ->
+            cache.put(contactKey(normalized, AvatarOptions(externalContactImages = external)), entry)
+        }
+    }
+
     /** Logout/reconnect purges private photos while retaining public website icons. */
     public suspend fun removeAccount(account: String): Unit = cache.clear(account)
 

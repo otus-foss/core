@@ -12,6 +12,7 @@ import io.ktor.http.headersOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonArray
@@ -94,6 +95,30 @@ class JmapOwnAvatarsTest {
         }
 
     @Test
+    fun aSavedAvatarShowsAtOnceThoughTheSearchDoesNotFindTheNewCardYet() =
+        runTest {
+            val server = SelfCardServer(card = null)
+            server.avatars.save("ada", "ada@example.org", "Ada", letters)
+            assertEquals(letters.style, server.avatars.avatar("ada", "ada@example.org", "Ada").style)
+            server.avatars.save("ada", "ada@example.org", "Ada", photo)
+            val shown = server.avatars.avatar("ada", "ada@example.org", "Ada")
+            assertEquals(AvatarOrigin.Contact, shown.origin)
+            assertTrue(shown.image?.bytes.contentEquals(photo.image.bytes))
+        }
+
+    @Test
+    fun aSecondSaveUpdatesTheCardTheFirstMadeInsteadOfMakingAnother() =
+        runTest {
+            val server = SelfCardServer(card = null)
+            server.avatars.save("ada", "ada@example.org", "Ada", letters)
+            server.avatars.save("ada", "ada@example.org", "Ada", photo)
+            assertTrue("create" in server.sets[0])
+            val second = server.sets[1]
+            assertNull(second["create"], "No second self card: $second")
+            assertEquals(setOf("n"), second.getValue("update").jsonObject.keys)
+        }
+
+    @Test
     fun resettingWithoutASelfCardWritesNothing() =
         runTest {
             val server = SelfCardServer(card = null)
@@ -132,13 +157,18 @@ class JmapOwnAvatarsTest {
         }
 }
 
-/** A contacts server with [books] and at most one [card], which records each ContactCard/set. */
+/**
+ * A contacts server with [books] and at most one [card], which records each ContactCard/set. Like a
+ * server that indexes in the background, its search never finds the card a set made, which only a
+ * get by its id returns.
+ */
 private class SelfCardServer(
     card: String?,
     books: String = "$OWN_BOOK,$SHARED_BOOK",
     setResult: String = """{"newState":"2","updated":{"c":null},"created":{"self":{"id":"n"}}}""",
 ) {
     val sets = mutableListOf<JsonObject>()
+    private var made: String? = null
     private val engine =
         MockEngine.create {
             dispatcher = Dispatchers.Unconfined
@@ -157,11 +187,28 @@ private class SelfCardServer(
                         val (name, arguments, id) = call.jsonArray
                         val result =
                             when (val method = (name as JsonPrimitive).content) {
-                                "AddressBook/get" -> """{"list":[$books]}"""
-                                "ContactCard/query" -> """{"ids":[${if (card == null) "" else "\"c\""}]}"""
-                                "ContactCard/get" -> """{"list":[${card.orEmpty()}]}"""
-                                "ContactCard/set" -> setResult.also { sets += arguments.jsonObject }
-                                else -> error("Unexpected $method")
+                                "AddressBook/get" -> {
+                                    """{"list":[$books]}"""
+                                }
+
+                                "ContactCard/query" -> {
+                                    """{"ids":[${if (card == null) "" else "\"c\""}]}"""
+                                }
+
+                                "ContactCard/get" -> {
+                                    val byId = arguments.jsonObject["ids"] is JsonArray
+                                    """{"list":[${(if (byId) made else card).orEmpty()}]}"""
+                                }
+
+                                "ContactCard/set" -> {
+                                    sets += arguments.jsonObject
+                                    if ("create" in arguments.jsonObject) made = MADE_CARD
+                                    setResult
+                                }
+
+                                else -> {
+                                    error("Unexpected $method")
+                                }
                             }
                         """[$name,$result,$id]"""
                     }
@@ -186,6 +233,7 @@ private class SelfCardServer(
 }
 
 private const val ADA_EMAIL = """"emails":{"e":{"address":"ada@example.org"}}"""
+private const val MADE_CARD = """{"id":"n","addressBookIds":{"own":true},$ADA_EMAIL}"""
 private const val OWN_BOOK = """{"id":"own","isDefault":true,"myRights":{"mayRead":true,"mayWrite":true}}"""
 private const val SHARED_BOOK = """{"id":"shared","myRights":{"mayRead":true,"mayWrite":false}}"""
 private const val SESSION = """
