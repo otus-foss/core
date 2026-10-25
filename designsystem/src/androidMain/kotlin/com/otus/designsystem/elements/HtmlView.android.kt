@@ -54,7 +54,9 @@ public actual fun HtmlView(
 
 /**
  * Sets scripts and file access off even where that is the default, so a platform change cannot
- * turn them on. The view gets a light or dark platform theme by [darken], the theme the user
+ * turn them on. Safe Browsing, which can send the addresses of remote images to Google, is off,
+ * and remote images are fetched with a User-Agent that names neither the device model nor its
+ * build. The view gets a light or dark platform theme by [darken], the theme the user
  * picked, because WebView darkens pages only under a dark platform theme, whatever the activity's.
  */
 private fun sandboxedWebView(
@@ -73,11 +75,25 @@ private fun sandboxedWebView(
         settings.useWideViewPort = true
         settings.builtInZoomControls = true
         settings.displayZoomControls = false
+        settings.userAgentString = genericUserAgent(settings.userAgentString)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) settings.safeBrowsingEnabled = false
         // On Android 13 and later, a page with its own light colors is darkened under a dark theme.
         // Elsewhere it keeps its white page, which sandboxedHtml gives it.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) settings.isAlgorithmicDarkeningAllowed = darken
         webViewClient = links
     }
+
+/**
+ * [default] reduced the way Chrome reduces its own: the device part, such as
+ * `(Linux; Android 14; Pixel 8 Build/AP2A; wv)`, becomes `(Linux; Android 10; K; wv)`, and the
+ * WebView version keeps only its major number, so an image's host cannot tell the phone model,
+ * Android version, or WebView build.
+ */
+internal fun genericUserAgent(default: String): String =
+    CHROME_VERSION.replace(DEVICE.replace(default, "(Linux; Android 10; K; wv)"), "Chrome/$1.0.0.0")
+
+private val DEVICE = Regex("""\(Linux; Android[^)]*\)""")
+private val CHROME_VERSION = Regex("""Chrome/(\d+)[\d.]*""")
 
 /**
  * Keeps every navigation out of the view; a tapped openable link goes to [onOpenLink], and a
