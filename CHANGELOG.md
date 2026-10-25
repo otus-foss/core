@@ -28,7 +28,10 @@
 - Add the Material Symbols behind `AvatarSymbols` that the bundle lacked, such as `symbol_home`,
   `symbol_pets`, `symbol_rocket_launch`, and the filled shapes `symbol_circle_fill` and
   `symbol_star_fill` (Material Symbols Rounded, Apache 2.0).
-
+- `JmapClient` implements `AutoCloseable`. Closing releases its HTTP client while injected
+  engines remain caller-owned.
+- Finish connection invalidation and account-change cleanup after credential removal, even
+  when the caller cancels the operation.
 - `OptionsMenu` and the menus of action bar buttons, such as ⋯, open at once instead of unrolling.
   `Dropdown` takes `unrolls`, which is true by default. Add the `symbol_self_improvement` drawable.
 - Add the parts of the compact filter panel: `FilterRowCard`, `FilterValueRow`, `PeopleLine`

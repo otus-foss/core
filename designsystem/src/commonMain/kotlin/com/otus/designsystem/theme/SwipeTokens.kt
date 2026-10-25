@@ -13,12 +13,6 @@ internal object SwipeTokens {
     /** How far the icon slides in from the edge while it grows to full size at the threshold. */
     val iconEntry = 16.dp
 
-    /** Rounding of the revealed area's free end, next to the moving row. */
-    val cornerRadius = CornerTokens.chip
-
-    /** Concave rounding where the revealed area meets the row's edge, reaching past the row's top and bottom. */
-    val filletRadius = CornerTokens.chip
-
     /** Icon scale at the start of a swipe; it reaches full size at [threshold]. */
     const val ICON_START_SCALE = 0.5f
 

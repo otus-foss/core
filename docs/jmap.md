@@ -215,3 +215,11 @@ require macOS/Xcode.
 Contact-photo lookup now uses RFC 9610 and the blob-download API. See [Mail's avatar guide](https://github.com/reazndev/otus-mail/blob/main/docs/avatars.md) for
 capability discovery, exact email matching, public-image options, and generated fallbacks.
 The full RFC 9610 client is the `jmap-contacts` module; see [Contacts](contacts.md).
+
+## Client lifetime
+
+The owner of a `JmapClient` calls `close()` when it no longer needs the client. Closing is
+idempotent and stops new requests. Existing requests finish before Ktor releases their resources.
+The default platform engine belongs to the client. An injected engine belongs to its caller,
+which must close it after all clients using it have closed. Short-lived callers can use
+`JmapClient().use { client -> ... }`.
