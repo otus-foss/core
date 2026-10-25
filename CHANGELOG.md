@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- `JmapClient` implements `AutoCloseable`. Closing releases its HTTP client while injected engines remain caller-owned.
+
 - Finish connection invalidation and account-change cleanup after credential removal, even
   when the caller cancels the operation.
 - `OptionsMenu` and the menus of action bar buttons, such as ⋯, open at once instead of unrolling.
