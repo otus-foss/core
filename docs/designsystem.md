@@ -4,8 +4,11 @@ The `designsystem` module (`com.otus.designsystem`, artifact `com.otus:designsys
 Otus theme, elements, and components. It moved here from otus-mail in version 0.2.0. Elements and
 components take values and callbacks; they own no ViewModels, navigation, networking, or storage.
 `HtmlView` is the one exception: with `loadRemote`, its web view fetches the images, styles, and
-fonts the document names. Without it, and with `onShowRemote`, each remote image shows as a dashed
-placeholder of its size, and a tap on one runs `onShowRemote`. The placeholder link carries a key
+fonts the document names. Without it, the platform also blocks every web request beneath the
+document's Content Security Policy: `blockNetworkLoads` on Android, a content rule list on iOS. On
+iOS each view keeps cookies and cache in memory only. Without `loadRemote`, and with
+`onShowRemote`, each remote image shows as a dashed placeholder of its size, and a tap on one runs
+`onShowRemote`. The placeholder link carries a key
 made for each render, so a link in the message cannot fake it. A `HtmlQuote` folds under the body
 in a `<details>` element, so it unfolds without scripts; the body is sealed first, so an element
 it leaves open, such as `<style>` or `<a>`, cannot swallow or wrap the fold.
