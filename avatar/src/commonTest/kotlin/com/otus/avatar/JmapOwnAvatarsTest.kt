@@ -187,8 +187,14 @@ private class SelfCardServer(
                         val (name, arguments, id) = call.jsonArray
                         val result =
                             when (val method = (name as JsonPrimitive).content) {
-                                "AddressBook/get" -> """{"list":[$books]}"""
-                                "ContactCard/query" -> """{"ids":[${if (card == null) "" else "\"c\""}]}"""
+                                "AddressBook/get" -> {
+                                    """{"list":[$books]}"""
+                                }
+
+                                "ContactCard/query" -> {
+                                    """{"ids":[${if (card == null) "" else "\"c\""}]}"""
+                                }
+
                                 "ContactCard/get" -> {
                                     val byId = arguments.jsonObject["ids"] is JsonArray
                                     """{"list":[${(if (byId) made else card).orEmpty()}]}"""
@@ -199,7 +205,10 @@ private class SelfCardServer(
                                     if ("create" in arguments.jsonObject) made = MADE_CARD
                                     setResult
                                 }
-                                else -> error("Unexpected $method")
+
+                                else -> {
+                                    error("Unexpected $method")
+                                }
                             }
                         """[$name,$result,$id]"""
                     }
