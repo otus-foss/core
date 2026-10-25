@@ -61,7 +61,7 @@ uncommitted `feat/action-bar` Mail worktree.
 | `urn:ietf:params:jmap:quota` | RFC 9425 | No plan | |
 | `urn:ietf:params:jmap:mdn` | RFC 9007 | No plan | |
 | `urn:ietf:params:jmap:websocket` | RFC 8887 | No plan | Push uses Web Push and EventSource. See [push](#push-and-sync). |
-| `urn:ietf:params:jmap:webpush-vapid` | RFC 9749 | Planned | Lets Google's FCM accept pushes without a gateway. The library reads the key. |
+| `urn:ietf:params:jmap:webpush-vapid` | RFC 9749 | In progress | Mail `feat/google-push` passes the server key to its embedded Google distributor and replaces registration when the key changes. |
 | `urn:ietf:params:jmap:principals` and sharing | RFC 9670 | Planned | Shared calendars ([Calendar #9](https://github.com/reazndev/otus-calendar/issues/9)). |
 | Tasks | IETF draft | No plan | The roadmap defers a task manager. `TaskList/get` appears only in library tests. |
 
@@ -188,7 +188,7 @@ implements. Reminders stay local to the device and are not server alarms.
 
 | Feature | Status | Notes |
 | --- | --- | --- |
-| Push (`EventSource`, `PushSubscription`) | Planned | [Mail #18](https://github.com/reazndev/otus-mail/issues/18), [decision 0015](../decisions/0015-push-notifications.md): background check, UnifiedPush, Google FCM, and an experimental always connected mode, with no Otus server. The library has the `PushSubscription` wire types; no app uses them yet. |
+| Push (`EventSource`, `PushSubscription`) | Partial | [Mail #18](https://github.com/reazndev/otus-mail/issues/18), [decision 0015](../decisions/0015-push-notifications.md): background check, UnifiedPush, Google FCM, and an experimental always connected mode, with no Otus server. Mail uses `PushSubscription` through `com.otus:push` with UnifiedPush and periodic background checks. Google delivery is on `feat/google-push`; EventSource remains planned. |
 | Local database and offline queue | Planned | [Mail #14](https://github.com/reazndev/otus-mail/issues/14), [Mail #16](https://github.com/reazndev/otus-mail/issues/16). Today nothing is cached. Each launch and refresh reloads from the server. |
 
 Until sync lands, a screen cannot show data that was not loaded in this session, and there is no
