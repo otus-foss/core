@@ -12,6 +12,8 @@ import com.otus.designsystem.theme.OtusColors
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.readValue
 import platform.CoreGraphics.CGRectZero
+import platform.WebKit.WKContentRuleList
+import platform.WebKit.WKContentRuleListStore
 import platform.WebKit.WKNavigationAction
 import platform.WebKit.WKNavigationActionPolicy
 import platform.WebKit.WKNavigationActionPolicy.WKNavigationActionPolicyAllow
@@ -20,6 +22,7 @@ import platform.WebKit.WKNavigationDelegateProtocol
 import platform.WebKit.WKNavigationTypeLinkActivated
 import platform.WebKit.WKWebView
 import platform.WebKit.WKWebViewConfiguration
+import platform.WebKit.WKWebsiteDataStore
 import platform.darwin.NSObject
 
 @OptIn(ExperimentalForeignApi::class)
@@ -49,11 +52,23 @@ public actual fun HtmlView(
         UIKitView(
             factory = {
                 val configuration =
-                    WKWebViewConfiguration().apply { defaultWebpagePreferences.allowsContentJavaScript = false }
+                    WKWebViewConfiguration().apply {
+                        defaultWebpagePreferences.allowsContentJavaScript = false
+                        // Each view gets a fresh store in memory, so cookies and cached responses a
+                        // message's images leave cannot follow the user to other messages.
+                        websiteDataStore = WKWebsiteDataStore.nonPersistentDataStore()
+                    }
                 WKWebView(CGRectZero.readValue(), configuration).apply {
                     navigationDelegate = delegate
                     setOpaque(false)
-                    loadHTMLString(document, baseURL = null)
+                    if (loadRemote) {
+                        loadHTMLString(document, baseURL = null)
+                    } else {
+                        withNetworkBlock { rules ->
+                            rules?.let { configuration.userContentController.addContentRuleList(it) }
+                            loadHTMLString(document, baseURL = null)
+                        }
+                    }
                 }
             },
             modifier = modifier,
@@ -89,3 +104,29 @@ private class LinkDelegate(
         decisionHandler(if (ownLoad) WKNavigationActionPolicyAllow else WKNavigationActionPolicyCancel)
     }
 }
+
+/**
+ * Passes [use] a content rule list that blocks every web request, compiled once, as Android's
+ * `blockNetworkLoads` does beneath the Content Security Policy. WebKit calls back on the main
+ * thread. Null when WebKit cannot compile it; the policy alone still blocks remote content then.
+ */
+private fun withNetworkBlock(use: (WKContentRuleList?) -> Unit) {
+    networkBlock?.let { return use(it) }
+    val store = WKContentRuleListStore.defaultStore() ?: return use(null)
+    store.compileContentRuleListForIdentifier(
+        NETWORK_BLOCK_ID,
+        encodedContentRuleList = NETWORK_BLOCK_RULES,
+    ) { rules, _ ->
+        networkBlock = rules
+        use(rules)
+    }
+}
+
+private var networkBlock: WKContentRuleList? = null
+
+private const val NETWORK_BLOCK_ID = "otus-html-view-network-block"
+
+// Rule filters have no alternation, so each scheme gets its own rule.
+private const val NETWORK_BLOCK_RULES =
+    """[{"trigger":{"url-filter":"^https?:"},"action":{"type":"block"}},""" +
+        """{"trigger":{"url-filter":"^wss?:"},"action":{"type":"block"}}]"""
