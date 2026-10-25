@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- An own address's new avatar shows right after the first save. `JmapOwnAvatars` hands the saved
+  avatar to the new `AvatarService.saved` instead of reading it back with a contact search, which
+  a server that indexes in the background, such as Stalwart, may not answer with a new card yet.
+  It also remembers the cards it makes, so a quick second save updates the card instead of making
+  a duplicate.
 - On iOS, `HtmlView` keeps each view's cookies and cache in memory, so what a message's remote
   images leave cannot follow the user to other messages. Without `loadRemote`, a WebKit content
   rule list also blocks every web request, as Android's `blockNetworkLoads` does, beneath the
