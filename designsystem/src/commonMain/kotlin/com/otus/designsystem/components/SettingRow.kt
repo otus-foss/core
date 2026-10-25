@@ -45,7 +45,8 @@ import kotlin.math.min
  * [onClick] the whole row is one button; without it, only its trailing controls act. A
  * [RowDensity.Compact] row drops the hairline and fits one line in
  * [PanelTokens.compactRowHeight]; a taller trailing control reaches into its padding instead of
- * making it taller.
+ * making it taller. An [info] button after the title explains the setting on request, so the
+ * [description] can stay one short line.
  */
 @Composable
 public fun SettingRow(
@@ -55,6 +56,7 @@ public fun SettingRow(
     description: String? = null,
     icon: DrawableResource? = null,
     density: RowDensity = RowDensity.Regular,
+    info: InfoText? = null,
     trailing: @Composable () -> Unit = {},
 ) {
     SettingRowLayout(
@@ -65,6 +67,7 @@ public fun SettingRow(
         trailing,
         density,
         onClick?.let { modifier.rowButton(it) } ?: modifier,
+        info,
     )
 }
 
@@ -93,7 +96,7 @@ private fun Modifier.rowButton(onClick: () -> Unit): Modifier {
         .controlPressFeedback(interactions, RoundedCornerShape(SheetTokens.rowRadius))
 }
 
-/** A settings row that turns something on or off; the whole row is the switch. */
+/** A settings row that turns something on or off; the whole row is the switch. [info] is as on [SettingRow]. */
 @Composable
 public fun SettingToggleRow(
     title: String,
@@ -102,6 +105,7 @@ public fun SettingToggleRow(
     modifier: Modifier = Modifier,
     description: String? = null,
     icon: DrawableResource? = null,
+    info: InfoText? = null,
 ) {
     val interactions = remember { MutableInteractionSource() }
     SettingRowLayout(
@@ -120,6 +124,7 @@ public fun SettingToggleRow(
                     role = Role.Switch,
                     onValueChange = onCheckedChange,
                 ).controlPressFeedback(interactions, RoundedCornerShape(SheetTokens.rowRadius)),
+        info = info,
     )
 }
 
@@ -132,6 +137,7 @@ private fun SettingRowLayout(
     trailing: @Composable () -> Unit,
     density: RowDensity,
     modifier: Modifier,
+    info: InfoText? = null,
 ) {
     val compact = density == RowDensity.Compact
     var first by remember { mutableStateOf(false) }
@@ -155,13 +161,18 @@ private fun SettingRowLayout(
     ) {
         icon?.let { LeadingSymbol(it) }
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(SettingTokens.textGap)) {
-            Text(
-                title,
-                fontSize = SettingTokens.titleSize,
-                lineHeight = SettingTokens.titleLineHeight,
-                maxLines = if (compact) 1 else Int.MAX_VALUE,
-                overflow = TextOverflow.Ellipsis,
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    title,
+                    Modifier.weight(1f, fill = false),
+                    fontSize = SettingTokens.titleSize,
+                    lineHeight = SettingTokens.titleLineHeight,
+                    maxLines = if (compact) 1 else Int.MAX_VALUE,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                // The button's touch target reaches into the row's padding rather than making it taller.
+                info?.let { InfoTip(it, Modifier.overlapHeight(PanelTokens.iconSize)) }
+            }
             description?.let {
                 PersonText(
                     it,
