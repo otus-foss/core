@@ -122,6 +122,27 @@ class JmapContactAvatarSourceTest {
             "c":{"kind":"photo","pref":1,"uri":"data:image/png;base64,AQ=="}}"""
             assertContentEquals(byteArrayOf(1), ContactFixture(mediaMap = media).source.photoOf(request, false)?.bytes)
         }
+
+    @Test
+    fun aWebsiteStyleCountsOnlyInTheUsersOwnBooks() =
+        runTest {
+            val website = AvatarStyle("blue", AvatarMark.Website)
+            val vCard = ""","vCard":{"properties":${avatarPropertiesWith(null, website)}}"""
+            val shared = ContactFixture(mediaMap = "{}", cardExtra = vCard)
+            assertNull(shared.source.avatar(request, false))
+            val own = ContactFixture(mediaMap = "{}", cardBook = "own", cardExtra = vCard)
+            assertEquals(ContactAvatar.Styled(website), own.source.avatar(request, false))
+        }
+
+    @Test
+    fun aCardInTheUsersOwnBookWinsOverASharedOne() =
+        runTest {
+            val photo = """{"p":{"kind":"photo","uri":"data:image/png;base64,Ag=="}}"""
+            val ownCard = ""","addressBookIds":{"own":true},"media":$photo"""
+            val media = """{"kind":"photo","uri":"data:image/png;base64,AQ=="}"""
+            val fixture = ContactFixture(media = media, otherCard = ownCard)
+            assertContentEquals(byteArrayOf(2), fixture.source.photoOf(request, false)?.bytes)
+        }
 }
 
 private class ContactFixture(
@@ -132,7 +153,12 @@ private class ContactFixture(
     mediaMap: String = """{"p":$media}""",
     downloadStatus: HttpStatusCode = HttpStatusCode.OK,
     images: AvatarImageLoader = AvatarImageLoader { error("No external requests") },
+    cardExtra: String = "",
+    otherCard: String? = null,
 ) {
+    // The other card's id sorts after "c", so only the own-book preference puts it first.
+    private val other = otherCard?.let { """,{"id":"d","emails":{"e":{"address":"$cardEmail"}}$it}""" }.orEmpty()
+
     val apiBodies = mutableListOf<String>()
     var downloads = 0
     private val engine =
@@ -154,11 +180,12 @@ private class ContactFixture(
                                 """{"methodResponses":[["AddressBook/get",{"list":[
                         {"id":"visible","isSubscribed":true,"myRights":{"mayRead":true}},
                         {"id":"hidden","isSubscribed":false,"myRights":{"mayRead":true}},
-                        {"id":"denied","isSubscribed":true,"myRights":{"mayRead":false}}]},"c0"]]}"""
+                        {"id":"denied","isSubscribed":true,"myRights":{"mayRead":false}},
+                        {"id":"own","myRights":{"mayRead":true,"mayWrite":true}}]},"c0"]]}"""
                             } else {
                                 """{"methodResponses":[["ContactCard/query",{"ids":["c"]},"c0"],
                         ["ContactCard/get",{"list":[{"id":"c","addressBookIds":{"$cardBook":true},
-                        "emails":{"e":{"address":"$cardEmail"}},"media":$mediaMap}]},"c1"]]}"""
+                        "emails":{"e":{"address":"$cardEmail"}},"media":$mediaMap$cardExtra}$other]},"c1"]]}"""
                             }
                         respond(response, headers = json)
                     }
