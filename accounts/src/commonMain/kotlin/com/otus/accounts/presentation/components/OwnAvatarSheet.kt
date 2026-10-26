@@ -19,7 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import com.otus.accounts.presentation.AvatarDraft
 import com.otus.accounts.presentation.AvatarKind
 import com.otus.accounts.presentation.PhotoSource
-import com.otus.avatar.AvatarOrigin
+import com.otus.accounts.presentation.isSet
 import com.otus.avatar.ResolvedAvatar
 import com.otus.designsystem.components.PersonAvatar
 import com.otus.designsystem.components.SegmentedToggle
@@ -33,14 +33,16 @@ import kotlinx.coroutines.launch
 import com.otus.avatar.ContactAvatar as SavedAvatar
 
 /**
- * Edits the avatar of [email]: a big preview, the kinds of avatar, and the choices of the kind
- * picked. Save runs [onSave] with the new avatar; it keeps a saved photo that did not change.
- * Reset, shown once the user has set an avatar, runs [onSave] with null to go back to the
- * generated one. [pickPhoto] is null when the platform cannot pick photos, which hides Your photo.
+ * Edits the avatar of [label], an address or all of an account's addresses: a big preview, the
+ * kinds of avatar, and the choices of the kind picked. A website icon comes from [domain]. Save
+ * runs [onSave] with the new avatar; it keeps a saved photo that did not change. Reset, shown once
+ * the user has set an avatar, runs [onSave] with null to go back to the generated one. [pickPhoto]
+ * is null when the platform cannot pick photos, which hides Your photo.
  */
 @Composable
 internal fun OwnAvatarSheet(
-    email: String,
+    label: String,
+    domain: String,
     shown: ResolvedAvatar?,
     pickPhoto: (suspend () -> SavedAvatar.Photo?)?,
     onSave: (SavedAvatar?) -> Unit,
@@ -50,7 +52,7 @@ internal fun OwnAvatarSheet(
     // Start again once the avatar loads, so a sheet opened early does not start from defaults.
     var draft by remember(shown != null) { mutableStateOf(AvatarDraft.of(shown, canUpload = pickPhoto != null)) }
     var resetting by remember { mutableStateOf(false) }
-    val isSet = shown?.style != null || shown?.origin == AvatarOrigin.Contact
+    val isSet = shown?.isSet == true
     val scope = rememberCoroutineScope()
     val pick = {
         scope.launch {
@@ -87,11 +89,11 @@ internal fun OwnAvatarSheet(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             PersonAvatar(draft.preview(shown), AvatarTokens.editorSize)
-            Text(email, color = OtusColors.text2, textAlign = TextAlign.Center)
+            Text(label, color = OtusColors.text2, textAlign = TextAlign.Center)
             SegmentedToggle(kinds.map { it.label }, kinds.indexOf(draft.kind), { draft = draft.copy(kind = kinds[it]) })
             AvatarChoices(
                 draft,
-                email.substringAfterLast('@'),
+                domain,
                 onChange = { draft = it },
                 onPickPhoto = if (pickPhoto != null) ({ pick() }) else null,
                 Modifier.fillMaxWidth(),

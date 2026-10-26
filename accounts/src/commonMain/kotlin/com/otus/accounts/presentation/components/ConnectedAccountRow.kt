@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import com.otus.accounts.domain.ConnectedAccount
 import com.otus.accounts.presentation.ownAddresses
 import com.otus.accounts.presentation.toChipAvatar
+import com.otus.avatar.GeneratedAvatar
 import com.otus.avatar.ResolvedAvatar
 import com.otus.avatar.generatedAvatar
 import com.otus.designsystem.components.ChipAvatar
@@ -24,13 +25,17 @@ import com.otus.designsystem.theme.PanelTokens
 /**
  * One connected account, its sign-in and server, a button that removes it, and a pill for each of
  * its addresses with that address's avatar. Tapping a pill runs [onEditAvatar] with the address.
+ * With more than one address, an All addresses pill comes first, showing [shared], the avatar they
+ * all have, and runs [onEditAll].
  */
 @Composable
 public fun ConnectedAccountRow(
     account: ConnectedAccount,
     avatar: (String) -> ResolvedAvatar?,
+    shared: ResolvedAvatar?,
     onRemove: () -> Unit,
     onEditAvatar: (String) -> Unit,
+    onEditAll: () -> Unit,
 ) {
     Column {
         SettingRow(
@@ -43,15 +48,22 @@ public fun ConnectedAccountRow(
             Modifier.padding(horizontal = PageTokens.textInset),
             horizontalArrangement = Arrangement.spacedBy(PanelTokens.chipGap),
         ) {
+            if (account.ownAddresses.size > 1) {
+                val chip = shared?.toChipAvatar() ?: generatedAvatar(account.name, account.username).toChip()
+                PersonChip(
+                    Recipient("All addresses", chip, "Change the avatar of every address of ${account.name}"),
+                    onClick = onEditAll,
+                )
+            }
             account.ownAddresses.forEach { email ->
-                val chip =
-                    avatar(email)?.toChipAvatar()
-                        ?: generatedAvatar(account.name, email).let { ChipAvatar(it.initials, it.colorIndex) }
+                val chip = avatar(email)?.toChipAvatar() ?: generatedAvatar(account.name, email).toChip()
                 PersonChip(Recipient(email, chip, "Change the avatar of $email"), onClick = { onEditAvatar(email) })
             }
         }
     }
 }
+
+private fun GeneratedAvatar.toChip() = ChipAvatar(initials, colorIndex)
 
 /** The sign-in when it is not one of the addresses the pills show, and the server. */
 internal fun connectedAccountDetail(account: ConnectedAccount): String {
