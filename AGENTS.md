@@ -128,6 +128,12 @@ commit history. See [the decision](docs/decisions/0004-commit-messages.md).
 
 ## Agent workflow
 
+During development, prefer `./gradlew spotlessCheck detekt ruffCheck ruffFormatCheck` and run
+only tests relevant to the change, for example
+`./gradlew :dateformat:testAndroidHostTest --tests 'com.otus.dateformat.DateFormatterTest'`.
+Use `qualityCheck` when all quality checks are needed. Batch edits and run `checkAll` once at the
+end, rather than after each edit. Run it again only if later changes or failures require it.
+
 Inspect existing patterns first. Make focused changes, run the relevant checks, and report any
 environment blockers precisely. Add behavior tests for new logic and regression tests for fixes.
 Update `docs/architecture.md` when modules or boundaries change.

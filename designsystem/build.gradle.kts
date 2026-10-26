@@ -71,8 +71,16 @@ compose.resources {
 val screenshots = layout.projectDirectory.dir("src/androidHostTest/screenshots")
 val recordScreenshots = providers.gradleProperty("roborazzi.record").isPresent
 tasks.withType<Test>().configureEach {
-    inputs.dir(screenshots).withPropertyName("screenshots").optional()
+    inputs
+        .dir(screenshots)
+        .withPropertyName("screenshots")
+        .withPathSensitivity(PathSensitivity.RELATIVE)
+        .optional()
     systemProperty(if (recordScreenshots) "roborazzi.test.record" else "roborazzi.test.verify", "true")
+    if (recordScreenshots) {
+        outputs.upToDateWhen { false }
+        outputs.doNotCacheIf("Recording writes baselines outside the test outputs") { true }
+    }
 }
 
 // The published iOS metadata sees JetBrains' and Google's Compose klibs together and warns about
