@@ -18,6 +18,8 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.toSize
 
 /** One letter of a [LetterIndex] and how many entries are filed under it. */
@@ -51,6 +53,15 @@ public class LetterIndexState {
             (rows.firstOrNull { position.y < it.value.bottom } ?: rows.lastOrNull())?.key
     }
 
+    internal fun open(
+        letters: List<IndexLetter>,
+        onPick: (String) -> Unit,
+    ) {
+        this.letters = letters
+        this.onPick = onPick
+        open = true
+    }
+
     internal fun pick(letter: String) {
         close()
         onPick(letter)
@@ -68,7 +79,8 @@ public fun rememberLetterIndexState(): LetterIndexState = remember { LetterIndex
 /**
  * Makes the heading of [letter] open the [state]'s index of [letters] on press. A tap leaves the
  * index open to pick from; holding and dragging marks the letter under the finger, and lifting
- * jumps to it, all in one touch. Picking a letter either way runs [onPick] with it.
+ * jumps to it, all in one touch. Picking a letter either way runs [onPick] with it. Screen readers
+ * get a "Show letters" action that opens the index.
  */
 @Composable
 public fun Modifier.letterIndexHandle(
@@ -85,13 +97,16 @@ public fun Modifier.letterIndexHandle(
     return onGloballyPositioned {
         coordinates.value = it
         state.headings[letter] = Rect(it.positionInWindow(), it.size.toSize())
+    }.semantics {
+        onClick(label = "Show letters") {
+            state.open(currentLetters, currentPick)
+            true
+        }
     }.pointerInput(state) {
         awaitEachGesture {
             val down = awaitFirstDown()
             down.consume()
-            state.letters = currentLetters
-            state.onPick = currentPick
-            state.open = true
+            state.open(currentLetters, currentPick)
             var dragging = false
             do {
                 val change = awaitPointerEvent().changes.firstOrNull { it.id == down.id } ?: break
