@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -14,16 +15,19 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import com.otus.designsystem.elements.Avatar
 import com.otus.designsystem.theme.PageTokens
+import com.otus.designsystem.theme.PanelTokens
 import com.otus.designsystem.theme.SettingTokens
 
 /**
  * A group of [SettingRow]s under a large [title]; rows follow each other without gaps. An
- * [avatar], such as the account the rows belong to, sits before the title.
+ * [avatar], such as the account the rows belong to, sits before the title, and an [info] button
+ * after it explains the section on request.
  */
 @Composable
 public fun SettingsSection(
     title: String,
     avatar: ChipAvatar? = null,
+    info: InfoText? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Column(Modifier.padding(top = SettingTokens.sectionGap)) {
@@ -44,7 +48,12 @@ public fun SettingsSection(
                 lineHeight = SettingTokens.sectionTitleLineHeight,
                 fontWeight = FontWeight.SemiBold,
             )
+            // The button's touch target reaches past the title's line rather than making the header taller.
+            info?.let { InfoTip(it, Modifier.offset(x = -InfoTipOverhang).overlapHeight(PanelTokens.iconSize)) }
         }
         content()
     }
 }
+
+/** How far the info button's touch target reaches past its question mark toward the title. */
+private val InfoTipOverhang = (PanelTokens.touchTarget - PanelTokens.iconSize) / 2

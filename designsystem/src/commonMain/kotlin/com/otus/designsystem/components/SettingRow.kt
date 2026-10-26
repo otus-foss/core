@@ -58,7 +58,7 @@ public fun SettingRow(
     trailing: @Composable () -> Unit = {},
 ) {
     SettingRowLayout(
-        title,
+        RowTitle(title),
         description,
         person = null,
         icon,
@@ -82,7 +82,7 @@ public fun SettingRow(
     icon: DrawableResource? = null,
     density: RowDensity = RowDensity.Regular,
 ) {
-    SettingRowLayout(title, description, person, icon, trailing = {}, density, modifier.rowButton(onClick))
+    SettingRowLayout(RowTitle(title), description, person, icon, trailing = {}, density, modifier.rowButton(onClick))
 }
 
 /** Makes the whole row one button with the shared press feedback. */
@@ -93,7 +93,10 @@ private fun Modifier.rowButton(onClick: () -> Unit): Modifier {
         .controlPressFeedback(interactions, RoundedCornerShape(SheetTokens.rowRadius))
 }
 
-/** A settings row that turns something on or off; the whole row is the switch. */
+/**
+ * A settings row that turns something on or off; the whole row is the switch. An [info] button
+ * after the title explains the setting on request, so the [description] can stay one short line.
+ */
 @Composable
 public fun SettingToggleRow(
     title: String,
@@ -102,10 +105,11 @@ public fun SettingToggleRow(
     modifier: Modifier = Modifier,
     description: String? = null,
     icon: DrawableResource? = null,
+    info: InfoText? = null,
 ) {
     val interactions = remember { MutableInteractionSource() }
     SettingRowLayout(
-        title,
+        RowTitle(title, info),
         description,
         person = null,
         icon,
@@ -125,7 +129,7 @@ public fun SettingToggleRow(
 
 @Composable
 private fun SettingRowLayout(
-    title: String,
+    title: RowTitle,
     description: String?,
     person: NamedAvatar?,
     icon: DrawableResource?,
@@ -155,13 +159,18 @@ private fun SettingRowLayout(
     ) {
         icon?.let { LeadingSymbol(it) }
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(SettingTokens.textGap)) {
-            Text(
-                title,
-                fontSize = SettingTokens.titleSize,
-                lineHeight = SettingTokens.titleLineHeight,
-                maxLines = if (compact) 1 else Int.MAX_VALUE,
-                overflow = TextOverflow.Ellipsis,
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    title.text,
+                    Modifier.weight(1f, fill = false),
+                    fontSize = SettingTokens.titleSize,
+                    lineHeight = SettingTokens.titleLineHeight,
+                    maxLines = if (compact) 1 else Int.MAX_VALUE,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                // The button's touch target reaches into the row's padding rather than making it taller.
+                title.info?.let { InfoTip(it, Modifier.overlapHeight(PanelTokens.iconSize)) }
+            }
             description?.let {
                 PersonText(
                     it,
@@ -180,11 +189,18 @@ private fun SettingRowLayout(
 
 /**
  * Lays the content out at most [height] tall and centers anything taller across that height, so a
- * row-high control reaches into a compact row's padding without making the row taller.
+ * row-high control reaches into a compact row's padding, or an info button past its title's line,
+ * without making the row taller.
  */
-private fun Modifier.overlapHeight(height: Dp): Modifier =
+internal fun Modifier.overlapHeight(height: Dp): Modifier =
     layout { measurable, constraints ->
         val placeable = measurable.measure(constraints.copy(minHeight = 0, maxHeight = Constraints.Infinity))
         val shown = min(placeable.height, height.roundToPx())
         layout(placeable.width, shown) { placeable.place(0, (shown - placeable.height) / 2) }
     }
+
+/** A row's title and the [info] button after it, if any. */
+private class RowTitle(
+    val text: String,
+    val info: InfoText? = null,
+)

@@ -30,6 +30,7 @@ import com.otus.accounts.presentation.components.OwnAvatarSheet
 import com.otus.accounts.presentation.confirmHostMessage
 import com.otus.accounts.presentation.message
 import com.otus.designsystem.components.ConfirmDialog
+import com.otus.designsystem.components.InfoText
 import com.otus.designsystem.components.PageNote
 import com.otus.designsystem.components.SettingsSection
 import com.otus.designsystem.components.SheetFrame
@@ -60,7 +61,7 @@ public fun AccountSetupScreen(
         title,
         onBack,
         footer = {
-            AccountsFooter(showNote = state.accounts.isNotEmpty()) {
+            AccountsFooter {
                 state.cancelConnect()
                 adding = true
             }
@@ -110,7 +111,7 @@ private fun ConnectedAccounts(
     onRemove: (String) -> Unit,
     onEditAvatar: (account: String, email: String) -> Unit,
 ) {
-    SettingsSection("Connected accounts") {
+    SettingsSection("Connected accounts", info = AvatarsInfo.takeIf { state.accounts.isNotEmpty() }) {
         if (state.accounts.isEmpty() && state.storageError == null) {
             PageNote(if (state.loading) "Loading accounts…" else "No accounts connected yet.")
         }
@@ -126,17 +127,9 @@ private fun ConnectedAccounts(
     }
 }
 
-/** The note about avatars, once there are accounts, and the button that connects one. */
+/** The button that connects an account. */
 @Composable
-private fun AccountsFooter(
-    showNote: Boolean,
-    onConnect: () -> Unit,
-) {
-    if (showNote) {
-        PageNote(
-            "Give each address its own avatar. Otus shows it wherever it marks which address a message was sent to.",
-        )
-    }
+private fun AccountsFooter(onConnect: () -> Unit) {
     ActionButton("Connect an account", onConnect, Modifier.fillMaxWidth(), primary = true)
 }
 
@@ -174,7 +167,7 @@ private fun AddAccountForm(
             password = ""
         }
     }
-    PageNote("Enter your JMAP server and sign-in details. Use an app password if your server offers one.")
+    PageNote("Enter your JMAP server and sign-in details.")
     InputField("Server", server, {
         server = it
     }, placeholder = "${service.name}.example.com", supportingText = serverHint(address), kind = InputKind.Url)
@@ -186,7 +179,13 @@ private fun AddAccountForm(
         supportingText = ConnectFailure.InvalidUsername.message(service).takeIf { ':' in username },
         kind = InputKind.Email,
     )
-    InputField("Password", password, { password = it }, kind = InputKind.Password)
+    InputField(
+        "Password",
+        password,
+        { password = it },
+        supportingText = "Use an app password if your server offers one.",
+        kind = InputKind.Password,
+    )
     val connecting = status == ConnectStatus.Connecting
     val ready = address is JmapServerAddress.Valid && isValidUsername(username.trim()) && password.isNotEmpty()
     ActionButton(
@@ -241,3 +240,10 @@ private fun serverHint(address: JmapServerAddress): String =
         JmapServerAddress.Invalid -> "This doesn't look like a server address."
         is JmapServerAddress.Valid -> "Connects to ${address.sessionUrl}"
     }
+
+private val AvatarsInfo =
+    InfoText(
+        "Address avatars",
+        "Tap an address to give it its own avatar. Otus shows it wherever it marks which address a " +
+            "message was sent to.",
+    )
