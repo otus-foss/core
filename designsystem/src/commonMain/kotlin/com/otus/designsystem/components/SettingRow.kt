@@ -42,8 +42,7 @@ import kotlin.math.min
  * [com.otus.designsystem.elements.ValueButton], a chevron, or a
  * [com.otus.designsystem.elements.RowButton]. A hairline separates it from what is above it, so
  * the first row in its parent, such as at the top of a page, has none. With
- * [onClick] the whole row is one button; without it, only its trailing controls act. [leading]
- * goes before the text, by default the [icon], or something else such as an avatar. A
+ * [onClick] the whole row is one button; without it, only its trailing controls act. A
  * [RowDensity.Compact] row drops the hairline and fits one line in
  * [PanelTokens.compactRowHeight]; a taller trailing control reaches into its padding instead of
  * making it taller.
@@ -56,7 +55,20 @@ public fun SettingRow(
     description: String? = null,
     icon: DrawableResource? = null,
     density: RowDensity = RowDensity.Regular,
-    leading: (@Composable () -> Unit)? = icon?.let { { LeadingSymbol(it) } },
+    trailing: @Composable () -> Unit = {},
+) {
+    SettingRow(title, onClick, icon?.let { { LeadingSymbol(it) } }, modifier, description, density, trailing)
+}
+
+/** A [SettingRow] with [leading] before its text in place of an icon, such as an avatar. */
+@Composable
+public fun SettingRow(
+    title: String,
+    onClick: (() -> Unit)?,
+    leading: (@Composable () -> Unit)?,
+    modifier: Modifier = Modifier,
+    description: String? = null,
+    density: RowDensity = RowDensity.Regular,
     trailing: @Composable () -> Unit = {},
 ) {
     SettingRowLayout(

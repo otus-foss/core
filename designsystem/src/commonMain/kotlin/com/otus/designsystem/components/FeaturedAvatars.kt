@@ -19,13 +19,6 @@ import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PageTokens
 import com.otus.designsystem.theme.SheetTokens
 
-/** One face of [FeaturedAvatars]: its [avatar] over its [label]; [onClick] makes it a button. */
-public class FeaturedAvatar(
-    public val label: String,
-    public val avatar: ChipAvatar,
-    public val onClick: (() -> Unit)? = null,
-)
-
 /**
  * A few [avatars] as large faces with their labels, two over the rest, like the Olympic rings
  * upside down, so the first two stand out. Fewer fill from the top. A label takes up to

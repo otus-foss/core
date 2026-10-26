@@ -1,4 +1,4 @@
-package com.otus.accounts.presentation.screens
+package com.otus.accounts.presentation.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
@@ -6,13 +6,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.otus.accounts.domain.ConnectedAccount
-import com.otus.accounts.presentation.OwnAvatarsState
-import com.otus.accounts.presentation.components.AvatarSheet
-import com.otus.accounts.presentation.ownAddresses
-import com.otus.accounts.presentation.toChipAvatar
+import com.otus.accounts.presentation.AccountAvatarEdit
 import com.otus.avatar.ContactAvatar
-import com.otus.avatar.generatedAvatar
 import com.otus.designsystem.components.ActionDialog
 import com.otus.designsystem.components.DialogAction
 import com.otus.designsystem.components.PersonAvatar
@@ -21,28 +16,27 @@ import com.otus.designsystem.components.PickRow
 import com.otus.designsystem.theme.AvatarTokens
 
 /**
- * Edits one avatar for every address of [account]. When some addresses already have an avatar of
- * their own, asks whether the new one replaces theirs or only fills the addresses without one.
+ * Edits one avatar for every address of [edit]'s account. When some addresses already have an
+ * avatar of their own, asks which of them the new one replaces.
  */
 @Composable
 internal fun AccountAvatarEditor(
-    avatars: OwnAvatarsState,
-    account: ConnectedAccount,
+    edit: AccountAvatarEdit,
     onDismiss: () -> Unit,
 ) {
     var asking by remember { mutableStateOf<AccountAvatarChoice?>(null) }
-    val emails = account.ownAddresses
+    val emails = edit.emails
     val choice = asking
     if (choice == null) {
         AvatarSheet(
-            "All addresses of ${account.name}",
+            "All addresses of ${edit.name}",
             emails.first().substringAfterLast('@'),
-            avatars.accountAvatar(account),
-            pickPhoto = if (avatars.canPickPhoto) avatars::pickPhoto else null,
+            edit.shown,
+            pickPhoto = edit.pickPhoto,
             onSave = { avatar ->
-                val replaced = avatars.replaced(account, avatar)
+                val replaced = edit.replaced(avatar)
                 if (replaced.isEmpty()) {
-                    avatars.saveAll(account, emails, avatar)
+                    edit.saveAll(emails, avatar)
                 } else {
                     asking = AccountAvatarChoice(avatar, replaced)
                 }
@@ -51,7 +45,7 @@ internal fun AccountAvatarEditor(
             onDismiss = { if (asking == null) onDismiss() },
         )
     } else {
-        ReplaceDialog(avatars, account, choice, onDismiss)
+        ReplaceDialog(edit, choice, onDismiss)
     }
 }
 
@@ -62,8 +56,7 @@ internal fun AccountAvatarEditor(
  */
 @Composable
 private fun ReplaceDialog(
-    avatars: OwnAvatarsState,
-    account: ConnectedAccount,
+    edit: AccountAvatarEdit,
     choice: AccountAvatarChoice,
     onDismiss: () -> Unit,
 ) {
@@ -79,16 +72,14 @@ private fun ReplaceDialog(
         title = if (choice.replaced.size == 1) "Replace 1 avatar?" else "Replace ${choice.replaced.size} avatars?",
         actions =
             listOf(
-                DialogAction(label, { avatars.saveAll(account, account.ownAddresses - kept, choice.avatar) }, true),
+                DialogAction(label, { edit.saveAll(edit.emails - kept, choice.avatar) }, true),
             ),
         onDismiss = onDismiss,
         message = "These addresses have their own. Untick the ones to keep:",
     ) {
         Column {
             choice.replaced.forEach { email ->
-                val avatar =
-                    avatars.avatar(account, email)?.toChipAvatar()
-                        ?: generatedAvatar(account.name, email).toChipAvatar()
+                val avatar = edit.avatarOf(email)
                 PickRow(
                     email,
                     null,
