@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -29,17 +31,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.offset
 import com.otus.designsystem.elements.IconButton
 import com.otus.designsystem.elements.IconButtonLook
 import com.otus.designsystem.elements.InputKind
 import com.otus.designsystem.elements.RemoveFieldButton
 import com.otus.designsystem.elements.Symbol
+import com.otus.designsystem.elements.controlPressFeedback
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_star
 import com.otus.designsystem.resources.symbol_star_fill
@@ -168,8 +168,8 @@ private fun FieldText(
 }
 
 /**
- * The star and ✕ of a [ContactFieldRow]. They keep 48 dp targets that overlap and reach past the
- * group, so the icons themselves sit a row gap apart and as far from the edge as the text is.
+ * The star and ✕ of a [ContactFieldRow], each in its own 48 dp slot, side by side as [TrailingIcons]
+ * lays them out, so neither target covers the other.
  */
 @Composable
 private fun TrailingButtons(
@@ -177,25 +177,28 @@ private fun TrailingButtons(
     primary: PrimaryStar?,
     onRemove: (() -> Unit)?,
 ) {
-    Row(
-        Modifier.bleed(ContactTokens.trailingBleedStart, ContactTokens.trailingBleedEnd),
-        horizontalArrangement = Arrangement.spacedBy(-ContactTokens.trailingOverlap),
-    ) {
-        primary?.let { star ->
-            IconButton(if (star.on) "Primary" else "Make primary", star.onClick, look = IconButtonLook.Bare) {
-                // accentLight is too faint on the accent fill, so the filled star takes text1.
-                CompositionLocalProvider(
-                    LocalContentColor provides if (star.on) OtusColors.text1 else OtusColors.text2,
-                ) {
-                    Symbol(if (star.on) Res.drawable.symbol_star_fill else Res.drawable.symbol_star)
+    TrailingIcons(
+        first =
+            primary?.let { star ->
+                {
+                    IconButton(if (star.on) "Primary" else "Make primary", star.onClick, look = IconButtonLook.Bare) {
+                        // accentLight is too faint on the accent fill, so the filled star takes text1.
+                        CompositionLocalProvider(
+                            LocalContentColor provides if (star.on) OtusColors.text1 else OtusColors.text2,
+                        ) {
+                            Symbol(if (star.on) Res.drawable.symbol_star_fill else Res.drawable.symbol_star)
+                        }
+                    }
                 }
-            }
-        }
-        onRemove?.let { RemoveFieldButton("Remove $description", it) }
-    }
+            },
+        last = onRemove?.let { remove -> { RemoveFieldButton("Remove $description", remove) } },
+    )
 }
 
-/** The label of a [ContactFieldRow] as a small outlined pill that opens [choices] below it. */
+/**
+ * The label of a [ContactFieldRow] as a small outlined pill that opens [choices] below it. The pill
+ * sits in a 48 dp touch target, which shows the press only on the pill.
+ */
 @Composable
 private fun LabelButton(
     label: String,
@@ -203,13 +206,19 @@ private fun LabelButton(
     choices: List<OptionsItem>,
 ) {
     var open by remember { mutableStateOf(false) }
-    Box {
+    val interactions = remember { MutableInteractionSource() }
+    Box(
+        Modifier
+            .sizeIn(minWidth = PanelTokens.touchTarget, minHeight = PanelTokens.touchTarget)
+            .clickable(interactionSource = interactions, indication = null, role = Role.Button) { open = true }
+            .semantics { contentDescription = "$field label: $label. Change" },
+        contentAlignment = Alignment.Center,
+    ) {
         Row(
             Modifier
                 .height(ContactTokens.labelChipHeight)
                 .border(PanelTokens.borderWidth, OtusColors.bgLight, CircleShape)
-                .clickable(role = Role.Button) { open = true }
-                .semantics { contentDescription = "$field label: $label. Change" }
+                .controlPressFeedback(interactions)
                 .padding(start = PanelTokens.chipPadding, end = PanelTokens.iconGap),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -221,15 +230,3 @@ private fun LabelButton(
         if (open) OptionsMenu(choices) { open = false }
     }
 }
-
-/** Lays this out [start] and [end] wider than the room it takes, reaching past it on both sides. */
-private fun Modifier.bleed(
-    start: Dp,
-    end: Dp,
-): Modifier =
-    layout { measurable, constraints ->
-        val before = start.roundToPx()
-        val after = end.roundToPx()
-        val placeable = measurable.measure(constraints.offset(horizontal = before + after))
-        layout(placeable.width - before - after, placeable.height) { placeable.place(-before, 0) }
-    }
