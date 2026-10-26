@@ -242,7 +242,7 @@ internal fun SheetHeader(
                 doneLabel,
                 it,
                 Modifier.align(Alignment.CenterEnd),
-                color = OtusColors.accentLight,
+                color = OtusColors.text1,
                 enabled = doneEnabled,
             )
         }

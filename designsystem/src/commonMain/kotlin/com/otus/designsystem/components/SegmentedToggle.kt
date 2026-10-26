@@ -27,7 +27,7 @@ import com.otus.designsystem.theme.motionTween
 import com.otus.designsystem.theme.panelTextStyle
 
 /**
- * A row of [options] in one track, one of them [selected] with a `bgLight` fill, such as Copy from
+ * A row of [options] in one track, one of them [selected] with a `selectedFill` fill, such as Copy from
  * and Copy to; none while [selected] is -1. Each label stays on one line at [fontSize], in a
  * segment as wide as its share of the labels' length, so a longer label gets more room. [height]
  * is the track's, such as [com.otus.designsystem.theme.FilterTokens.segmentHeight] in a filter panel.
@@ -53,7 +53,7 @@ public fun SegmentedToggle(
         options.forEachIndexed { index, option ->
             val chosen = index == selected
             val fill by animateColorAsState(
-                if (chosen) OtusColors.bgLight else OtusColors.bgRegular,
+                if (chosen) OtusColors.selectedFill else OtusColors.bgRegular,
                 motionTween(MotionSpeed.Fast),
                 label = "Segment fill",
             )

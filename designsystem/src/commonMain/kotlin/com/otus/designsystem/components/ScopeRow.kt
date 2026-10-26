@@ -43,7 +43,7 @@ import com.otus.designsystem.theme.panelTextStyle
  * A top-level [ScopeSheet] choice, such as every account, an account, or a pinned address. A
  * row with a subtitle is a group, so its title is SemiBold. A group with nested [ScopeChildRow]s
  * passes [expanded] and gets a chevron that calls [onExpandedChange]; the caller shows the
- * nested rows in a [Collapsible]. The [chosen] row gets an `accentDark` fill. A long
+ * nested rows in a [Collapsible]. The [chosen] row gets a `selectedFill` fill. A long
  * press calls [onLongClick], which pins or unpins the choice.
  */
 @Composable
@@ -104,7 +104,7 @@ private fun ScopeRowFrame(
                 onLongClick = onLongClick,
                 onClick = onClick,
             ).clip(shape)
-            .background(if (chosen) OtusColors.accentDark else Color.Transparent)
+            .background(if (chosen) OtusColors.selectedFill else Color.Transparent)
             .controlPressFeedback(interactions, shape)
             .padding(horizontal = SheetTokens.gap),
         verticalAlignment = Alignment.CenterVertically,

@@ -46,7 +46,7 @@ public fun FilterChip(
 
 /**
  * A choice in a filter panel section: a 36 dp capsule in a 48 dp touch target, `bgRegular` while
- * off and `accentDark` while [selected]. An optional 18 dp [leading] icon or avatar comes first.
+ * off and `selectedFill` while [selected]. An optional 18 dp [leading] icon or avatar comes first.
  * The [label]'s prefix, such as the parent folders of a folder whose name repeats, shows in `text3`.
  */
 @Composable
@@ -90,9 +90,9 @@ public fun FilterChip(
         Surface(
             Modifier.reportControlVisualBounds().controlPressFeedback(interactions),
             shape = CircleShape,
-            color = if (on) OtusColors.accentDark else OtusColors.bgRegular,
+            color = if (on) OtusColors.selectedFill else OtusColors.bgRegular,
             contentColor = OtusColors.text1,
-            border = BorderStroke(PanelTokens.borderWidth, if (on) OtusColors.accentRegular else OtusColors.bgLight),
+            border = BorderStroke(PanelTokens.borderWidth, if (on) OtusColors.selectedFill else OtusColors.bgLight),
         ) {
             Row(
                 Modifier

@@ -26,7 +26,7 @@ import org.jetbrains.compose.resources.DrawableResource
 
 /**
  * The sidebar's main destination, such as Inbox, as a large row: icon, a SemiBold label, and an
- * optional [count] at the end. It has a `bgRegular` fill, or `accentDark` when it is the current
+ * optional [count] at the end. It has a `bgRegular` fill, or `selectedFill` when it is the current
  * destination. While [inset], its edges line up with a SidebarDivider and a SidebarMailboxGrid;
  * otherwise it spans the full width, like a [SidebarEntry], so its icon lines up with theirs.
  */
@@ -49,7 +49,7 @@ public fun SidebarInboxEntry(
             .heightIn(min = SidebarTokens.inboxHeight)
             .selectable(selected, interactions, indication = null, role = Role.Tab, onClick = onClick)
             .clip(shape)
-            .background(if (selected) OtusColors.accentDark else OtusColors.bgRegular)
+            .background(if (selected) OtusColors.selectedFill else OtusColors.bgRegular)
             .controlPressFeedback(interactions, shape)
             .padding(horizontal = SidebarTokens.entryPadding),
         verticalAlignment = Alignment.CenterVertically,

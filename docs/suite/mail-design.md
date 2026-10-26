@@ -54,10 +54,10 @@ transparent alpha fade instead. The palette above remains unchanged. See
 Figma nodes `23:488` (front page) and `10:58` (separate message row) were inspected for the inbox
 implementation. The empty state is new UI; no populated inbox was present in that front-page frame.
 The message-row avatar's black fill and label border `#2A5E96` are outside the approved palette.
-`LabelPill` draws that label with palette tokens instead: an `accent-regular` border and
-`accent-light` text when highlighted, otherwise a `bg-light` border and `text-2` text.
-Generated avatars now choose `accentDark`, `bgLight`, or `bgDark` by email address, with `text1`
-initials. Contact photos fill the same circle. These avatar variants are app decisions, not newly
+`LabelPill` draws that label with palette tokens instead: a `text-3` border and `text-1` text
+when highlighted, otherwise a `bg-light` border and `text-2` text.
+Generated avatars choose `bgLight`, `bgDark`, or the grey halfway between them by email address,
+with `text1` initials, so a list of people does not fill with the accent. Contact photos fill the same circle. These avatar variants are app decisions, not newly
 verified Figma values. Metadata continues to use named text tokens. No palette values change.
 See [Mail inbox documentation](https://github.com/reazndev/otus-mail/blob/main/docs/inbox.md) for implemented behavior and deferred work.
 
@@ -132,6 +132,26 @@ decisions, not verified Figma values, and no Figma frame for the bar has been in
 The group and shell use `bg-dark` with a `stroke-bg-dark` border. The primary action is
 `accent-dark` with an `accent-regular` border, and a disabled one is `bg-dark` with a `stroke-bg-dark` border. Selected list rows
 use an `accent-dark` tint. The palette is unchanged.
+
+## Selected states
+
+The accent marks only these:
+
+- the one primary action on a screen, such as New mail, Reply, Send, Save, Show N
+  conversations, Merge, or Connect an account
+- notification badges, such as `CountBadge`, the sidebar's Spam count, and the count on the
+  filter pill
+- rows selected in multi-select (`RowSelectionLook`)
+- switches that are on (`ToggleSwitch`)
+- links in mail bodies, and text cursors
+
+Every other selected or current state uses `OtusColors.selectedFill`, which is the theme's
+`bg-light`, with `text-1` on it and no accent border. That covers filter chips, chips, the
+selected `SegmentedToggle` segment, the current item of an options menu, `currentPlace`,
+picked people in a filter, the sidebar's current Inbox, tile, and folder, the chosen row in the
+Move to sheet and the Show mail from picker, calendar ranges, and a contact's primary address.
+Checkmarks, radio dots, the primary star, and Done in sheet headers use `text-1`. Unselected chips
+keep their `bg-light` outline. Folder colors the user picks are not the accent and do not change.
 
 ## Motion
 
