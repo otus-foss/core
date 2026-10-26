@@ -205,6 +205,14 @@ class VCardTest {
     }
 
     @Test
+    fun aByteOrderMarkBeforeTheFirstCardIsSkipped() {
+        val result = VCard.parse("\uFEFFBEGIN:VCARD\r\nVERSION:3.0\r\nFN:Ada\r\nEND:VCARD\r\n")
+
+        assertEquals(listOf(Name(full = "Ada")), result.cards.map { it.name })
+        assertEquals(emptyList(), result.failures)
+    }
+
+    @Test
     fun aCardWithoutEndFails() {
         val result = VCard.parse("BEGIN:VCARD\r\nVERSION:4.0\r\nFN:Cut off\r\n")
 

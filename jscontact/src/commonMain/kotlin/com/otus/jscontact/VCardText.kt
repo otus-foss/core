@@ -158,7 +158,7 @@ internal fun String.encodeCarets(): String =
         .replace("\n", "^n")
         .replace("\"", "^'")
 
-private const val BYTE_ORDER_MARK = ""
+private const val BYTE_ORDER_MARK = "\uFEFF"
 private const val LINE_OCTETS = 75
 private const val QUOTED_BYTE_LENGTH = 3
 private const val HEX = 16
