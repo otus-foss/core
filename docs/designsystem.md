@@ -25,11 +25,12 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   feedback, pages, panels, refresh, sheets, the sidebar, the action bar (`ActionBarTokens`), and
   compose fields (`ComposeTokens`), reply threads (`ThreadTokens`), and rule chips and folder
   settings rows (`RuleChipTokens`, `FolderRowTokens`), the filter panel (`FilterTokens`), the read
-  view (`ReadTokens`), the Move to pills (`MoveTokens`), and shared opacities (`OtusAlpha`).
+  view (`ReadTokens`), the Move to pills (`MoveTokens`), list entry cards (`EntryTokens`), and shared opacities
+  (`OtusAlpha`).
   `panelTextStyle()` uses Figtree.
 - `elements`: `ActionButton`, `ActionRow`, `AnimatedText`, `Avatar`, `AvatarImage`, `BarIconButton`, `BarAddButton`, `CalendarDay`,
   `AddressPill`, `ButtonPill`, `ComposeField`, `HtmlView`, `QuoteChip`, `RichTextBody` (with `RichText` and `TextFormat`),
-  `CalendarMonthBackground`, `Chip`, `ColorSlider`, `ColorSwatch`, `AddSwatch`, `SwatchStack`, `IconButton`, `IconPill`, `InputField`, `LabelPill`, `RefreshIndicator`,
+  `CalendarMonthBackground`, `Chip`, `ColorSlider`, `ColorSwatch`, `AddSwatch`, `SwatchStack`, `IconButton` (with `IconButtonLook`), `IconPill`, `InputField` (with `InputKind`), `FieldLabel`, `RemoveFieldButton`, `LabelPill`, `RefreshIndicator`,
   `FolderColorSwatch`, `LocalIconTint`, `RowButton`, `SearchField`, `SearchPrompt`, `SelectionRow`, `SidebarEntry`, `SidebarHeading`,
   `SidebarCount`, `SidebarExpandButton`, `SidebarPill`, `SidebarInboxEntry`, `SidebarMailboxTile`,
   `SidebarFolderEntry` (with `SidebarFolder`), `SidebarDivider`, `SectionCaption`, `Symbol`, `Toast` (with `ToastAction`),
@@ -44,15 +45,20 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   `RuleSegmentStyle`), `FolderSettingRow` with `FolderRuleSummary` and `FolderOwnerLine`, `SummaryCard` and `PersonText` (with `NamedAvatar`), `ValueToken`, `ValuePicker`, `Collapsible`, `CollapsibleTree`, `AvatarStack`, `ContextMenu` and `QuickActionBar` (with `MenuAction`),
   `Dropdown` (with `DropdownRow`), `OptionsMenu` (with `OptionsItem`), `FormattingBar` (with
   `FormatButton` and `CompactSendButton`), `BarMorph`, `AttachmentChip`, `RecipientLine` (with `Recipient`, `AddressInput`, and `RecipientChip`), `ThreadStrip` (with `ThreadEntry` and `ThreadMessageRow`),
-  `PersonAvatar`, `BarNotice`, `ClosableSheet` (with `SheetConfirm`), `SegmentedToggle`, `PickRow` (with `PickMark`), `PersonRow`, `RowGroup` (with `GroupRow`), `TimeWheelPicker`,
+  `PersonAvatar`, `BarNotice`, `ClosableSheet` (with `SheetConfirm`), `SegmentedToggle`, `PickRow` (with `PickMark` and `PickRowLayout`), `PersonRow`, `RowGroup` (with `GroupRow`), `TimeWheelPicker`,
   `ResizableImage` (with `ImageSizing` and `ImagePreset`), `ListCaption`, `PersonChip`,
   the read view strips `StripCard`, `PositionStrip` (and `SlidingPositionStrip`, whose content slides inside the card), `ThreadList`, `AlsoInStrip`, `FolderHint` (with `FolderName`),
   `InfoStrip` (with `StripAction`), and `AttachmentStrip` (with `AttachmentFile`, `AttachmentKind`, and
   `AttachmentActions`), `ImageBanner`, `DetailsTable` (with `DetailLine`), `QuoteFold`, `FolderPickRow`,
   `FilterPanel`, `FilterPanelHeader`, `FilterPanelFooter`, `FilterSection`, `FilterFolderRow` (with `FolderCheck` and `TreeFolder`),
   `FilterRowCard`, `FilterValueRow`, `PeopleLine`, `RemovablePersonChip`, `FilterPickRow`, `DateRangeCalendar`, `FilterNote`, `FolderStackChip`,
-  `SidebarSwipeArea`, `SlidingOverlay`, `SlidingPages`, `SwipeActions`, `ThemeCard`, and `ToastHost`
-  (with `ToastState` and `ToastMessage`).
+  `SidebarSwipeArea`, `SlidingOverlay`, `SlidingPages`, `SwipeActions`, `ThemeCard`, `ToastHost`
+  (with `ToastState` and `ToastMessage`), `EntryCard` (with `EntryTaps` and `rowSelection`), the
+  contact components `ContactEntry` (with `ContactEntryEnd` and `ContactRowLabel`), `ContactRow`,
+  `ContactHeader`, `ContactValueRow`, `ContactFieldRow` (with `ContactFieldLook` and
+  `PrimaryStar`), `ContactInputField`, and `ContactPickerField`, `LetterIndex` (with
+  `LetterIndexState`, `IndexLetter`, and the `letterIndexHandle` modifier), and `BirthdayPicker`
+  (with `YearlyDate`).
 - Settings rows follow Notion's settings pages: flat rows with a title and `text2` description
   beside the control, `bgLight` hairlines between them, and large section titles. The whole row is
   the control; `ToggleSwitch` and `ValueButton` only show its state. A long picker, such as Mail's
