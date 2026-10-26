@@ -1,7 +1,6 @@
 package com.otus.accounts.presentation.screens
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -16,11 +15,10 @@ import com.otus.avatar.ContactAvatar
 import com.otus.avatar.generatedAvatar
 import com.otus.designsystem.components.ActionDialog
 import com.otus.designsystem.components.DialogAction
-import com.otus.designsystem.components.FeaturedAvatar
-import com.otus.designsystem.components.FeaturedAvatars
-import com.otus.designsystem.components.PersonChip
-import com.otus.designsystem.components.Recipient
-import com.otus.designsystem.theme.PanelTokens
+import com.otus.designsystem.components.PersonAvatar
+import com.otus.designsystem.components.RowDensity
+import com.otus.designsystem.components.SettingRow
+import com.otus.designsystem.theme.AvatarTokens
 
 /**
  * Edits one avatar for every address of [account]. When some addresses already have an avatar of
@@ -70,28 +68,26 @@ internal fun AccountAvatarEditor(
     }
 }
 
-/** [emails] with the avatars they have now: large faces for a few, else pills. */
+/** [emails], each beside the avatar it has now. */
 @Composable
 private fun CurrentAvatars(
     avatars: OwnAvatarsState,
     account: ConnectedAccount,
     emails: List<String>,
 ) {
-    val chip = { email: String ->
-        avatars.avatar(account, email)?.toChipAvatar() ?: generatedAvatar(account.name, email).toChipAvatar()
-    }
-    if (emails.size < FACES) {
-        FeaturedAvatars(emails.map { FeaturedAvatar(it, chip(it)) }, labelLines = 2)
-    } else {
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(PanelTokens.chipGap),
-            verticalArrangement = Arrangement.spacedBy(PanelTokens.chipGap),
-        ) { emails.forEach { PersonChip(Recipient(it, chip(it), it)) } }
+    Column {
+        emails.forEach { email ->
+            val avatar =
+                avatars.avatar(account, email)?.toChipAvatar() ?: generatedAvatar(account.name, email).toChipAvatar()
+            SettingRow(
+                email,
+                onClick = null,
+                density = RowDensity.Compact,
+                leading = { PersonAvatar(avatar, AvatarTokens.size) },
+            )
+        }
     }
 }
-
-/** Below this many addresses, the dialog shows them as large faces. */
-private const val FACES = 5
 
 /** A new account avatar waiting for the user to say whether it replaces [replaced]' own. */
 private class AccountAvatarChoice(
