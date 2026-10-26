@@ -114,8 +114,8 @@ internal fun PickRowFrame(
 /**
  * The radio or checkbox of a [PickRow] on its own, for rows built from other parts, such as a
  * folder tree row in the Folders sheet. Unchosen marks have a dim `text3` outline; a ticked
- * checkbox fills with `accentDark` inside an `accentLight` outline and a chosen radio turns
- * `accentLight`, as a selected chip does.
+ * checkbox fills with `text1` around a `bgDark` tick, as in a `SelectionRow`, and a chosen radio
+ * turns `text1`.
  */
 @Composable
 public fun PickMarkView(mark: PickMark) {
@@ -123,25 +123,24 @@ public fun PickMarkView(mark: PickMark) {
         val stroke = SignatureTokens.markStroke.toPx()
         val inset = Offset(stroke / 2, stroke / 2)
         val inner = size.copy(size.width - stroke, size.height - stroke)
-        // Chosen marks take the selected-chip colors: an accent fill or dot inside an accentLight
-        // outline. Unchosen ones keep a quiet text3 outline, so the choice stands out.
-        val outline = if (mark.selected) OtusColors.accentLight else OtusColors.text3
+        // Unchosen marks keep a quiet text3 outline, so the text1 of a chosen one stands out.
+        val outline = if (mark.selected) OtusColors.text1 else OtusColors.text3
         if (mark.multiple) {
             val corner = CornerRadius(SettingTokens.valueRadius.toPx() / 2)
             if (mark.selected) {
-                drawRoundRect(OtusColors.accentDark, cornerRadius = corner)
+                drawRoundRect(OtusColors.text1, cornerRadius = corner)
                 val check =
                     Path().apply {
                         moveTo(size.width * CHECK_START_X, size.height * CHECK_MID_Y)
                         lineTo(size.width * CHECK_LOW_X, size.height * CHECK_LOW_Y)
                         lineTo(size.width * CHECK_END_X, size.height * CHECK_END_Y)
                     }
-                drawPath(check, OtusColors.text1, style = Stroke(stroke, cap = StrokeCap.Round))
+                drawPath(check, OtusColors.bgDark, style = Stroke(stroke, cap = StrokeCap.Round))
             }
             drawRoundRect(outline, inset, inner, corner, Stroke(stroke))
         } else {
             drawCircle(outline, radius = size.minDimension / 2 - stroke / 2, style = Stroke(stroke))
-            if (mark.selected) drawCircle(OtusColors.accentLight, radius = SignatureTokens.markDot.toPx() / 2)
+            if (mark.selected) drawCircle(OtusColors.text1, radius = SignatureTokens.markDot.toPx() / 2)
         }
     }
 }

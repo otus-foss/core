@@ -25,6 +25,14 @@ public data class OtusPalette(
     public val scrim: Color
         get() = if (isLight) text1 else bgDark
 
+    /**
+     * Fills a selected or current control that is not the screen's primary action, such as a
+     * filter chip, a menu's current choice, or the sidebar's current folder, with `text1` on it.
+     * The accent stays for primary actions, badges, multi-select rows, switches, and links.
+     */
+    public val selectedFill: Color
+        get() = bgLight
+
     public companion object {
         public val Otus: OtusPalette =
             OtusPalette(

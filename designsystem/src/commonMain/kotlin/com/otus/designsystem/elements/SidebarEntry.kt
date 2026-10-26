@@ -63,7 +63,7 @@ public fun SidebarEntry(
                 role = Role.Tab,
                 onClick = onClick,
             ).clip(shape)
-            .background(if (selected) OtusColors.accentDark else Color.Transparent)
+            .background(if (selected) OtusColors.selectedFill else Color.Transparent)
             .controlPressFeedback(interactions, shape)
             .padding(horizontal = SidebarTokens.entryPadding),
         verticalAlignment = Alignment.CenterVertically,

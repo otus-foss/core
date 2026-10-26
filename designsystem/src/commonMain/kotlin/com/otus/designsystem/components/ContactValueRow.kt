@@ -26,8 +26,8 @@ import org.jetbrains.compose.resources.DrawableResource
 /**
  * One value of a contact in a raised [RowGroup]: an optional `text2` [icon], the [value] over a
  * `text2` [caption] such as "Primary", then a [label] in a value chip such as "Work" on the
- * right. A [highlighted] row fills with `accentDark`, such as a contact's primary address among
- * the others, and its chip takes an `accentLight` outline to stand out on it. [onClick] acts on
+ * right. A [highlighted] row fills with `selectedFill`, such as a contact's primary address among
+ * the others, and its chip takes a `text3` outline to stand out on it. [onClick] acts on
  * the value, as writing to an address does.
  */
 @Composable
@@ -43,7 +43,7 @@ public fun ContactValueRow(
     Row(
         modifier
             .fillMaxWidth()
-            .then(if (highlighted) Modifier.background(OtusColors.accentDark) else Modifier)
+            .then(if (highlighted) Modifier.background(OtusColors.selectedFill) else Modifier)
             .heightIn(min = ContactTokens.valueRowHeight)
             .then(if (onClick == null) Modifier else Modifier.clickable(role = Role.Button, onClick = onClick))
             .padding(horizontal = SheetTokens.inset, vertical = SheetTokens.rowPadding),
@@ -59,6 +59,6 @@ public fun ContactValueRow(
                 Text(it, style = panelTextStyle(), color = OtusColors.text2, fontSize = ContactTokens.detailSize)
             }
         }
-        label?.let { ValueButton(it, outline = if (highlighted) OtusColors.accentLight else OtusColors.bgLight) }
+        label?.let { ValueButton(it, outline = if (highlighted) OtusColors.text3 else OtusColors.bgLight) }
     }
 }

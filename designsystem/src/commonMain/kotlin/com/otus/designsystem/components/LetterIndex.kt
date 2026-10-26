@@ -136,7 +136,7 @@ private fun LetterRow(
                 letter.letter,
                 Modifier.width(LetterIndexTokens.letterColumn),
                 style = panelTextStyle(),
-                color = if (active) OtusColors.accentRegular else OtusColors.text1,
+                color = if (active) OtusColors.text1 else OtusColors.text2,
                 fontSize = SidebarTokens.detailSize,
                 fontWeight = FontWeight.SemiBold,
                 maxLines = 1,

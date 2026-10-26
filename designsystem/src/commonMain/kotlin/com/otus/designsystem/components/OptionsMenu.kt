@@ -94,10 +94,10 @@ public fun OptionsList(
     }
 }
 
-/** The current choice: an `accentDark` fill, rounded inside the menu, read as selected. */
+/** The current choice: a `selectedFill` fill, rounded inside the menu, read as selected. */
 private fun Modifier.currentChoice(): Modifier =
     clip(RoundedCornerShape(MenuTokens.radius - MenuTokens.inset))
-        .background(OtusColors.accentDark)
+        .background(OtusColors.selectedFill)
         .semantics { selected = true }
 
 /** The line between groups of options, inset like their rows. */

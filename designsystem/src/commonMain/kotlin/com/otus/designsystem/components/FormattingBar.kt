@@ -125,7 +125,7 @@ private fun FormattingRow(
     }
 }
 
-/** One button of a [FormattingBar]; an [active] format is filled with `bgLight`. */
+/** One button of a [FormattingBar]; an [active] format is filled with `selectedFill`. */
 @Composable
 public fun FormatButton(
     description: String,
@@ -148,7 +148,7 @@ public fun FormatButton(
         Surface(
             Modifier.size(ComposeTokens.formatButtonSize).controlPressFeedback(interactions, shape),
             shape = shape,
-            color = if (active) OtusColors.bgLight else OtusColors.bgDark,
+            color = if (active) OtusColors.selectedFill else OtusColors.bgDark,
             contentColor = if (enabled) OtusColors.text1 else OtusColors.text3,
         ) { Box(contentAlignment = Alignment.Center) { Symbol(icon, size = ComposeTokens.formatIconSize) } }
     }

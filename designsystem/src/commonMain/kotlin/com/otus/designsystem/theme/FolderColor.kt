@@ -8,7 +8,7 @@ import androidx.compose.ui.graphics.Color
  *
  * Each color has one shade for dark themes and one for light themes, picked by
  * [OtusPalette.isLight], so custom themes follow the kind of theme they were made from. Every shade
- * reaches 3:1 contrast on `bgDark`, `bgRegular`, and `accentDark` for every built-in theme and
+ * reaches 3:1 contrast on `bgDark`, `bgRegular`, `selectedFill`, and `accentDark` for every built-in theme and
  * accent preset. Dark shades are light so they stay readable on the brightest accent fill.
  */
 public enum class FolderColor(

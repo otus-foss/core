@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
@@ -59,12 +60,15 @@ public fun Avatar(
     }
 }
 
-/** The fill of a generated avatar with [colorIndex], from the theme's named colors. */
+/**
+ * The fill of a generated avatar with [colorIndex]: the theme's `bgLight`, `bgDark`, or the grey
+ * between them, so a list of people stays neutral instead of taking the accent.
+ */
 public fun avatarFill(colorIndex: Int): Color =
     when (colorIndex) {
         1 -> OtusColors.bgLight
         2 -> OtusColors.bgDark
-        else -> OtusColors.accentDark
+        else -> lerp(OtusColors.bgLight, OtusColors.bgDark, AvatarTokens.MIDDLE_FILL)
     }
 
 /** Smaller avatars scale their initials with the circle so they stay inside the shape. */

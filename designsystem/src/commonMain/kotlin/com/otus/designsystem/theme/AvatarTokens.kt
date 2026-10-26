@@ -18,4 +18,7 @@ public object AvatarTokens {
 
     /** A symbol fills this share of its avatar's width. */
     public const val SYMBOL_SCALE: Float = 0.5f
+
+    /** How far the third generated fill sits from `bgLight` toward `bgDark`. */
+    public const val MIDDLE_FILL: Float = 0.5f
 }
