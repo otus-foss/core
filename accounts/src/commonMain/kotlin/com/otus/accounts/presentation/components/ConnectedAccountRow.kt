@@ -23,14 +23,14 @@ import com.otus.designsystem.theme.PanelTokens
 /**
  * One connected account, its sign-in and server, a button that removes it, and a pill for each of
  * its addresses with that address's avatar. Tapping a pill runs [onEditAvatar] with the address.
- * The account's avatar leads the row: [shared], the one all its addresses have, else its initials.
- * Tapping it runs [onEditAll], or [onEditAvatar] when the account has one address.
+ * [accountAvatar], its sign-in address's, leads the row, else its initials. Tapping it runs
+ * [onEditAll], or [onEditAvatar] when the account has one address.
  */
 @Composable
 public fun ConnectedAccountRow(
     account: ConnectedAccount,
     avatar: (String) -> ResolvedAvatar?,
-    shared: ResolvedAvatar?,
+    accountAvatar: ResolvedAvatar?,
     onRemove: () -> Unit,
     onEditAvatar: (String) -> Unit,
     onEditAll: () -> Unit,
@@ -43,7 +43,7 @@ public fun ConnectedAccountRow(
             leading = {
                 val single = account.ownAddresses.singleOrNull()
                 AvatarButton(
-                    shared?.toChipAvatar() ?: generatedAvatar(account.name, account.username).toChipAvatar(),
+                    accountAvatar?.toChipAvatar() ?: generatedAvatar(account.name, account.username).toChipAvatar(),
                     EntryTokens.avatarSize,
                     if (single != null) "Change the avatar of $single" else "Change the avatar of every address",
                     onClick = { if (single != null) onEditAvatar(single) else onEditAll() },

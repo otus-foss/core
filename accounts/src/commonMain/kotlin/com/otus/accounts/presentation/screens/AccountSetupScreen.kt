@@ -127,7 +127,7 @@ private fun ConnectedAccounts(
             ConnectedAccountRow(
                 account,
                 avatar = { avatars.avatar(account, it) },
-                shared = avatars.shared(account),
+                accountAvatar = avatars.accountAvatar(account),
                 onRemove = { onRemove(account.id) },
                 onEditAvatar = { onEditAvatar(account.id, it) },
                 onEditAll = { onEditAll(account.id) },
