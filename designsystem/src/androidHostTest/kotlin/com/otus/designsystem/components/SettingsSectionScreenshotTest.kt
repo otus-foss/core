@@ -31,4 +31,17 @@ class SettingsSectionScreenshotTest {
                 }
             }
         }
+
+    @Test
+    fun withInfo() =
+        compose.screenshot("settings_section_info") {
+            Column {
+                SettingsSection("New mail", info = InfoText("New mail", "Who sees what when mail arrives.")) {
+                    SettingToggleRow("Notify", checked = true, {})
+                }
+                SettingsSection("Personal") {
+                    SettingToggleRow("Mark read on open", checked = true, {})
+                }
+            }
+        }
 }
