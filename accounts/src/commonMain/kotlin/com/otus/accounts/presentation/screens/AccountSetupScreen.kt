@@ -25,6 +25,8 @@ import com.otus.accounts.domain.parseJmapServer
 import com.otus.accounts.presentation.AccountsState
 import com.otus.accounts.presentation.ConnectStatus
 import com.otus.accounts.presentation.OwnAvatarsState
+import com.otus.accounts.presentation.accountEdit
+import com.otus.accounts.presentation.components.AccountAvatarEditor
 import com.otus.accounts.presentation.components.AvatarSheet
 import com.otus.accounts.presentation.components.ConnectedAccountRow
 import com.otus.accounts.presentation.confirmHostMessage
@@ -52,8 +54,8 @@ public fun AccountSetupScreen(
 ) {
     var removing by rememberSaveable { mutableStateOf<String?>(null) }
     var adding by rememberSaveable { mutableStateOf(false) }
-    var editing by rememberSaveable { mutableStateOf<Pair<String, String>?>(null) }
-    var editingAll by rememberSaveable { mutableStateOf<String?>(null) }
+    // The account and address whose avatar is being edited; no address edits all of them.
+    var editing by rememberSaveable { mutableStateOf<Pair<String, String?>?>(null) }
     LaunchedEffect(state.status) {
         if (state.status is ConnectStatus.Connected) adding = false
     }
@@ -77,16 +79,11 @@ public fun AccountSetupScreen(
             avatars,
             onRemove = { removing = it },
             onEditAvatar = { id, email -> editing = id to email },
-            onEditAll = { editingAll = it },
+            onEditAll = { editing = it to null },
         )
     }
     editing?.let { (accountId, email) ->
-        state.accounts.firstOrNull { it.id == accountId }?.let { account ->
-            AvatarEditor(avatars, account, email) { editing = null }
-        }
-    }
-    state.accounts.firstOrNull { it.id == editingAll }?.let { account ->
-        AccountAvatarEditor(avatars, account) { editingAll = null }
+        state.accounts.firstOrNull { it.id == accountId }?.let { AvatarEditors(avatars, it, email) { editing = null } }
     }
     if (adding) {
         SheetFrame("Connect an account", onDismiss = {
@@ -141,6 +138,23 @@ private fun ConnectedAccounts(
 @Composable
 private fun AccountsFooter(onConnect: () -> Unit) {
     ActionButton("Connect an account", onConnect, Modifier.fillMaxWidth(), primary = true)
+}
+
+/** The editor of [email]'s avatar, or of every address's when it is null. */
+@Composable
+private fun AvatarEditors(
+    avatars: OwnAvatarsState,
+    account: ConnectedAccount,
+    email: String?,
+    onDismiss: () -> Unit,
+) {
+    if (email ==
+        null
+    ) {
+        AccountAvatarEditor(avatars.accountEdit(account), onDismiss)
+    } else {
+        AvatarEditor(avatars, account, email, onDismiss)
+    }
 }
 
 @Composable
