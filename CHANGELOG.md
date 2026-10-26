@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+- Breaking: `ContactHeader` takes `onEdit: (() -> Unit)?` instead of `photoChoices`. With it, the
+  avatar wears a pen badge and a tap runs it; open your own avatar editor there, such as
+  `AvatarSheet`, and offer removal through that editor.
+- Breaking: `ConnectedAccountRow` takes `accountAvatar`, the account's avatar, which leads the row in
+  place of the @ icon, and `onEditAll`, which runs on a tap of it.
+- Add `AvatarSheet`, the avatar editor of the accounts module, now public and renamed from
+  `OwnAvatarSheet`, so contacts can reuse it. It takes a `label` and a `domain` instead of an
+  address.
+- Accounts with several addresses can give all of them one avatar. Before replacing an address's own
+  avatar, the editor lists those addresses with their avatars so each can keep its own.
+- Add a `SettingRow` overload with a `leading` slot, `ActionDialog(content)`, `AvatarButton`, and
+  `FeaturedAvatars` with `FeaturedAvatar`, the large faces with labels above a list.
+- Add `Card.withAvatarStyle(style)`, which sets or clears the avatar style of any contact card.
+
 - Add `InfoTip` and `InfoText`: a quiet question mark that opens a sheet with background a setting
   or section explains on request. `SettingsSection` and `SettingToggleRow` take an `info` that places
   one after the title. Email accounts and the custom accent sheet move their long
