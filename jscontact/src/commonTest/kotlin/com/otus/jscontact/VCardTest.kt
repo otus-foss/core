@@ -180,7 +180,7 @@ class VCardTest {
     }
 
     @Test
-    fun aCardWithoutNameOrEmailFailsAtItsPosition() {
+    fun aCardWithoutContactDetailsFailsAtItsPosition() {
         val text =
             listOf(
                 "BEGIN:VCARD",
@@ -189,19 +189,19 @@ class VCardTest {
                 "END:VCARD",
                 "BEGIN:VCARD",
                 "VERSION:4.0",
-                "TEL:+1-555-0100",
+                "UID:urn:uuid:only-an-id",
                 "END:VCARD",
                 "BEGIN:VCARD",
                 "VERSION:4.0",
-                "EMAIL:third@example.com",
+                "TEL:+1-555-0100",
                 "END:VCARD",
             ).joinToString("\r\n")
 
         val result = VCard.parse(text)
 
-        assertEquals(listOf(VCardFailure(2, "It has no name and no email address.")), result.failures)
+        assertEquals(listOf(VCardFailure(2, "It has no contact details.")), result.failures)
         assertEquals(listOf(Name(full = "First"), null), result.cards.map { it.name })
-        assertEquals(mapOf("e1" to EmailAddress("third@example.com")), result.cards[1].emails)
+        assertEquals(mapOf("p1" to Phone("+1-555-0100")), result.cards[1].phones)
     }
 
     @Test

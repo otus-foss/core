@@ -7,7 +7,7 @@ import kotlin.test.assertTrue
 class VCardWriteTest {
     @Test
     fun writtenCardsReadBackUnchanged() {
-        val cards = listOf(PERSON, GROUP, EMAIL_ONLY)
+        val cards = listOf(PERSON, GROUP, EMAIL_ONLY, PHONE_ONLY, ORGANIZATION_ONLY)
 
         assertEquals(VCardImport(cards, failures = emptyList()), VCard.parse(VCard.write(cards)))
     }
@@ -39,6 +39,13 @@ class VCardWriteTest {
         assertTrue("BDAY:19850412" in lines)
         assertTrue("ANNIVERSARY:--0601" in lines)
         assertTrue("ROLE:Project lead" in lines)
+    }
+
+    @Test
+    fun aCardWithoutANameGetsADerivedFullName() {
+        val lines = VCard.write(listOf(ORGANIZATION_ONLY, PHONE_ONLY)).split("\r\n")
+
+        assertEquals(listOf("FN;DERIVED=TRUE:ACME", "FN;DERIVED=TRUE:+1 555"), lines.filter { it.startsWith("FN") })
     }
 
     @Test
@@ -159,5 +166,9 @@ class VCardWriteTest {
                 kind = CardKind.Individual,
                 emails = mapOf("e1" to EmailAddress("someone@example.com")),
             )
+
+        val PHONE_ONLY = Card(kind = CardKind.Individual, phones = mapOf("p1" to Phone("+1 555")))
+
+        val ORGANIZATION_ONLY = Card(kind = CardKind.Org, organizations = mapOf("o1" to Organization("ACME")))
     }
 }
