@@ -52,6 +52,13 @@ public class OwnAvatarsState(
         email: String,
     ): ResolvedAvatar? = shown[key(account, email)]
 
+    /**
+     * The avatar [account] shows as a whole: its first address's, which is the sign-in address
+     * when that is one, as the sidebar shows it. Null before it loads.
+     */
+    public fun accountAvatar(account: ConnectedAccount): ResolvedAvatar? =
+        account.ownAddresses.firstOrNull()?.let { shown[key(account, it)] }
+
     /** Loads the avatar of every address of [accounts]. */
     public fun load(accounts: List<ConnectedAccount>) {
         accounts.forEach { account ->
@@ -62,6 +69,25 @@ public class OwnAvatarsState(
     }
 
     public suspend fun pickPhoto(): ContactAvatar.Photo? = photos?.pick()
+
+    /**
+     * The addresses of [account] whose own avatar would change if [avatar] went to all of them:
+     * those with a photo or a style of their own that differs from it.
+     */
+    public fun replaced(
+        account: ConnectedAccount,
+        avatar: ContactAvatar?,
+    ): List<String> =
+        account.ownAddresses.filter { email ->
+            shown[key(account, email)]?.let { it.isSet && !it.looksLike(avatar.resolved(it.fallback)) } == true
+        }
+
+    /** Saves [avatar] for each of [emails] of [account], as [save] does for one. */
+    public fun saveAll(
+        account: ConnectedAccount,
+        emails: List<String>,
+        avatar: ContactAvatar?,
+    ): Unit = emails.forEach { save(account, it, avatar) }
 
     /** Saves [avatar] for [email], or goes back to the generated avatar when it is null. */
     public fun save(
@@ -124,6 +150,9 @@ private fun ContactAvatar?.resolved(fallback: GeneratedAvatar): ResolvedAvatar =
         is ContactAvatar.Styled -> ResolvedAvatar(fallback, origin = AvatarOrigin.Contact, style = style)
         null -> ResolvedAvatar(fallback)
     }
+
+/** Whether the user gave this address an avatar: a photo or a style rather than the generated one. */
+internal val ResolvedAvatar.isSet: Boolean get() = style != null || origin == AvatarOrigin.Contact
 
 private fun ResolvedAvatar.looksLike(other: ResolvedAvatar?): Boolean =
     other != null && style == other.style && origin == other.origin && image?.bytes.contentEquals(other.image?.bytes)

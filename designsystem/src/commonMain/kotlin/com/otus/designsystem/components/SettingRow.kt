@@ -57,11 +57,25 @@ public fun SettingRow(
     density: RowDensity = RowDensity.Regular,
     trailing: @Composable () -> Unit = {},
 ) {
+    SettingRow(title, onClick, icon?.let { { LeadingSymbol(it) } }, modifier, description, density, trailing)
+}
+
+/** A [SettingRow] with [leading] before its text in place of an icon, such as an avatar. */
+@Composable
+public fun SettingRow(
+    title: String,
+    onClick: (() -> Unit)?,
+    leading: (@Composable () -> Unit)?,
+    modifier: Modifier = Modifier,
+    description: String? = null,
+    density: RowDensity = RowDensity.Regular,
+    trailing: @Composable () -> Unit = {},
+) {
     SettingRowLayout(
         RowTitle(title),
         description,
         person = null,
-        icon,
+        leading,
         trailing,
         density,
         onClick?.let { modifier.rowButton(it) } ?: modifier,
@@ -82,7 +96,15 @@ public fun SettingRow(
     icon: DrawableResource? = null,
     density: RowDensity = RowDensity.Regular,
 ) {
-    SettingRowLayout(RowTitle(title), description, person, icon, trailing = {}, density, modifier.rowButton(onClick))
+    SettingRowLayout(
+        RowTitle(title),
+        description,
+        person,
+        icon?.let { { LeadingSymbol(it) } },
+        trailing = {},
+        density,
+        modifier.rowButton(onClick),
+    )
 }
 
 /** Makes the whole row one button with the shared press feedback. */
@@ -112,7 +134,7 @@ public fun SettingToggleRow(
         RowTitle(title, info),
         description,
         person = null,
-        icon,
+        icon?.let { { LeadingSymbol(it) } },
         trailing = { ToggleSwitch(checked) },
         density = RowDensity.Regular,
         modifier =
@@ -132,7 +154,7 @@ private fun SettingRowLayout(
     title: RowTitle,
     description: String?,
     person: NamedAvatar?,
-    icon: DrawableResource?,
+    leading: (@Composable () -> Unit)?,
     trailing: @Composable () -> Unit,
     density: RowDensity,
     modifier: Modifier,
@@ -157,7 +179,7 @@ private fun SettingRowLayout(
         horizontalArrangement = Arrangement.spacedBy(SettingTokens.rowGap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        icon?.let { LeadingSymbol(it) }
+        leading?.invoke()
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(SettingTokens.textGap)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(

@@ -24,7 +24,8 @@ import com.otus.designsystem.theme.PageTokens
 
 /**
  * A popup that asks the user to choose: a confirmation when [message] explains the consequence,
- * or a menu of actions for one item. Buttons stack so long labels stay readable.
+ * or a menu of actions for one item. [content], such as the people it is about, goes between the
+ * message and the buttons. Buttons stack so long labels stay readable.
  */
 @Composable
 public fun ActionDialog(
@@ -32,6 +33,7 @@ public fun ActionDialog(
     actions: List<DialogAction>,
     onDismiss: () -> Unit,
     message: String? = null,
+    content: (@Composable () -> Unit)? = null,
 ) {
     DialogFrame(title, onDismiss) {
         Column(
@@ -39,6 +41,7 @@ public fun ActionDialog(
             verticalArrangement = Arrangement.spacedBy(PageTokens.rowGap),
         ) {
             message?.let { Text(it, color = OtusColors.text2) }
+            content?.invoke()
             actions.forEach { action ->
                 ActionButton(
                     action.label,
