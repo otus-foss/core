@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -26,7 +27,7 @@ import com.otus.designsystem.theme.panelTextStyle
 /**
  * A round button around a symbol. A [badgeCount] above zero puts a small `accentLight` count on its
  * top end, such as the number of active filters on the filter button; the badge sits outside the
- * circle's clip, so it is never cut off.
+ * circle's clip, so it is never cut off. [look] sets what is behind the symbol.
  */
 @Composable
 public fun IconButton(
@@ -34,7 +35,7 @@ public fun IconButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    outlined: Boolean = true,
+    look: IconButtonLook = IconButtonLook.Outlined,
     badgeCount: Int = 0,
     content: @Composable () -> Unit,
 ) {
@@ -61,9 +62,16 @@ public fun IconButton(
                         ).reportControlVisualBounds()
                         .controlPressFeedback(interactions),
                 shape = CircleShape,
-                color = OtusColors.bgDark,
+                color = if (look == IconButtonLook.Bare) Color.Transparent else OtusColors.bgDark,
                 contentColor = if (enabled) OtusColors.text1 else OtusColors.text3,
-                border = if (outlined) BorderStroke(PanelTokens.borderWidth, OtusColors.strokeBgDark) else null,
+                border =
+                    if (look ==
+                        IconButtonLook.Outlined
+                    ) {
+                        BorderStroke(PanelTokens.borderWidth, OtusColors.strokeBgDark)
+                    } else {
+                        null
+                    },
             ) {
                 Box(contentAlignment = Alignment.Center) { content() }
             }
@@ -93,4 +101,16 @@ private fun CountDot(
             maxLines = 1,
         )
     }
+}
+
+/** What is behind an [IconButton]'s symbol. */
+public enum class IconButtonLook {
+    /** A `bgDark` circle inside a `strokeBgDark` outline, the default. */
+    Outlined,
+
+    /** A `bgDark` circle without an outline, such as in a panel's header. */
+    Plain,
+
+    /** Nothing, for a field or row that has its own fill. */
+    Bare,
 }

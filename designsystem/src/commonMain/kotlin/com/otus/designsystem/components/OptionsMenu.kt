@@ -12,11 +12,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import com.otus.designsystem.elements.Symbol
 import com.otus.designsystem.elements.ToggleSwitch
 import com.otus.designsystem.resources.Res
@@ -60,10 +64,12 @@ public fun OptionsList(
                         item.icon,
                         item.label,
                         item.detail,
-                        Modifier.clickable(role = Role.Button) {
-                            onDone()
-                            item.onClick()
-                        },
+                        Modifier
+                            .then(if (item.current) Modifier.currentChoice() else Modifier)
+                            .clickable(role = Role.Button) {
+                                onDone()
+                                item.onClick()
+                            },
                     ) { if (item.opens) Symbol(Res.drawable.symbol_chevron_right, mirrorInRtl = true) }
                 }
 
@@ -87,6 +93,12 @@ public fun OptionsList(
         }
     }
 }
+
+/** The current choice: an `accentDark` fill, rounded inside the menu, read as selected. */
+private fun Modifier.currentChoice(): Modifier =
+    clip(RoundedCornerShape(MenuTokens.radius - MenuTokens.inset))
+        .background(OtusColors.accentDark)
+        .semantics { selected = true }
 
 /** The line between groups of options, inset like their rows. */
 @Composable

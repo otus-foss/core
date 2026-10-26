@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import com.otus.designsystem.elements.IconButton
+import com.otus.designsystem.elements.IconButtonLook
 import com.otus.designsystem.elements.SearchField
 import com.otus.designsystem.elements.Symbol
 import com.otus.designsystem.resources.Res
@@ -71,7 +72,7 @@ public fun PickerSearch(
                 IconButton(
                     "Clear picker search",
                     { onChange("") },
-                    outlined = false,
+                    look = IconButtonLook.Plain,
                 ) { Symbol(Res.drawable.symbol_close) }
             }
         }

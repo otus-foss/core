@@ -21,7 +21,13 @@ import com.otus.designsystem.theme.MenuTokens
 internal class BarMenu {
     private var open by mutableStateOf(false)
 
-    fun click(action: BarAction): () -> Unit = { if (action.menu.isEmpty()) action.onClick() else open = true }
+    fun click(action: BarAction): () -> Unit = click(action.menu, action.onClick)
+
+    /** Runs [run], or opens [menu] when it has choices. */
+    fun click(
+        menu: List<MenuAction>,
+        run: () -> Unit = {},
+    ): () -> Unit = { if (menu.isEmpty()) run() else open = true }
 
     /**
      * [action]'s open menu, one bar gap above the button and lined up with its [end] or start edge.
@@ -32,13 +38,22 @@ internal class BarMenu {
         action: BarAction,
         end: Boolean = false,
     ) {
+        Menu(action.menu, end)
+    }
+
+    /** [actions] in the open menu, placed as for an action's own. */
+    @Composable
+    fun Menu(
+        actions: List<MenuAction>,
+        end: Boolean = false,
+    ) {
         if (!open) return
         val density = LocalDensity.current
         val position =
             remember(end, density) {
                 with(density) { AboveBar(ActionBarTokens.gap.roundToPx(), MenuTokens.edge.roundToPx(), end) }
             }
-        ContextMenu(action.menu, position, { open = false }, unrolls = false)
+        ContextMenu(actions, position, { open = false }, unrolls = false)
     }
 }
 

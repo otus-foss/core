@@ -6,7 +6,8 @@ import org.jetbrains.compose.resources.DrawableResource
 public sealed interface OptionsItem {
     /**
      * Runs [onClick] and closes the menu; one that [opens] something more shows a chevron. A
-     * [detail], such as "Usually Invoices", shows as a smaller second line.
+     * [detail], such as "Usually Invoices", shows as a smaller second line. The [current] choice,
+     * such as the label a field has now, fills with the accent.
      */
     public class Action(
         public val label: String,
@@ -14,6 +15,7 @@ public sealed interface OptionsItem {
         public val onClick: () -> Unit,
         public val opens: Boolean = false,
         public val detail: String? = null,
+        public val current: Boolean = false,
     ) : OptionsItem
 
     /**

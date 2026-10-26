@@ -8,12 +8,15 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -54,19 +57,23 @@ public fun Toast(
         motionTween(MotionSpeed.Normal),
         label = "Toast fill",
     )
+    // A one-line toast is a pill; a longer text grows it to up to [ToastTokens.MAX_LINES] lines with
+    // the same corners, and the action keeps the full height beside it.
+    val shape = RoundedCornerShape(ToastTokens.height / 2)
     Row(
         modifier
-            .height(ToastTokens.height)
-            .background(fill, CircleShape)
-            .border(PanelTokens.borderWidth, OtusColors.strokeBgDark, CircleShape)
+            .heightIn(min = ToastTokens.height)
+            .height(IntrinsicSize.Min)
+            .background(fill, shape)
+            .border(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape)
             .padding(start = ToastTokens.textInset, end = if (action == null) ToastTokens.textInset else 0.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text,
-            Modifier.weight(1f),
+            Modifier.weight(1f).padding(vertical = ToastTokens.textPadding),
             style = panelTextStyle(),
-            maxLines = 1,
+            maxLines = ToastTokens.MAX_LINES,
             overflow = TextOverflow.Ellipsis,
         )
         action?.let { ToastButton(it, remaining, if (lifted) OtusColors.bgLight else OtusColors.bgRegular) }
@@ -86,10 +93,11 @@ private fun ToastButton(
             .fillMaxHeight()
             .clickable(interactions, indication = null, role = Role.Button, onClick = action.onAction)
             .padding(ToastTokens.actionInset),
+        contentAlignment = Alignment.Center,
     ) {
         Row(
             Modifier
-                .fillMaxHeight()
+                .height(ToastTokens.height - ToastTokens.actionInset * 2)
                 .controlPressFeedback(interactions)
                 .background(fill, CircleShape)
                 .padding(horizontal = ToastTokens.actionPadding),

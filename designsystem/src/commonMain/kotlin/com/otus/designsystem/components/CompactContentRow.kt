@@ -1,39 +1,26 @@
 package com.otus.designsystem.components
 
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import com.otus.designsystem.elements.CountPill
 import com.otus.designsystem.theme.InboxTokens
-import com.otus.designsystem.theme.OtusAlpha
 import com.otus.designsystem.theme.OtusColors
 
 /**
- * A two-line list row on its own card: [CompactRowText.first] and the date, then
- * [CompactRowText.second] with its marks and folders, and an optional preview. Space the rows
- * [InboxTokens.rowGap] apart. A selected row fills its card with the selection tint.
- *
- * [dimmed] fades the content and the card by the same amount, but never the selection tint; pass
- * false for a selected row, so it reads clearly. Accessibility services read
+ * A two-line [EntryCard]: [CompactRowText.first] and the date, then [CompactRowText.second] with
+ * its marks and folders, and an optional preview. Accessibility services read
  * [CompactRowText.description] instead of the visible text, because the marks and pills are icons.
  */
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 public fun CompactContentRow(
     text: CompactRowText,
@@ -44,27 +31,16 @@ public fun CompactContentRow(
     onLongClick: (() -> Unit)? = null,
     leading: @Composable () -> Unit,
 ) {
-    val alpha = if (dimmed) OtusAlpha.DIMMED else 1f
-    Row(
-        modifier
-            .fillMaxWidth()
-            .rowCard(selection, dimmed)
-            .semantics(mergeDescendants = true) {
-                contentDescription = text.description
-                stateDescription = text.stateLabel
-                selection?.let { this.selected = it.selected }
-            }.combinedClickable(role = Role.Button, onLongClick = onLongClick, onClick = onClick)
-            // The fade's layer includes the padding, so the avatar's badge can overhang without being cut.
-            .alpha(alpha)
-            .padding(
-                start = InboxTokens.compactPaddingStart,
-                top = InboxTokens.compactPaddingVertical,
-                end = InboxTokens.compactPaddingEnd,
-                bottom = InboxTokens.compactPaddingVertical,
-            ),
-        horizontalArrangement = Arrangement.spacedBy(InboxTokens.itemGap),
+    EntryCard(
+        EntryTaps(onClick, onLongClick),
+        leading,
+        modifier.semantics(mergeDescendants = true) {
+            contentDescription = text.description
+            stateDescription = text.stateLabel
+        },
+        selection = selection,
+        dimmed = dimmed,
     ) {
-        SelectableLeading(selection?.selected == true, InboxTokens.compactAvatarSize, leading = leading)
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(InboxTokens.lineGap)) {
             FirstLine(text)
             SecondLine(text)

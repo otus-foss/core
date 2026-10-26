@@ -24,7 +24,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import com.otus.designsystem.elements.Symbol
-import com.otus.designsystem.theme.InboxTokens
+import com.otus.designsystem.theme.EntryTokens
 import com.otus.designsystem.theme.Motion
 import com.otus.designsystem.theme.MotionSpeed
 import com.otus.designsystem.theme.OtusColors
@@ -53,7 +53,7 @@ internal fun SwipeBackdrop(
     val shift = with(density) { SwipeTokens.iconEntry.toPx() } * (1f - progress) * if (fromLeft) -1f else 1f
     Box(
         modifier
-            .clip(RoundedCornerShape(InboxTokens.selectionRadius))
+            .clip(RoundedCornerShape(EntryTokens.radius))
             .background(OtusColors.accentRegular)
             .drawBehind { if (flash > 0f) drawRect(OtusColors.text1.copy(alpha = flash)) },
     ) {

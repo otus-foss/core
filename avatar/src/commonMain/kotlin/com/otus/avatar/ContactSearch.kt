@@ -118,6 +118,5 @@ private fun contactFilter(
     }
 
 private const val CONTACT_PAGE_SIZE = 32
-private const val VCARD_PROPERTY = "vCard"
 private val CARD_PROPERTIES = listOf("id", "addressBookIds", "emails", "media")
 private const val CONTACT_SEARCH_TIMEOUT_MILLIS = 10_000L

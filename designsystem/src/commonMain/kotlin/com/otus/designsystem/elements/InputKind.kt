@@ -9,5 +9,6 @@ public enum class InputKind(
     Text(KeyboardType.Text),
     Url(KeyboardType.Uri),
     Email(KeyboardType.Email),
+    Phone(KeyboardType.Phone),
     Password(KeyboardType.Password),
 }

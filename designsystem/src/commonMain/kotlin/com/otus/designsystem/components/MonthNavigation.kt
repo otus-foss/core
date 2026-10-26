@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import com.otus.designsystem.elements.ActionButton
 import com.otus.designsystem.elements.AnimatedText
 import com.otus.designsystem.elements.IconButton
+import com.otus.designsystem.elements.IconButtonLook
 import com.otus.designsystem.elements.Symbol
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_chevron_left
@@ -47,7 +48,7 @@ public fun MonthNavigation(
         // The shared surface supplies the overlapped portions of the Figma arrow segments.
         // Keep hit targets adjacent so the center button never steals an arrow press.
         Row(verticalAlignment = Alignment.CenterVertically) {
-            IconButton("Previous month", onPrevious, enabled = previousEnabled, outlined = false) {
+            IconButton("Previous month", onPrevious, enabled = previousEnabled, look = IconButtonLook.Plain) {
                 Symbol(Res.drawable.symbol_chevron_left, mirrorInRtl = true)
             }
             ActionButton(
@@ -78,7 +79,7 @@ public fun MonthNavigation(
                     }
                 },
             )
-            IconButton("Next month", onNext, enabled = nextEnabled, outlined = false) {
+            IconButton("Next month", onNext, enabled = nextEnabled, look = IconButtonLook.Plain) {
                 Box(Modifier.rotate(CalendarTokens.HALF_TURN)) {
                     Symbol(Res.drawable.symbol_chevron_left, mirrorInRtl = true)
                 }

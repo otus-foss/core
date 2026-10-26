@@ -20,14 +20,11 @@ internal data class ContactCard(
 ) {
     val style: AvatarStyle? get() = avatarStyleIn(vCard)
 
-    /** Whether Otus wrote this card's avatar: a style, or the photo under [OWN_PHOTO_KEY]. */
-    val isOtusAvatar: Boolean get() = style != null || OWN_PHOTO_KEY in media
+    /** Whether Otus wrote this card's avatar: a style, or the photo under [AVATAR_PHOTO_KEY]. */
+    val isOtusAvatar: Boolean get() = style != null || AVATAR_PHOTO_KEY in media
 
     fun isIn(books: Set<String>): Boolean = addressBookIds.any { it.value && it.key in books }
 }
-
-/** The `media` key of the photo [JmapOwnAvatars] saves. */
-internal const val OWN_PHOTO_KEY = "otus"
 
 @Serializable
 internal data class ContactEmail(

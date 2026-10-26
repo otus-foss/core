@@ -33,10 +33,9 @@ import com.otus.designsystem.theme.SignatureTokens
 import com.otus.designsystem.theme.panelTextStyle
 
 /**
- * A choice in a sheet list: an optional [leading] avatar, the [title], a smaller `text2` [subtitle]
- * of up to [subtitleLines] lines, and a `text1` radio or checkbox. A ticked checkbox fills with
- * `accentLight`, as in [com.otus.designsystem.elements.SelectionRow]. A null [onClick] shows the
- * row disabled.
+ * A choice in a sheet list: an optional [leading] avatar, the [title], a smaller `text2` [subtitle],
+ * and a radio or checkbox in the selected-chip colors. A null [onClick] shows the row disabled.
+ * [layout] sets its height and how many lines the subtitle may take.
  */
 @Composable
 public fun PickRow(
@@ -45,11 +44,11 @@ public fun PickRow(
     mark: PickMark,
     onClick: (() -> Unit)?,
     modifier: Modifier = Modifier,
-    subtitleLines: Int = 1,
+    layout: PickRowLayout = PickRowLayout(),
     leading: (@Composable () -> Unit)? = null,
 ) {
-    PickRowFrame(mark, onClick, modifier.heightIn(min = SheetTokens.rowHeight), leading) {
-        PickRowText(title, subtitle, subtitleLines)
+    PickRowFrame(mark, onClick, modifier.heightIn(min = layout.density.pickRowHeight), leading) {
+        PickRowText(title, subtitle, layout.subtitleLines)
     }
 }
 
@@ -114,37 +113,35 @@ internal fun PickRowFrame(
 
 /**
  * The radio or checkbox of a [PickRow] on its own, for rows built from other parts, such as a
- * folder tree row in the Folders sheet. An unticked checkbox has a dim `text3` outline, as in
- * [com.otus.designsystem.elements.SelectionRow], and a ticked one fills with `accentLight`.
+ * folder tree row in the Folders sheet. Unchosen marks have a dim `text3` outline; a ticked
+ * checkbox fills with `accentDark` inside an `accentLight` outline and a chosen radio turns
+ * `accentLight`, as a selected chip does.
  */
 @Composable
 public fun PickMarkView(mark: PickMark) {
-    val color = OtusColors.text1
     Canvas(Modifier.size(SignatureTokens.markSize)) {
         val stroke = SignatureTokens.markStroke.toPx()
+        val inset = Offset(stroke / 2, stroke / 2)
+        val inner = size.copy(size.width - stroke, size.height - stroke)
+        // Chosen marks take the selected-chip colors: an accent fill or dot inside an accentLight
+        // outline. Unchosen ones keep a quiet text3 outline, so the choice stands out.
+        val outline = if (mark.selected) OtusColors.accentLight else OtusColors.text3
         if (mark.multiple) {
             val corner = CornerRadius(SettingTokens.valueRadius.toPx() / 2)
             if (mark.selected) {
-                drawRoundRect(OtusColors.accentLight, cornerRadius = corner)
+                drawRoundRect(OtusColors.accentDark, cornerRadius = corner)
                 val check =
                     Path().apply {
                         moveTo(size.width * CHECK_START_X, size.height * CHECK_MID_Y)
                         lineTo(size.width * CHECK_LOW_X, size.height * CHECK_LOW_Y)
                         lineTo(size.width * CHECK_END_X, size.height * CHECK_END_Y)
                     }
-                drawPath(check, OtusColors.bgDark, style = Stroke(stroke, cap = StrokeCap.Round))
-            } else {
-                drawRoundRect(
-                    OtusColors.text3,
-                    Offset(stroke / 2, stroke / 2),
-                    size.copy(size.width - stroke, size.height - stroke),
-                    corner,
-                    Stroke(stroke),
-                )
+                drawPath(check, OtusColors.text1, style = Stroke(stroke, cap = StrokeCap.Round))
             }
+            drawRoundRect(outline, inset, inner, corner, Stroke(stroke))
         } else {
-            drawCircle(color, radius = size.minDimension / 2 - stroke / 2, style = Stroke(stroke))
-            if (mark.selected) drawCircle(color, radius = SignatureTokens.markDot.toPx() / 2)
+            drawCircle(outline, radius = size.minDimension / 2 - stroke / 2, style = Stroke(stroke))
+            if (mark.selected) drawCircle(OtusColors.accentLight, radius = SignatureTokens.markDot.toPx() / 2)
         }
     }
 }
@@ -155,3 +152,16 @@ private const val CHECK_LOW_X = 0.43f
 private const val CHECK_LOW_Y = 0.7f
 private const val CHECK_END_X = 0.76f
 private const val CHECK_END_Y = 0.32f
+
+/** A pick row's least height: a full row, or a touch target for long lists of short choices. */
+private val RowDensity.pickRowHeight
+    get() = if (this == RowDensity.Compact) PanelTokens.touchTarget else SheetTokens.rowHeight
+
+/**
+ * How a [PickRow] is laid out: a [RowDensity.Compact] row is only a touch target tall, for long
+ * lists of short choices, and the subtitle takes up to [subtitleLines] lines.
+ */
+public data class PickRowLayout(
+    val density: RowDensity = RowDensity.Regular,
+    val subtitleLines: Int = 1,
+)
