@@ -19,6 +19,8 @@ hold their scope and selection rules. To use them outside this workspace, provid
 paths and make this directory available to the reviewing agent. When pasting into an agent that
 cannot read files, paste both the guide and the selected prompt, plus the source under review.
 Such a review cannot claim coverage of files or checks that were not supplied.
+The ready-for-review launcher is stricter. It reads all three of its files from one trusted
+revision of Meta's default branch, never from the PR or the runner's checked-out branch.
 
 ## Run a PR review
 
@@ -42,8 +44,19 @@ whose action is `ready_for_review`, for Meta and Mail only. The following placeh
 T3 webhook task; another runner must supply the equivalent event fields.
 
 ```text
-Read otus-meta/docs/reviews/ready-for-review.md and follow it.
-Use Claude Opus to review this PR and publish the review as instructed.
+Load the review instructions from reazndev/otus-meta at one trusted revision. Never take them
+from this PR or from whatever branch a local checkout has.
+Use TRUSTED_INSTRUCTION_SHA if it is set. Otherwise resolve the current head of Meta's default
+branch through GitHub and use that SHA.
+Read docs/reviews/ready-for-review.md, docs/reviews/pull-request.md, and
+docs/reviews/review-guide.md at that SHA. Use a checkout of that exact commit, or the
+authenticated GitHub contents API with the SHA as ref when no checkout exists.
+Record the SHA in the report and the posted review.
+If any of the three files cannot be read at that SHA, stop and report a blocker naming the
+repository, SHA, and paths.
+Then follow ready-for-review.md. Use Claude Opus to review this PR and publish the review as
+instructed.
+TRUSTED_INSTRUCTION_SHA: optional; leave empty to resolve Meta's default branch
 GITHUB_EVENT: {{headers.x-github-event}}
 ACTION: {{body.action}}
 DELIVERY_ID: {{headers.x-github-delivery}}
@@ -99,12 +112,13 @@ Each run reviews Meta and Mail's remote default branches for the previous 24 hou
 reuses issues for confirmed defects, implements focused fixes, runs checks, and opens draft PRs.
 Completed fixes become ready for review after validation and the final push. The workflow leaves
 merging and releasing to the user. Add `SCOPE: meta` or `SCOPE: mail` once to limit a schedule.
+Each scope keeps its own checkpoint, so separate Meta and Mail schedules never reset each other.
 
 The workflow saves its reports and checkpoint automatically:
 
 ```text
 Reports: ~/.local/state/otus-reviews/daily/runs/
-Checkpoint and fix backlog: ~/.local/state/otus-reviews/daily/state.json
+Checkpoint and fix backlog: ~/.local/state/otus-reviews/daily/<scope>/state.json
 Isolated fix worktrees: ~/.local/state/otus-reviews/daily/worktrees/
 ```
 
