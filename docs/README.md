@@ -3,6 +3,7 @@
 ## Suite
 
 - [Hosting and CI](hosting.md): GitHub repositories, runners, and packages.
+- [Review prompts](reviews/README.md): PR/repository reviews, Opus reviews when PRs become ready, and daily fixes for Meta and Mail.
 
 - [Product goals](suite/product-goals.md): purpose, protocol scope, and current state of both apps.
 - [Mail design foundations](suite/mail-design.md): the palette and Figma reference used by both apps.
