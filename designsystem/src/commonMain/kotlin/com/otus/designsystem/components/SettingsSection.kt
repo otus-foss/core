@@ -48,11 +48,12 @@ public fun SettingsSection(
                 lineHeight = SettingTokens.sectionTitleLineHeight,
                 fontWeight = FontWeight.SemiBold,
             )
-            info?.let { InfoTip(it, Modifier.offset(x = -InfoTipOverhang)) }
+            // The button's touch target reaches past the title's line rather than making the header taller.
+            info?.let { InfoTip(it, Modifier.offset(x = -InfoTipOverhang).overlapHeight(PanelTokens.iconSize)) }
         }
         content()
     }
 }
 
-/** How far the info button's touch target reaches past its drawn circle toward the title. */
+/** How far the info button's touch target reaches past its question mark toward the title. */
 private val InfoTipOverhang = (PanelTokens.touchTarget - PanelTokens.iconSize) / 2
