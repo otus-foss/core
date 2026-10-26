@@ -61,14 +61,15 @@ public fun Avatar(
 }
 
 /**
- * The fill of a generated avatar with [colorIndex]: the theme's `bgLight`, `bgDark`, or the grey
- * between them, so a list of people stays neutral instead of taking the accent.
+ * The fill of a generated avatar with [colorIndex]: the theme's `bgLight`, a grey a step toward
+ * `bgDark`, or one a step toward `text3`. A list of people stays neutral instead of taking the
+ * accent, and every fill shows on the raised cards rows sit on.
  */
 public fun avatarFill(colorIndex: Int): Color =
     when (colorIndex) {
         1 -> OtusColors.bgLight
-        2 -> OtusColors.bgDark
-        else -> lerp(OtusColors.bgLight, OtusColors.bgDark, AvatarTokens.MIDDLE_FILL)
+        2 -> lerp(OtusColors.bgLight, OtusColors.text3, AvatarTokens.FILL_STEP)
+        else -> lerp(OtusColors.bgLight, OtusColors.bgDark, AvatarTokens.FILL_STEP)
     }
 
 /** Smaller avatars scale their initials with the circle so they stay inside the shape. */

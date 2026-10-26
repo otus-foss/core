@@ -56,8 +56,9 @@ implementation. The empty state is new UI; no populated inbox was present in tha
 The message-row avatar's black fill and label border `#2A5E96` are outside the approved palette.
 `LabelPill` draws that label with palette tokens instead: a `text-3` border and `text-1` text
 when highlighted, otherwise a `bg-light` border and `text-2` text.
-Generated avatars choose `bgLight`, `bgDark`, or the grey halfway between them by email address,
-with `text1` initials, so a list of people does not fill with the accent. Contact photos fill the same circle. These avatar variants are app decisions, not newly
+Generated avatars choose `bgLight` or a grey a step from it toward `bgDark` or `text3` by email
+address, with `text1` initials, so a list of people does not fill with the accent and every avatar
+shows on raised cards. Contact photos fill the same circle. These avatar variants are app decisions, not newly
 verified Figma values. Metadata continues to use named text tokens. No palette values change.
 See [Mail inbox documentation](https://github.com/reazndev/otus-mail/blob/main/docs/inbox.md) for implemented behavior and deferred work.
 
