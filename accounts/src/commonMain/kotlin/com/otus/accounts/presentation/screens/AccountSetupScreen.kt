@@ -25,8 +25,10 @@ import com.otus.accounts.domain.parseJmapServer
 import com.otus.accounts.presentation.AccountsState
 import com.otus.accounts.presentation.ConnectStatus
 import com.otus.accounts.presentation.OwnAvatarsState
+import com.otus.accounts.presentation.accountEdit
+import com.otus.accounts.presentation.components.AccountAvatarEditor
+import com.otus.accounts.presentation.components.AvatarSheet
 import com.otus.accounts.presentation.components.ConnectedAccountRow
-import com.otus.accounts.presentation.components.OwnAvatarSheet
 import com.otus.accounts.presentation.confirmHostMessage
 import com.otus.accounts.presentation.message
 import com.otus.designsystem.components.ConfirmDialog
@@ -52,7 +54,8 @@ public fun AccountSetupScreen(
 ) {
     var removing by rememberSaveable { mutableStateOf<String?>(null) }
     var adding by rememberSaveable { mutableStateOf(false) }
-    var editing by rememberSaveable { mutableStateOf<Pair<String, String>?>(null) }
+    // The account and address whose avatar is being edited; no address edits all of them.
+    var editing by rememberSaveable { mutableStateOf<Pair<String, String?>?>(null) }
     LaunchedEffect(state.status) {
         if (state.status is ConnectStatus.Connected) adding = false
     }
@@ -71,15 +74,16 @@ public fun AccountSetupScreen(
             PageNote(it)
             ActionButton("Reload accounts", state::reload)
         }
-        ConnectedAccounts(state, avatars, onRemove = { removing = it }, onEditAvatar = { id, email ->
-            editing =
-                id to email
-        })
+        ConnectedAccounts(
+            state,
+            avatars,
+            onRemove = { removing = it },
+            onEditAvatar = { id, email -> editing = id to email },
+            onEditAll = { editing = it to null },
+        )
     }
     editing?.let { (accountId, email) ->
-        state.accounts.firstOrNull { it.id == accountId }?.let { account ->
-            AvatarEditor(avatars, account, email) { editing = null }
-        }
+        state.accounts.firstOrNull { it.id == accountId }?.let { AvatarEditors(avatars, it, email) { editing = null } }
     }
     if (adding) {
         SheetFrame("Connect an account", onDismiss = {
@@ -110,6 +114,7 @@ private fun ConnectedAccounts(
     avatars: OwnAvatarsState,
     onRemove: (String) -> Unit,
     onEditAvatar: (account: String, email: String) -> Unit,
+    onEditAll: (account: String) -> Unit,
 ) {
     SettingsSection("Connected accounts", info = AvatarsInfo.takeIf { state.accounts.isNotEmpty() }) {
         if (state.accounts.isEmpty() && state.storageError == null) {
@@ -119,8 +124,10 @@ private fun ConnectedAccounts(
             ConnectedAccountRow(
                 account,
                 avatar = { avatars.avatar(account, it) },
+                accountAvatar = avatars.accountAvatar(account),
                 onRemove = { onRemove(account.id) },
                 onEditAvatar = { onEditAvatar(account.id, it) },
+                onEditAll = { onEditAll(account.id) },
             )
         }
         avatars.error?.let { PageNote(it) }
@@ -133,6 +140,23 @@ private fun AccountsFooter(onConnect: () -> Unit) {
     ActionButton("Connect an account", onConnect, Modifier.fillMaxWidth(), primary = true)
 }
 
+/** The editor of [email]'s avatar, or of every address's when it is null. */
+@Composable
+private fun AvatarEditors(
+    avatars: OwnAvatarsState,
+    account: ConnectedAccount,
+    email: String?,
+    onDismiss: () -> Unit,
+) {
+    if (email ==
+        null
+    ) {
+        AccountAvatarEditor(avatars.accountEdit(account), onDismiss)
+    } else {
+        AvatarEditor(avatars, account, email, onDismiss)
+    }
+}
+
 @Composable
 private fun AvatarEditor(
     avatars: OwnAvatarsState,
@@ -140,8 +164,9 @@ private fun AvatarEditor(
     email: String,
     onDismiss: () -> Unit,
 ) {
-    OwnAvatarSheet(
+    AvatarSheet(
         email,
+        email.substringAfterLast('@'),
         avatars.avatar(account, email),
         pickPhoto = if (avatars.canPickPhoto) avatars::pickPhoto else null,
         onSave = { avatars.save(account, email, it) },

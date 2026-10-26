@@ -19,10 +19,13 @@ public val Card.avatarStyle: AvatarStyle? get() = avatarStyleIn(extra[VCARD_PROP
 public val Card.isAvatarCard: Boolean get() = avatarStyle != null || AVATAR_PHOTO_KEY in media.orEmpty()
 
 /** This card without an avatar style, keeping its other vCard properties. */
-public fun Card.withoutAvatarStyle(): Card {
+public fun Card.withoutAvatarStyle(): Card = withAvatarStyle(null)
+
+/** This card with [style] as its avatar style, or none when it is null, keeping its other vCard properties. */
+public fun Card.withAvatarStyle(style: AvatarStyle?): Card {
     val vCard = extra[VCARD_PROPERTY]
-    if (!hasAvatarStyle(vCard)) return this
-    val properties = avatarPropertiesWith(vCard, null)
+    if (style == null && !hasAvatarStyle(vCard)) return this
+    val properties = avatarPropertiesWith(vCard, style)
     return copy(
         extra =
             extra + (VCARD_PROPERTY to JsonObject((vCard as? JsonObject).orEmpty() + ("properties" to properties))),

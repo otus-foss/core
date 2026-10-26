@@ -57,8 +57,8 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   contact components `ContactEntry` (with `ContactEntryEnd` and `ContactRowLabel`), `ContactRow`,
   `ContactHeader`, `ContactValueRow`, `ContactFieldRow` (with `ContactFieldLook` and
   `PrimaryStar`), `ContactInputField`, and `ContactPickerField`, `LetterIndex` (with
-  `LetterIndexState`, `IndexLetter`, and the `letterIndexHandle` modifier), and `BirthdayPicker`
-  (with `YearlyDate`).
+  `LetterIndexState`, `IndexLetter`, and the `letterIndexHandle` modifier), `BirthdayPicker`
+  (with `YearlyDate`), `AvatarButton`, and `FeaturedAvatars` (with `FeaturedAvatar`).
 - Settings rows follow Notion's settings pages: flat rows with a title and `text2` description
   beside the control, `bgLight` hairlines between them, and large section titles. The whole row is
   the control; `ToggleSwitch` and `ValueButton` only show its state. A long picker, such as Mail's
