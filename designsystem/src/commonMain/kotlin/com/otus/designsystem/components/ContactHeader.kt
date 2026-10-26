@@ -26,7 +26,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import com.otus.designsystem.elements.Symbol
 import com.otus.designsystem.resources.Res
-import com.otus.designsystem.resources.symbol_photo_camera
+import com.otus.designsystem.resources.symbol_edit
 import com.otus.designsystem.theme.ContactTokens
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PageTokens
@@ -36,7 +36,7 @@ import com.otus.designsystem.theme.panelTextStyle
 /**
  * The top of a contact's page: a large [avatar] and, under it, `text2` [lines] such as the
  * person's title and organization. The name sits in the page's panel, so it is not repeated here.
- * With [photoChoices], such as Choose photo and Remove photo, the avatar wears a camera badge and
+ * With [photoChoices], such as Choose photo and Remove photo, the avatar wears a pen badge and
  * opens them in a menu; without them, a photo opens large on a tap.
  */
 @Composable
@@ -84,7 +84,7 @@ private fun PhotoButton(
                 contentAlignment = Alignment.Center,
             ) {
                 CompositionLocalProvider(LocalContentColor provides OtusColors.text1) {
-                    Symbol(Res.drawable.symbol_photo_camera, size = ContactTokens.photoBadgeIconSize)
+                    Symbol(Res.drawable.symbol_edit, size = ContactTokens.photoBadgeIconSize)
                 }
             }
         }
