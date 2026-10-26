@@ -25,8 +25,8 @@ import com.otus.accounts.domain.parseJmapServer
 import com.otus.accounts.presentation.AccountsState
 import com.otus.accounts.presentation.ConnectStatus
 import com.otus.accounts.presentation.OwnAvatarsState
+import com.otus.accounts.presentation.components.AvatarSheet
 import com.otus.accounts.presentation.components.ConnectedAccountRow
-import com.otus.accounts.presentation.components.OwnAvatarSheet
 import com.otus.accounts.presentation.confirmHostMessage
 import com.otus.accounts.presentation.message
 import com.otus.designsystem.components.ConfirmDialog
@@ -150,7 +150,7 @@ private fun AvatarEditor(
     email: String,
     onDismiss: () -> Unit,
 ) {
-    OwnAvatarSheet(
+    AvatarSheet(
         email,
         email.substringAfterLast('@'),
         avatars.avatar(account, email),

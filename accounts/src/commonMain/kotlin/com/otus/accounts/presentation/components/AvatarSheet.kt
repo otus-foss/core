@@ -33,14 +33,15 @@ import kotlinx.coroutines.launch
 import com.otus.avatar.ContactAvatar as SavedAvatar
 
 /**
- * Edits the avatar of [label], an address or all of an account's addresses: a big preview, the
- * kinds of avatar, and the choices of the kind picked. A website icon comes from [domain]. Save
+ * Edits the avatar of [label], such as one of the user's addresses, all of an account's, or a
+ * contact: a big preview, the kinds of avatar, and the choices of the kind picked. A website icon
+ * comes from [domain]. Save
  * runs [onSave] with the new avatar; it keeps a saved photo that did not change. Reset, shown once
  * the user has set an avatar, runs [onSave] with null to go back to the generated one. [pickPhoto]
  * is null when the platform cannot pick photos, which hides Your photo.
  */
 @Composable
-internal fun OwnAvatarSheet(
+public fun AvatarSheet(
     label: String,
     domain: String,
     shown: ResolvedAvatar?,

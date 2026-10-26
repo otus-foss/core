@@ -8,7 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.otus.accounts.domain.ConnectedAccount
 import com.otus.accounts.presentation.OwnAvatarsState
-import com.otus.accounts.presentation.components.OwnAvatarSheet
+import com.otus.accounts.presentation.components.AvatarSheet
 import com.otus.accounts.presentation.ownAddresses
 import com.otus.accounts.presentation.toChipAvatar
 import com.otus.avatar.ContactAvatar
@@ -34,7 +34,7 @@ internal fun AccountAvatarEditor(
     val emails = account.ownAddresses
     val choice = asking
     if (choice == null) {
-        OwnAvatarSheet(
+        AvatarSheet(
             "All addresses of ${account.name}",
             emails.first().substringAfterLast('@'),
             avatars.accountAvatar(account),
