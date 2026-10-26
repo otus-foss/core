@@ -42,7 +42,8 @@ import kotlin.math.min
  * [com.otus.designsystem.elements.ValueButton], a chevron, or a
  * [com.otus.designsystem.elements.RowButton]. A hairline separates it from what is above it, so
  * the first row in its parent, such as at the top of a page, has none. With
- * [onClick] the whole row is one button; without it, only its trailing controls act. A
+ * [onClick] the whole row is one button; without it, only its trailing controls act. [leading]
+ * goes before the text, by default the [icon], or something else such as an avatar. A
  * [RowDensity.Compact] row drops the hairline and fits one line in
  * [PanelTokens.compactRowHeight]; a taller trailing control reaches into its padding instead of
  * making it taller.
@@ -55,13 +56,14 @@ public fun SettingRow(
     description: String? = null,
     icon: DrawableResource? = null,
     density: RowDensity = RowDensity.Regular,
+    leading: (@Composable () -> Unit)? = icon?.let { { LeadingSymbol(it) } },
     trailing: @Composable () -> Unit = {},
 ) {
     SettingRowLayout(
         RowTitle(title),
         description,
         person = null,
-        icon,
+        leading,
         trailing,
         density,
         onClick?.let { modifier.rowButton(it) } ?: modifier,
@@ -82,7 +84,15 @@ public fun SettingRow(
     icon: DrawableResource? = null,
     density: RowDensity = RowDensity.Regular,
 ) {
-    SettingRowLayout(RowTitle(title), description, person, icon, trailing = {}, density, modifier.rowButton(onClick))
+    SettingRowLayout(
+        RowTitle(title),
+        description,
+        person,
+        icon?.let { { LeadingSymbol(it) } },
+        trailing = {},
+        density,
+        modifier.rowButton(onClick),
+    )
 }
 
 /** Makes the whole row one button with the shared press feedback. */
@@ -112,7 +122,7 @@ public fun SettingToggleRow(
         RowTitle(title, info),
         description,
         person = null,
-        icon,
+        icon?.let { { LeadingSymbol(it) } },
         trailing = { ToggleSwitch(checked) },
         density = RowDensity.Regular,
         modifier =
@@ -132,7 +142,7 @@ private fun SettingRowLayout(
     title: RowTitle,
     description: String?,
     person: NamedAvatar?,
-    icon: DrawableResource?,
+    leading: (@Composable () -> Unit)?,
     trailing: @Composable () -> Unit,
     density: RowDensity,
     modifier: Modifier,
@@ -157,7 +167,7 @@ private fun SettingRowLayout(
         horizontalArrangement = Arrangement.spacedBy(SettingTokens.rowGap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        icon?.let { LeadingSymbol(it) }
+        leading?.invoke()
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(SettingTokens.textGap)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(

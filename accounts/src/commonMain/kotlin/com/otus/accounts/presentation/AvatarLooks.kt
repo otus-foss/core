@@ -3,6 +3,7 @@ package com.otus.accounts.presentation
 import com.otus.accounts.domain.ConnectedAccount
 import com.otus.avatar.AvatarMark
 import com.otus.avatar.AvatarStyle
+import com.otus.avatar.GeneratedAvatar
 import com.otus.avatar.ResolvedAvatar
 import com.otus.designsystem.components.ChipAvatar
 import com.otus.designsystem.elements.AvatarSymbols
@@ -22,6 +23,9 @@ public fun ResolvedAvatar.toChipAvatar(): ChipAvatar {
         else -> style.toChipAvatar()
     }
 }
+
+/** The initials over their color. */
+internal fun GeneratedAvatar.toChipAvatar(): ChipAvatar = ChipAvatar(initials, colorIndex)
 
 /** A style's color, and its letters or icon. An unknown icon name falls back to the color alone. */
 public fun AvatarStyle.toChipAvatar(): ChipAvatar =
