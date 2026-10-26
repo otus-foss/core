@@ -53,6 +53,7 @@ public fun AccountSetupScreen(
     var removing by rememberSaveable { mutableStateOf<String?>(null) }
     var adding by rememberSaveable { mutableStateOf(false) }
     var editing by rememberSaveable { mutableStateOf<Pair<String, String>?>(null) }
+    var editingAll by rememberSaveable { mutableStateOf<String?>(null) }
     LaunchedEffect(state.status) {
         if (state.status is ConnectStatus.Connected) adding = false
     }
@@ -71,15 +72,21 @@ public fun AccountSetupScreen(
             PageNote(it)
             ActionButton("Reload accounts", state::reload)
         }
-        ConnectedAccounts(state, avatars, onRemove = { removing = it }, onEditAvatar = { id, email ->
-            editing =
-                id to email
-        })
+        ConnectedAccounts(
+            state,
+            avatars,
+            onRemove = { removing = it },
+            onEditAvatar = { id, email -> editing = id to email },
+            onEditAll = { editingAll = it },
+        )
     }
     editing?.let { (accountId, email) ->
         state.accounts.firstOrNull { it.id == accountId }?.let { account ->
             AvatarEditor(avatars, account, email) { editing = null }
         }
+    }
+    state.accounts.firstOrNull { it.id == editingAll }?.let { account ->
+        AccountAvatarEditor(avatars, account) { editingAll = null }
     }
     if (adding) {
         SheetFrame("Connect an account", onDismiss = {
@@ -110,6 +117,7 @@ private fun ConnectedAccounts(
     avatars: OwnAvatarsState,
     onRemove: (String) -> Unit,
     onEditAvatar: (account: String, email: String) -> Unit,
+    onEditAll: (account: String) -> Unit,
 ) {
     SettingsSection("Connected accounts", info = AvatarsInfo.takeIf { state.accounts.isNotEmpty() }) {
         if (state.accounts.isEmpty() && state.storageError == null) {
@@ -119,8 +127,10 @@ private fun ConnectedAccounts(
             ConnectedAccountRow(
                 account,
                 avatar = { avatars.avatar(account, it) },
+                shared = avatars.shared(account),
                 onRemove = { onRemove(account.id) },
                 onEditAvatar = { onEditAvatar(account.id, it) },
+                onEditAll = { onEditAll(account.id) },
             )
         }
         avatars.error?.let { PageNote(it) }
@@ -142,6 +152,7 @@ private fun AvatarEditor(
 ) {
     OwnAvatarSheet(
         email,
+        email.substringAfterLast('@'),
         avatars.avatar(account, email),
         pickPhoto = if (avatars.canPickPhoto) avatars::pickPhoto else null,
         onSave = { avatars.save(account, email, it) },
