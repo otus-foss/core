@@ -1,6 +1,7 @@
 package com.otus.designsystem.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,15 +29,27 @@ import com.otus.designsystem.theme.SheetTokens
 import com.otus.designsystem.theme.panelTextStyle
 import org.jetbrains.compose.resources.DrawableResource
 
-/** [rows] on one `bgRegular` card with rounded corners, a `bgLight` line between each two. */
+/**
+ * [rows] on one `bgRegular` card with rounded corners, a `bgLight` line between each two. A
+ * [raised] group sits on a page instead of a sheet, so it takes `bgDark` with a `strokeBgDark` outline.
+ */
 @Composable
 public fun RowGroup(
     rows: List<@Composable () -> Unit>,
     modifier: Modifier = Modifier,
+    raised: Boolean = false,
 ) {
-    Column(modifier.fillMaxWidth().clip(RoundedCornerShape(SheetTokens.rowRadius)).background(OtusColors.bgRegular)) {
+    val shape = RoundedCornerShape(SheetTokens.rowRadius)
+    val line = if (raised) OtusColors.strokeBgDark else OtusColors.bgLight
+    Column(
+        modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .background(if (raised) OtusColors.bgDark else OtusColors.bgRegular)
+            .then(if (raised) Modifier.border(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape) else Modifier),
+    ) {
         rows.forEachIndexed { index, row ->
-            if (index > 0) Box(Modifier.fillMaxWidth().height(PanelTokens.borderWidth).background(OtusColors.bgLight))
+            if (index > 0) Box(Modifier.fillMaxWidth().height(PanelTokens.borderWidth).background(line))
             row()
         }
     }

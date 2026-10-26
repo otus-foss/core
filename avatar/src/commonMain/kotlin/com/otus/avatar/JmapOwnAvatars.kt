@@ -154,7 +154,7 @@ public class JmapOwnAvatars(
                         .values
                         .any { avatarEmailKey(it.address) == email }
             }.sortedWith(
-                compareBy({ !hasAvatarStyle(it.extra[VCARD]) && OWN_PHOTO_KEY !in it.media.orEmpty() }, { it.id }),
+                compareBy({ !it.isAvatarCard }, { it.id }),
             ).firstOrNull()
     }
 }
@@ -169,31 +169,31 @@ private fun Card.patch(
     val oldPhotos =
         media
             .orEmpty()
-            .filter { (key, value) -> value.kind == MediaKind.Photo && !(photo != null && key == OWN_PHOTO_KEY) }
+            .filter { (key, value) -> value.kind == MediaKind.Photo && !(photo != null && key == AVATAR_PHOTO_KEY) }
             .keys
     val hasMedia = media != null
-    val vCard = extra[VCARD]
+    val vCard = extra[VCARD_PROPERTY]
     val style = (avatar as? ContactAvatar.Styled)?.style
     return contactCardPatch {
         oldPhotos.forEach { media.remove(it) }
         // A patch path needs its parent on the server, so a card without `media` gets the whole map.
         when {
             photo == null -> Unit
-            !hasMedia -> media.set(mapOf(OWN_PHOTO_KEY to photo))
-            else -> media.put(OWN_PHOTO_KEY, photo)
+            !hasMedia -> media.set(mapOf(AVATAR_PHOTO_KEY to photo))
+            else -> media.put(AVATAR_PHOTO_KEY, photo)
         }
         if (style != null || hasAvatarStyle(vCard)) {
             raw {
                 val properties = avatarPropertiesWith(vCard, style)
                 // The same goes for `vCard`.
                 if (vCard is JsonObject) {
-                    set(properties, VCARD, PROPERTIES)
+                    set(properties, VCARD_PROPERTY, PROPERTIES)
                 } else {
                     set(
                         JsonObject(
                             mapOf(PROPERTIES to properties),
                         ),
-                        VCARD,
+                        VCARD_PROPERTY,
                     )
                 }
             }
@@ -211,11 +211,11 @@ private fun newCard(
     kind = CardKind.Individual,
     name = name.trim().takeIf { it.isNotEmpty() }?.let { Name(full = it) },
     emails = mapOf(EMAIL_KEY to EmailAddress(email)),
-    media = photo?.let { mapOf(OWN_PHOTO_KEY to it) },
+    media = photo?.let { mapOf(AVATAR_PHOTO_KEY to it) },
     addressBookIds = mapOf(book to true),
     extra =
         (avatar as? ContactAvatar.Styled)
-            ?.let { mapOf(VCARD to JsonObject(mapOf(PROPERTIES to avatarPropertiesWith(null, it.style)))) }
+            ?.let { mapOf(VCARD_PROPERTY to JsonObject(mapOf(PROPERTIES to avatarPropertiesWith(null, it.style)))) }
             .orEmpty(),
 ).toCreation()
 
@@ -224,5 +224,4 @@ private fun ContactAvatar.Photo.toMedia() =
 
 private const val NEW_CARD = "self"
 private const val EMAIL_KEY = "e1"
-private const val VCARD = "vCard"
 private const val PROPERTIES = "properties"

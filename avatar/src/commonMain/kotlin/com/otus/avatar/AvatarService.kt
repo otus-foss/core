@@ -97,12 +97,14 @@ public class AvatarService(
     public suspend fun clear(): Unit = cache.clear()
 
     /**
-     * Makes [avatar], just saved on the user's own card for [request], what lookups find, so it
-     * shows at once. Reading it back would search the server, whose index may not have the card yet.
+     * Makes [avatar], just saved on a card for [request], what lookups find, so it shows at once.
+     * Reading it back would search the server, whose index may not have the card yet. A null
+     * [avatar], such as for a removed or linked photo, makes the next lookup ask the server again
+     * instead of keeping the old result for up to a month.
      */
     public suspend fun saved(
         request: AvatarRequest,
-        avatar: ContactAvatar,
+        avatar: ContactAvatar?,
     ) {
         val normalized = request.copy(email = avatarEmailKey(request.email))
         if (!isAvatarEmail(normalized.email)) return
@@ -110,9 +112,11 @@ public class AvatarService(
             when (avatar) {
                 is ContactAvatar.Photo -> StoredAvatar(avatar.image, 0)
                 is ContactAvatar.Styled -> StoredAvatar(null, 0, avatar.style)
+                null -> null
             }
         listOf(false, true).forEach { external ->
-            cache.put(contactKey(normalized, AvatarOptions(externalContactImages = external)), entry)
+            val key = contactKey(normalized, AvatarOptions(externalContactImages = external))
+            if (entry == null) cache.expire(key) else cache.put(key, entry)
         }
     }
 

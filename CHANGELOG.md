@@ -6,6 +6,48 @@
   or section explains on request. `SettingsSection` and `SettingToggleRow` take an `info` that places
   one after the title. Email accounts and the custom accent sheet move their long
   notes behind it, and the Password field shows the app-password hint.
+- Breaking: `IconButton` takes `look: IconButtonLook` instead of `outlined`. Replace
+  `outlined = false` with `look = IconButtonLook.Plain`, and drop `outlined = true`, since
+  `Outlined` is the default. `IconButtonLook.Bare` also drops the fill, as the ✕ of a form field
+  does.
+- Breaking: `PickRow` takes `layout: PickRowLayout` instead of `subtitleLines`. Replace
+  `subtitleLines = n` with `layout = PickRowLayout(subtitleLines = n)`. `PickRowLayout.density`
+  set to `RowDensity.Compact` makes the row 48 dp tall. The unchosen radio and check now draw a
+  `text3` outline, and a chosen check fills with `accentDark`.
+- Breaking: `InboxTokens.rowGap`, `cardOutline`, `compactPaddingVertical`, `compactPaddingStart`,
+  and `compactPaddingEnd` are removed. Use `EntryTokens.gap`, `outline`, `paddingVertical`,
+  `paddingStart`, and `paddingEnd`. `InboxTokens.compactAvatarSize` stays and equals
+  `EntryTokens.avatarSize`.
+- Add `EntryCard` with `EntryTaps` and `EntryTokens`: the card behind each mail or person in a
+  list. Selected neighbors join into one accent block; `rowSelection(keys, index, selected)`
+  works out each entry's `RowSelection`. `CompactContentRow` now draws on it.
+- Add the contact page components: `ContactEntry` (with `ContactEntryEnd` and
+  `ContactRowLabel`) for a list of people, `ContactRow` for a person in a sheet, `ContactHeader`,
+  `ContactValueRow`, `ContactFieldRow` (with `ContactFieldLook` and `PrimaryStar`),
+  `ContactInputField`, `ContactPickerField`, `FieldLabel`, and `RemoveFieldButton`. The label
+  chip, star, and ✕ of a `ContactFieldRow` each have their own 48 dp touch target.
+  `AvatarTokens` adds `featuredSize` and `featuredWidth`.
+- Add `LetterIndex` with `LetterIndexState`, `rememberLetterIndexState`, `IndexLetter`, and the
+  `letterIndexHandle` modifier, a jump-to-letter index that opens from a list's letter headings.
+  Screen readers open it with the heading's "Show letters" action.
+- Add `BirthdayPicker` and `YearlyDate`, wheels for a yearly date whose year may stay "No year".
+  A stored year more than 120 years back or in the future stays on the wheel.
+- Add `InputKind.Phone`, `OptionsItem.Action(current)`, which fills the current choice with the
+  accent, `BarContext.choices`, which makes the context a button that opens other choices,
+  `RowGroup(raised)`, and `ValueButton(outline)`. Add the symbols `symbol_badge`, `symbol_call`,
+  `symbol_call_merge`, `symbol_cloud_off`, `symbol_contact_page`, `symbol_contacts`,
+  `symbol_group_add`, `symbol_group_remove`, `symbol_help`, `symbol_label`, `symbol_lock`,
+  `symbol_person_edit`, `symbol_person_search`, `symbol_share`, `symbol_star`, and `symbol_upload`.
+- A `Toast` wraps to three lines instead of cutting its text off. `ToastHost` stacks toasts of
+  different heights, older ones peek out 10 dp instead of 6 dp, and an older toast eases into its
+  stacked place as a new one arrives.
+- Add `VCard.parse` and `VCard.write`, with `VCardImport` and `VCardFailure`, to read vCard 2.1,
+  3.0, and 4.0 files and write vCard 4.0 (RFC 9555). See [contacts](docs/contacts.md#vcard). Add
+  `isEmailAddress` and `cardPropertyNames` to `jscontact`, and `contactCardPropertiesWithVCard`
+  to `jmap-contacts`.
+- `AvatarService.saved` takes a nullable `avatar`. Null, as for a removed or linked photo, drops
+  the cached result, so the next lookup asks the server again. The `avatar` module adds
+  `AVATAR_PHOTO_KEY`, `Card.isAvatarCard`, `Card.avatarStyle`, and `Card.withoutAvatarStyle()`.
 - An own address's new avatar shows right after the first save. `JmapOwnAvatars` hands the saved
   avatar to the new `AvatarService.saved` instead of reading it back with a contact search, which
   a server that indexes in the background, such as Stalwart, may not answer with a new card yet.

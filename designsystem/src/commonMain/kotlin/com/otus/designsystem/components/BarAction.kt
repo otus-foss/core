@@ -22,11 +22,14 @@ public class BarAction(
  * under the primary's label, such as "5 people". Accessibility services read [description] after
  * the label; pass it when the subtitle leaves out what the token shows, such as a count. A [lead]
  * takes the label's place as a small line above the subtitle, which then reads larger, as in
- * "Send to" above "Grace".
+ * "Send to" above "Grace". Non-empty [choices] make the context its own button, which opens
+ * them in a [ContextMenu] above the shell, such as other address books to save to, while the
+ * action keeps running the primary.
  */
 public class BarContext(
     public val subtitle: String,
     public val token: BarToken,
     public val description: String = subtitle,
     public val lead: String? = null,
+    public val choices: List<MenuAction> = emptyList(),
 )

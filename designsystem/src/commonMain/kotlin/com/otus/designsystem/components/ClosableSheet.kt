@@ -19,6 +19,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import com.otus.designsystem.elements.ActionButton
 import com.otus.designsystem.elements.IconButton
+import com.otus.designsystem.elements.IconButtonLook
 import com.otus.designsystem.elements.Symbol
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_close
@@ -90,7 +91,7 @@ private fun ClosableHeader(
                 fontSize = SheetTokens.titleSize,
                 fontWeight = FontWeight.SemiBold,
             )
-            IconButton("Close", onClose, outlined = false) { Symbol(Res.drawable.symbol_close) }
+            IconButton("Close", onClose, look = IconButtonLook.Plain) { Symbol(Res.drawable.symbol_close) }
         }
     }
 }

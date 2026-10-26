@@ -1,9 +1,12 @@
 package com.otus.jscontact
 
+/** Whether [address] is an RFC 5322 addr-spec, such as "ada@example.org", as an EmailAddress needs. */
+public fun isEmailAddress(address: String): Boolean = ADDR_SPEC.matches(address)
+
 /** Validates an EmailAddress, whose address is an RFC 5322 addr-spec (RFC 9553, section 2.3.1). */
 internal fun ValidationScope.checkEmail(email: EmailAddress) {
     propertyNames(email.extra, EmailAddress.serializer())
-    ensure(ADDR_SPEC.matches(email.address), "Not an addr-spec (RFC 5322, section 3.4.1)", "address")
+    ensure(isEmailAddress(email.address), "Not an addr-spec (RFC 5322, section 3.4.1)", "address")
     contexts(email.contexts)
     pref(email.pref)
 }

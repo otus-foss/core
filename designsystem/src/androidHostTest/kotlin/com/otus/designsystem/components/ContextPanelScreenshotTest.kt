@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import com.otus.designsystem.elements.Chip
 import com.otus.designsystem.elements.IconButton
+import com.otus.designsystem.elements.IconButtonLook
 import com.otus.designsystem.elements.Symbol
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_filter_list
@@ -41,7 +42,7 @@ class ContextPanelScreenshotTest {
         ContextPanel(
             placement = placement,
             navigation = {
-                IconButton("Open folders", {}, outlined = false) { Symbol(Res.drawable.symbol_menu) }
+                IconButton("Open folders", {}, look = IconButtonLook.Plain) { Symbol(Res.drawable.symbol_menu) }
             },
             trailingAction = { IconButton("Filter", {}) { Symbol(Res.drawable.symbol_filter_list) } },
             chips = {

@@ -19,6 +19,7 @@ import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
 import com.otus.designsystem.elements.IconButton
+import com.otus.designsystem.elements.IconButtonLook
 import com.otus.designsystem.elements.Symbol
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_chevron_left
@@ -54,7 +55,7 @@ public fun PageScaffold(
                 // Chips sit inside the panel, as on a draft's header; a page without them keeps its plain header.
                 placement = if (chips != null) ChipPlacement.Overlapping else ChipPlacement.Below,
                 navigation = {
-                    IconButton(navigationLabel, onNavigation, outlined = false) {
+                    IconButton(navigationLabel, onNavigation, look = IconButtonLook.Plain) {
                         Symbol(
                             Res.drawable.symbol_chevron_left,
                             mirrorInRtl = true,
