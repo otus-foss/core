@@ -22,7 +22,7 @@ END_UTC: capture the current UTC time at the start of this run
 TARGET_BRANCHES: discover the remote default branch of each selected repository
 VALIDATION: full
 REPORT_DIR: ~/.local/state/otus-reviews/daily/runs
-STATE_FILE: ~/.local/state/otus-reviews/daily/state.json
+STATE_FILE: ~/.local/state/otus-reviews/daily/<SCOPE>/state.json
 LOCK_FILE: ~/.local/state/otus-reviews/daily/run.lock
 WORKTREE_DIR: ~/.local/state/otus-reviews/daily/worktrees
 ```
@@ -30,8 +30,10 @@ WORKTREE_DIR: ~/.local/state/otus-reviews/daily/worktrees
 No input values need editing between runs. The default repositories are `reazndev/otus-meta` and
 `reazndev/otus-mail`, with their sibling checkouts in this workspace. An explicit `SCOPE: meta` or
 `SCOPE: mail` limits a schedule to one repository. Explicit repository/state directory overrides
-are allowed for another machine; the rolling window remains 24 hours. Keep independent schedule
-checkpoints separate by scope while retaining a shared lock for overlapping repository work.
+are allowed for another machine; the rolling window remains 24 hours. `<SCOPE>` in `STATE_FILE` is
+the run's scope, so `both`, `meta`, and `mail` schedules each keep their own checkpoint, such as
+`daily/meta/state.json`. One scope's run never reads, archives, or re-baselines another scope's
+checkpoint. All scopes share `LOCK_FILE`, because their repository work can overlap.
 
 Calendar is always excluded. Expand `~`, create the local state directories, and keep worktrees,
 reports, and state outside the repositories. Use the scheduler's existing GitHub credentials.
@@ -51,9 +53,10 @@ work from state and GitHub before creating anything new.
    Use the half-open UTC interval `START_UTC <= mergedAt < END_UTC`. Preserve full timestamp
    precision and report the bounds. Do not use local dates or daylight-saving arithmetic.
 2. Read the checkpoint before selection. Validate its schema, repository/branch identity,
-   review mode, previous coverage end, and previous target SHAs. Do not silently reuse state from
-   another branch, scope, or incompatible format. A corrupt/incompatible checkpoint is a coverage
-   gap. Archive the original before recovery, reconcile saved manifests and GitHub records, and
+   review mode, previous coverage end, and previous target SHAs. Read only this scope's
+   `STATE_FILE`. Do not silently reuse state from another branch or an incompatible format, and
+   treat a scope field that does not match the file's path as corruption. A corrupt or
+   incompatible checkpoint is a coverage gap. Archive the original before recovery, reconcile saved manifests and GitHub records, and
    establish a fresh baseline if recovery is impossible. Report any lost historical coverage.
 3. Always select the last 24 hours. Also resume unfinished reviews/fixes and catch up from a prior
    successful checkpoint when a run was missed. List older catch-up work separately from the daily
