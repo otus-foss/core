@@ -55,12 +55,14 @@ properties as RFC 9555 does.
 - It maps FN, N, NICKNAME, EMAIL, TEL, ORG, TITLE, ROLE, BDAY, ANNIVERSARY, DEATHDATE, NOTE, ADR,
   UID, KIND, MEMBER, PHOTO, and URL. It also reads Apple's `X-ABLabel` labels, its
   `X-APPLE-OMIT-YEAR` birthdays, and its vCard 3.0 group properties.
-- An entry becomes a card when it has FN, N, or an email address. Any other entry, or one without
-  `END:VCARD`, becomes a failure with its 1-based position and a reason such as "It has no name
-  and no email address." A card without FN gets its full name from N, and one without KIND is an
-  individual. Map keys are `e1`, `p1`, and so on, in file order.
+- An entry becomes a card when it has any mapped property besides KIND and UID. Any other entry,
+  or one without `END:VCARD`, becomes a failure with its 1-based position and a reason such as "It
+  has no contact details." A card without FN gets its full name from N, and one without KIND is an
+  individual. An FN marked `DERIVED=TRUE` (RFC 9554) is not read as a name. Map keys are `e1`,
+  `p1`, and so on, in file order. A byte-order mark at the start of the file is skipped.
 - Writing uses CRLF, folds lines at 75 octets, escapes text, and writes labels as `X-ABLabel` in a
-  group. `VCard.parse` reads the output back to the same card.
+  group. A card without a name gets its organization, email address, or phone number as FN, marked
+  `DERIVED=TRUE`. `VCard.parse` reads the output back to the same card.
 
 Limits:
 

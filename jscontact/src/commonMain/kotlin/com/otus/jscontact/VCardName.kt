@@ -1,5 +1,8 @@
 package com.otus.jscontact
 
+import com.otus.jscontact.VCardKey.DERIVED
+import com.otus.jscontact.VCardKey.DERIVED_TRUE
+import com.otus.jscontact.VCardKey.FN
 import com.otus.jscontact.VCardKey.N
 
 /**
@@ -39,6 +42,21 @@ private fun VCardProperty.toNameComponents(): List<NameComponent> {
 /** The values joined with spaces in the order people read a name, such as "Dr. Jane Doe". */
 internal fun List<NameComponent>.fullName(): String =
     READING_ORDER.flatMap { kind -> filter { it.kind == kind }.map { it.value } }.joinToString(" ")
+
+/**
+ * FN, which vCard 4.0 requires. A Card without a name gets its organization, email address, or phone number
+ * as FN, marked `DERIVED=TRUE` (RFC 9554, section 4.4) so that [VCard.parse] does not read it as a name.
+ */
+internal fun Card.fullNameProperty(): VCardProperty =
+    name?.writtenFull()?.ifEmpty { null }?.let { VCardProperty(FN, it.escapeText()) }
+        ?: VCardProperty(FN, derivedFullName().escapeText(), mapOf(DERIVED to listOf(DERIVED_TRUE)))
+
+private fun Card.derivedFullName(): String =
+    listOfNotNull(
+        organizations?.values?.firstNotNullOfOrNull { it.name },
+        emails?.values?.firstOrNull()?.address,
+        phones?.values?.firstOrNull()?.number,
+    ).firstOrNull().orEmpty()
 
 /** The full name to write as FN, which vCard 4.0 requires: [Name.full], or else the joined components. */
 internal fun Name.writtenFull(): String = full ?: components.orEmpty().fullName()

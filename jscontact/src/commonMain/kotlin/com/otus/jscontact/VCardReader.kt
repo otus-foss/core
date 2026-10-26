@@ -6,6 +6,8 @@ import com.otus.jscontact.VCardKey.APPLE_KIND
 import com.otus.jscontact.VCardKey.APPLE_MEMBER
 import com.otus.jscontact.VCardKey.BASE64
 import com.otus.jscontact.VCardKey.BASE64_SHORT
+import com.otus.jscontact.VCardKey.DERIVED
+import com.otus.jscontact.VCardKey.DERIVED_TRUE
 import com.otus.jscontact.VCardKey.EMAIL
 import com.otus.jscontact.VCardKey.FN
 import com.otus.jscontact.VCardKey.KIND
@@ -23,11 +25,11 @@ import com.otus.jscontact.VCardKey.UID
 import com.otus.jscontact.VCardKey.URL
 
 /**
- * The Card these properties of one vCard describe, mapped as RFC 9555 does, or null when it has neither a
- * name nor an email address. A Card without KIND is an individual.
+ * The Card these properties of one vCard describe, mapped as RFC 9555 does, or null when it has no mapped
+ * property besides KIND and UID. A Card without KIND is an individual.
  */
 internal fun List<VCardProperty>.toCardOrNull(): Card? =
-    CardReader(this).card().takeIf { it.name != null || it.emails != null }
+    CardReader(this).card().takeIf { it.copy(kind = null, uid = null) != Card() }
 
 /** Reads one vCard. Properties with an empty value count as absent, and unknown properties are ignored. */
 private class CardReader(
@@ -45,7 +47,7 @@ private class CardReader(
             kind = (first(KIND) ?: first(APPLE_KIND))?.let { CardKind(it.text.lowercase()) } ?: CardKind.Individual,
             members = named(MEMBER, APPLE_MEMBER).associate { it.text to true }.ifEmpty { null },
             uid = first(UID)?.text,
-            name = readName(first(FN)?.text, first(N)),
+            name = readName(named(FN).firstOrNull { !it.isDerived }?.text, first(N)),
             nicknames = named(NICKNAME).flatMap { it.textList }.map { Nickname(it) }.keyed("k"),
             organizations = named(ORG).mapNotNull { it.toOrganization() }.keyed("o"),
             titles = named(TITLE, ROLE).map { it.toTitle() }.keyed("t"),
@@ -67,6 +69,9 @@ private class CardReader(
 
     private fun labelOf(property: VCardProperty): String? = property.group?.let { labels[it] }
 }
+
+private val VCardProperty.isDerived: Boolean
+    get() = parameter(DERIVED).any { it.equals(DERIVED_TRUE, ignoreCase = true) }
 
 private fun VCardProperty.toEmail(label: String?): EmailAddress =
     EmailAddress(address = text, contexts = types.mapTypes(CONTEXT_TYPES), pref = pref, label = label)

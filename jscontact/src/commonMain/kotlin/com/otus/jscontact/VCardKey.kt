@@ -42,6 +42,10 @@ internal object VCardKey {
     const val ENCODING = "ENCODING"
     const val CHARSET = "CHARSET"
     const val MEDIATYPE = "MEDIATYPE"
+
+    /** Marks a value made from other properties, such as an FN made from ORG (RFC 9554, section 4.4). */
+    const val DERIVED = "DERIVED"
+    const val DERIVED_TRUE = "TRUE"
     const val LABEL = "LABEL"
     const val GEO = "GEO"
     const val TZ = "TZ"

@@ -19,10 +19,11 @@ public object VCard {
      * `group.` prefixes are read. TYPE values may be lists, as in `TYPE=work,pref`, or repeated, as in
      * `TYPE=WORK;TYPE=PREF`.
      *
-     * An entry becomes a Card when it has a name, from FN or N, or at least one email address. Every other
-     * entry, and one without `END:VCARD`, becomes a [VCardFailure] instead, so one bad entry never fails the
-     * file. Entries in an `Id[X]` map get the keys `e1`, `e2`, and so on, in file order. Without FN, the full
-     * name joins the N components, and without KIND, the Card is an individual.
+     * An entry becomes a Card when it has any mapped property besides KIND and UID. Every other entry, and
+     * one without `END:VCARD`, becomes a [VCardFailure] instead, so one bad entry never fails the file. An FN
+     * marked `DERIVED=TRUE` is not read as a name. Entries in an `Id[X]` map get the keys `e1`, `e2`, and so
+     * on, in file order. Without FN, the full name joins the N components, and without KIND, the Card is an
+     * individual.
      */
     public fun parse(text: String): VCardImport {
         val entries = text.vCardEntries().map { entry -> entry to entry.properties.toCardOrNull() }
@@ -39,7 +40,8 @@ public object VCard {
      * Writes [cards] as vCard 4.0 entries, one after another, with CRLF line endings, lines folded at 75
      * octets, and text values escaped. [parse] reads the result back to the same mapped properties.
      *
-     * A Card without a name gets an empty FN, which vCard 4.0 requires. The JSContact properties that
+     * A Card without a name gets its organization, email address, or phone number as FN, which vCard 4.0
+     * requires, marked `DERIVED=TRUE` so that [parse] reads no name back. The JSContact properties that
      * [parse] does not read are not written.
      */
     public fun write(cards: List<Card>): String = cards.joinToString("") { it.toVCard() }
@@ -57,7 +59,7 @@ public data class VCardImport(
 public data class VCardFailure(
     /** The 1-based position of the entry among the file's `BEGIN:VCARD` lines. */
     val position: Int,
-    /** Why the entry was skipped, as a sentence to show people, such as "It has no name and no email address." */
+    /** Why the entry was skipped, as a sentence to show people, such as "It has no contact details." */
     val reason: String,
 )
 
@@ -99,6 +101,6 @@ private fun VCardProperty.marks(boundary: String): Boolean =
 private fun VCardEntry.failureReason(card: Card?): String? =
     when {
         !isClosed -> "It has no END:VCARD line."
-        card == null -> "It has no name and no email address."
+        card == null -> "It has no contact details."
         else -> null
     }

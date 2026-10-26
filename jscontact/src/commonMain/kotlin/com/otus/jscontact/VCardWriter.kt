@@ -4,7 +4,6 @@ import com.otus.jscontact.VCardKey.AB_LABEL
 import com.otus.jscontact.VCardKey.BEGIN
 import com.otus.jscontact.VCardKey.EMAIL
 import com.otus.jscontact.VCardKey.END
-import com.otus.jscontact.VCardKey.FN
 import com.otus.jscontact.VCardKey.KIND
 import com.otus.jscontact.VCardKey.MEDIATYPE
 import com.otus.jscontact.VCardKey.MEMBER
@@ -34,7 +33,7 @@ private fun Card.vCardProperties(): List<VCardProperty> =
         add(VCardProperty(VERSION, WRITTEN_VERSION))
         if (uid != null) add(VCardProperty(UID, uid.escapeText()))
         if (kind != null) add(VCardProperty(KIND, kind.value))
-        add(VCardProperty(FN, name?.writtenFull().orEmpty().escapeText()))
+        add(fullNameProperty())
         addAll(listOfNotNull(name?.toNProperty()))
         addAll(nicknames.orEmpty().values.map { VCardProperty(NICKNAME, it.name.escapeText()) })
         addAll(organizations.orEmpty().values.map { it.toOrgProperty() })
