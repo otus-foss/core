@@ -16,8 +16,8 @@ import com.otus.avatar.generatedAvatar
 import com.otus.designsystem.components.ActionDialog
 import com.otus.designsystem.components.DialogAction
 import com.otus.designsystem.components.PersonAvatar
-import com.otus.designsystem.components.RowDensity
-import com.otus.designsystem.components.SettingRow
+import com.otus.designsystem.components.PickMark
+import com.otus.designsystem.components.PickRow
 import com.otus.designsystem.theme.AvatarTokens
 
 /**
@@ -51,40 +51,52 @@ internal fun AccountAvatarEditor(
             onDismiss = { if (asking == null) onDismiss() },
         )
     } else {
-        val one = choice.replaced.size == 1
-        ActionDialog(
-            title = if (one) "Replace 1 avatar?" else "Replace ${choice.replaced.size} avatars?",
-            actions =
-                listOf(
-                    DialogAction("Replace all", { avatars.saveAll(account, emails, choice.avatar) }, primary = true),
-                    DialogAction(
-                        "Keep theirs",
-                        { avatars.saveAll(account, emails - choice.replaced.toSet(), choice.avatar) },
-                    ),
-                ),
-            onDismiss = onDismiss,
-            message = if (one) "This address already has an avatar:" else "These addresses already have one:",
-        ) { CurrentAvatars(avatars, account, choice.replaced) }
+        ReplaceDialog(avatars, account, choice, onDismiss)
     }
 }
 
-/** [emails], each beside the avatar it has now. */
+/**
+ * Lists the addresses the new avatar would replace, each beside the avatar it has now, all ticked.
+ * The user unticks the ones that keep theirs; the button saves the avatar to the ticked ones and
+ * to every address that had none.
+ */
 @Composable
-private fun CurrentAvatars(
+private fun ReplaceDialog(
     avatars: OwnAvatarsState,
     account: ConnectedAccount,
-    emails: List<String>,
+    choice: AccountAvatarChoice,
+    onDismiss: () -> Unit,
 ) {
-    Column {
-        emails.forEach { email ->
-            val avatar =
-                avatars.avatar(account, email)?.toChipAvatar() ?: generatedAvatar(account.name, email).toChipAvatar()
-            SettingRow(
-                email,
-                onClick = null,
-                density = RowDensity.Compact,
-                leading = { PersonAvatar(avatar, AvatarTokens.size) },
-            )
+    var ticked by remember(choice) { mutableStateOf(choice.replaced.toSet()) }
+    val kept = choice.replaced.toSet() - ticked
+    val label =
+        when {
+            kept.isEmpty() -> "Replace all"
+            ticked.isEmpty() -> "Keep all"
+            else -> "Replace ${ticked.size}"
+        }
+    ActionDialog(
+        title = if (choice.replaced.size == 1) "Replace 1 avatar?" else "Replace ${choice.replaced.size} avatars?",
+        actions =
+            listOf(
+                DialogAction(label, { avatars.saveAll(account, account.ownAddresses - kept, choice.avatar) }, true),
+            ),
+        onDismiss = onDismiss,
+        message = "These addresses have their own. Untick the ones to keep:",
+    ) {
+        Column {
+            choice.replaced.forEach { email ->
+                val avatar =
+                    avatars.avatar(account, email)?.toChipAvatar()
+                        ?: generatedAvatar(account.name, email).toChipAvatar()
+                PickRow(
+                    email,
+                    null,
+                    PickMark(email in ticked, multiple = true),
+                    { ticked = if (email in ticked) ticked - email else ticked + email },
+                    leading = { PersonAvatar(avatar, AvatarTokens.size) },
+                )
+            }
         }
     }
 }
