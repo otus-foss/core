@@ -25,7 +25,8 @@ import kotlin.time.Clock
 
 /**
  * The date wheels for a birthday or another yearly date: day, month, and a year that may stay
- * "No year". Done confirms; [onRemove], when given, clears the date.
+ * "No year". The years run from this year back 120 years, widened to include [initial]'s year.
+ * Done confirms; [onRemove], when given, clears the date.
  */
 @Composable
 public fun BirthdayPicker(
@@ -35,8 +36,11 @@ public fun BirthdayPicker(
     title: String = "Birthday",
     onRemove: (() -> Unit)? = null,
 ) {
-    val latest = remember { Clock.System.todayIn(TimeZone.currentSystemDefault()).year }
-    val years = remember(latest) { listOf(NO_YEAR) + (latest downTo latest - YEARS_BACK).map(Int::toString) }
+    val thisYear = remember { Clock.System.todayIn(TimeZone.currentSystemDefault()).year }
+    // A stored year outside the usual range stays on the wheel, so Done keeps it.
+    val latest = maxOf(thisYear, initial?.year ?: thisYear)
+    val earliest = minOf(thisYear - YEARS_BACK, initial?.year ?: thisYear)
+    val years = remember(latest, earliest) { listOf(NO_YEAR) + (latest downTo earliest).map(Int::toString) }
     var month by rememberSaveable { mutableIntStateOf(initial?.month ?: 1) }
     var day by rememberSaveable { mutableIntStateOf(initial?.day ?: 1) }
     var year by rememberSaveable { mutableStateOf(initial?.year) }
