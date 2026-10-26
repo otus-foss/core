@@ -189,9 +189,10 @@ private fun SettingRowLayout(
 
 /**
  * Lays the content out at most [height] tall and centers anything taller across that height, so a
- * row-high control reaches into a compact row's padding without making the row taller.
+ * row-high control reaches into a compact row's padding, or an info button past its title's line,
+ * without making the row taller.
  */
-private fun Modifier.overlapHeight(height: Dp): Modifier =
+internal fun Modifier.overlapHeight(height: Dp): Modifier =
     layout { measurable, constraints ->
         val placeable = measurable.measure(constraints.copy(minHeight = 0, maxHeight = Constraints.Infinity))
         val shown = min(placeable.height, height.roundToPx())
