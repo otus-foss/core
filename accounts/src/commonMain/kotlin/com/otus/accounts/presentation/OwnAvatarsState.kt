@@ -52,11 +52,12 @@ public class OwnAvatarsState(
         email: String,
     ): ResolvedAvatar? = shown[key(account, email)]
 
-    /** The avatar every address of [account] shares, or null while they differ or still load. */
-    public fun shared(account: ConnectedAccount): ResolvedAvatar? {
-        val avatars = account.ownAddresses.map { shown[key(account, it)] ?: return null }
-        return avatars.firstOrNull()?.takeIf { first -> avatars.all { it.looksLike(first) } }
-    }
+    /**
+     * The avatar [account] shows as a whole: its first address's, which is the sign-in address
+     * when that is one, as the sidebar shows it. Null before it loads.
+     */
+    public fun accountAvatar(account: ConnectedAccount): ResolvedAvatar? =
+        account.ownAddresses.firstOrNull()?.let { shown[key(account, it)] }
 
     /** Loads the avatar of every address of [accounts]. */
     public fun load(accounts: List<ConnectedAccount>) {

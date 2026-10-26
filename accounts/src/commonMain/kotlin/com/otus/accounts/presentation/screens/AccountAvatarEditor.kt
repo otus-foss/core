@@ -37,7 +37,7 @@ internal fun AccountAvatarEditor(
         OwnAvatarSheet(
             "All addresses of ${account.name}",
             emails.first().substringAfterLast('@'),
-            avatars.shared(account),
+            avatars.accountAvatar(account),
             pickPhoto = if (avatars.canPickPhoto) avatars::pickPhoto else null,
             onSave = { avatar ->
                 val replaced = avatars.replaced(account, avatar)
