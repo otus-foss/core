@@ -45,7 +45,10 @@ public fun PersonAvatar(
     )
 }
 
-/** Draws [avatar] as a [BadgedAvatar]'s badge, such as the address a mail came to. */
+/**
+ * Draws [avatar] as a [BadgedAvatar][com.otus.designsystem.shared.people.elements.BadgedAvatar]'s
+ * badge, such as the address a mail came to.
+ */
 @Composable
 public fun PersonBadge(
     avatar: ChipAvatar,

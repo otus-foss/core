@@ -2,9 +2,8 @@
 
 ## Status
 
-Implemented on `refactor/ui-domains` for [Mail issue #174](https://github.com/reazndev/otus-mail/issues/174).
-The user approved grouping the design system by ownership, feature, and UI layer. Release 0.10.0
-is a candidate until the coordinated Meta and Mail changes pass validation and Meta publishes it.
+Accepted by the user on 2026-10-27 for [Mail issue #174](https://github.com/reazndev/otus-mail/issues/174).
+The packages ship in 0.10.0.
 
 ## Decision
 
