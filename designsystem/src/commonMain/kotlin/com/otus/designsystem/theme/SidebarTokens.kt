@@ -38,7 +38,7 @@ internal object SidebarTokens {
     val tileLabelLineHeight = 16.sp
     val tileLabelGap = 4.dp
 
-    /** A count on a tile's icon, ringed in the surface color so it stands clear of the icon. */
+    /** A count on a tile's icon or the inset Inbox row, ringed in the surface color so it stands clear. */
     val badgeHeight = 16.dp
     val badgePadding = 4.dp
     val badgeRing = 2.dp

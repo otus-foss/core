@@ -51,8 +51,11 @@ public data class RowTextPart(
     public val quiet: Boolean = false,
 )
 
-/** A state icon at the end of a [CompactContentRow]'s second line. */
-public enum class RowMark { Answered, Attachment, Flagged, ReadLater }
+/**
+ * A state icon at the end of a [CompactContentRow]'s second line. [Invite] marks a calendar
+ * invitation apart from [Attachment], so an invite does not look like any other file.
+ */
+public enum class RowMark { Answered, Attachment, Invite, Flagged, ReadLater }
 
 /** A folder an item is in; see [com.otus.designsystem.elements.FolderGlyph]. */
 public data class RowFolderIcon(
