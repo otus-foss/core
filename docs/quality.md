@@ -19,18 +19,34 @@ Test code gets ktlint formatting only. detekt and Android lint (`ignoreTestSourc
 source sets. The apps' lint analyzes Meta modules through `checkDependencies`, so this keeps their
 `checkAll` fast too.
 
-Daily commands:
+During development, batch edits and run the linters plus the test classes affected by the change:
 
 ```sh
-./gradlew formatAll
-./gradlew checkAll
+./gradlew spotlessCheck detekt ruffCheck ruffFormatCheck
+./gradlew :dateformat:testAndroidHostTest --tests 'com.otus.dateformat.DateFormatterTest'
 ```
+
+Use `qualityCheck` when architecture and tooling checks are also needed. Run `formatAll` when
+files need formatting. Run `checkAll` once after the final batch, and repeat it only when later
+changes or failures require another full check.
 
 | Command | Scope |
 | --- | --- |
 | `formatAll` | Spotless/ktlint Kotlin and Gradle formatting, project text whitespace, Ruff fixes/formatting |
 | `qualityCheck` | Spotless, detekt, architecture/file-length checks and regression tests, Ruff lint/format |
 | `checkAll` | `qualityCheck` plus the `check` task of every library module |
+
+Use `--profile` to write task timings to `build/reports/profile/` and `--info` to explain cache
+misses. For actual test timings, add `--rerun` to a specific test task, such as
+`./gradlew :designsystem:testAndroidHostTest --rerun --profile`. This reruns that test task without
+forcing its compilation dependencies to rerun. Record shared-machine queue waits separately;
+Gradle includes them in task time. Test time includes Robolectric and native-renderer startup.
+
+Screenshot baselines use relative path sensitivity so the checkout's absolute path does not
+change their input fingerprints. Keep baseline names and contents as task inputs so an edited
+PNG still invalidates verification.
+Recording with `-Proborazzi.record` always executes and does not cache test results, because
+baseline PNGs are written outside the test task's declared output directories.
 
 Detekt is skipped while the repository has no library module, because it has no Kotlin source to
 read. Kotlin/Native tests for iOS run only on macOS. On Linux, compile the iOS sources of a module
