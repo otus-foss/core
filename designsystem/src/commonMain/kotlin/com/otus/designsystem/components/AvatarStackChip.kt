@@ -43,7 +43,7 @@ public fun AvatarStackChip(
             prefix?.let {
                 Text(it, style = panelTextStyle(), color = OtusColors.text2, fontSize = PanelTokens.countSize)
             }
-            AvatarStack(avatars, ring = OtusColors.accentLight)
+            AvatarStack(avatars, ring = OtusColors.selectedFill)
         }
     }
 }

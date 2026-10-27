@@ -26,5 +26,8 @@ public object CalendarTokens {
     public val endpointRadius: Dp = CornerTokens.tiny
     public val rangeInset: Dp = 4.dp
     public const val DAYS_PER_WEEK: Int = 7
+
+    /** How far a range's end days step from the range's `selectedFill` toward `text1`. */
+    public const val ENDPOINT_STEP: Float = 0.25f
     public const val HALF_TURN: Float = 180f
 }

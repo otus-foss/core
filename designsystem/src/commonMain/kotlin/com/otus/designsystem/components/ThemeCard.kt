@@ -81,7 +81,7 @@ public fun ThemeCard(
                 .background(OtusColors.bgDark, shape)
                 .border(
                     if (selected) PanelTokens.borderWidth * 2 else PanelTokens.borderWidth,
-                    if (selected) OtusColors.accentLight else OtusColors.strokeBgDark,
+                    if (selected) OtusColors.text1 else OtusColors.strokeBgDark,
                     shape,
                 ).padding(ThemeTokens.cardPadding),
             verticalArrangement = Arrangement.spacedBy(ThemeTokens.cardGap),
@@ -128,7 +128,7 @@ private fun CardLabel(
             }
 
             selected -> {
-                CompositionLocalProvider(LocalContentColor provides OtusColors.accentLight) {
+                CompositionLocalProvider(LocalContentColor provides OtusColors.text1) {
                     Symbol(Res.drawable.symbol_check_circle)
                 }
             }

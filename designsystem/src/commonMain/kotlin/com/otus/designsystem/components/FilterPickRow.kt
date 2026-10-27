@@ -15,7 +15,7 @@ import com.otus.designsystem.theme.OtusColors
 /**
  * A person, address, or account to pick on a filter page, [FilterTokens.pickRowHeight] tall: an
  * optional [leading] avatar, the [title], a `text2` [subtitle], and a circle at the end, filled
- * with a check in `accentLight` while [mark] is selected. [mark] also sets whether screen readers
+ * with a check in `text1` while [mark] is selected. [mark] also sets whether screen readers
  * hear a checkbox or a radio button. A null [onClick] shows the row disabled.
  */
 @Composable
@@ -39,7 +39,7 @@ public fun FilterPickRow(
 /** The check circle of a [FilterPickRow] and a [FilterFolderRow]. */
 @Composable
 internal fun FilterPickMark(selected: Boolean) {
-    CompositionLocalProvider(LocalContentColor provides if (selected) OtusColors.accentLight else OtusColors.text3) {
+    CompositionLocalProvider(LocalContentColor provides if (selected) OtusColors.text1 else OtusColors.text3) {
         Symbol(if (selected) Res.drawable.symbol_check_circle_fill else Res.drawable.symbol_radio_button_unchecked)
     }
 }

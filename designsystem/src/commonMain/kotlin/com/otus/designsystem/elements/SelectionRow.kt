@@ -64,7 +64,7 @@ public fun SelectionRow(
                     ) { onClick() }
                 },
             ).clip(shape)
-            .background(if (selected) OtusColors.accentDark else OtusColors.bgDark)
+            .background(if (selected) OtusColors.selectedFill else OtusColors.bgDark)
             .controlPressFeedback(interactions, shape)
             .padding(horizontal = SheetTokens.gap, vertical = if (subtitle == null) 0.dp else SheetTokens.rowPadding),
         verticalAlignment = Alignment.CenterVertically,
@@ -83,7 +83,7 @@ private fun SelectionCheckmark(selected: Boolean) {
         onCheckedChange = null,
         colors =
             CheckboxDefaults.colors(
-                checkedColor = OtusColors.accentLight,
+                checkedColor = OtusColors.text1,
                 uncheckedColor = OtusColors.text3,
                 checkmarkColor = OtusColors.bgDark,
             ),

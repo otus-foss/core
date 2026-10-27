@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -65,8 +66,8 @@ public fun CalendarDay(
             .padding(vertical = CalendarTokens.rangeInset)
             .background(
                 when {
-                    selection.endpoint -> OtusColors.accentRegular
-                    selection.inRange -> OtusColors.accentDark
+                    selection.endpoint -> lerp(OtusColors.selectedFill, OtusColors.text1, CalendarTokens.ENDPOINT_STEP)
+                    selection.inRange -> OtusColors.selectedFill
                     else -> Color.Transparent
                 },
                 shape,
@@ -94,7 +95,7 @@ private fun CalendarMonthLabel(
         label,
         modifier = Modifier.offset(y = -offset).height(height),
         style = style.copy(fontSize = CalendarTokens.monthLabelSize, lineHeight = CalendarTokens.monthLabelLineHeight),
-        color = if (selected) OtusColors.text1 else OtusColors.accentLight,
+        color = if (selected) OtusColors.text1 else OtusColors.text2,
         maxLines = 1,
     )
 }

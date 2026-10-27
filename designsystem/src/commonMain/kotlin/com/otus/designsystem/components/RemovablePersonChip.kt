@@ -29,7 +29,7 @@ import com.otus.designsystem.theme.PanelTokens
 import com.otus.designsystem.theme.panelTextStyle
 
 /**
- * A picked person in a filter, such as a sender on a [PeopleLine]: an `accentDark` capsule with
+ * A picked person in a filter, such as a sender on a [PeopleLine]: a `selectedFill` capsule with
  * the [person]'s avatar, name, and a ✕ that calls [onRemove]. Only the ✕ reacts to taps, so a tap
  * on the rest reaches the line; screen readers hear it as "Remove Grace Hopper".
  */
@@ -42,9 +42,9 @@ public fun RemovablePersonChip(
     Surface(
         modifier.height(FilterTokens.chipHeight),
         shape = CircleShape,
-        color = OtusColors.accentDark,
+        color = OtusColors.selectedFill,
         contentColor = OtusColors.text1,
-        border = BorderStroke(PanelTokens.borderWidth, OtusColors.accentRegular),
+        border = BorderStroke(PanelTokens.borderWidth, OtusColors.selectedFill),
     ) {
         Row(
             Modifier.padding(start = FilterTokens.chipIconGap),
