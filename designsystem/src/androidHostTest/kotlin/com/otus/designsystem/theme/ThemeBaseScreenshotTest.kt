@@ -9,8 +9,8 @@ import androidx.compose.material.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.unit.dp
-import com.otus.designsystem.elements.Chip
 import com.otus.designsystem.screenshot.screenshot
+import com.otus.designsystem.shared.controls.elements.Chip
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.ParameterizedRobolectricTestRunner

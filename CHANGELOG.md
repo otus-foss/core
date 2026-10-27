@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Breaking: move design-system elements and components into `shared/<group>` and
+  `mail/<feature>` packages. Update imports with the [package migration guide](docs/ui-package-migration.md).
+  The Maven module, theme package, resource identifiers, and rendering behavior are unchanged.
 - `SidebarInboxEntry` shows its count in the mailbox tiles' badge while `inset`, so the Inbox count
   matches the tiles below it. Pass a shortened count, such as "999+", as for `SidebarMailboxTile`.
 - Add `RowMark.Invite`, a calendar mark for a row that carries a calendar invitation. Exhaustive

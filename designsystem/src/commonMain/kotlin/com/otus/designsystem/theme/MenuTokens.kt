@@ -27,7 +27,7 @@ public object MenuTokens {
     /** A row's smaller second line, such as an option's detail. */
     public val detailSize: TextUnit = 12.sp
 
-    /** How far a [com.otus.designsystem.components.QuickActionBar] sits from the pressed point. */
+    /** How far a [com.otus.designsystem.shared.actionbar.components.QuickActionBar] sits from the pressed point. */
     public val barGap: Dp = 12.dp
 
     /** The space the menu keeps from the screen edges. */

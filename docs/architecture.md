@@ -8,9 +8,10 @@ database instance, credentials, notifications, and release. Shared code does not
 access to the other app's accounts or storage.
 
 Move code here when the second app needs it or the user explicitly requests a suite extraction
-of existing behavior. The settings/account extraction follows that request and leaves Calendar
-adoption for later. The contacts modules are new code the user asked for before either app needs
-them; see [decision 0016](decisions/0016-contacts-modules.md). App-specific workflows and speculative modules stay out of this repository. All branded visual
+of existing behavior. The settings/account extraction followed that request. Calendar now consumes
+the shared settings module; account setup remains app-specific there. The contacts modules began
+as requested suite code and now serve Mail; see [decision 0016](decisions/0016-contacts-modules.md).
+App-specific workflows and speculative modules stay out of this repository. All branded visual
 elements, reusable components, visual tokens, and symbols live here, including those currently
 used only by Mail. See [decision 0008](decisions/0008-central-ui-ownership.md).
 
@@ -30,23 +31,25 @@ named `jmap-mail` uses the package `com.otus.jmap.mail` and publishes the Maven 
     commonTest/kotlin/com/otus/<module>/   Behavior tests
 ```
 
-### Planned extraction
+### Extracted libraries
 
 The first modules move existing code. `jmap` moved in version 0.1.0; `designsystem`, `dateformat`,
-and `avatar` moved from Mail in 0.2.0. Calendar still carries older copies of the last three until
-it adopts the modules. Version 0.3.0 adds `accounts` and `settings`,
-plus the historical date-range picker and avatar-stack pill in `designsystem`. Mail consumes
-these through pinned libraries or an opt-in composite build; Calendar is unchanged.
+and `avatar` moved from Mail in 0.2.0. Version 0.3.0 added `accounts` and `settings`,
+plus the historical date-range picker and avatar-stack pill in `designsystem`. Mail consumes all
+nine modules. Calendar consumes `avatar`, `dateformat`, `designsystem`, and `settings`, pinned
+independently of Mail. Both apps support an opt-in composite build for development.
 
 | Order | Module | Source | Notes |
 | --- | --- | --- | --- |
 | 1 | `jmap` | `otus-mail/jmap` | Moved in 0.1.0. See [JMAP](jmap.md). |
 | 2 | `designsystem` | `designsystem/` in both apps | Moved from Mail in 0.2.0. See [design system](designsystem.md). |
 | 3 | `dateformat` | `core/dateformat` in both apps | Moved from Mail in 0.2.0. See [date formatting](dateformat.md). |
-| 4 | `avatar` | `core/avatar` in both apps | Moved from Mail in 0.2.0; Calendar's copy is older. See [avatars](avatar.md). |
-| 5 | `push` | New | JMAP push subscriptions for Mail, and Calendar later. See [push](push.md) and decision 0015. |
-| 6 | `jscontact` | New | JSContact cards (RFC 9553). Depends only on kotlinx.serialization. No app uses it yet. See [contacts](contacts.md) and decision 0016. |
-| 7 | `jmap-contacts` | New | JMAP for Contacts (RFC 9610) on `jmap` and `jscontact`. No app uses it yet. See [contacts](contacts.md) and decision 0016. |
+| 4 | `avatar` | `core/avatar` in both apps | Moved from Mail in 0.2.0. See [avatars](avatar.md). |
+| 5 | `accounts` | Mail account setup | Moved in 0.3.0. See decision 0007. |
+| 6 | `settings` | Mail settings | Moved in 0.3.0; both apps consume it. See decision 0007. |
+| 7 | `push` | New | JMAP push subscriptions for Mail, and Calendar later. See [push](push.md) and decision 0015. |
+| 8 | `jscontact` | New | JSContact cards (RFC 9553), consumed by Mail. Depends only on kotlinx.serialization. See [contacts](contacts.md) and decision 0016. |
+| 9 | `jmap-contacts` | New | JMAP for Contacts (RFC 9610) on `jmap` and `jscontact`, consumed by Mail. See [contacts](contacts.md) and decision 0016. |
 
 Later modules come from the roadmap issues once their APIs exist in one app and the second app
 needs them. Candidates are storage (SQLDelight drivers, migrations, blob files), sync cursors,
@@ -62,9 +65,14 @@ The checker in `tools/check_architecture.py` enforces these rules at source leve
 - No module references `com.otus.mail` or `com.otus.calendar`, including in tests.
 - Packages match the source path and start with the module namespace.
 - `commonMain` uses no Android, JVM, or Apple platform APIs.
-- `designsystem` modules use Compose in `elements`, `components`, and `theme`. Elements do not
-  use components. They may format dates through `dateformat`, but cannot depend on account or
-  settings features, protocol clients, networking, or storage.
+- `designsystem` modules use `shared/<group>/elements` and `components` for shared UI, and
+  `mail/<feature>/elements` and `components` for Mail rendering. Future Calendar rendering uses
+  `calendar/<feature>` with the same layers. Elements never use components, including those in
+  other groups. Shared UI cannot depend on Mail or Calendar UI groups, and the two app-specific
+  groups cannot depend on each other. `theme` stays at the root and cannot depend on these UI
+  groups. The module may format dates through `dateformat`, but cannot depend on account or
+  settings features, protocol clients, networking, or storage. See
+  [decision 0018](decisions/0018-ui-domain-packages.md).
 - The shared `accounts` and `settings` features may use Compose in `presentation` only.
   Composables live in `presentation/components` or `presentation/screens`, with screen files
   named `*Screen.kt`. Domain cannot depend on data, presentation, or the design system.
@@ -108,6 +116,24 @@ compose shared design-system components. App-specific navigation and installed-a
 remain independent. See [decision 0007](decisions/0007-shared-feature-modules.md).
 
 ## Central visual library
+
+The package layout groups rendering by ownership, responsibility, and UI layer:
+
+```text
+com/otus/designsystem/
+  theme/
+  shared/<group>/elements/
+  shared/<group>/components/
+  mail/<feature>/elements/
+  mail/<feature>/components/
+```
+
+Groups such as `people`, `contacts`, `dates`, `rows`, `filters`, and `sidebar` hold shared UI.
+Mail owns rendering groups such as `inbox`, `compose`, `read`, `folders`, and `attachments`.
+Only create a layer directory when it contains code. Platform implementations and tests mirror
+these paths. Keep component-specific display values and visual state beside their component;
+app business models and services do not move into these groups. See the
+[package migration guide](ui-package-migration.md) for the declaration mapping.
 
 `designsystem` also owns `ContentRow`, `DetailRow`, `EmptyState`, `InboxTokens`, and the public
 `com.otus.designsystem.resources.Res` symbol bundle. Mail supplies display values and actions

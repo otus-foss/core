@@ -3,7 +3,7 @@ package com.otus.designsystem.theme
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-/** A [com.otus.designsystem.components.PreviewCard] and the page sketch above its preview. */
+/** A [com.otus.designsystem.shared.settings.components.PreviewCard] and the page sketch above its preview. */
 internal object PreviewTokens {
     val sketchPadding: Dp = 10.dp
     val sketchRadius: Dp = CornerTokens.chip

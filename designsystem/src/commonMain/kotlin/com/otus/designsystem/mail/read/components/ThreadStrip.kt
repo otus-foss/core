@@ -1,0 +1,169 @@
+package com.otus.designsystem.mail.read.components
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.LocalContentColor
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.TextOverflow
+import com.otus.designsystem.resources.Res
+import com.otus.designsystem.resources.symbol_unfold_more
+import com.otus.designsystem.shared.controls.elements.Symbol
+import com.otus.designsystem.shared.people.components.AvatarStack
+import com.otus.designsystem.shared.people.components.PersonAvatar
+import com.otus.designsystem.theme.ActionBarTokens
+import com.otus.designsystem.theme.OtusColors
+import com.otus.designsystem.theme.PanelTokens
+import com.otus.designsystem.theme.ThreadTokens
+import com.otus.designsystem.theme.panelTextStyle
+
+/**
+ * The earlier messages of the thread a reply answers, just above its action bar. Up to
+ * [ThreadTokens.ROW_LIMIT] show as rows with their sender and date; more fold into one row with
+ * their avatars, the [summary], such as "5 earlier messages", and its [detail], such as who wrote
+ * the latest. Tapping anywhere runs [onOpen].
+ */
+@Composable
+public fun ThreadStrip(
+    entries: List<ThreadEntry>,
+    summary: String,
+    detail: String,
+    onOpen: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val shape = RoundedCornerShape(ActionBarTokens.radius)
+    Column(
+        modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .background(OtusColors.bgDark)
+            .border(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape)
+            .clickable(onClickLabel = "Show the thread", role = Role.Button, onClick = onOpen),
+    ) {
+        if (entries.size > ThreadTokens.ROW_LIMIT) {
+            ThreadSummary(entries, summary, detail)
+        } else {
+            entries.forEachIndexed { index, entry ->
+                if (index >
+                    0
+                ) {
+                    Box(Modifier.fillMaxWidth().height(PanelTokens.borderWidth).background(OtusColors.bgLight))
+                }
+                ThreadRow(entry)
+            }
+        }
+    }
+}
+
+@Composable
+private fun ThreadRow(entry: ThreadEntry) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .heightIn(
+                min = ThreadTokens.rowHeight,
+            ).padding(horizontal = ActionBarTokens.contextInset),
+        horizontalArrangement = Arrangement.spacedBy(ActionBarTokens.contextInset),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        PersonAvatar(entry.avatar, ThreadTokens.avatarSize)
+        Text(
+            entry.name,
+            Modifier.weight(1f),
+            style = panelTextStyle(),
+            fontSize = ThreadTokens.nameSize,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+        Text(entry.date, style = panelTextStyle(), color = OtusColors.text3, fontSize = ThreadTokens.detailSize)
+    }
+}
+
+@Composable
+private fun ThreadSummary(
+    entries: List<ThreadEntry>,
+    summary: String,
+    detail: String,
+) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .heightIn(
+                min = ThreadTokens.summaryHeight,
+            ).padding(horizontal = ActionBarTokens.contextInset),
+        horizontalArrangement = Arrangement.spacedBy(ActionBarTokens.contextInset),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        AvatarStack(entries.take(ThreadTokens.ROW_LIMIT).map { it.avatar }, ring = OtusColors.bgDark)
+        Column(Modifier.weight(1f)) {
+            Text(
+                summary,
+                style = panelTextStyle(),
+                fontSize = ThreadTokens.nameSize,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Text(
+                detail,
+                style = panelTextStyle(),
+                color = OtusColors.text3,
+                fontSize = ThreadTokens.detailSize,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+        CompositionLocalProvider(
+            LocalContentColor provides OtusColors.text2,
+        ) { Symbol(Res.drawable.symbol_unfold_more) }
+    }
+}
+
+/** A message in the thread sheet: avatar, sender, date, and one line of its text. */
+@Composable
+public fun ThreadMessageRow(
+    entry: ThreadEntry,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier.fillMaxWidth().padding(horizontal = ActionBarTokens.contextInset, vertical = PanelTokens.chipPadding),
+        horizontalArrangement = Arrangement.spacedBy(ActionBarTokens.contextInset),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        PersonAvatar(entry.avatar, ThreadTokens.sheetAvatarSize)
+        Column(Modifier.weight(1f)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    entry.name,
+                    Modifier.weight(1f),
+                    style = panelTextStyle(),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Text(entry.date, style = panelTextStyle(), color = OtusColors.text3, fontSize = ThreadTokens.detailSize)
+            }
+            Text(
+                entry.preview,
+                style = panelTextStyle(),
+                color = OtusColors.text2,
+                fontSize = ThreadTokens.nameSize,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+    }
+}
