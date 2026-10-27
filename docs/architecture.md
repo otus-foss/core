@@ -47,7 +47,7 @@ independently of Mail. Both apps support an opt-in composite build for developme
 | 4 | `avatar` | `core/avatar` in both apps | Moved from Mail in 0.2.0. See [avatars](avatar.md). |
 | 5 | `accounts` | Mail account setup | Moved in 0.3.0. See decision 0007. |
 | 6 | `settings` | Mail settings | Moved in 0.3.0; both apps consume it. See decision 0007. |
-| 7 | `push` | New | JMAP push subscriptions for Mail, and Calendar later. See [push](push.md) and decision 0015. |
+| 7 | `jmap-push` | New | JMAP push subscriptions for Mail, and Calendar later. See [push](push.md) and decision 0015. |
 | 8 | `jscontact` | New | JSContact cards (RFC 9553), consumed by Mail. Depends only on kotlinx.serialization. See [contacts](contacts.md) and decision 0016. |
 | 9 | `jmap-contacts` | New | JMAP for Contacts (RFC 9610) on `jmap` and `jscontact`, consumed by Mail. See [contacts](contacts.md) and decision 0016. |
 

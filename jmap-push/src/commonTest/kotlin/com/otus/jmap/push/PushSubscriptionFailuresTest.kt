@@ -1,4 +1,4 @@
-package com.otus.push
+package com.otus.jmap.push
 
 import com.otus.jmap.login.InMemoryLoginStore
 import com.otus.jmap.login.JmapLogin

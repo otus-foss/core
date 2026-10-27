@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Breaking: rename the `push` module and `com.otus:push` artifact to `jmap-push` and
+  `com.otus:jmap-push`. Replace `com.otus.push` imports with `com.otus.jmap.push` and use
+  `libs.otus.jmap.push` with the `otus-jmap-push` catalog alias. Push behavior and stored records
+  are unchanged. See [push subscriptions](docs/push.md#module-rename-in-0100).
 - Breaking: move design-system elements and components into `shared/<group>` and
   `mail/<feature>` packages. Update imports with the [package migration guide](docs/ui-package-migration.md).
   The Maven module, theme package, resource identifiers, and rendering behavior are unchanged.
@@ -443,7 +447,7 @@
 - Add `MotionCurve.Reverse`, the standard curve played backward. When a page closes, the action
   bar beneath now moves back on it, and a context that goes away in place uses it too, so both
   replay the way the bar collapsed.
-- Add the `push` module (decision 0015). `PushSubscriptions` keeps one JMAP push subscription per
+- Add the `jmap-push` module (decision 0015). `PushSubscriptions` keeps one JMAP push subscription per
   login pointed at the app's push endpoint: it creates, verifies, renews, replaces, and deletes
   subscriptions, and reports a `PushStatus` per login. Apps store records through
   `PushStateStore`. `forget` deletes a login's subscription before the login is removed, and

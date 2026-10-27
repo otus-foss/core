@@ -93,7 +93,8 @@ module to `<module>/build/reports/kover/html/`. `koverLog` prints line coverage 
 Kover counts only the code that runs on the JVM, through the common and Android host tests.
 Kotlin/Native tests for iOS do not count, and neither does code in `iosMain`.
 
-Measured on 2026-10-16, after the design system screenshot tests:
+Measured on 2026-10-16, after the design system screenshot tests. The `jmap-push` module was
+named `push` at the time:
 
 | Module | Line | Branch |
 | --- | --- | --- |
@@ -102,7 +103,7 @@ Measured on 2026-10-16, after the design system screenshot tests:
 | `dateformat` | 89.8% | 100% |
 | `designsystem` | 92.1% | 56.8% |
 | `jmap` | 96.4% | 58.5% |
-| `push` | 97.3% | 77.3% |
+| `jmap-push` | 97.3% | 77.3% |
 | `settings` | 77.5% | 59.6% |
 | All modules | 90.6% | 60.6% |
 
