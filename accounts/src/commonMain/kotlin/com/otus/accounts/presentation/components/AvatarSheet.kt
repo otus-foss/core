@@ -21,10 +21,10 @@ import com.otus.accounts.presentation.AvatarKind
 import com.otus.accounts.presentation.PhotoSource
 import com.otus.accounts.presentation.isSet
 import com.otus.avatar.ResolvedAvatar
-import com.otus.designsystem.components.PersonAvatar
-import com.otus.designsystem.components.SegmentedToggle
-import com.otus.designsystem.components.SheetFrame
-import com.otus.designsystem.components.SheetHeaderAction
+import com.otus.designsystem.shared.controls.components.SegmentedToggle
+import com.otus.designsystem.shared.overlays.components.SheetFrame
+import com.otus.designsystem.shared.overlays.components.SheetHeaderAction
+import com.otus.designsystem.shared.people.components.PersonAvatar
 import com.otus.designsystem.theme.AvatarTokens
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PageTokens

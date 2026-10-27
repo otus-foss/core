@@ -15,10 +15,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import com.otus.designsystem.components.ColorSheet
-import com.otus.designsystem.components.PageSection
-import com.otus.designsystem.components.Subpage
-import com.otus.designsystem.elements.ActionButton
+import com.otus.designsystem.shared.controls.elements.ActionButton
+import com.otus.designsystem.shared.pages.components.PageSection
+import com.otus.designsystem.shared.pages.components.Subpage
+import com.otus.designsystem.shared.settings.components.ColorSheet
 import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.PanelTokens
 import com.otus.designsystem.theme.SheetTokens

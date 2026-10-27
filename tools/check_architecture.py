@@ -14,7 +14,8 @@ DATA_APIS = ("io.ktor.", "app.cash.sqldelight.", "androidx.room.", "okhttp3.")
 UI_APIS = ("androidx.compose.", "androidx.lifecycle.", "org.jetbrains.compose.")
 # Libraries are consumed by the apps; they must never reach back into app code.
 APP_NAMESPACES = ("com.otus.mail", "com.otus.calendar")
-UI_LAYERS = {"elements", "components", "theme"}
+UI_LAYERS = frozenset({"elements", "components"})
+UI_SCOPES = frozenset({"shared", "mail", "calendar"})
 FEATURE_LAYERS = {"domain", "data", "presentation"}
 FEATURE_UI_MODULES = frozenset({"accounts", "settings"})
 # Design-system code may format dates, but must not reach protocol, storage, or feature modules.
@@ -115,6 +116,55 @@ def uses(code: str, apis: tuple[str, ...]) -> bool:
     return any(re.search(r"(?<![\w.])" + re.escape(api), code) for api in apis)
 
 
+def scoped_ui_location(location: list[str]) -> bool:
+    return (
+        len(location) == 3
+        and location[0] in UI_SCOPES
+        and bool(re.fullmatch(r"[A-Za-z_][\w]*", location[1]))
+        and location[1] not in UI_LAYERS | {"theme", "resources"}
+        and location[2] in UI_LAYERS
+    )
+
+
+def library_references(code: str) -> list[str]:
+    # A package declaration describes this file, not a dependency.
+    code = re.sub(r"^package\s+[\w.]+[ \t]*;?", "", code, flags=re.MULTILINE)
+    return re.findall(r"(?<![\w.])" + re.escape(NAMESPACE) + r"\.([A-Za-z_][\w.]*)", code)
+
+
+def ui_reference_violations(
+    location: list[str], references: list[str], ui_modules: frozenset[str]
+) -> list[str]:
+    errors = []
+    scope = location[0] if location else None
+    # Split modules have longer namespaces, such as designsystem.controls.
+    namespaces = sorted(
+        (name.replace("-", ".") for name in ui_modules | {"designsystem"}),
+        key=len,
+        reverse=True,
+    )
+    for reference in references:
+        namespace = next((name for name in namespaces if reference.startswith(name + ".")), None)
+        if namespace is None:
+            continue
+        target = reference.removeprefix(namespace + ".").split(".")
+        target_scope = target[0]
+        if target_scope not in {"theme", "resources"} and (
+            len(target) < 4 or not scoped_ui_location(target[:3])
+        ):
+            errors.append(
+                "design-system references must use <scope>.<group>.elements/components "
+                "or theme/resources"
+            )
+        if scope == "shared" and target_scope in {"mail", "calendar"}:
+            errors.append("shared UI cannot depend on mail or calendar UI")
+        if scope in {"mail", "calendar"} and target_scope in {"mail", "calendar"} - {scope}:
+            errors.append("mail and calendar UI cannot depend on each other")
+        if scope == "theme" and target_scope in UI_SCOPES:
+            errors.append("theme cannot depend on scoped UI")
+    return errors
+
+
 def violations(path: Path, text: str, ui_modules: frozenset[str] = frozenset()) -> list[str]:
     errors = file_length_violations(path, text)
     if re.search(SUPPRESSIONS, text):
@@ -146,10 +196,16 @@ def violations(path: Path, text: str, ui_modules: frozenset[str] = frozenset()) 
         errors.append("use responsibility-specific packages instead of catch-all packages")
     if "domain" in location and uses(code, (*PLATFORM_APIS, *DATA_APIS, *UI_APIS)):
         errors.append("domain contains UI/platform/network/database dependencies")
-    if "theme" not in location and literal_color(code):
+    if not (is_ui_module(module) and location == ["theme"]) and literal_color(code):
         errors.append("literal colors belong in theme")
+    references = library_references(code)
     if is_ui_module(module):
-        errors.extend(ui_violations(location, code, ui_modules | {module}))
+        ui_modules = ui_modules | {module}
+    errors.extend(
+        ui_reference_violations(location if is_ui_module(module) else [], references, ui_modules)
+    )
+    if is_ui_module(module):
+        errors.extend(ui_violations(location, code, references, ui_modules))
     else:
         composable = re.search(r"@(?:androidx\.compose\.runtime\.)?Composable\b", code)
         if module not in FEATURE_UI_MODULES and (uses(code, UI_APIS) or composable):
@@ -202,17 +258,23 @@ def feature_violations(path: Path, base: str, location: list[str], code: str) ->
     return errors
 
 
-def ui_violations(location: list[str], code: str, ui_modules: frozenset[str]) -> list[str]:
+def ui_violations(
+    location: list[str], code: str, references: list[str], ui_modules: frozenset[str]
+) -> list[str]:
     errors = []
-    if not location or location[0] not in UI_LAYERS:
-        errors.append("design-system code belongs in elements/components/theme")
+    if location != ["theme"] and not scoped_ui_location(location):
+        errors.append(
+            "design-system code belongs in <shared|mail|calendar>/<group>/elements|components "
+            "or root theme"
+        )
     if uses(code, DATA_APIS):
         errors.append("UI must not access network or database APIs")
-    if location[:1] in (["elements"], ["components"]) and re.search(SERVICE_TYPES, code):
+    layer = location[2:3]
+    if layer in (["elements"], ["components"]) and re.search(SERVICE_TYPES, code):
         errors.append("elements/components take values and callbacks, not services or navigation")
-    for reference in re.findall(r"\b" + re.escape(NAMESPACE) + r"\.([A-Za-z_][\w.]*)", code):
+    for reference in references:
         target = reference.split(".")
-        if location[:1] == ["elements"] and "components" in target:
+        if layer == ["elements"] and "components" in target:
             errors.append("elements cannot depend on components")
         allowed = ui_modules | UI_ALLOWED_MODULES
         namespace = ".".join(target)

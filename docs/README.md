@@ -22,6 +22,7 @@
 - [Avatars](avatar.md): the `avatar` module's lookup order, caching, and privacy limits.
 - [Shared features](shared-features.md): settings and JMAP account setup modules.
 - [Design system](designsystem.md): the `designsystem` module's contents, resources, and tests.
+- [UI package migration](ui-package-migration.md): the domain layout and declaration moves in 0.10.0.
 - [Using the libraries from an app](consuming.md): GitHub Packages, credentials, and local builds.
 - [Releasing](releasing.md): versions, changelog, and publishing.
 - [Quality gate](quality.md): commands, checks, and file-length exceptions.
@@ -45,5 +46,6 @@
 - [0015: Push notifications without an Otus server](decisions/0015-push-notifications.md)
 - [0016: JMAP contacts modules](decisions/0016-contacts-modules.md)
 - [0017: Apple push through an APNs bridge](decisions/0017-apple-push.md)
+- [0018: UI domain packages](decisions/0018-ui-domain-packages.md)
 
 Decisions 0001 to 0004 were made in the app repositories and apply to every Otus repository.

@@ -8,11 +8,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.otus.accounts.presentation.AccountAvatarEdit
 import com.otus.avatar.ContactAvatar
-import com.otus.designsystem.components.ActionDialog
-import com.otus.designsystem.components.DialogAction
-import com.otus.designsystem.components.PersonAvatar
-import com.otus.designsystem.components.PickMark
-import com.otus.designsystem.components.PickRow
+import com.otus.designsystem.shared.overlays.components.ActionDialog
+import com.otus.designsystem.shared.overlays.components.DialogAction
+import com.otus.designsystem.shared.people.components.PersonAvatar
+import com.otus.designsystem.shared.selection.components.PickMark
+import com.otus.designsystem.shared.selection.components.PickRow
 import com.otus.designsystem.theme.AvatarTokens
 
 /**

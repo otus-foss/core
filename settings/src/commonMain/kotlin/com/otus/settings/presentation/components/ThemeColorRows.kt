@@ -2,10 +2,10 @@ package com.otus.settings.presentation.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
-import com.otus.designsystem.components.Collapsible
-import com.otus.designsystem.components.SettingRow
-import com.otus.designsystem.elements.SwatchStack
-import com.otus.designsystem.elements.ValueButton
+import com.otus.designsystem.shared.rows.components.Collapsible
+import com.otus.designsystem.shared.settings.components.SettingRow
+import com.otus.designsystem.shared.settings.elements.SwatchStack
+import com.otus.designsystem.shared.settings.elements.ValueButton
 import com.otus.designsystem.theme.ThemeChoice
 import com.otus.designsystem.theme.ThemeColor
 import com.otus.designsystem.theme.get

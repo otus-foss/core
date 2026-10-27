@@ -16,7 +16,18 @@ The user picks one of four themes and an accent color. Changing any single color
 theme. The Otus theme with Otus blue is the palette recorded in [mail design foundations](suite/mail-design.md). See
 [decision 0014](decisions/0014-user-themes.md).
 
+## Packages
+
+Elements and components are grouped beneath `shared/<group>` and `mail/<feature>`. For example,
+`ContactRow` lives in `com.otus.designsystem.shared.contacts.components`, and `HtmlView` lives in
+`com.otus.designsystem.mail.read.elements`. The UI hierarchy still applies inside and across
+groups. `theme` and the generated `resources.Res` package remain at the module root.
+See [the migration guide](ui-package-migration.md) for the old-to-new declaration mapping and
+[decision 0018](decisions/0018-ui-domain-packages.md) for dependency rules.
+
 ## Contents
+
+The element and component lists below describe UI layers, not flat packages.
 
 - `theme`: `OtusColors`, `OtusTheme`, `OtusPalette`, `ThemeBase`, `ThemeChoice`, `ThemeColor`, `CustomTheme`, `AccentPreset`,
   `accentShades` (with `AccentShades`), color helpers (`hslColor`, `toHsl`, `contrast`, `toHex`,

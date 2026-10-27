@@ -1,0 +1,61 @@
+package com.otus.designsystem.mail.folders.components
+
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.longClick
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
+import com.otus.designsystem.resources.Res
+import com.otus.designsystem.resources.symbol_delete
+import com.otus.designsystem.resources.symbol_edit
+import com.otus.designsystem.shared.actionbar.components.QuickActionBar
+import com.otus.designsystem.shared.overlays.components.MenuAction
+import com.otus.designsystem.shared.sidebar.elements.SidebarFolder
+import org.junit.Rule
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
+import kotlin.test.Test
+import kotlin.test.assertEquals
+
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [35])
+class QuickActionBarTest {
+    @get:Rule
+    val compose = createComposeRule()
+
+    @Test
+    fun aLongPressOpensTheBarAndAnActionRunsAndClosesIt() {
+        val chosen = mutableListOf<String>()
+        var clicks = 0
+        compose.setContent {
+            var at by remember { mutableStateOf<Offset?>(null) }
+            FolderSettingRow(
+                SidebarFolder("Receipts"),
+                expanded = null,
+                onExpandedChange = {},
+                onClick = { clicks++ },
+                onLongClick = { at = it },
+            )
+            at?.let { point ->
+                val actions =
+                    listOf(
+                        MenuAction("Rename", Res.drawable.symbol_edit) { chosen += "Rename" },
+                        MenuAction("Delete", Res.drawable.symbol_delete) { chosen += "Delete" },
+                    )
+                QuickActionBar(actions, point, onDismiss = { at = null })
+            }
+        }
+        compose.onNodeWithText("Receipts").performTouchInput { longClick() }
+        compose.onNodeWithContentDescription("Delete").performClick()
+        assertEquals(listOf("Delete"), chosen)
+        assertEquals(0, clicks, "A long press does not also open the folder")
+        compose.onNodeWithContentDescription("Rename").assertDoesNotExist()
+    }
+}

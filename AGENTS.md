@@ -32,7 +32,13 @@ compiling for iOS. Read [the suite product goals](docs/suite/product-goals.md) a
 - Enable explicit API mode and warnings as errors in every module. Public declarations are a
   contract with both apps; change them only with a changelog entry and the right version bump.
 - `designsystem` modules follow **elements → components**, with tokens in `theme` and values
-  and callbacks at their public boundary. The shared `accounts` and `settings` feature modules
+  and callbacks at their public boundary. Put UI in `shared/<group>/elements` or `components`,
+  or in `mail/<feature>/elements` or `components` for mail-specific rendering. Add a `calendar`
+  group only when it contains Calendar-specific UI. Shared UI cannot depend on Mail or Calendar
+  UI groups; Mail and Calendar UI groups cannot depend on each other. Elements cannot depend on
+  components in any group. Keep `theme` at the package root, independent of scoped UI. See
+  [decision 0018](docs/decisions/0018-ui-domain-packages.md).
+  The shared `accounts` and `settings` feature modules
   may use Compose only in `presentation`, with composables in `components` or `screens`. Keep
   their domain, data, and presentation layers separate; design-system code cannot depend on
   features. See decision 0007. Use named palette tokens; they follow the theme the user picks, so

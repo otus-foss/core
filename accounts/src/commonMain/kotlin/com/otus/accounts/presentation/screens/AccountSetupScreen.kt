@@ -31,15 +31,15 @@ import com.otus.accounts.presentation.components.AvatarSheet
 import com.otus.accounts.presentation.components.ConnectedAccountRow
 import com.otus.accounts.presentation.confirmHostMessage
 import com.otus.accounts.presentation.message
-import com.otus.designsystem.components.ConfirmDialog
-import com.otus.designsystem.components.InfoText
-import com.otus.designsystem.components.PageNote
-import com.otus.designsystem.components.SettingsSection
-import com.otus.designsystem.components.SheetFrame
-import com.otus.designsystem.components.Subpage
-import com.otus.designsystem.elements.ActionButton
-import com.otus.designsystem.elements.InputField
-import com.otus.designsystem.elements.InputKind
+import com.otus.designsystem.shared.controls.elements.ActionButton
+import com.otus.designsystem.shared.feedback.components.InfoText
+import com.otus.designsystem.shared.input.elements.InputField
+import com.otus.designsystem.shared.input.elements.InputKind
+import com.otus.designsystem.shared.overlays.components.ConfirmDialog
+import com.otus.designsystem.shared.overlays.components.SheetFrame
+import com.otus.designsystem.shared.pages.components.PageNote
+import com.otus.designsystem.shared.pages.components.Subpage
+import com.otus.designsystem.shared.settings.components.SettingsSection
 import com.otus.designsystem.theme.PageTokens
 import com.otus.designsystem.theme.SheetTokens
 
