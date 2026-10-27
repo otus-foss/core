@@ -21,8 +21,10 @@ import com.otus.designsystem.theme.panelTextStyle
 
 /**
  * Folders on one line, such as "Also in Finance / Invoices · Freelancing": an optional `text3`
- * [prefix], then each name with its [FolderGlyph] and [FolderPath], apart by dots. It shows whole
- * names while they fit and then a plain `text3` "· +N more" from [more]; it never cuts a name.
+ * [prefix], then each name with its
+ * [FolderGlyph][com.otus.designsystem.shared.folders.elements.FolderGlyph] and [FolderPath],
+ * apart by dots. It shows whole names while they fit and then a plain `text3` "· +N more" from
+ * [more]; it never cuts a name.
  * When even the first name does not fit, it drops the count, then the prefix, and only then
  * shortens that name. Nothing draws past the line's width.
  */

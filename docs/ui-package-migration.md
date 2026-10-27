@@ -1,6 +1,6 @@
 # UI package migration for 0.10.0
 
-Version 0.10.0 is a release candidate. It moves the design system's flat `elements` and
+Version 0.10.0 moves the design system's flat `elements` and
 `components` packages beneath an owner and a UI group. The artifact remains
 `com.otus:designsystem`. Theme tokens and generated resource identifiers retain their packages.
 
@@ -61,19 +61,12 @@ names under `designsystem/src/androidHostTest/screenshots`; verify them without 
 ## Coordinating the repositories
 
 Meta updates `accounts` and `settings` in the same change as the design system. Mail adopts the
-new imports on its matching `refactor/ui-domains` branch. Its quality workflow can select the
-Meta branch with the same name while the candidate is under review.
+new imports on a branch with the same name, which its quality workflow builds against the
+matching Meta branch.
 
-Mail's nightly normally combines Mail main and Meta main. Before landing incompatible package
-moves, merge the separate preparation that pins Meta to the compatible pre-migration revision.
-Keep the nightly's resolved SHA in its provenance. The Mail consumer PR must restore main
-tracking in the same merge that adopts the migrated imports. Base it on the nightly-pin
-preparation so the removal remains an explicit change after that preparation merges.
-
-Publishing remains paused. Under the normal release policy, publish 0.10.0 before merging a
-consumer version pin that requires its packages. A local candidate repository proves artifact
-compatibility but does not make the version available on GitHub Packages. Keep the consumer PR
-in draft until the release dependency is satisfied. See [releasing](releasing.md).
+Mail's nightly builds Mail main against Meta main. Merge the Meta change and Mail's import
+update one after the other, away from the nightly's 00:00 UTC run, so no nightly pairs migrated
+Meta with old imports.
 
 ## Validation
 
