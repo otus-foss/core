@@ -20,6 +20,7 @@ import com.otus.designsystem.elements.Symbol
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_attach_file
 import com.otus.designsystem.resources.symbol_bookmark_fill
+import com.otus.designsystem.resources.symbol_event
 import com.otus.designsystem.resources.symbol_flag
 import com.otus.designsystem.resources.symbol_reply
 import com.otus.designsystem.theme.InboxTokens
@@ -64,6 +65,7 @@ internal fun RowEndIcons(text: CompactRowText) {
         when (mark) {
             RowMark.Answered -> MarkSymbol(Res.drawable.symbol_reply, OtusColors.text2)
             RowMark.Attachment -> MarkSymbol(Res.drawable.symbol_attach_file, OtusColors.text2)
+            RowMark.Invite -> MarkSymbol(Res.drawable.symbol_event, OtusColors.text2)
             RowMark.Flagged -> MarkSymbol(Res.drawable.symbol_flag, OtusColors.text1)
             RowMark.ReadLater -> MarkSymbol(Res.drawable.symbol_bookmark_fill, OtusColors.text1)
         }
