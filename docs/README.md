@@ -17,7 +17,7 @@
 - [JMAP](jmap.md): the `jmap` module's API, security rules, protocol coverage, and checks.
 - [Contacts](contacts.md): the `jscontact` and `jmap-contacts` modules for JSContact cards and
   JMAP for Contacts, with their RFC coverage. No app uses them yet.
-- [Push subscriptions](push.md): the `push` module that keeps JMAP push subscriptions current.
+- [Push subscriptions](push.md): the `jmap-push` module that keeps JMAP push subscriptions current.
 - [Date formatting](dateformat.md): the `dateformat` module's choices, API, and storage.
 - [Avatars](avatar.md): the `avatar` module's lookup order, caching, and privacy limits.
 - [Shared features](shared-features.md): settings and JMAP account setup modules.

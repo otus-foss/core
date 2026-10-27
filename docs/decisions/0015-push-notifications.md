@@ -51,7 +51,7 @@ extension and a deployable bridge. It is not deployed or device-verified. See
 
 - `com.otus:jmap` holds the wire types: `PushSubscription` methods, `PushMessage`, and the VAPID
   key from the session. Added in this change.
-- `com.otus:push` holds subscription upkeep: create, verify, renew before `expires`, and destroy.
+- `com.otus:jmap-push` holds subscription upkeep: create, verify, renew before `expires`, and destroy.
   Each app passes the data types it watches. The UnifiedPush connector library decrypts Web Push
   messages, so Otus has no crypto code. The Android receiver and the background check stay in
   Mail until Calendar needs them.
@@ -87,10 +87,10 @@ everything since the last saved state.
 1. Wire types in `com.otus:jmap`, and this record. Done.
 2. Mail notifications on the background check, with a saved state per account and
    `Email/changes`. Done.
-3. UnifiedPush. Built with `com.otus:push`; the device test against a self-hosted ntfy, ntfy.sh,
+3. UnifiedPush. Built with `com.otus:jmap-push`; the device test against a self-hosted ntfy, ntfy.sh,
    and Sunup is still open.
 4. Google delivery is implemented on Mail `feat/google-push`, pending merge and a device test.
    It reads each server's VAPID key, replaces registration after key rotation, and shows account
    registration failures. Gateways remain unimplemented.
 5. A device test of the always connected mode.
-6. Calendar uses `com.otus:push`.
+6. Calendar uses `com.otus:jmap-push`.

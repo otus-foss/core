@@ -198,7 +198,7 @@ implements. Reminders stay local to the device and are not server alarms.
 
 | Feature | Status | Notes |
 | --- | --- | --- |
-| Push (`EventSource`, `PushSubscription`) | Partial | [Mail #18](https://github.com/reazndev/otus-mail/issues/18), [decision 0015](../decisions/0015-push-notifications.md): background check, UnifiedPush, Google FCM, and an experimental always connected mode, with no Otus server. Mail uses `PushSubscription` through `com.otus:push` with UnifiedPush and periodic background checks. Google delivery is on `feat/google-push`; EventSource remains planned. |
+| Push (`EventSource`, `PushSubscription`) | Partial | [Mail #18](https://github.com/reazndev/otus-mail/issues/18), [decision 0015](../decisions/0015-push-notifications.md): background check, UnifiedPush, Google FCM, and an experimental always connected mode, with no Otus server. Mail uses `PushSubscription` through `com.otus:jmap-push` with UnifiedPush and periodic background checks. Google delivery is on `feat/google-push`; EventSource remains planned. |
 | Local database and offline queue | Planned | [Mail #14](https://github.com/reazndev/otus-mail/issues/14), [Mail #16](https://github.com/reazndev/otus-mail/issues/16). Today nothing is cached. Each launch and refresh reloads from the server. |
 
 Until sync lands, a screen cannot show data that was not loaded in this session, and there is no

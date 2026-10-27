@@ -1,4 +1,4 @@
-package com.otus.push
+package com.otus.jmap.push
 
 import com.otus.jmap.JmapClient
 import com.otus.jmap.JmapConnections
