@@ -19,8 +19,8 @@ import com.otus.designsystem.theme.PanelTokens
 import org.jetbrains.compose.resources.DrawableResource
 
 /**
- * A read-only pill that names something an item belongs to, such as a folder. [highlighted] uses
- * the accent colors for the one label that matters most; others stay quiet.
+ * A read-only pill that names something an item belongs to, such as a folder. [highlighted] gives
+ * the one label that matters most `text1` and a `text3` outline; others stay quiet.
  */
 @Composable
 public fun LabelPill(
@@ -29,13 +29,13 @@ public fun LabelPill(
     icon: DrawableResource? = null,
     highlighted: Boolean = false,
 ) {
-    val color = if (highlighted) OtusColors.accentLight else OtusColors.text2
+    val color = if (highlighted) OtusColors.text1 else OtusColors.text2
     Row(
         modifier
             .height(LabelTokens.height)
             .border(
                 PanelTokens.borderWidth,
-                if (highlighted) OtusColors.accentRegular else OtusColors.bgLight,
+                if (highlighted) OtusColors.text3 else OtusColors.bgLight,
                 CircleShape,
             ).padding(horizontal = LabelTokens.horizontalPadding),
         horizontalArrangement = Arrangement.spacedBy(LabelTokens.iconGap),

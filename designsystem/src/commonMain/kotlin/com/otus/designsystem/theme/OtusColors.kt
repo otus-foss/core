@@ -24,6 +24,9 @@ public object OtusColors {
     public val text3: Color get() = palette.text3
     public val strokeBgDark: Color get() = palette.strokeBgDark
 
+    /** See [OtusPalette.selectedFill]. */
+    public val selectedFill: Color get() = palette.selectedFill
+
     /** Dims the page behind sheets and the sidebar; apply the caller's alpha. */
     public val scrim: Color get() = palette.scrim
 }

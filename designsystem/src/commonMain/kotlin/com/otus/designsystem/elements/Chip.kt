@@ -92,12 +92,12 @@ internal fun ChipFrame(
                     .reportControlVisualBounds()
                     .controlPressFeedback(interactions),
             shape = CircleShape,
-            color = if (selected == true) OtusColors.accentDark else fill,
+            color = if (selected == true) OtusColors.selectedFill else fill,
             contentColor = if (enabled) OtusColors.text1 else OtusColors.text3,
             border =
                 BorderStroke(
                     PanelTokens.borderWidth,
-                    if (selected == true) OtusColors.accentLight else OtusColors.strokeBgDark,
+                    if (selected == true) OtusColors.selectedFill else OtusColors.strokeBgDark,
                 ),
         ) {
             Row(
@@ -139,7 +139,7 @@ internal fun ChipDivider(selected: Boolean) {
         Modifier
             .padding(horizontal = PanelTokens.iconGap)
             .size(PanelTokens.borderWidth, PanelTokens.chipDividerHeight)
-            .background(if (selected) OtusColors.accentLight else OtusColors.bgLight),
+            .background(if (selected) OtusColors.text3 else OtusColors.bgLight),
     )
 }
 

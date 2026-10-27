@@ -113,7 +113,7 @@ public fun ContactFieldRow(
     }
 }
 
-/** The field's rounded box, filled with the accent while [highlighted]; see [ContactFieldRow]. */
+/** The field's rounded box, filled with `selectedFill` while [highlighted]; see [ContactFieldRow]. */
 @Composable
 private fun FieldFrame(
     highlighted: Boolean,
@@ -125,11 +125,11 @@ private fun FieldFrame(
         Modifier
             .fillMaxWidth()
             .heightIn(min = ContactTokens.fieldHeight)
-            .background(if (highlighted) OtusColors.accentDark else OtusColors.bgDark, shape)
+            .background(if (highlighted) OtusColors.selectedFill else OtusColors.bgDark, shape)
             .border(
                 BorderStroke(
                     PanelTokens.borderWidth,
-                    if (highlighted) OtusColors.accentRegular else OtusColors.strokeBgDark,
+                    if (highlighted) OtusColors.selectedFill else OtusColors.strokeBgDark,
                 ),
                 shape,
             )
@@ -182,7 +182,6 @@ private fun TrailingButtons(
             primary?.let { star ->
                 {
                     IconButton(if (star.on) "Primary" else "Make primary", star.onClick, look = IconButtonLook.Bare) {
-                        // accentLight is too faint on the accent fill, so the filled star takes text1.
                         CompositionLocalProvider(
                             LocalContentColor provides if (star.on) OtusColors.text1 else OtusColors.text2,
                         ) {

@@ -24,6 +24,7 @@ class FolderColorTest {
                         "bgDark" to palette.bgDark,
                         "bgRegular" to palette.bgRegular,
                         "accentDark" to palette.accentDark,
+                        "selectedFill" to palette.selectedFill,
                     ).map { (surface, background) ->
                         "${color.name} on $surface of $theme" to contrast(tint, background)
                     }

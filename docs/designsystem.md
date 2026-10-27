@@ -86,7 +86,7 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   for null or unknown names. `tint` is the icon color in the current theme, or null for
   `Default`. Each color has one shade for dark themes and one for light themes, chosen by
   `OtusPalette.isLight`, so custom themes use the shades of their kind. `FolderColorTest` checks
-  that every shade reaches 3:1 against `bgDark`, `bgRegular`, and `accentDark` for every theme and
+  that every shade reaches 3:1 against `bgDark`, `bgRegular`, `selectedFill`, and `accentDark` for every theme and
   accent preset. A new kind of theme adds a shade to each color in `FolderColor.kt`.
   The color tints only the folder icon. Provide it with `LocalIconTint` around a row:
   `SidebarEntry`, `ActionRow`, `SettingRow`, `SettingToggleRow`, `ValuePicker`, and `ValueToken`
@@ -110,7 +110,7 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   takes an optional search slot, such as `PickerSearch`, and a footnote. `ScopeRow` is a 64 dp
   choice with 40 dp avatars. A row with a subtitle is a group with a SemiBold title, and passing
   `expanded` adds a chevron. `ScopeChildRow` is a 52 dp nested choice with 32 dp avatars, indented
-  so its avatar lines up with the group's title. The chosen row gets an `accentDark` fill, and a
+  so its avatar lines up with the group's title. The chosen row gets a `selectedFill` fill, and a
   pinned row shows a pin. A long press calls `onLongClick`, which the row names
   "Pin" or "Unpin" for screen readers. The caller wraps nested rows in `Collapsible` and owns what
   is chosen, pinned, and expanded.
@@ -303,7 +303,7 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
 - `FormattingBar` docks above the keyboard: a `bgDark` 56 dp row with an optional leading button,
   such as Attach, behind a divider, then Bold, Italic, Bulleted list, Numbered list, Link, and
   Clear formatting. The buttons scroll sideways with faded edges, and a trailing slot, such as
-  `CompactSendButton`, stays pinned. An active format gets a `bgLight` fill, never the accent.
+  `CompactSendButton`, stays pinned. An active format gets a `selectedFill` fill, never the accent.
   Over the keyboard the row reaches the page gap at both sides. `CompactSendButton` is a circle as
   tall as the row and sits flush at the row's end, its accent border over
   the row's.
@@ -321,9 +321,9 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   act, open more with a chevron, or switch an option, with dividers between groups.
 - `ClosableSheet` is a sheet titled at its start with a ✕ at its end and an optional full-width
   `SheetConfirm` button at the bottom; `SheetFrame` shares its surface. `SegmentedToggle` picks one
-  of a few options with a `bgLight` fill. `RowGroup` puts `GroupRow`s, with an icon, a label, and a value or a chevron, on one
+  of a few options with a `selectedFill` fill. `RowGroup` puts `GroupRow`s, with an icon, a label, and a value or a chevron, on one
   `bgRegular` card. `TimeWheelPicker` picks a time like the date chooser. `PickRow` is a sheet choice with a `text1` radio or
-  checkbox; a ticked checkbox fills with `accentLight` and a `bgDark` tick, as in `SelectionRow`, and the row dims without an action. `PersonRow` opens an address's page,
+  checkbox; a ticked checkbox fills with `text1` and a `bgDark` tick, as in `SelectionRow`, and the row dims without an action. `PersonRow` opens an address's page,
   with an avatar, a `text2` or muted `text3` line, and a chevron. `ResizableImage` shows a
   signature image with a selection outline, a ✕, a corner handle that snaps to `ImagePreset`s, and
   a size pill under it. `ListCaption` heads a group of rows in `text3`.
@@ -338,7 +338,7 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   scrim, back, and an upward swipe close it; screen readers read only the panel while it is open
   and start at its title. `FilterPanelHeader` has the title, or a back button named after the page
   it returns to, and leaves room for the panel's ✕. `FilterSection` puts a small `text3` label above wrapping
-  `FilterChip`s, which are `bgRegular` capsules while off and `accentDark` while on, read as a
+  `FilterChip`s, which are `bgRegular` capsules while off and `selectedFill` while on, read as a
   checkbox, a radio, or a button. A `ChipLabel`'s prefix, such as a folder's parents, shows in `text3`.
   `FilterPanelFooter` has a Reset pill whose label dims while there is nothing to reset, while
   the pill stays opaque over the body, and the primary button, whose label screen readers announce politely when it changes.
@@ -352,7 +352,7 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
   while it is the default and `text2` once set. `PeopleLine` is a line of the People card: a
   `text3` label column, a `RemovablePersonChip` for each picked person, with an avatar, a name, and a ✕
   read as "Remove <name>", and a `text3` placeholder in the rest; a tap anywhere else opens the
-  page. `FilterPickRow` is a 56 dp choice on a filter page, ending in an `accentLight` filled
+  page. `FilterPickRow` is a 56 dp choice on a filter page, ending in a `text1` filled
   check circle while chosen and a `text3` empty circle while not. `DateRangeCalendar` is the
   calendar of `DateRangePicker` without its summary and shortcuts, for a page that has its own,
   in a bounded height such as `FilterTokens.rangeCalendarHeight`. `FilterNote` is a 12 sp `text3`

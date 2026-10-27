@@ -40,7 +40,7 @@ import org.jetbrains.compose.resources.DrawableResource
 /**
  * One mailbox in a [com.otus.designsystem.components.SidebarMailboxGrid]: [icon] over a small
  * [label], with [count] in a badge on the icon's top-end corner. The caller shortens a large
- * count, such as "999+". The current mailbox gets an `accentDark` fill.
+ * count, such as "999+". The current mailbox gets a `selectedFill` fill.
  */
 @Composable
 public fun SidebarMailboxTile(
@@ -53,7 +53,7 @@ public fun SidebarMailboxTile(
 ) {
     val interactions = remember { MutableInteractionSource() }
     val shape = RoundedCornerShape(SidebarTokens.entryRadius)
-    val fill = if (selected) OtusColors.accentDark else OtusColors.bgRegular
+    val fill = if (selected) OtusColors.selectedFill else OtusColors.bgRegular
     Column(
         modifier
             .fillMaxWidth()
@@ -72,12 +72,7 @@ public fun SidebarMailboxTile(
             // A zero-size anchor on the icon's corner centers the badge there without resizing the icon.
             Box(Modifier.align(Alignment.TopEnd).size(0.dp).wrapContentSize(unbounded = true)) {
                 count?.let {
-                    TileBadge(
-                        it,
-                        ring = fill,
-                        // On a selected tile the usual badge fill would vanish into the tile.
-                        color = if (selected) OtusColors.accentRegular else OtusColors.accentDark,
-                    )
+                    TileBadge(it, ring = fill, color = OtusColors.accentDark)
                 }
             }
         }

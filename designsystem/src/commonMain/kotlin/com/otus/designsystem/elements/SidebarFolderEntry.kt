@@ -58,7 +58,7 @@ public fun SidebarFolderEntry(
                 onLongClick = onLongClick,
                 onClick = onClick,
             ).clip(shape)
-            .background(if (selected) OtusColors.accentDark else Color.Transparent)
+            .background(if (selected) OtusColors.selectedFill else Color.Transparent)
             .controlPressFeedback(interactions, shape)
             .nestIndent(SidebarTokens.nestIndent, folder.depth)
             .padding(end = SidebarTokens.entryPadding),
