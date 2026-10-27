@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- `SidebarInboxEntry` shows its count in the mailbox tiles' badge while `inset`, so the Inbox count
+  matches the tiles below it. Pass a shortened count, such as "999+", as for `SidebarMailboxTile`.
 - Breaking: `ContactHeader` takes `onEdit: (() -> Unit)?` instead of `photoChoices`. With it, the
   avatar wears a pen badge and a tap runs it; open your own avatar editor there, such as
   `AvatarSheet`, and offer removal through that editor.
