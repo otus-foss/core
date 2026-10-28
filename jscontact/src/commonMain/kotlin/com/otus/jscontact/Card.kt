@@ -1,5 +1,6 @@
 package com.otus.jscontact
 
+import com.otus.jscontact.validation.cardProblems
 import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KeepGeneratedSerializer

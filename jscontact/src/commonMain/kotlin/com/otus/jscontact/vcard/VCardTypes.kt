@@ -1,10 +1,13 @@
-package com.otus.jscontact
+package com.otus.jscontact.vcard
 
-import com.otus.jscontact.VCardKey.ANNIVERSARY
-import com.otus.jscontact.VCardKey.BDAY
-import com.otus.jscontact.VCardKey.DEATHDATE
-import com.otus.jscontact.VCardKey.PREF
-import com.otus.jscontact.VCardKey.TYPE
+import com.otus.jscontact.AnniversaryKind
+import com.otus.jscontact.ContactContext
+import com.otus.jscontact.PhoneFeature
+import com.otus.jscontact.vcard.VCardKey.ANNIVERSARY
+import com.otus.jscontact.vcard.VCardKey.BDAY
+import com.otus.jscontact.vcard.VCardKey.DEATHDATE
+import com.otus.jscontact.vcard.VCardKey.PREF
+import com.otus.jscontact.vcard.VCardKey.TYPE
 
 /** The TYPE values that map to a context (RFC 9555). vCard `home` is JSContact `private`. */
 internal val CONTEXT_TYPES: Map<String, ContactContext> =

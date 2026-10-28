@@ -1,5 +1,7 @@
 package com.otus.jscontact
 
+import com.otus.jscontact.vcard.CRLF
+import com.otus.jscontact.vcard.folded
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

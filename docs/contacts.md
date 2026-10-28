@@ -4,9 +4,8 @@
 Contacts (RFC 9610). They have no UI, no storage, and no sync. See
 [decision 0016](decisions/0016-contacts-modules.md).
 
-No app uses these modules yet. Mail and the `avatar` module still define their own small
-contact types for recipient suggestions and contact photos. The tests listed below are written
-but have not run yet, and nothing has been tried against a server.
+Mail uses both modules for its contacts feature. The `avatar` module keeps smaller contact types
+for photo lookup. App storage, editing state, and synchronization remain outside these libraries.
 
 ## Modules
 
@@ -18,6 +17,11 @@ but have not run yet, and nothing has been tried against a server.
 Both modules use Kotlin explicit API mode and target Android and iOS. The parts of JMAP that other
 data types need too live in `jmap`: `/queryChanges`, `/copy`, filter operators, PatchObjects,
 `UtcDateSerializer`, and the sharing types of RFC 9670. See [JMAP](jmap.md).
+
+Within `jscontact`, public models and entry points stay in `com.otus.jscontact`. The `vcard`
+subpackage holds internal parsing and conversion code; `validation` holds internal card rules.
+Callers still use `Card.validate()`, `VCard.parse()`, `VCard.write()`, and `isEmailAddress` from
+the root package. These implementation folders add no modules or dependencies.
 
 ## API
 
@@ -337,7 +341,6 @@ decides how text filters match.
 ## Checks
 
 `./gradlew :jscontact:testAndroidHostTest :jmap-contacts:testAndroidHostTest` runs the tests in
-the tables, and `checkAll` includes both modules. None of these tests have run yet, so every row
-above is written, not passed. The tests use the RFC figures. `CardOfAllFigures` builds one card
+the tables, and `checkAll` includes both modules. The tests use the RFC figures. `CardOfAllFigures` builds one card
 with every property from the figures of RFC 9553, section 2, and `Rfc9610Figures` holds figures 1
 to 4 of RFC 9610. The iOS tests need macOS, and no test runs against a real server.

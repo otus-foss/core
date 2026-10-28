@@ -1,4 +1,6 @@
-package com.otus.jscontact
+package com.otus.jscontact.validation
+
+import com.otus.jscontact.JsContactProblem
 
 /**
  * Collects [JsContactProblem]s while validation walks a Card. A scope stands for one JSON value at the

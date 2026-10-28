@@ -1,6 +1,6 @@
-package com.otus.jscontact
+package com.otus.jscontact.vcard
 
-import com.otus.jscontact.VCardKey.QUOTED_PRINTABLE
+import com.otus.jscontact.vcard.VCardKey.QUOTED_PRINTABLE
 
 /** The line break vCard requires between content lines (RFC 6350, section 3.2). */
 internal const val CRLF = "\r\n"

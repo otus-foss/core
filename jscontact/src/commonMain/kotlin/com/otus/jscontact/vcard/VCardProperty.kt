@@ -1,10 +1,10 @@
-package com.otus.jscontact
+package com.otus.jscontact.vcard
 
-import com.otus.jscontact.VCardKey.CHARSET
-import com.otus.jscontact.VCardKey.ENCODING
-import com.otus.jscontact.VCardKey.PREF
-import com.otus.jscontact.VCardKey.QUOTED_PRINTABLE
-import com.otus.jscontact.VCardKey.TYPE
+import com.otus.jscontact.vcard.VCardKey.CHARSET
+import com.otus.jscontact.vcard.VCardKey.ENCODING
+import com.otus.jscontact.vcard.VCardKey.PREF
+import com.otus.jscontact.vcard.VCardKey.QUOTED_PRINTABLE
+import com.otus.jscontact.vcard.VCardKey.TYPE
 
 /**
  * One content line of a vCard, `group.NAME;KEY=value,value:value` (RFC 6350, section 3.3). The name, the

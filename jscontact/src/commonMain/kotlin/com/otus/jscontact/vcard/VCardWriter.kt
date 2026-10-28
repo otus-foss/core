@@ -1,24 +1,30 @@
-package com.otus.jscontact
+package com.otus.jscontact.vcard
 
-import com.otus.jscontact.VCardKey.AB_LABEL
-import com.otus.jscontact.VCardKey.BEGIN
-import com.otus.jscontact.VCardKey.EMAIL
-import com.otus.jscontact.VCardKey.END
-import com.otus.jscontact.VCardKey.KIND
-import com.otus.jscontact.VCardKey.MEDIATYPE
-import com.otus.jscontact.VCardKey.MEMBER
-import com.otus.jscontact.VCardKey.NICKNAME
-import com.otus.jscontact.VCardKey.NOTE
-import com.otus.jscontact.VCardKey.ORG
-import com.otus.jscontact.VCardKey.PHOTO
-import com.otus.jscontact.VCardKey.ROLE
-import com.otus.jscontact.VCardKey.TEL
-import com.otus.jscontact.VCardKey.TITLE
-import com.otus.jscontact.VCardKey.UID
-import com.otus.jscontact.VCardKey.URL
-import com.otus.jscontact.VCardKey.VCARD
-import com.otus.jscontact.VCardKey.VERSION
-import com.otus.jscontact.VCardKey.WRITTEN_VERSION
+import com.otus.jscontact.Card
+import com.otus.jscontact.MediaKind
+import com.otus.jscontact.Organization
+import com.otus.jscontact.Title
+import com.otus.jscontact.TitleKind
+import com.otus.jscontact.VCard
+import com.otus.jscontact.vcard.VCardKey.AB_LABEL
+import com.otus.jscontact.vcard.VCardKey.BEGIN
+import com.otus.jscontact.vcard.VCardKey.EMAIL
+import com.otus.jscontact.vcard.VCardKey.END
+import com.otus.jscontact.vcard.VCardKey.KIND
+import com.otus.jscontact.vcard.VCardKey.MEDIATYPE
+import com.otus.jscontact.vcard.VCardKey.MEMBER
+import com.otus.jscontact.vcard.VCardKey.NICKNAME
+import com.otus.jscontact.vcard.VCardKey.NOTE
+import com.otus.jscontact.vcard.VCardKey.ORG
+import com.otus.jscontact.vcard.VCardKey.PHOTO
+import com.otus.jscontact.vcard.VCardKey.ROLE
+import com.otus.jscontact.vcard.VCardKey.TEL
+import com.otus.jscontact.vcard.VCardKey.TITLE
+import com.otus.jscontact.vcard.VCardKey.UID
+import com.otus.jscontact.vcard.VCardKey.URL
+import com.otus.jscontact.vcard.VCardKey.VCARD
+import com.otus.jscontact.vcard.VCardKey.VERSION
+import com.otus.jscontact.vcard.VCardKey.WRITTEN_VERSION
 
 /** This Card as one vCard 4.0 entry, each content line folded and ended with CRLF. */
 internal fun Card.toVCard(): String = vCardProperties().joinToString("") { it.toContentLine() + CRLF }
