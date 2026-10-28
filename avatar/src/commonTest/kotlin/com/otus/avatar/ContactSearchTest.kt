@@ -11,6 +11,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -19,16 +20,51 @@ import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 class ContactSearchTest {
     @Test
     fun findsTheExactAddressAfterThirtyTwoLabelMatches() =
         runTest {
             val fixture = SearchFixture()
-            assertContentEquals(byteArrayOf(1), fixture.search()?.bytes)
+            assertContentEquals(
+                byteArrayOf(1),
+                fixture.search(books = setOf("z-book", "book", "a-book"), email = " Target@Example.ORG ")?.bytes,
+            )
             assertEquals(listOf(0L, 32L), fixture.positions)
-            assertTrue(fixture.bodies.all { "\"inAddressBook\":\"book\"" in it })
+            val expectedFilter =
+                JmapJson.parseToJsonElement(
+                    """{"operator":"AND","conditions":[{"email":" Target@Example.ORG "},
+                    {"operator":"OR","conditions":[{"inAddressBook":"a-book"},
+                    {"inAddressBook":"book"},{"inAddressBook":"z-book"}]}]}""",
+                )
+            assertEquals(listOf(expectedFilter, expectedFilter), fixture.filters)
+        }
+
+    @Test
+    fun aSingleApprovedBookRetainsBothFilterOperators() =
+        runTest {
+            val fixture = SearchFixture(count = 1, matchAt = 0)
+            assertContentEquals(byteArrayOf(1), fixture.search()?.bytes)
+            val expectedFilter =
+                JmapJson.parseToJsonElement(
+                    """{"operator":"AND","conditions":[{"email":"target@example.org"},
+                    {"operator":"OR","conditions":[{"inAddressBook":"book"}]}]}""",
+                )
+            assertEquals(listOf(expectedFilter), fixture.filters)
+        }
+
+    @Test
+    fun noApprovedBooksRetainsAnEmptyOrAndRejectsReturnedCards() =
+        runTest {
+            val fixture = SearchFixture(count = 1, matchAt = 0)
+            assertNull(fixture.search(books = emptySet()) { error("An unreadable card must not be loaded") })
+            assertEquals(listOf(0L, 1L), fixture.positions)
+            val expectedFilter =
+                JmapJson.parseToJsonElement(
+                    """{"operator":"AND","conditions":[{"email":"target@example.org"},
+                    {"operator":"OR","conditions":[]}]}""",
+                )
+            assertEquals(listOf(expectedFilter, expectedFilter), fixture.filters)
         }
 
     @Test
@@ -97,7 +133,7 @@ private class SearchFixture(
     private val beforePage: suspend () -> Unit = {},
 ) {
     val positions = mutableListOf<Long>()
-    val bodies = mutableListOf<String>()
+    val filters = mutableListOf<JsonElement>()
     private val connection =
         JmapConnection(
             JmapClient(
@@ -109,7 +145,6 @@ private class SearchFixture(
                         } else {
                             beforePage()
                             val body = (request.body as TextContent).text
-                            bodies += body
                             val calls =
                                 JmapJson
                                     .parseToJsonElement(body)
@@ -117,6 +152,7 @@ private class SearchFixture(
                                     .getValue("methodCalls")
                                     .jsonArray
                             val arguments = calls.first().jsonArray[1].jsonObject
+                            filters += arguments.getValue("filter")
                             val position =
                                 arguments
                                     .getValue("position")
@@ -133,8 +169,11 @@ private class SearchFixture(
             JmapAuth.Basic("ada", "secret"),
         )
 
-    suspend fun search(load: suspend (ContactCard) -> AvatarImage? = { AvatarImage(byteArrayOf(1)) }): AvatarImage? =
-        findContactAvatar(connection, "a", "target@example.org", setOf("book"), own = emptySet(), load)
+    suspend fun search(
+        books: Set<String> = setOf("book"),
+        email: String = "target@example.org",
+        load: suspend (ContactCard) -> AvatarImage? = { AvatarImage(byteArrayOf(1)) },
+    ): AvatarImage? = findContactAvatar(connection, "a", email, books, own = emptySet(), load)
 
     private fun page(position: Long): String {
         val start = if (ignorePosition) 0 else position.toInt()
