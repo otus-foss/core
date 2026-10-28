@@ -16,6 +16,7 @@ UI_APIS = ("androidx.compose.", "androidx.lifecycle.", "org.jetbrains.compose.")
 APP_NAMESPACES = ("com.otus.mail", "com.otus.calendar")
 UI_LAYERS = frozenset({"elements", "components"})
 UI_SCOPES = frozenset({"shared", "mail", "calendar"})
+PACKAGE_SEGMENT = r"[A-Za-z_]\w*"
 FEATURE_LAYERS = {"domain", "data", "presentation"}
 FEATURE_UI_MODULES = frozenset({"accounts", "settings"})
 # Design-system code may format dates, but must not reach protocol, storage, or feature modules.
@@ -112,7 +113,13 @@ def is_ui_module(module: str) -> bool:
     return module == "designsystem" or module.startswith("designsystem-")
 
 
+def reference_code(code: str) -> str:
+    """Separate ranges and join navigation dots without resolving Kotlin types."""
+    return re.sub(r"\s*\.\s*", ".", re.sub(r"\.\.<?", " ", code))
+
+
 def uses(code: str, apis: tuple[str, ...]) -> bool:
+    code = reference_code(code)
     return any(re.search(r"(?<![\w.])" + re.escape(api), code) for api in apis)
 
 
@@ -120,15 +127,24 @@ def scoped_ui_location(location: list[str]) -> bool:
     return (
         len(location) == 3
         and location[0] in UI_SCOPES
-        and bool(re.fullmatch(r"[A-Za-z_][\w]*", location[1]))
+        and bool(re.fullmatch(PACKAGE_SEGMENT, location[1]))
         and location[1] not in UI_LAYERS | {"theme", "resources"}
         and location[2] in UI_LAYERS
+    )
+
+
+def theme_location(location: list[str]) -> bool:
+    return location[:1] == ["theme"] and all(
+        re.fullmatch(PACKAGE_SEGMENT, part) for part in location[1:]
     )
 
 
 def library_references(code: str) -> list[str]:
     # A package declaration describes this file, not a dependency.
     code = re.sub(r"^package\s+[\w.]+[ \t]*;?", "", code, flags=re.MULTILINE)
+    # Keep import spelling intact so malformed package segments still fail validation.
+    imports = re.compile(r"\bimport\s+[\w.*]+")
+    code = "\n".join([*imports.findall(code), reference_code(imports.sub("", code))])
     return re.findall(r"(?<![\w.])" + re.escape(NAMESPACE) + r"\.([A-Za-z_][\w.]*)", code)
 
 
@@ -137,6 +153,7 @@ def ui_reference_violations(
 ) -> list[str]:
     errors = []
     scope = location[0] if location else None
+    layer = location[2:3] if scoped_ui_location(location) else []
     # Split modules have longer namespaces, such as designsystem.controls.
     namespaces = sorted(
         (name.replace("-", ".") for name in ui_modules | {"designsystem"}),
@@ -149,13 +166,17 @@ def ui_reference_violations(
             continue
         target = reference.removeprefix(namespace + ".").split(".")
         target_scope = target[0]
-        if target_scope not in {"theme", "resources"} and (
-            len(target) < 4 or not scoped_ui_location(target[:3])
+        if (
+            not (len(target) > 1 and theme_location(target))
+            and target_scope != "resources"
+            and (len(target) < 4 or not scoped_ui_location(target[:3]))
         ):
             errors.append(
                 "design-system references must use <scope>.<group>.elements/components "
                 "or theme/resources"
             )
+        if layer == ["elements"] and scoped_ui_location(target[:3]) and target[2] == "components":
+            errors.append("elements cannot depend on components")
         if scope == "shared" and target_scope in {"mail", "calendar"}:
             errors.append("shared UI cannot depend on mail or calendar UI")
         if scope in {"mail", "calendar"} and target_scope in {"mail", "calendar"} - {scope}:
@@ -180,7 +201,10 @@ def violations(path: Path, text: str, ui_modules: frozenset[str] = frozenset()) 
     if "kotlin" not in path.parts:
         return [*errors, "Kotlin source must live under a kotlin source directory"]
     expected = ".".join(path.parts[path.parts.index("kotlin") + 1 : -1])
-    if package.group(1) != expected or not (expected == base or expected.startswith(base + ".")):
+    package_matches = package.group(1) == expected and (
+        expected == base or expected.startswith(base + ".")
+    )
+    if not package_matches:
         errors.append(f"package must match source path and the module namespace {base}")
     imports = re.findall(r"^import\s+([\w.*]+)", code, re.MULTILINE)
     if any(name.endswith(".*") for name in imports):
@@ -196,7 +220,8 @@ def violations(path: Path, text: str, ui_modules: frozenset[str] = frozenset()) 
         errors.append("use responsibility-specific packages instead of catch-all packages")
     if "domain" in location and uses(code, (*PLATFORM_APIS, *DATA_APIS, *UI_APIS)):
         errors.append("domain contains UI/platform/network/database dependencies")
-    if not (is_ui_module(module) and location == ["theme"]) and literal_color(code):
+    in_theme = package_matches and is_ui_module(module) and theme_location(location)
+    if not in_theme and literal_color(code):
         errors.append("literal colors belong in theme")
     references = library_references(code)
     if is_ui_module(module):
@@ -262,22 +287,18 @@ def ui_violations(
     location: list[str], code: str, references: list[str], ui_modules: frozenset[str]
 ) -> list[str]:
     errors = []
-    if location != ["theme"] and not scoped_ui_location(location):
+    if not theme_location(location) and not scoped_ui_location(location):
         errors.append(
             "design-system code belongs in <shared|mail|calendar>/<group>/elements|components "
-            "or root theme"
+            "or root theme and its subpackages"
         )
     if uses(code, DATA_APIS):
         errors.append("UI must not access network or database APIs")
-    layer = location[2:3]
+    layer = location[2:3] if scoped_ui_location(location) else []
     if layer in (["elements"], ["components"]) and re.search(SERVICE_TYPES, code):
         errors.append("elements/components take values and callbacks, not services or navigation")
-    for reference in references:
-        target = reference.split(".")
-        if layer == ["elements"] and "components" in target:
-            errors.append("elements cannot depend on components")
-        allowed = ui_modules | UI_ALLOWED_MODULES
-        namespace = ".".join(target)
+    allowed = ui_modules | UI_ALLOWED_MODULES
+    for namespace in references:
         if not any(
             namespace == m.replace("-", ".") or namespace.startswith(m.replace("-", ".") + ".")
             for m in allowed
