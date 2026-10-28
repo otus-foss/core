@@ -14,7 +14,6 @@ import io.ktor.http.Url
 import io.ktor.http.contentLength
 import io.ktor.http.takeFrom
 import io.ktor.utils.io.readBuffer
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.io.readByteArray
 
@@ -33,11 +32,8 @@ public class HttpAvatarImageLoader(
 
     /** Read only the bounded beginning of HTML, and retain the final URL for relative icon links. */
     internal suspend fun websitePage(url: String): AvatarWebsitePage? =
-        runCatching {
+        nullOnFailure {
             withTimeoutOrNull(AVATAR_TIMEOUT_MILLIS) { loadRedirects(Url(url), page = true)?.page }
-        }.getOrElse {
-            if (it is CancellationException) throw it
-            null
         }
 
     private suspend fun loadRedirects(

@@ -1,6 +1,5 @@
 package com.otus.avatar
 
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.sync.Mutex
@@ -139,13 +138,7 @@ public class FileAvatarStore(
 
     private suspend fun <T> access(block: () -> T): T? =
         withContext(Dispatchers.IO) {
-            lock.withLock {
-                runCatching(block).getOrElse { error ->
-                    if (error is CancellationException) throw error
-                    // Optional cache IO failures must never hide the inbox or fail sign-out.
-                    null
-                }
-            }
+            lock.withLock { nullOnFailure { block() } }
         }
 
     private class DiskRecord(

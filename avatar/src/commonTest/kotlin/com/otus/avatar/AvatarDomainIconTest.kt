@@ -1,8 +1,11 @@
 package com.otus.avatar
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.yield
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
 import kotlin.test.assertSame
 
@@ -11,6 +14,55 @@ class AvatarDomainIconTest {
     private val image = AvatarImage(byteArrayOf(1, 2, 3))
     private val options = AvatarOptions(domainIcons = true, domainIconProxy = true)
     private val domains = PublicSuffixDomainResolver { "com\nme\nio\ngithub.io" }
+
+    @Test
+    fun resolverFailuresRetainInitialsWithoutFetchingIcons() =
+        runTest {
+            for (failure in listOf(IllegalStateException("Offline"), AssertionError("Resolver failed"))) {
+                val resolvedHosts = mutableListOf<String>()
+                val fetched = mutableListOf<String>()
+                val service =
+                    AvatarService(
+                        images =
+                            AvatarImageLoader {
+                                fetched += it
+                                image
+                            },
+                        domains =
+                            AvatarDomainResolver {
+                                resolvedHosts += it
+                                yield()
+                                throw failure
+                            },
+                        iconFallback =
+                            DomainIconSource {
+                                fetched += it
+                                image
+                            },
+                    )
+                val expected = ResolvedAvatar(generatedAvatar(request.name, request.email))
+                assertEquals(expected, service.resolve(request, options))
+                assertEquals(expected, service.cached(request, options))
+                assertEquals(listOf("email.openai.com", "email.openai.com"), resolvedHosts)
+                assertEquals(emptyList(), fetched)
+            }
+        }
+
+    @Test
+    fun resolverCancellationPropagatesFromResolveAndCached() =
+        runTest {
+            val cancellation = CancellationException("Refresh cancelled")
+            val service =
+                AvatarService(
+                    domains =
+                        AvatarDomainResolver {
+                            yield()
+                            throw cancellation
+                        },
+                )
+            assertSame(cancellation, assertFailsWith<CancellationException> { service.resolve(request, options) })
+            assertSame(cancellation, assertFailsWith<CancellationException> { service.cached(request, options) })
+        }
 
     @Test
     fun subdomainSenderFetchesOnlyTheRegistrableDomainAndItsIconCache() =
