@@ -27,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import com.otus.designsystem.elements.IconButton
 import com.otus.designsystem.elements.IconButtonLook
+import com.otus.designsystem.elements.SidebarDetail
 import com.otus.designsystem.elements.Symbol
 import com.otus.designsystem.elements.controlPressFeedback
 import com.otus.designsystem.resources.Res
@@ -120,16 +121,6 @@ internal fun RowScope.ScopeTitle(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
-        subtitle?.let {
-            Text(
-                it,
-                style = panelTextStyle(),
-                color = OtusColors.text2,
-                fontSize = SidebarTokens.detailSize,
-                lineHeight = SidebarTokens.detailLineHeight,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
+        subtitle?.let { SidebarDetail(it) }
     }
 }
