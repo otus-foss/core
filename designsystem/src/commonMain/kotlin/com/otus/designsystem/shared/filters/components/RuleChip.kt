@@ -35,7 +35,6 @@ import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.shared.people.components.ChipAvatar
 import com.otus.designsystem.shared.people.components.PersonAvatar
-import com.otus.designsystem.shared.people.elements.Avatar
 import com.otus.designsystem.shared.rows.components.RowDensity
 import com.otus.designsystem.shared.rows.components.topHairline
 import com.otus.designsystem.shared.selection.components.valueOutline

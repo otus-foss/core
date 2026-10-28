@@ -17,7 +17,6 @@ import com.otus.designsystem.shared.feedback.components.InfoText
 import com.otus.designsystem.shared.feedback.components.InfoTip
 import com.otus.designsystem.shared.people.components.ChipAvatar
 import com.otus.designsystem.shared.people.components.PersonAvatar
-import com.otus.designsystem.shared.people.elements.Avatar
 import com.otus.designsystem.theme.tokens.layout.PageTokens
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.settings.SettingTokens

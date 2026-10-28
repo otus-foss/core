@@ -11,7 +11,8 @@ BRAND = ROOT / "brand"
 COMPOSE = ROOT / "src/commonMain/composeResources/drawable"
 ANDROID = ROOT / "src/androidMain/res"
 
-# Must match AccentPreset in theme/AccentPreset.kt; a host test checks every preset has an icon.
+# Must match AccentPreset in theme/colors/AccentPreset.kt.
+# A host test checks every preset has an icon.
 ACCENTS = {
     "otus_blue": "#4D6F92",
     "sky": "#1D9BF0",

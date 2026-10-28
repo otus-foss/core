@@ -34,6 +34,7 @@ import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.shared.people.components.AvatarStack
 import com.otus.designsystem.shared.people.components.ChipAvatar
+import com.otus.designsystem.shared.sidebar.elements.SidebarDetail
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.layout.SidebarTokens
@@ -123,16 +124,6 @@ internal fun RowScope.ScopeTitle(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
-        subtitle?.let {
-            Text(
-                it,
-                style = panelTextStyle(),
-                color = OtusColors.text2,
-                fontSize = SidebarTokens.detailSize,
-                lineHeight = SidebarTokens.detailLineHeight,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
+        subtitle?.let { SidebarDetail(it) }
     }
 }

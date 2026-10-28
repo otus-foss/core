@@ -15,13 +15,7 @@ internal val CustomTheme.title: String
     get() = name ?: if (id == 1) "Custom" else "Custom $id"
 
 internal val ThemeBase.title: String
-    get() =
-        when (this) {
-            ThemeBase.Otus -> "Otus"
-            ThemeBase.Ink -> "Ink"
-            ThemeBase.Light -> "Light"
-            ThemeBase.Black -> "Black"
-        }
+    get() = name
 
 internal val ThemeBase.description: String
     get() =
@@ -33,16 +27,7 @@ internal val ThemeBase.description: String
         }
 
 internal val AccentPreset.title: String
-    get() =
-        when (this) {
-            AccentPreset.OtusBlue -> "Otus blue"
-            AccentPreset.Sky -> "Sky"
-            AccentPreset.Blue -> "Blue"
-            AccentPreset.Violet -> "Violet"
-            AccentPreset.Pink -> "Pink"
-            AccentPreset.Orange -> "Orange"
-            AccentPreset.Green -> "Green"
-        }
+    get() = if (this == AccentPreset.OtusBlue) "Otus blue" else name
 
 internal val ThemeColor.title: String
     get() =
