@@ -5,8 +5,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import com.otus.designsystem.components.MonthNavigation
-import com.otus.designsystem.components.MonthNavigationLabel
 import com.otus.designsystem.theme.CalendarTokens
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
