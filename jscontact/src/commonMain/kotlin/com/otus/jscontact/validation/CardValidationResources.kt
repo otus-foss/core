@@ -1,4 +1,13 @@
-package com.otus.jscontact
+package com.otus.jscontact.validation
+
+import com.otus.jscontact.Author
+import com.otus.jscontact.ContactResource
+import com.otus.jscontact.CryptoKey
+import com.otus.jscontact.Directory
+import com.otus.jscontact.Link
+import com.otus.jscontact.Media
+import com.otus.jscontact.Note
+import com.otus.jscontact.PersonalInfo
 
 /**
  * Validates what every Resource shares: its contexts and pref (RFC 9553, section 1.4.4). Each type checks

@@ -1,4 +1,6 @@
-package com.otus.jscontact
+package com.otus.jscontact.validation
+
+import com.otus.jscontact.ContactContext
 
 /** Reports a [pref] outside 1 to 100, although its UnsignedInt type allows more (RFC 9553, section 1.5.3). */
 internal fun ValidationScope.pref(pref: Int?) {

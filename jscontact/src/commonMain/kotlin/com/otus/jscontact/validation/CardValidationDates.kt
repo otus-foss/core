@@ -1,4 +1,9 @@
-package com.otus.jscontact
+package com.otus.jscontact.validation
+
+import com.otus.jscontact.Anniversary
+import com.otus.jscontact.AnniversaryDate
+import com.otus.jscontact.PartialDate
+import com.otus.jscontact.Timestamp
 
 /** Validates an Anniversary, its date, and its place, which follows the Address rules (RFC 9553, section 2.8.1). */
 internal fun ValidationScope.checkAnniversary(anniversary: Anniversary) {

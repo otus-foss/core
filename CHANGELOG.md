@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Group JSContact's internal vCard conversion and validation code into `vcard` and `validation`
+  packages. Public APIs, including `Card`, `VCard`, and `isEmailAddress`, keep their packages and behavior.
 - Breaking: rename the `push` module and `com.otus:push` artifact to `jmap-push` and
   `com.otus:jmap-push`. Replace `com.otus.push` imports with `com.otus.jmap.push` and use
   `libs.otus.jmap.push` with the `otus-jmap-push` catalog alias. Push behavior and stored records

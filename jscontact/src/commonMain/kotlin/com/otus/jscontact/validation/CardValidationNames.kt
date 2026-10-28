@@ -1,4 +1,14 @@
-package com.otus.jscontact
+package com.otus.jscontact.validation
+
+import com.otus.jscontact.Name
+import com.otus.jscontact.NameComponent
+import com.otus.jscontact.Nickname
+import com.otus.jscontact.OrgUnit
+import com.otus.jscontact.Organization
+import com.otus.jscontact.Pronouns
+import com.otus.jscontact.Relation
+import com.otus.jscontact.SpeakToAs
+import com.otus.jscontact.Title
 
 /** Validates a Name: [Name.components] or [Name.full], the component rules, and sortAs (RFC 9553, section 2.2.1.1). */
 internal fun ValidationScope.checkName(name: Name) {

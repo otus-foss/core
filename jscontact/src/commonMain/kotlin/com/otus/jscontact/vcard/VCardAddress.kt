@@ -1,10 +1,13 @@
-package com.otus.jscontact
+package com.otus.jscontact.vcard
 
-import com.otus.jscontact.VCardKey.ADR
-import com.otus.jscontact.VCardKey.CC
-import com.otus.jscontact.VCardKey.GEO
-import com.otus.jscontact.VCardKey.LABEL
-import com.otus.jscontact.VCardKey.TZ
+import com.otus.jscontact.Address
+import com.otus.jscontact.AddressComponent
+import com.otus.jscontact.AddressComponentKind
+import com.otus.jscontact.vcard.VCardKey.ADR
+import com.otus.jscontact.vcard.VCardKey.CC
+import com.otus.jscontact.vcard.VCardKey.GEO
+import com.otus.jscontact.vcard.VCardKey.LABEL
+import com.otus.jscontact.vcard.VCardKey.TZ
 
 /**
  * The [Address] of an ADR property (RFC 9555, Table 2), or null when it holds nothing. The seven RFC 6350

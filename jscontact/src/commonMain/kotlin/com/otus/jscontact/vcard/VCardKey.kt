@@ -1,4 +1,6 @@
-package com.otus.jscontact
+package com.otus.jscontact.vcard
+
+import com.otus.jscontact.VCard
 
 /**
  * The vCard property names, parameter names, and fixed values that [VCard] reads and writes (RFC 6350,

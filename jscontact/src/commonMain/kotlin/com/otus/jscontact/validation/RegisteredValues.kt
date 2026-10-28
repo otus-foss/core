@@ -1,4 +1,21 @@
-package com.otus.jscontact
+package com.otus.jscontact.validation
+
+import com.otus.jscontact.AddressComponentKind
+import com.otus.jscontact.AnniversaryKind
+import com.otus.jscontact.CalendarKind
+import com.otus.jscontact.CardKind
+import com.otus.jscontact.ContactContext
+import com.otus.jscontact.DirectoryKind
+import com.otus.jscontact.GrammaticalGender
+import com.otus.jscontact.LinkKind
+import com.otus.jscontact.MediaKind
+import com.otus.jscontact.NameComponentKind
+import com.otus.jscontact.PersonalInfoKind
+import com.otus.jscontact.PersonalInfoLevel
+import com.otus.jscontact.PhoneFeature
+import com.otus.jscontact.PhoneticSystem
+import com.otus.jscontact.RelationType
+import com.otus.jscontact.TitleKind
 
 /**
  * The registered values of each enumerated property (RFC 9553, section 3.7), as strings. Validation

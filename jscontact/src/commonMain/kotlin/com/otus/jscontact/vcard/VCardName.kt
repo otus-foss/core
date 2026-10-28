@@ -1,9 +1,14 @@
-package com.otus.jscontact
+package com.otus.jscontact.vcard
 
-import com.otus.jscontact.VCardKey.DERIVED
-import com.otus.jscontact.VCardKey.DERIVED_TRUE
-import com.otus.jscontact.VCardKey.FN
-import com.otus.jscontact.VCardKey.N
+import com.otus.jscontact.Card
+import com.otus.jscontact.Name
+import com.otus.jscontact.NameComponent
+import com.otus.jscontact.NameComponentKind
+import com.otus.jscontact.VCard
+import com.otus.jscontact.vcard.VCardKey.DERIVED
+import com.otus.jscontact.vcard.VCardKey.DERIVED_TRUE
+import com.otus.jscontact.vcard.VCardKey.FN
+import com.otus.jscontact.vcard.VCardKey.N
 
 /**
  * The [Name] of an FN value and an N property (RFC 9555, Table 1), or null when both are empty. Without

@@ -1,4 +1,4 @@
-package com.otus.jscontact
+package com.otus.jscontact.validation
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.elementNames

@@ -1,5 +1,9 @@
-package com.otus.jscontact
+package com.otus.jscontact.validation
 
+import com.otus.jscontact.Card
+import com.otus.jscontact.CardKind
+import com.otus.jscontact.JsContactProblem
+import com.otus.jscontact.localizedWith
 import kotlinx.serialization.json.JsonObject
 
 /**
