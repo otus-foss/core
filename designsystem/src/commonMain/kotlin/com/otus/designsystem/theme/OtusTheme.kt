@@ -6,8 +6,6 @@ import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.darkColors
-import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
@@ -38,34 +36,18 @@ public fun OtusTheme(
 }
 
 private fun OtusPalette.materialColors(): Colors =
-    if (isLight) {
-        lightColors(
-            primary = accentRegular,
-            primaryVariant = accentDark,
-            secondary = accentLight,
-            secondaryVariant = accentDark,
-            background = bgRegular,
-            surface = bgRegular,
-            error = accentLight,
-            onPrimary = text1,
-            onSecondary = text1,
-            onBackground = text1,
-            onSurface = text1,
-            onError = text1,
-        )
-    } else {
-        darkColors(
-            primary = accentRegular,
-            primaryVariant = accentDark,
-            secondary = accentLight,
-            secondaryVariant = accentDark,
-            background = bgRegular,
-            surface = bgRegular,
-            error = accentLight,
-            onPrimary = text1,
-            onSecondary = text1,
-            onBackground = text1,
-            onSurface = text1,
-            onError = text1,
-        )
-    }
+    Colors(
+        primary = accentRegular,
+        primaryVariant = accentDark,
+        secondary = accentLight,
+        secondaryVariant = accentDark,
+        background = bgRegular,
+        surface = bgRegular,
+        error = accentLight,
+        onPrimary = text1,
+        onSecondary = text1,
+        onBackground = text1,
+        onSurface = text1,
+        onError = text1,
+        isLight = isLight,
+    )

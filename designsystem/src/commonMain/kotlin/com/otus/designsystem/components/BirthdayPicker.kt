@@ -1,11 +1,7 @@
 package com.otus.designsystem.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -16,7 +12,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.otus.designsystem.elements.ActionButton
 import com.otus.designsystem.theme.CalendarTokens
-import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.SheetTokens
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone

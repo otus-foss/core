@@ -1,18 +1,20 @@
 package com.otus.avatar
 
+import com.otus.jmap.FilterOperator
 import com.otus.jmap.GetMethod
 import com.otus.jmap.GetResult
 import com.otus.jmap.JmapCall
 import com.otus.jmap.JmapConnection
 import com.otus.jmap.JmapException
+import com.otus.jmap.JmapFilter
 import com.otus.jmap.JmapIds
 import com.otus.jmap.QueryMethod
 import com.otus.jmap.QueryResult
+import com.otus.jmap.allOf
+import com.otus.jmap.contacts.ContactCardFilter
 import kotlinx.coroutines.withTimeoutOrNull
-import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.buildJsonObject
 
 /**
  * Search each page without retaining the whole address book or trusting fuzzy email matches. On
@@ -39,7 +41,7 @@ internal suspend fun <T : Any> findContactAvatar(
             val found =
                 cards
                     .filter { card ->
-                        card.addressBookIds.any { it.value && it.key in books } &&
+                        card.isIn(books) &&
                             card.emails.values.any { avatarEmailKey(it.address) == avatarEmailKey(email) }
                     }.sortedWith(compareBy({ !it.isIn(own) }, { !it.isOtusAvatar }, { it.id }))
                     .firstNotNullOfOrNull { load(it) }
@@ -94,28 +96,10 @@ private fun contactFilter(
     email: String,
     books: Set<String>,
 ): JsonObject =
-    buildJsonObject {
-        put("operator", JsonPrimitive("AND"))
-        put(
-            "conditions",
-            JsonArray(
-                listOf(
-                    buildJsonObject { put("email", JsonPrimitive(email)) },
-                    buildJsonObject {
-                        put("operator", JsonPrimitive("OR"))
-                        put(
-                            "conditions",
-                            JsonArray(
-                                books.sorted().map { book ->
-                                    buildJsonObject { put("inAddressBook", JsonPrimitive(book)) }
-                                },
-                            ),
-                        )
-                    },
-                ),
-            ),
-        )
-    }
+    allOf(
+        ContactCardFilter(email = email).toFilter(),
+        JmapFilter.Operator(FilterOperator.OR, books.sorted().map { ContactCardFilter(inAddressBook = it).toFilter() }),
+    ).toJson()
 
 private const val CONTACT_PAGE_SIZE = 32
 private val CARD_PROPERTIES = listOf("id", "addressBookIds", "emails", "media")

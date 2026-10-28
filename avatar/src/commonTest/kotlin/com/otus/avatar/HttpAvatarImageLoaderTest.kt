@@ -7,6 +7,7 @@ import io.ktor.client.engine.mock.respond
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
@@ -14,6 +15,7 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
 
 class HttpAvatarImageLoaderTest {
@@ -208,6 +210,39 @@ class HttpAvatarImageLoaderTest {
         }
 
     @Test
+    fun websitePageFailuresReturnNull() =
+        runTest {
+            for (failure in listOf(IllegalStateException("Offline"), AssertionError("Page failed"))) {
+                var calls = 0
+                val loader =
+                    HttpAvatarImageLoader(
+                        avatarEngine {
+                            calls++
+                            throw failure
+                        },
+                    )
+                try {
+                    assertNull(loader.websitePage("https://company.com/"))
+                    assertEquals(1, calls)
+                } finally {
+                    loader.close()
+                }
+            }
+        }
+
+    @Test
+    fun websitePageCancellationPropagates() =
+        runTest {
+            val loader = HttpAvatarImageLoader(avatarEngine { throw CancellationException("Page cancelled") })
+            try {
+                val cancellation = assertFailsWith<CancellationException> { loader.websitePage("https://company.com/") }
+                assertEquals("Page cancelled", cancellation.message)
+            } finally {
+                loader.close()
+            }
+        }
+
+    @Test
     fun timeoutIncludesTheEntireRedirectChain() =
         runTest {
             var calls = 0
@@ -221,6 +256,9 @@ class HttpAvatarImageLoaderTest {
                 )
             try {
                 assertNull(loader.load("https://company.com/favicon.png"))
+                assertEquals(2, calls)
+                calls = 0
+                assertNull(loader.websitePage("https://company.com/"))
                 assertEquals(2, calls)
             } finally {
                 loader.close()
