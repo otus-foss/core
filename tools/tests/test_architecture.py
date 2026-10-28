@@ -8,11 +8,20 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from check_architecture import source_code, violations, visual_resource_violations
 
 
-def check(module, package, body, source_set="commonMain"):
+def check(module, package, body, source_set="commonMain", ui_modules=frozenset({"designsystem"})):
     base = "com.otus." + module.replace("-", ".")
     name = base + (f".{package}" if package else "")
     path = Path(f"{module}/src/{source_set}/kotlin") / name.replace(".", "/") / "Example.kt"
-    return violations(path, f"package {name}\n{body}", frozenset({"designsystem"}))
+    return violations(path, f"package {name}\n{body}", ui_modules)
+
+
+def reference_bodies(reference):
+    return (
+        f"import {reference}",
+        f"import {reference} as Item\nfun value() = Item()",
+        f"fun value() = {reference}()",
+        f'val value = "${{{reference}()}}"',
+    )
 
 
 class ProtocolModuleTests(unittest.TestCase):
@@ -90,46 +99,575 @@ class ProtocolModuleTests(unittest.TestCase):
 class DesignSystemTests(unittest.TestCase):
     def test_compose_is_allowed_in_layers(self):
         body = "import androidx.compose.runtime.Composable\n@Composable fun Chip() {}"
-        self.assertEqual(check("designsystem", "elements", body), [])
+        self.assertEqual(check("designsystem", "shared.controls.elements", body), [])
 
     def test_code_outside_layers_is_rejected(self):
         self.assertTrue(check("designsystem", "widgets", "fun x() = 1"))
         self.assertTrue(check("designsystem", "", "fun x() = 1"))
 
     def test_elements_cannot_import_components(self):
-        body = "import com.otus.designsystem.components.Sidebar"
-        self.assertTrue(check("designsystem", "elements", body))
-        self.assertEqual(check("designsystem", "components", body), [])
+        body = "import com.otus.designsystem.shared.navigation.components.Sidebar"
+        self.assertTrue(check("designsystem", "shared.controls.elements", body))
+        self.assertEqual(check("designsystem", "shared.controls.components", body), [])
 
     def test_cannot_depend_on_protocol_or_feature_modules(self):
-        self.assertTrue(check("designsystem", "elements", "import com.otus.jmap.JmapClient"))
-        self.assertTrue(check("designsystem", "components", "import io.ktor.client.HttpClient"))
+        self.assertTrue(
+            check("designsystem", "shared.controls.elements", "import com.otus.jmap.JmapClient")
+        )
+        self.assertTrue(
+            check("designsystem", "shared.controls.components", "import io.ktor.client.HttpClient")
+        )
         body = "import com.otus.accounts.domain.ConnectedAccount"
-        self.assertTrue(check("designsystem", "components", body))
+        self.assertTrue(check("designsystem", "shared.controls.components", body))
 
     def test_may_format_dates(self):
         body = "import com.otus.dateformat.DateFormatter"
-        self.assertEqual(check("designsystem", "components", body), [])
-        self.assertTrue(check("designsystem", "components", "import com.otus.dateformatting.Store"))
+        self.assertEqual(check("designsystem", "shared.controls.components", body), [])
+        self.assertTrue(
+            check(
+                "designsystem", "shared.controls.components", "import com.otus.dateformatting.Store"
+            )
+        )
 
     def test_components_take_values_not_services(self):
-        self.assertTrue(check("designsystem", "components", "fun row(vm: InboxViewModel) {}"))
+        self.assertTrue(
+            check("designsystem", "shared.controls.components", "fun row(vm: InboxViewModel) {}")
+        )
 
     def test_literal_colors_belong_in_theme(self):
-        self.assertTrue(check("designsystem", "elements", "val c = Color(0xFFFFFFFF)"))
+        self.assertTrue(
+            check("designsystem", "shared.controls.elements", "val c = Color(0xFFFFFFFF)")
+        )
         self.assertEqual(check("designsystem", "theme", "val c = Color(0xFFFFFFFF)"), [])
 
     def test_aliased_and_decimal_literal_colors_belong_in_theme(self):
         aliased = "import androidx.compose.ui.graphics.Color as Tint\nval c = Tint(0xFFFFFFFF)"
-        self.assertTrue(check("designsystem", "elements", aliased))
-        self.assertTrue(check("designsystem", "elements", "val c = Color(red = 0.5f, 0f, 0f)"))
-        self.assertTrue(check("designsystem", "elements", "val c = Color(255, 0, 0)"))
+        self.assertTrue(check("designsystem", "shared.controls.elements", aliased))
+        self.assertTrue(
+            check("designsystem", "shared.controls.elements", "val c = Color(red = 0.5f, 0f, 0f)")
+        )
+        self.assertTrue(
+            check("designsystem", "shared.controls.elements", "val c = Color(255, 0, 0)")
+        )
         token = "val c = Color(OtusColors.text1.value)"
-        self.assertEqual(check("designsystem", "elements", token), [])
+        self.assertEqual(check("designsystem", "shared.controls.elements", token), [])
 
     def test_portable_compose_platform_package_is_allowed(self):
         body = "import androidx.compose.ui.platform.LocalDensity"
-        self.assertEqual(check("designsystem", "elements", body), [])
+        self.assertEqual(check("designsystem", "shared.controls.elements", body), [])
+
+
+class ThemePackageTests(unittest.TestCase):
+    packages = ("theme", "theme.colors", "theme.tokens.inbox", "theme.motion")
+
+    def test_root_theme_and_responsibility_packages_allow_literal_colors(self):
+        for package in (
+            *self.packages,
+            "theme.colors.palette",
+            "theme.typography",
+            "theme.spacing._scale2",
+        ):
+            for body in (
+                "val tint = Color(0xFFFFFFFF)",
+                "val tint = androidx.compose.ui.graphics.Color(255, 0, 0)",
+                "import androidx.compose.ui.graphics.Color as Tint\nval tint = Tint(red = 0.5f)",
+            ):
+                with self.subTest(package=package, body=body):
+                    self.assertEqual(check("designsystem", package, body), [])
+
+    def test_theme_dependencies_and_root_entry_point_are_allowed(self):
+        for package in self.packages:
+            for target in (
+                "designsystem.theme.OtusTheme",
+                "designsystem.theme.colors.OtusColors",
+                "designsystem.theme.tokens.inbox.InboxTokens",
+                "designsystem.theme.motion.Motion",
+                "designsystem.resources.Res",
+                "dateformat.DateFormatter",
+            ):
+                for body in reference_bodies(f"com.otus.{target}"):
+                    with self.subTest(package=package, body=body):
+                        self.assertEqual(check("designsystem", package, body), [])
+        self.assertEqual(check("designsystem", "theme", "@Composable fun OtusTheme() {}"), [])
+
+    def test_nested_theme_groups_are_organizational(self):
+        for package in ("theme.shared.controls.elements", "theme.tokens.elements"):
+            for body in reference_bodies("com.otus.designsystem.theme.tokens.components.RowTokens"):
+                with self.subTest(package=package, body=body):
+                    self.assertEqual(check("designsystem", package, body), [])
+        self.assertEqual(
+            check(
+                "designsystem",
+                "shared.controls.elements",
+                "import com.otus.designsystem.theme.tokens.components.RowTokens",
+            ),
+            [],
+        )
+
+    def test_theme_like_and_malformed_paths_cannot_define_colors(self):
+        for package in (
+            "themeish",
+            "themeish.colors",
+            "mail.inbox.theme",
+            "mail.inbox.theme.colors",
+            "mail.inbox.components.theme",
+            "shared.theme.elements",
+            "theme.2colors",
+            "theme.colors.2palette",
+        ):
+            with self.subTest(package=package):
+                errors = check("designsystem", package, "val tint = Color(0xFFFFFFFF)")
+                self.assertIn("literal colors belong in theme", errors)
+                self.assertTrue(any("design-system code belongs" in error for error in errors))
+
+    def test_other_modules_cannot_define_theme_colors(self):
+        for module in ("settings", "jmap", "designsystemish"):
+            with self.subTest(module=module):
+                errors = check(module, "theme.colors", "val tint = Color(0xFFFFFFFF)")
+                self.assertIn("literal colors belong in theme", errors)
+
+    def test_nested_theme_keeps_platform_and_catch_all_rules(self):
+        for source_set, reference in (
+            ("androidMain", "android.content.Context"),
+            ("androidMain", "java.time.Instant"),
+            ("androidMain", "javax.net.SocketFactory"),
+            ("iosMain", "platform.Foundation.NSDate"),
+        ):
+            for body in reference_bodies(reference):
+                with self.subTest(source_set=source_set, body=body):
+                    self.assertEqual(check("designsystem", "theme.motion", body, source_set), [])
+                    self.assertEqual(
+                        check("designsystem", "theme.motion", body),
+                        ["platform-only API in commonMain"],
+                    )
+        for package in ("theme.utils", "theme.tokens.helpers", "theme.colors.manager"):
+            with self.subTest(package=package):
+                self.assertEqual(
+                    check("designsystem", package, "val tint = Color(0xFFFFFFFF)"),
+                    ["use responsibility-specific packages instead of catch-all packages"],
+                )
+
+    def test_nested_theme_keeps_package_and_namespace_matching(self):
+        for directory, package in (
+            ("com.otus.designsystem.theme.colors", "com.otus.designsystem.theme.motion"),
+            ("com.otus.designsystem.theme.colors", "com.otus.designsystem.theme..colors"),
+            ("com.otus.designsystemish.theme.colors", "com.otus.designsystemish.theme.colors"),
+            ("com.otus.designsystemtheme.colors", "com.otus.designsystemtheme.colors"),
+            ("org.example.theme.colors", "org.example.theme.colors"),
+        ):
+            path = Path("designsystem/src/commonMain/kotlin") / directory.replace(".", "/") / "A.kt"
+            with self.subTest(directory=directory, package=package):
+                errors = violations(path, f"package {package}\nval tint = Color(0xFFFFFFFF)")
+                self.assertIn(
+                    "package must match source path and the module namespace com.otus.designsystem",
+                    errors,
+                )
+                self.assertIn("literal colors belong in theme", errors)
+
+
+class QualifiedExpressionTests(unittest.TestCase):
+    forbidden_references = (
+        (
+            "theme.brand",
+            "com.otus.designsystem.shared.controls.elements.WIDTH",
+            "theme cannot depend on scoped UI",
+        ),
+        (
+            "shared.controls.elements",
+            "com.otus.designsystem.shared.controls.components.WIDTH",
+            "elements cannot depend on components",
+        ),
+        (
+            "shared.controls.components",
+            "com.otus.designsystem.mail.inbox.elements.WIDTH",
+            "shared UI cannot depend on mail or calendar UI",
+        ),
+        (
+            "mail.inbox.components",
+            "com.otus.designsystem.calendar.events.elements.WIDTH",
+            "mail and calendar UI cannot depend on each other",
+        ),
+        (
+            "calendar.events.components",
+            "com.otus.designsystem.mail.inbox.elements.WIDTH",
+            "mail and calendar UI cannot depend on each other",
+        ),
+        (
+            "theme.brand",
+            "com.otus.jmap.LIMIT",
+            "design-system modules may depend only on design-system and dateformat",
+        ),
+        (
+            "theme.brand",
+            "com.otus.mail.app.LIMIT",
+            "shared libraries cannot depend on Mail or Calendar app code",
+        ),
+        (
+            "theme.brand",
+            "android.os.Build.VERSION_CODES.TIRAMISU",
+            "platform-only API in commonMain",
+        ),
+        (
+            "theme.brand",
+            "io.ktor.http.HttpStatusCode.OK.value",
+            "UI must not access network or database APIs",
+        ),
+    )
+
+    def test_closed_and_open_ended_theme_ranges_are_allowed(self):
+        modules = frozenset({"designsystem", "designsystem-controls"})
+        for namespace in ("designsystem", "designsystem.controls"):
+            for theme in ("theme", "theme.brand"):
+                base = f"com.otus.{namespace}.{theme}"
+                for operator in ("..", "..<", " .. ", " ..< ", "..\n    ", "..<\n    "):
+                    expression = f"{base}.OWL_ART_WIDTH{operator}{base}.OWL_ART_HEIGHT"
+                    for module, package in (
+                        ("designsystem", "theme.brand"),
+                        ("designsystem", "shared.controls.elements"),
+                        ("accounts", "presentation.components"),
+                    ):
+                        with self.subTest(module=module, package=package, expression=expression):
+                            self.assertEqual(
+                                check(
+                                    module, package, f"val value = {expression}", ui_modules=modules
+                                ),
+                                [],
+                            )
+
+    def test_qualified_theme_tokens_and_navigation_can_span_lines(self):
+        for reference in (
+            "com.otus.designsystem.theme.OWL_ART_WIDTH",
+            "com.otus.designsystem.theme.brand.OWL_ART_WIDTH",
+            "com.otus.designsystem.theme.tokens.inbox.InboxTokens.row.height.value",
+        ):
+            for separator in (".\n    ", "\n    .", " \n . \n "):
+                expressions = (
+                    reference.replace(".", separator),
+                    f"{reference}{separator}toInt()",
+                    f"{reference}{separator}coerceAtLeast(1)",
+                )
+                for expression in expressions:
+                    with self.subTest(expression=expression):
+                        self.assertEqual(
+                            check(
+                                "designsystem", "shared.controls.elements", f"val n = {expression}"
+                            ),
+                            [],
+                        )
+
+    def test_forbidden_references_are_checked_on_each_range_endpoint(self):
+        allowed = "com.otus.designsystem.theme.brand.OWL_ART_WIDTH"
+        for package, forbidden, error in self.forbidden_references:
+            for operator in ("..", "..<"):
+                for left, right in ((allowed, forbidden), (forbidden, allowed)):
+                    body = f"val value = {left}{operator}{right}"
+                    with self.subTest(package=package, body=body):
+                        self.assertIn(error, check("designsystem", package, body))
+
+    def test_forbidden_references_are_checked_across_chained_lines(self):
+        for package, reference, error in self.forbidden_references:
+            for separator in (".\n    ", "\n    .", " \n . \n "):
+                expression = reference.replace(".", separator)
+                for body in (f"val value = {expression}", f'val label = "${{{expression}}}"'):
+                    with self.subTest(package=package, body=body):
+                        self.assertIn(error, check("designsystem", package, body))
+
+    def test_import_punctuation_is_not_treated_as_expression_navigation(self):
+        for target in (
+            "theme..colors.OtusColors",
+            "theme.colors..OtusColors",
+            "theme.colors.OtusColors.",
+            "theme.colors.2palette.OtusColors",
+        ):
+            for suffix in ("", " as Item"):
+                body = f"import com.otus.designsystem.{target}{suffix}"
+                with self.subTest(body=body):
+                    errors = check("designsystem", "shared.controls.elements", body)
+                    self.assertIn(
+                        "design-system references must use <scope>.<group>.elements/components "
+                        "or theme/resources",
+                        errors,
+                    )
+
+
+class ScopedDesignSystemTests(unittest.TestCase):
+    def test_scoped_layers_and_root_theme_are_allowed(self):
+        packages = [
+            f"{scope}.controls.{layer}"
+            for scope in ("shared", "mail", "calendar")
+            for layer in ("elements", "components")
+        ]
+        for package in [*packages, "shared.calendar.components", "theme"]:
+            with self.subTest(package=package):
+                self.assertEqual(check("designsystem", package, "@Composable fun Row() {}"), [])
+
+    def test_flat_and_malformed_production_paths_are_rejected(self):
+        for package in (
+            "elements",
+            "components",
+            "elements.controls",
+            "components.mail",
+            "controls.elements",
+            "shared",
+            "shared.elements",
+            "shared.controls",
+            "shared.controls.widgets",
+            "shared.elements.controls",
+            "shared.elements.components",
+            "shared.controls.elements.nested",
+            "shared.controls.nested.components",
+            "shared.theme.elements",
+            "shared.resources.components",
+            "shared.2controls.elements",
+            "mail.inbox.theme",
+            "calendar.events",
+            "other.controls.elements",
+            "resources",
+        ):
+            with self.subTest(package=package):
+                errors = check("designsystem", package, "fun value() = 1")
+                self.assertTrue(any("design-system code belongs" in error for error in errors))
+
+    def test_permitted_dependency_directions(self):
+        for scope in ("shared", "mail", "calendar"):
+            for layer in ("elements", "components"):
+                targets = [
+                    "theme.OtusColors",
+                    "theme.colors.OtusColors",
+                    "theme.tokens.inbox.InboxTokens",
+                    "theme.motion.Motion",
+                    "resources.Res",
+                    "resources.icon",
+                    "shared.controls.elements.Button",
+                    f"{scope}.other.elements.Label",
+                ]
+                if layer == "components":
+                    targets += [
+                        "shared.controls.components.Row",
+                        f"{scope}.other.components.Panel",
+                    ]
+                for target in targets:
+                    with self.subTest(scope=scope, layer=layer, target=target):
+                        self.assertEqual(
+                            check(
+                                "designsystem",
+                                f"{scope}.controls.{layer}",
+                                f"import com.otus.designsystem.{target}",
+                            ),
+                            [],
+                        )
+
+    def test_elements_cannot_use_components_in_any_group(self):
+        for scope in ("shared", "mail", "calendar"):
+            for body in (
+                "import com.otus.designsystem.shared.navigation.components.Sidebar as Panel",
+                f"fun row() = com.otus.designsystem.{scope}.other.components.Row()",
+            ):
+                with self.subTest(scope=scope, body=body):
+                    errors = check("designsystem", f"{scope}.controls.elements", body)
+                    self.assertEqual(errors, ["elements cannot depend on components"])
+
+    def test_shared_and_app_scope_boundaries(self):
+        for scope, target in (
+            ("shared", "mail"),
+            ("shared", "calendar"),
+            ("mail", "calendar"),
+            ("calendar", "mail"),
+        ):
+            for body in (
+                f"import com.otus.designsystem.{target}.rows.elements.Label as Item",
+                f"fun row() = com.otus.designsystem.{target}.rows.elements.Label()",
+                f'val label = "${{com.otus.designsystem.{target}.rows.elements.Label()}}"',
+            ):
+                with self.subTest(scope=scope, target=target, body=body):
+                    errors = check("designsystem", f"{scope}.controls.components", body)
+                    expected = (
+                        "shared UI cannot depend on mail or calendar UI"
+                        if scope == "shared"
+                        else "mail and calendar UI cannot depend on each other"
+                    )
+                    self.assertEqual(errors, [expected])
+
+    def test_theme_cannot_depend_on_scoped_ui(self):
+        for package in ThemePackageTests.packages:
+            for scope in ("shared", "mail", "calendar"):
+                for layer in ("elements", "components"):
+                    target = f"com.otus.designsystem.{scope}.controls.{layer}.Row"
+                    for body in reference_bodies(target):
+                        with self.subTest(package=package, body=body):
+                            self.assertEqual(
+                                check("designsystem", package, body),
+                                ["theme cannot depend on scoped UI"],
+                            )
+
+    def test_legacy_and_malformed_imports_are_rejected_in_production_consumers(self):
+        for module, package in (
+            ("designsystem", "shared.controls.components"),
+            ("accounts", "presentation.components"),
+        ):
+            for target in (
+                "elements.Button",
+                "components.Row",
+                "shared.elements.Button",
+                "shared.controls.Button",
+                "shared.controls.widgets.Button",
+                "shared.components.elements.Button",
+                "unknown.controls.elements.Button",
+                "themeish.colors.OtusColors",
+                "theme.2colors.OtusColors",
+                "theme.colors.2palette.OtusColors",
+                "theme..colors.OtusColors",
+                "mail.inbox.theme.OtusColors",
+            ):
+                for body in (
+                    f"import com.otus.designsystem.{target} as Item",
+                    f"fun row() = com.otus.designsystem.{target}()",
+                ):
+                    with self.subTest(module=module, target=target, body=body):
+                        errors = check(module, package, body)
+                        self.assertTrue(
+                            any("design-system references must use" in e for e in errors)
+                        )
+
+    def test_values_and_callbacks_are_allowed_but_services_are_rejected(self):
+        for scope in ("shared", "mail", "calendar"):
+            for layer in ("elements", "components"):
+                package = f"{scope}.controls.{layer}"
+                body = "fun row(title: String, onClick: () -> Unit) {}"
+                self.assertEqual(check("designsystem", package, body), [])
+                for body in (
+                    "fun row(model: InboxViewModel) {}",
+                    "fun row(repository: MessageRepository) {}",
+                    "fun row(controller: NavController) {}",
+                    "import androidx.navigation.NavController as Navigator",
+                    "val model = viewModel<InboxState>()",
+                    "val service = koinInject<Service>()",
+                    "val model = hiltViewModel<InboxState>()",
+                ):
+                    with self.subTest(package=package, body=body):
+                        self.assertEqual(
+                            check("designsystem", package, body),
+                            [
+                                "elements/components take values and callbacks, "
+                                "not services or navigation"
+                            ],
+                        )
+
+    def test_network_storage_features_and_app_references_remain_rejected(self):
+        for reference, error in (
+            ("io.ktor.client.HttpClient", "UI must not access network or database APIs"),
+            ("app.cash.sqldelight.Query", "UI must not access network or database APIs"),
+            ("androidx.room.Room", "UI must not access network or database APIs"),
+            ("okhttp3.OkHttpClient", "UI must not access network or database APIs"),
+            ("com.otus.jmap.JmapClient", "design-system modules may depend only"),
+            ("com.otus.accounts.domain.Account", "design-system modules may depend only"),
+            ("com.otus.settings.domain.Entry", "design-system modules may depend only"),
+            ("com.otus.mail.app.App", "shared libraries cannot depend on Mail or Calendar"),
+            ("com.otus.calendar.app.App", "shared libraries cannot depend on Mail or Calendar"),
+        ):
+            for package in ("mail.inbox.components", *ThemePackageTests.packages):
+                for body in reference_bodies(reference):
+                    with self.subTest(package=package, body=body):
+                        errors = check("designsystem", package, body)
+                        self.assertTrue(any(message.startswith(error) for message in errors))
+
+    def test_nested_platform_paths_and_literal_colors(self):
+        package = "mail.message.elements"
+        body = "import android.content.Context"
+        self.assertEqual(check("designsystem", package, body, "androidMain"), [])
+        self.assertEqual(check("designsystem", package, body), ["platform-only API in commonMain"])
+        body = "import platform.Foundation.NSDate"
+        self.assertEqual(check("designsystem", package, body, "iosMain"), [])
+        for package in (
+            "shared.controls.elements",
+            "mail.message.components",
+            "shared.theme.elements",
+        ):
+            with self.subTest(package=package):
+                errors = check("designsystem", package, "val tint = Color(0xFFFFFFFF)")
+                self.assertIn("literal colors belong in theme", errors)
+
+    def test_split_design_system_modules_keep_dependency_rules(self):
+        modules = frozenset({"designsystem", "designsystem-controls"})
+        for module, target_base in (
+            ("designsystem", "com.otus.designsystem.controls"),
+            ("designsystem-controls", "com.otus.designsystem"),
+        ):
+            for package, target, error in (
+                ("shared.forms.components", "shared.controls.elements.Button", None),
+                ("shared.forms.components", "resources.Res", None),
+                ("shared.forms.elements", "theme.colors.OtusColors", None),
+                ("shared.forms.components", "theme.tokens.inbox.InboxTokens", None),
+                ("theme.colors", "theme.motion.Motion", None),
+                (
+                    "shared.forms.elements",
+                    "shared.controls.components.Row",
+                    "elements cannot depend",
+                ),
+                ("shared.forms.components", "mail.inbox.elements.Label", "shared UI cannot depend"),
+                ("mail.forms.components", "calendar.events.elements.Label", "mail and calendar UI"),
+                ("calendar.forms.components", "mail.inbox.elements.Label", "mail and calendar UI"),
+                ("theme", "shared.controls.elements.Button", "theme cannot depend"),
+                ("theme.colors", "shared.controls.elements.Button", "theme cannot depend"),
+                ("theme.tokens.inbox", "mail.inbox.components.Row", "theme cannot depend"),
+                ("theme.motion", "calendar.events.elements.Label", "theme cannot depend"),
+                ("shared.forms.components", "elements.Button", "design-system references must use"),
+                ("shared.forms.components", "components.Row", "design-system references must use"),
+            ):
+                for body in reference_bodies(f"{target_base}.{target}"):
+                    with self.subTest(module=module, package=package, body=body):
+                        errors = check(module, package, body, ui_modules=modules)
+                        if error is None:
+                            self.assertEqual(errors, [])
+                        else:
+                            self.assertTrue(any(message.startswith(error) for message in errors))
+            self.assertEqual(
+                check(module, "theme.colors", "val tint = Color(0xFFFFFFFF)", ui_modules=modules),
+                [],
+            )
+
+    def test_comments_and_strings_do_not_count_as_references(self):
+        body = """
+// import com.otus.designsystem.mail.inbox.components.Row
+/** com.otus.designsystem.components.Sidebar */
+val example = "com.otus.designsystem.calendar.events.components.Row"
+"""
+        self.assertEqual(check("designsystem", "shared.controls.elements", body), [])
+
+    def test_reference_on_the_package_line_is_still_checked(self):
+        package = "com.otus.designsystem.shared.controls.elements"
+        path = Path("designsystem/src/commonMain/kotlin") / package.replace(".", "/") / "Test.kt"
+        text = f"package {package}; import com.otus.designsystem.shared.rows.components.Row"
+        self.assertIn("elements cannot depend on components", violations(path, text))
+
+    def test_tests_keep_the_existing_production_guard_exemption(self):
+        body = """
+import io.ktor.client.HttpClient
+import android.content.Context
+import com.otus.designsystem.mail.inbox.components.Row
+import com.otus.designsystem.components.OldFixture
+fun row(model: InboxViewModel) = Color(0xFFFFFFFF)
+"""
+        for source_set in ("commonTest", "androidHostTest", "iosTest"):
+            for package in ("", "shared.controls.elements", *ThemePackageTests.packages):
+                with self.subTest(source_set=source_set, package=package):
+                    self.assertEqual(check("designsystem", package, body, source_set), [])
+
+    def test_test_sources_still_enforce_packages_apps_suppressions_and_import_style(self):
+        path = Path(
+            "designsystem/src/commonTest/kotlin/com/otus/designsystem/shared/controls/elements/Test.kt"
+        )
+        errors = violations(path, "package com.otus.designsystem.shared.controls.components")
+        self.assertTrue(any("package must match" in error for error in errors))
+        for body, error in (
+            ("import com.otus.mail.app.App", "shared libraries cannot depend"),
+            ("import com.otus.designsystem.shared.controls.components.*", "wildcard imports"),
+            ('@Suppress("unused") fun test() {}', "inline lint suppression"),
+            ("\n" * 301, "file has"),
+        ):
+            with self.subTest(body=body):
+                errors = check("designsystem", "shared.controls.elements", body, "commonTest")
+                self.assertTrue(any(message.startswith(error) for message in errors))
 
 
 class FeatureModuleTests(unittest.TestCase):

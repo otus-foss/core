@@ -16,11 +16,11 @@ import androidx.compose.ui.test.performTouchInput
 import androidx.navigationevent.NavigationEventDispatcher
 import androidx.navigationevent.NavigationEventDispatcherOwner
 import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
-import com.otus.designsystem.theme.CustomTheme
 import com.otus.designsystem.theme.OtusTheme
-import com.otus.designsystem.theme.ThemeBase
-import com.otus.designsystem.theme.ThemeChoice
-import com.otus.designsystem.theme.ThemeColor
+import com.otus.designsystem.theme.colors.CustomTheme
+import com.otus.designsystem.theme.colors.ThemeBase
+import com.otus.designsystem.theme.colors.ThemeChoice
+import com.otus.designsystem.theme.colors.ThemeColor
 import com.otus.settings.presentation.ThemeSettingsState
 import org.junit.Rule
 import org.junit.runner.RunWith

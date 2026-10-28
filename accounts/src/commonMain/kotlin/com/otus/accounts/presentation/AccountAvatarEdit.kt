@@ -4,7 +4,7 @@ import com.otus.accounts.domain.ConnectedAccount
 import com.otus.avatar.ContactAvatar
 import com.otus.avatar.ResolvedAvatar
 import com.otus.avatar.generatedAvatar
-import com.otus.designsystem.components.ChipAvatar
+import com.otus.designsystem.shared.people.components.ChipAvatar
 
 /**
  * One avatar for all [emails] of the account named [name], as the editor needs it: the avatar it

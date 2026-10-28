@@ -31,7 +31,7 @@ changes are excluded unless the user explicitly asks to review them. Calendar is
 2. Compare the inventory with the docs. Use source and callers to determine which behavior exists.
    Record documentation drift without treating documented future plans as requirements for today.
 3. For Meta, inspect every existing module. Current starting points are `jmap`, `jscontact`,
-   `jmap-contacts`, `push`, `avatar`, `dateformat`, `designsystem`, `accounts`, and `settings`.
+   `jmap-contacts`, `jmap-push`, `avatar`, `dateformat`, `designsystem`, `accounts`, and `settings`.
    Discover additions or removals rather than treating this list as fixed.
 4. For Mail, inspect app wiring, `core`, every implemented feature, Android integrations, iOS
    hosts/extensions, SQLDelight storage, `push_bridge`, build/update tooling, and tests. Feature

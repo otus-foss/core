@@ -11,14 +11,14 @@ import com.otus.accounts.presentation.ownAddresses
 import com.otus.accounts.presentation.toChipAvatar
 import com.otus.avatar.ResolvedAvatar
 import com.otus.avatar.generatedAvatar
-import com.otus.designsystem.components.AvatarButton
-import com.otus.designsystem.components.PersonChip
-import com.otus.designsystem.components.Recipient
-import com.otus.designsystem.components.SettingRow
-import com.otus.designsystem.elements.RowButton
-import com.otus.designsystem.theme.EntryTokens
-import com.otus.designsystem.theme.PageTokens
-import com.otus.designsystem.theme.PanelTokens
+import com.otus.designsystem.shared.people.components.AvatarButton
+import com.otus.designsystem.shared.people.components.PersonChip
+import com.otus.designsystem.shared.people.components.Recipient
+import com.otus.designsystem.shared.rows.elements.RowButton
+import com.otus.designsystem.shared.settings.components.SettingRow
+import com.otus.designsystem.theme.tokens.layout.PageTokens
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.rows.EntryTokens
 
 /**
  * One connected account, its sign-in and server, a button that removes it, and a pill for each of

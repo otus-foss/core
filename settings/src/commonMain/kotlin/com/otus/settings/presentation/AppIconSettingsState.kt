@@ -3,7 +3,7 @@ package com.otus.settings.presentation
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.otus.designsystem.theme.AppIconStyle
+import com.otus.designsystem.theme.brand.AppIconStyle
 
 /** Keeps the chosen [AppIconStyle]'s name between launches, such as in platform preferences. */
 public interface AppIconPreferenceStore {

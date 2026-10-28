@@ -3,7 +3,7 @@ package com.otus.settings.presentation
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.otus.designsystem.theme.AnimationSpeed
+import com.otus.designsystem.theme.motion.AnimationSpeed
 import com.otus.settings.domain.AnimationPreferenceStore
 
 /**

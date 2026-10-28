@@ -2,8 +2,8 @@ package com.otus.settings.presentation.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
-import com.otus.designsystem.components.PageScaffold
-import com.otus.designsystem.components.SettingPageRow
+import com.otus.designsystem.shared.pages.components.PageScaffold
+import com.otus.designsystem.shared.settings.components.SettingPageRow
 import com.otus.settings.presentation.SettingsEntry
 
 /** The top settings page: one row per subpage, in the order the app lists them. */

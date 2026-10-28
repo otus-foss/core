@@ -1,6 +1,6 @@
 package com.otus.settings.presentation
 
-import com.otus.designsystem.theme.AppIconStyle
+import com.otus.designsystem.theme.brand.AppIconStyle
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

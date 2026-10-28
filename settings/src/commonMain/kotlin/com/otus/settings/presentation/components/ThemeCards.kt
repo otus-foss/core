@@ -3,9 +3,9 @@ package com.otus.settings.presentation.components
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.otus.designsystem.components.MenuAction
-import com.otus.designsystem.components.ThemeCard
-import com.otus.designsystem.theme.ThemeChoice
+import com.otus.designsystem.shared.overlays.components.MenuAction
+import com.otus.designsystem.shared.settings.components.ThemeCard
+import com.otus.designsystem.theme.colors.ThemeChoice
 import com.otus.settings.presentation.ThemeOption
 import com.otus.settings.presentation.options
 

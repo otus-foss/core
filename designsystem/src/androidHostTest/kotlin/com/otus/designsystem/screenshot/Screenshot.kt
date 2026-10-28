@@ -13,9 +13,9 @@ import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.captureRoboImage
 import com.github.takahirom.roborazzi.captureScreenRoboImage
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.OtusPalette
 import com.otus.designsystem.theme.OtusTheme
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.colors.OtusPalette
 
 private const val SHOT_TAG = "screenshot"
 

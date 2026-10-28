@@ -1,10 +1,10 @@
 package com.otus.settings.presentation
 
-import com.otus.designsystem.theme.AccentPreset
-import com.otus.designsystem.theme.CustomTheme
-import com.otus.designsystem.theme.ThemeBase
-import com.otus.designsystem.theme.ThemeChoice
-import com.otus.designsystem.theme.ThemeColor
+import com.otus.designsystem.theme.colors.AccentPreset
+import com.otus.designsystem.theme.colors.CustomTheme
+import com.otus.designsystem.theme.colors.ThemeBase
+import com.otus.designsystem.theme.colors.ThemeChoice
+import com.otus.designsystem.theme.colors.ThemeColor
 
 /** The selected theme's name in settings, such as on the theme row. */
 public val ThemeChoice.themeTitle: String
