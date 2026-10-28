@@ -1,11 +1,7 @@
 package com.otus.designsystem.shared.dates.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -23,7 +19,6 @@ import com.otus.designsystem.resources.symbol_close
 import com.otus.designsystem.shared.controls.elements.ActionButton
 import com.otus.designsystem.shared.controls.elements.IconButton
 import com.otus.designsystem.shared.controls.elements.Symbol
-import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import kotlinx.datetime.LocalTime
 import kotlin.math.abs
@@ -59,14 +54,7 @@ public fun TimeWheelPicker(
             )
             IconButton("Close time chooser", onDismiss) { Symbol(Res.drawable.symbol_close) }
         }
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .background(OtusColors.bgRegular, RoundedCornerShape(SheetTokens.radius))
-                .padding(SheetTokens.gap),
-            horizontalArrangement = Arrangement.spacedBy(SheetTokens.gap),
-        ) {
+        DateWheels(Modifier.weight(1f)) {
             DatePickerColumn(
                 "Hour",
                 hours.map(::twoDigits),

@@ -145,11 +145,7 @@ public class AvatarService(
         return resolvedDomain(host)?.takeIf { isPublicAvatarHost(it) && (host == it || host.endsWith(".$it")) }
     }
 
-    private suspend fun resolvedDomain(host: String): String? =
-        runCatching { domains.resolve(host) }.getOrElse {
-            if (it is CancellationException) throw it
-            null
-        }
+    private suspend fun resolvedDomain(host: String): String? = nullOnFailure { domains.resolve(host) }
 
     private suspend fun domainImage(
         domain: String,
