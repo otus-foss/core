@@ -1,8 +1,13 @@
 package com.otus.jscontact
 
-import com.otus.jscontact.VCardKey.BEGIN
-import com.otus.jscontact.VCardKey.END
-import com.otus.jscontact.VCardKey.VCARD
+import com.otus.jscontact.vcard.VCardKey.BEGIN
+import com.otus.jscontact.vcard.VCardKey.END
+import com.otus.jscontact.vcard.VCardKey.VCARD
+import com.otus.jscontact.vcard.VCardProperty
+import com.otus.jscontact.vcard.toCardOrNull
+import com.otus.jscontact.vcard.toVCard
+import com.otus.jscontact.vcard.toVCardProperty
+import com.otus.jscontact.vcard.vCardLines
 
 /**
  * Converts between vCard files and [Card]s, mapping properties as RFC 9555 describes. It reads vCard 3.0

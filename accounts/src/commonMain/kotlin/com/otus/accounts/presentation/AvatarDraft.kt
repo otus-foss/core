@@ -7,8 +7,8 @@ import com.otus.avatar.AvatarStyle
 import com.otus.avatar.ContactAvatar
 import com.otus.avatar.ResolvedAvatar
 import com.otus.avatar.avatarLetters
-import com.otus.designsystem.components.ChipAvatar
-import com.otus.designsystem.elements.AvatarSymbols
+import com.otus.designsystem.shared.people.components.ChipAvatar
+import com.otus.designsystem.shared.people.elements.AvatarSymbols
 
 /** The kinds of avatar the sheet offers, in the order of its toggle. */
 internal enum class AvatarKind(

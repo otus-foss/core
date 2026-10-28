@@ -31,7 +31,7 @@ must provide TLS and ingress rate limits. The bridge also limits route and messa
 
 Mail owns the Swift APNs adapter, CryptoKit Web Push decoder, Keychain group, extension and
 bridge. Calendar does not consume these yet. Portable JMAP subscription upkeep remains in
-`com.otus:push`; its new `beforeCreate` callback lets a transport buffer verification notices
+`com.otus:jmap-push`; its new `beforeCreate` callback lets a transport buffer verification notices
 before every subscription creation, including expired subscriptions replaced during renewal.
 Other transports retain their existing behavior by leaving the callback unset.
 

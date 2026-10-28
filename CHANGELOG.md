@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+- Group JSContact's internal vCard conversion and validation code into `vcard` and `validation`
+  packages. Public APIs, including `Card`, `VCard`, and `isEmailAddress`, keep their packages and behavior.
+- Breaking: rename the `push` module and `com.otus:push` artifact to `jmap-push` and
+  `com.otus:jmap-push`. Replace `com.otus.push` imports with `com.otus.jmap.push` and use
+  `libs.otus.jmap.push` with the `otus-jmap-push` catalog alias. Push behavior and stored records
+  are unchanged. See [push subscriptions](docs/push.md#module-rename-in-0100).
+- Breaking: move design-system elements and components into `shared/<group>` and
+  `mail/<feature>` packages. Group theme declarations under `theme.colors`, `theme.motion`,
+  `theme.brand`, `theme.typography`, and `theme.tokens.<family>`. Update imports with the
+  [package migration guide](docs/ui-package-migration.md). The Maven module, `theme.OtusTheme`,
+  resource identifiers, token values, and rendering behavior are unchanged.
 - `SidebarInboxEntry` shows its count in the mailbox tiles' badge while `inset`, so the Inbox count
   matches the tiles below it. Pass a shortened count, such as "999+", as for `SidebarMailboxTile`.
 - Add `RowMark.Invite`, a calendar mark for a row that carries a calendar invitation. Exhaustive
@@ -440,7 +451,7 @@
 - Add `MotionCurve.Reverse`, the standard curve played backward. When a page closes, the action
   bar beneath now moves back on it, and a context that goes away in place uses it too, so both
   replay the way the bar collapsed.
-- Add the `push` module (decision 0015). `PushSubscriptions` keeps one JMAP push subscription per
+- Add the `jmap-push` module (decision 0015). `PushSubscriptions` keeps one JMAP push subscription per
   login pointed at the app's push endpoint: it creates, verifies, renews, replaces, and deletes
   subscriptions, and reports a `PushStatus` per login. Apps store records through
   `PushStateStore`. `forget` deletes a login's subscription before the login is removed, and

@@ -1,0 +1,89 @@
+package com.otus.designsystem.shared.dates.components
+
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Surface
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.text
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.style.TextAlign
+import com.otus.designsystem.resources.Res
+import com.otus.designsystem.resources.symbol_chevron_left
+import com.otus.designsystem.shared.controls.elements.ActionButton
+import com.otus.designsystem.shared.controls.elements.AnimatedText
+import com.otus.designsystem.shared.controls.elements.IconButton
+import com.otus.designsystem.shared.controls.elements.IconButtonLook
+import com.otus.designsystem.shared.controls.elements.Symbol
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.overlays.SheetTokens
+import com.otus.designsystem.theme.tokens.selection.CalendarTokens
+import com.otus.designsystem.theme.typography.panelTextStyle
+
+/** Joined capsule navigation. The caller owns the displayed month and allowed range. */
+@Composable
+public fun MonthNavigation(
+    label: MonthNavigationLabel,
+    onPrevious: () -> Unit,
+    onChooseMonth: () -> Unit,
+    onNext: () -> Unit,
+    previousEnabled: Boolean = true,
+    nextEnabled: Boolean = true,
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = CircleShape,
+        color = OtusColors.bgDark,
+        border = BorderStroke(PanelTokens.borderWidth, OtusColors.strokeBgDark),
+    ) {
+        // The shared surface supplies the overlapped portions of the Figma arrow segments.
+        // Keep hit targets adjacent so the center button never steals an arrow press.
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            IconButton("Previous month", onPrevious, enabled = previousEnabled, look = IconButtonLook.Plain) {
+                Symbol(Res.drawable.symbol_chevron_left, mirrorInRtl = true)
+            }
+            ActionButton(
+                "${label.month} ${label.year}",
+                onChooseMonth,
+                Modifier.weight(1f).semantics { text = AnnotatedString("${label.month} ${label.year}") },
+                primary = true,
+                labelContent = {
+                    Row(
+                        Modifier.fillMaxWidth().clearAndSetSemantics {},
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(SheetTokens.gap),
+                    ) {
+                        AnimatedText(
+                            label.month,
+                            label.chronologicalOrder,
+                            Modifier.weight(CalendarTokens.MONTH_COLUMN_WEIGHT),
+                            style = panelTextStyle(),
+                            textAlign = TextAlign.Center,
+                        )
+                        AnimatedText(
+                            label.year,
+                            label.chronologicalOrder,
+                            Modifier.weight(1f),
+                            style = panelTextStyle(),
+                            textAlign = TextAlign.Center,
+                        )
+                    }
+                },
+            )
+            IconButton("Next month", onNext, enabled = nextEnabled, look = IconButtonLook.Plain) {
+                Box(Modifier.rotate(CalendarTokens.HALF_TURN)) {
+                    Symbol(Res.drawable.symbol_chevron_left, mirrorInRtl = true)
+                }
+            }
+        }
+    }
+}

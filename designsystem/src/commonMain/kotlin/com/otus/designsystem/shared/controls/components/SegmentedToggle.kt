@@ -1,0 +1,80 @@
+package com.otus.designsystem.shared.controls.components
+
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.motion.MotionSpeed
+import com.otus.designsystem.theme.motion.motionTween
+import com.otus.designsystem.theme.tokens.editing.SignatureTokens
+import com.otus.designsystem.theme.typography.panelTextStyle
+
+/**
+ * A row of [options] in one track, one of them [selected] with a `selectedFill` fill, such as Copy from
+ * and Copy to; none while [selected] is -1. Each label stays on one line at [fontSize], in a
+ * segment as wide as its share of the labels' length, so a longer label gets more room. [height]
+ * is the track's, such as [com.otus.designsystem.theme.tokens.selection.FilterTokens.segmentHeight] in a filter panel.
+ */
+@Composable
+public fun SegmentedToggle(
+    options: List<String>,
+    selected: Int,
+    onSelect: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+    fontSize: TextUnit = TextUnit.Unspecified,
+    height: Dp = SignatureTokens.toggleHeight,
+) {
+    Row(
+        modifier
+            .fillMaxWidth()
+            .height(height)
+            .clip(CircleShape)
+            .background(OtusColors.bgRegular)
+            .padding(SignatureTokens.toggleInset)
+            .selectableGroup(),
+    ) {
+        options.forEachIndexed { index, option ->
+            val chosen = index == selected
+            val fill by animateColorAsState(
+                if (chosen) OtusColors.selectedFill else OtusColors.bgRegular,
+                motionTween(MotionSpeed.Fast),
+                label = "Segment fill",
+            )
+            Box(
+                Modifier
+                    .weight(option.length.coerceAtLeast(1).toFloat())
+                    .fillMaxHeight()
+                    .clip(CircleShape)
+                    .background(fill)
+                    .selectable(chosen, role = Role.Tab) { onSelect(index) },
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    option,
+                    style = panelTextStyle(),
+                    color = if (chosen) OtusColors.text1 else OtusColors.text2,
+                    fontSize = fontSize,
+                    maxLines = 1,
+                    softWrap = false,
+                )
+            }
+        }
+    }
+}

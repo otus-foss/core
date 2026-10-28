@@ -5,14 +5,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import com.otus.designsystem.components.ChoiceOptions
-import com.otus.designsystem.components.ChoiceRow
-import com.otus.designsystem.components.ChoiceSheet
-import com.otus.designsystem.components.SettingRow
-import com.otus.designsystem.elements.ValueButton
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_owl
-import com.otus.designsystem.theme.AppIconStyle
+import com.otus.designsystem.shared.selection.components.ChoiceOptions
+import com.otus.designsystem.shared.selection.components.ChoiceRow
+import com.otus.designsystem.shared.selection.components.ChoiceSheet
+import com.otus.designsystem.shared.settings.components.SettingRow
+import com.otus.designsystem.shared.settings.elements.ValueButton
+import com.otus.designsystem.theme.brand.AppIconStyle
 import com.otus.settings.presentation.AppIconSettingsState
 
 /**

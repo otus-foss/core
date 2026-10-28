@@ -1,9 +1,9 @@
 # Using the libraries from an app
 
-The apps get these libraries in two ways. CI and release builds download a pinned version from
-GitHub Packages. Local development can build against a sibling checkout instead, so a library
+The apps pin a released library version from GitHub Packages. Development builds can use a
+sibling checkout instead, so a library
 change can be tried in an app before it is released. Nothing in an app's build requires the
-sibling checkout. Calendar has not adopted Meta packages yet.
+sibling checkout. Both apps declare Meta dependencies and pin their versions independently.
 
 ## Released versions
 
@@ -85,10 +85,16 @@ Enable it for a single build with `./gradlew checkAll -Potus.meta.path=../otus-m
 build by adding `otus.meta.path=../otus-meta` to `~/.gradle/gradle.properties`. The path resolves
 from each app's root, so one entry works for both apps when they sit next to otus-meta. Gradle
 replaces `com.otus:<module>` with the matching project from the checkout, regardless of the
-pinned version. CI never sets this property.
+pinned version. While publishing is paused, Mail's quality and nightly workflows set this
+property to build Meta source. Their success does not validate the published artifacts.
 
 Before merging an app change that needs a library change, release the library and update the
 pinned version. An app's main branch must always build from a released version.
+
+Version 0.10.0 reorganizes design-system packages. See the
+[package migration guide](ui-package-migration.md) before adopting that candidate. Mail's CI can
+test a matching Meta branch while publishing is paused; this does not publish the version or
+replace the release requirement for the consumer cutover.
 
 ## iOS
 
