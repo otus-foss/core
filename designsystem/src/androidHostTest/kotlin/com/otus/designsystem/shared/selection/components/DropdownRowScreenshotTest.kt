@@ -8,7 +8,7 @@ import androidx.compose.ui.unit.dp
 import com.otus.designsystem.screenshot.screenshot
 import com.otus.designsystem.shared.people.components.DemoPeople
 import com.otus.designsystem.shared.people.components.PersonAvatar
-import com.otus.designsystem.theme.ComposeTokens
+import com.otus.designsystem.theme.tokens.editing.ComposeTokens
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner

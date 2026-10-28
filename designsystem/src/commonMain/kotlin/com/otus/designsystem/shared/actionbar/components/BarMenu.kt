@@ -13,8 +13,8 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.window.PopupPositionProvider
 import com.otus.designsystem.shared.overlays.components.ContextMenu
 import com.otus.designsystem.shared.overlays.components.MenuAction
-import com.otus.designsystem.theme.ActionBarTokens
-import com.otus.designsystem.theme.MenuTokens
+import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
+import com.otus.designsystem.theme.tokens.overlays.MenuTokens
 
 /**
  * Whether a bar button's [ContextMenu] is open. [click] runs an action, or opens its menu when it

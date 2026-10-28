@@ -17,8 +17,8 @@ import androidx.compose.ui.text.font.FontWeight
 import com.otus.designsystem.shared.people.components.ChipAvatar
 import com.otus.designsystem.shared.people.components.PersonAvatar
 import com.otus.designsystem.shared.people.elements.Avatar
-import com.otus.designsystem.theme.ActionBarTokens
-import com.otus.designsystem.theme.OtusColors
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 
 /** What an action bar's context is about, drawn at the start of its shell. */
 public sealed interface BarToken {

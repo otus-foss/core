@@ -11,8 +11,8 @@ import com.otus.designsystem.resources.symbol_inbox
 import com.otus.designsystem.screenshot.screenshot
 import com.otus.designsystem.shared.controls.elements.IconPill
 import com.otus.designsystem.shared.folders.elements.DestinationPill
-import com.otus.designsystem.theme.MoveTokens
-import com.otus.designsystem.theme.ReadTokens
+import com.otus.designsystem.theme.tokens.content.ReadTokens
+import com.otus.designsystem.theme.tokens.selection.MoveTokens
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner

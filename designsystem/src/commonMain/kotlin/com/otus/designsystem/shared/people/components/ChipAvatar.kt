@@ -8,9 +8,9 @@ import com.otus.designsystem.shared.people.elements.Avatar
 import com.otus.designsystem.shared.people.elements.AvatarBadge
 import com.otus.designsystem.shared.people.elements.avatarFill
 import com.otus.designsystem.shared.people.elements.rememberAvatarImage
-import com.otus.designsystem.theme.FolderColor
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.contrast
+import com.otus.designsystem.theme.colors.FolderColor
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.colors.contrast
 import org.jetbrains.compose.resources.DrawableResource
 
 /**

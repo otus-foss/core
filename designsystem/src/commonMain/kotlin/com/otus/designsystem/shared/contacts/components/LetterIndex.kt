@@ -35,12 +35,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
-import com.otus.designsystem.theme.LetterIndexTokens
-import com.otus.designsystem.theme.MotionSpeed
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.SidebarTokens
-import com.otus.designsystem.theme.motionTween
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.motion.MotionSpeed
+import com.otus.designsystem.theme.motion.motionTween
+import com.otus.designsystem.theme.tokens.layout.SidebarTokens
+import com.otus.designsystem.theme.tokens.rows.LetterIndexTokens
+import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
  * Hosts a jump-to-letter index over [content], such as a whole page with a contact list filed by

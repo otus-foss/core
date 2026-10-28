@@ -28,9 +28,9 @@ import com.otus.designsystem.resources.symbol_add
 import com.otus.designsystem.resources.symbol_check
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.ThemeTokens
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.settings.ThemeTokens
 
 /**
  * One color to pick, such as an accent. A selected swatch shows a check and a [OtusColors.text1]

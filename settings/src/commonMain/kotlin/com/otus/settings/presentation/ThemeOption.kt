@@ -1,8 +1,8 @@
 package com.otus.settings.presentation
 
-import com.otus.designsystem.theme.CustomTheme
-import com.otus.designsystem.theme.ThemeBase
-import com.otus.designsystem.theme.ThemeChoice
+import com.otus.designsystem.theme.colors.CustomTheme
+import com.otus.designsystem.theme.colors.ThemeBase
+import com.otus.designsystem.theme.colors.ThemeChoice
 
 /**
  * A theme on the theme page: its name, a description, and the [choice] that selects it. [custom]

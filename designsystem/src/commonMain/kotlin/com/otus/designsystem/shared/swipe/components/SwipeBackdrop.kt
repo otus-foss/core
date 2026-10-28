@@ -24,11 +24,11 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import com.otus.designsystem.shared.controls.elements.Symbol
-import com.otus.designsystem.theme.EntryTokens
-import com.otus.designsystem.theme.Motion
-import com.otus.designsystem.theme.MotionSpeed
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.SwipeTokens
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.motion.Motion
+import com.otus.designsystem.theme.motion.MotionSpeed
+import com.otus.designsystem.theme.tokens.rows.EntryTokens
+import com.otus.designsystem.theme.tokens.rows.SwipeTokens
 import kotlin.math.abs
 
 /**

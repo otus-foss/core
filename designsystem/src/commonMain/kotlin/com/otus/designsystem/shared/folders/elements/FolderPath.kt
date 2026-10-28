@@ -7,8 +7,8 @@ import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.TextUnit
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
  * A folder's place in the tree on one line, such as "Finance / Invoices": the parents in `text3`

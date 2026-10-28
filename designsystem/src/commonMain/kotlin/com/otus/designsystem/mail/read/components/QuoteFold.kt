@@ -35,12 +35,12 @@ import com.otus.designsystem.shared.people.components.NamedAvatar
 import com.otus.designsystem.shared.people.components.PersonPill
 import com.otus.designsystem.shared.people.components.PersonPillSize
 import com.otus.designsystem.shared.people.components.PillDetail
-import com.otus.designsystem.theme.MotionSpeed
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.ReadTokens
-import com.otus.designsystem.theme.motionTween
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.motion.MotionSpeed
+import com.otus.designsystem.theme.motion.motionTween
+import com.otus.designsystem.theme.tokens.content.ReadTokens
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
  * The quoted part of a reply, folded under its body. A `bgLight` line runs along its start; the

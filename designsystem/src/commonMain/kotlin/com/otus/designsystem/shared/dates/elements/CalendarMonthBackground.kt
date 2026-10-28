@@ -8,7 +8,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.unit.LayoutDirection
-import com.otus.designsystem.theme.CalendarTokens
+import com.otus.designsystem.theme.tokens.selection.CalendarTokens
 
 /** Draw one week's slice of a continuous month outline, with convex and concave rounded corners. */
 public fun Modifier.calendarMonthBackground(

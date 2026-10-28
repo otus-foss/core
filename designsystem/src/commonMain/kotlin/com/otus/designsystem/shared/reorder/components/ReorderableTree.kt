@@ -19,9 +19,9 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.ReorderTreeTokens
-import com.otus.designsystem.theme.SheetTokens
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.overlays.SheetTokens
+import com.otus.designsystem.theme.tokens.rows.ReorderTreeTokens
 
 /**
  * A tree of rows, flattened in display order with each row's [depth], that the user rearranges by

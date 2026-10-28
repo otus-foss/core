@@ -6,7 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.LayoutDirection
-import com.otus.designsystem.theme.OtusPalette
+import com.otus.designsystem.theme.colors.OtusPalette
 import kotlin.math.roundToInt
 
 /**

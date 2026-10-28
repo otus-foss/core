@@ -23,10 +23,10 @@ import com.otus.designsystem.shared.controls.elements.ActionButton
 import com.otus.designsystem.shared.controls.elements.IconButton
 import com.otus.designsystem.shared.controls.elements.IconButtonLook
 import com.otus.designsystem.shared.controls.elements.Symbol
-import com.otus.designsystem.theme.ChoiceSheetTokens
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.SheetTokens
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.overlays.ChoiceSheetTokens
+import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 
 /**
  * A modal sheet titled [title] at its start with a close ✕ at its end, for choices that act at

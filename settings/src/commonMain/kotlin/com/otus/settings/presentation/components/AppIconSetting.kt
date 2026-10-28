@@ -12,7 +12,7 @@ import com.otus.designsystem.shared.selection.components.ChoiceRow
 import com.otus.designsystem.shared.selection.components.ChoiceSheet
 import com.otus.designsystem.shared.settings.components.SettingRow
 import com.otus.designsystem.shared.settings.elements.ValueButton
-import com.otus.designsystem.theme.AppIconStyle
+import com.otus.designsystem.theme.brand.AppIconStyle
 import com.otus.settings.presentation.AppIconSettingsState
 
 /**

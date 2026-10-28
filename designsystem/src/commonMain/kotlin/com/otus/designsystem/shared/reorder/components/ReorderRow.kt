@@ -18,8 +18,8 @@ import androidx.compose.ui.semantics.semantics
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_drag_indicator
 import com.otus.designsystem.shared.controls.elements.Symbol
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PanelTokens
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
 
 /** One row of a [ReorderableColumn] or [ReorderableTree]: its drag gestures and its Move up and Move down actions. */
 internal class ReorderRow(

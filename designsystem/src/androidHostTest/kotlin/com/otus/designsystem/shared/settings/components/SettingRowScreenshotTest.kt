@@ -14,7 +14,7 @@ import com.otus.designsystem.shared.people.components.DemoPeople
 import com.otus.designsystem.shared.rows.components.RowDensity
 import com.otus.designsystem.shared.rows.elements.RowButton
 import com.otus.designsystem.shared.settings.elements.ValueButton
-import com.otus.designsystem.theme.OtusColors
+import com.otus.designsystem.theme.colors.OtusColors
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner

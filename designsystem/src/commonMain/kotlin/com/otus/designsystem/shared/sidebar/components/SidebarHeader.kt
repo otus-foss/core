@@ -34,10 +34,10 @@ import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.shared.people.components.AvatarStack
 import com.otus.designsystem.shared.people.components.ChipAvatar
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.SidebarTokens
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.layout.SidebarTokens
+import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
  * The [Sidebar]'s header: [avatars], [title], and an optional [subtitle], then an unfold button

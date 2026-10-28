@@ -16,8 +16,8 @@ import com.otus.designsystem.shared.input.elements.InputIcon
 import com.otus.designsystem.shared.input.elements.InputLook
 import com.otus.designsystem.shared.input.elements.RemoveFieldButton
 import com.otus.designsystem.shared.input.elements.inputFrame
-import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.typography.panelTextStyle
 import org.jetbrains.compose.resources.DrawableResource
 
 /**

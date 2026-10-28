@@ -15,7 +15,7 @@ import com.otus.designsystem.mail.folders.components.FolderHint
 import com.otus.designsystem.mail.folders.components.FolderName
 import com.otus.designsystem.shared.controls.components.StripChevron
 import com.otus.designsystem.shared.rows.components.StripCard
-import com.otus.designsystem.theme.ReadTokens
+import com.otus.designsystem.theme.tokens.content.ReadTokens
 
 /**
  * The slim strip of a single message that is in other folders too: "Also in" and the [names] as

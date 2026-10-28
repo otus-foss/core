@@ -19,8 +19,8 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import com.otus.designsystem.shared.controls.elements.ActionButton
 import com.otus.designsystem.shared.input.elements.InputField
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PageTokens
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.layout.PageTokens
 
 /**
  * A popup that asks the user to choose: a confirmation when [message] explains the consequence,

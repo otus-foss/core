@@ -22,7 +22,7 @@ import com.otus.designsystem.shared.settings.components.SettingPageRow
 import com.otus.designsystem.shared.settings.components.SettingRow
 import com.otus.designsystem.shared.settings.components.SettingsSection
 import com.otus.designsystem.shared.settings.elements.ValueButton
-import com.otus.designsystem.theme.AnimationSpeed
+import com.otus.designsystem.theme.motion.AnimationSpeed
 import com.otus.settings.presentation.AnimationSettingsState
 import com.otus.settings.presentation.DateFormatSettingsState
 import com.otus.settings.presentation.ThemeSettingsState

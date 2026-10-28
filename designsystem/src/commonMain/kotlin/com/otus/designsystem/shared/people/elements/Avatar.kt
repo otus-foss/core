@@ -20,9 +20,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import com.otus.designsystem.shared.controls.elements.Symbol
-import com.otus.designsystem.theme.AvatarTokens
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.people.AvatarTokens
+import com.otus.designsystem.theme.typography.panelTextStyle
 import org.jetbrains.compose.resources.DrawableResource
 
 /**

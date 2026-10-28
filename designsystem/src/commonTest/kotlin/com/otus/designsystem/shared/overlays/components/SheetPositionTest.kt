@@ -1,7 +1,7 @@
 package com.otus.designsystem.shared.overlays.components
 
 import androidx.compose.runtime.MonotonicFrameClock
-import com.otus.designsystem.theme.MotionCurve
+import com.otus.designsystem.theme.motion.MotionCurve
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

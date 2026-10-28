@@ -26,11 +26,11 @@ import com.otus.designsystem.resources.symbol_unfold_more
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.people.components.AvatarStack
 import com.otus.designsystem.shared.people.components.PersonAvatar
-import com.otus.designsystem.theme.ActionBarTokens
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.ThreadTokens
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.content.ThreadTokens
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
+import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
  * The earlier messages of the thread a reply answers, just above its action bar. Up to

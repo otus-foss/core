@@ -16,7 +16,7 @@ import com.otus.designsystem.shared.controls.elements.ChipWidth
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.people.components.AvatarStack
 import com.otus.designsystem.shared.people.components.ChipAvatar
-import com.otus.designsystem.theme.OtusColors
+import com.otus.designsystem.theme.colors.OtusColors
 
 /**
  * A pill with the current choice, its [avatars] and [label], and a down chevron, such as which

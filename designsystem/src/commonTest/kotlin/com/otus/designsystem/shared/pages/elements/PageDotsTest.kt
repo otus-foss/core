@@ -1,6 +1,6 @@
 package com.otus.designsystem.shared.pages.elements
 
-import com.otus.designsystem.theme.ReadTokens
+import com.otus.designsystem.theme.tokens.content.ReadTokens
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

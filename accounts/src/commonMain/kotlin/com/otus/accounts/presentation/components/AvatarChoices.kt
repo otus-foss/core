@@ -24,12 +24,12 @@ import com.otus.designsystem.shared.selection.components.PickRow
 import com.otus.designsystem.shared.settings.components.ColorSheet
 import com.otus.designsystem.shared.settings.elements.AddSwatch
 import com.otus.designsystem.shared.settings.elements.ColorSwatch
-import com.otus.designsystem.theme.FolderColor
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PageTokens
-import com.otus.designsystem.theme.ThemeTokens
-import com.otus.designsystem.theme.parseHexColor
-import com.otus.designsystem.theme.toHex
+import com.otus.designsystem.theme.colors.FolderColor
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.colors.parseHexColor
+import com.otus.designsystem.theme.colors.toHex
+import com.otus.designsystem.theme.tokens.layout.PageTokens
+import com.otus.designsystem.theme.tokens.settings.ThemeTokens
 
 /**
  * The choices of the draft's kind: where the photo comes from, or the colors and the icons or

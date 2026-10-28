@@ -47,10 +47,10 @@ import com.otus.designsystem.shared.actionbar.components.overKeyboard
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.shared.panels.components.drawEdgeFade
-import com.otus.designsystem.theme.ActionBarTokens
-import com.otus.designsystem.theme.ComposeTokens
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PanelTokens
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.editing.ComposeTokens
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 import org.jetbrains.compose.resources.DrawableResource
 
 /**

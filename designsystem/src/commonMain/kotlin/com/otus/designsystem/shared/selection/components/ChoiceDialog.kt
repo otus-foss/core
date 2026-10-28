@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.otus.designsystem.shared.overlays.components.DialogFrame
 import com.otus.designsystem.shared.selection.elements.SelectionRow
-import com.otus.designsystem.theme.PageTokens
+import com.otus.designsystem.theme.tokens.layout.PageTokens
 
 /** Single-choice popup. Choosing an option applies it and closes; dismissing changes nothing. */
 @Composable

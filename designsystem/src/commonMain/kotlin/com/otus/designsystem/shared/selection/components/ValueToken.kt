@@ -16,10 +16,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import com.otus.designsystem.shared.controls.elements.LeadingSymbol
 import com.otus.designsystem.shared.people.components.ChipAvatar
 import com.otus.designsystem.shared.people.components.SmallAvatar
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.SettingTokens
-import com.otus.designsystem.theme.SummaryTokens
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.people.SummaryTokens
+import com.otus.designsystem.theme.tokens.settings.SettingTokens
 import org.jetbrains.compose.resources.DrawableResource
 
 /**

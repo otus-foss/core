@@ -11,9 +11,9 @@ import com.otus.designsystem.resources.symbol_folder
 import com.otus.designsystem.resources.symbol_folder_fill
 import com.otus.designsystem.resources.symbol_inbox
 import com.otus.designsystem.shared.controls.elements.Symbol
-import com.otus.designsystem.theme.FolderColor
-import com.otus.designsystem.theme.InboxTokens
-import com.otus.designsystem.theme.OtusColors
+import com.otus.designsystem.theme.colors.FolderColor
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.rows.InboxTokens
 import org.jetbrains.compose.resources.DrawableResource
 
 /**

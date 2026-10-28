@@ -17,7 +17,7 @@ import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.TextUnit
-import com.otus.designsystem.theme.SummaryTokens
+import com.otus.designsystem.theme.tokens.people.SummaryTokens
 
 /**
  * [text] with [person]'s small avatar before the first place their name appears, so a person

@@ -37,13 +37,13 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.window.PopupPositionProvider
 import com.otus.designsystem.shared.overlays.components.MenuPopup
 import com.otus.designsystem.shared.overlays.components.menuSurface
-import com.otus.designsystem.theme.ComposeTokens
-import com.otus.designsystem.theme.MenuTokens
-import com.otus.designsystem.theme.MotionSpeed
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.motionTween
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.motion.MotionSpeed
+import com.otus.designsystem.theme.motion.motionTween
+import com.otus.designsystem.theme.tokens.editing.ComposeTokens
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.overlays.MenuTokens
+import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
  * A list that opens under the element it is called from, such as the addresses under a Send-from

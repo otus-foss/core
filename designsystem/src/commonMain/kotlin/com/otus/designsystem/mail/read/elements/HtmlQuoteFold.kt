@@ -1,8 +1,8 @@
 package com.otus.designsystem.mail.read.elements
 
-import com.otus.designsystem.theme.OtusPalette
-import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.ReadTokens
+import com.otus.designsystem.theme.colors.OtusPalette
+import com.otus.designsystem.theme.tokens.content.ReadTokens
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
 
 /**
  * The fold for [quote] after the body: a header pill with the author's initials and name and the

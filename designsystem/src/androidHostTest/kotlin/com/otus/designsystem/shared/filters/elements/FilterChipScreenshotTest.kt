@@ -9,10 +9,10 @@ import com.otus.designsystem.screenshot.screenshot
 import com.otus.designsystem.shared.controls.elements.IconButton
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.folders.elements.FolderGlyph
-import com.otus.designsystem.theme.FilterTokens
-import com.otus.designsystem.theme.FolderColor
-import com.otus.designsystem.theme.ThemeBase
-import com.otus.designsystem.theme.ThemeChoice
+import com.otus.designsystem.theme.colors.FolderColor
+import com.otus.designsystem.theme.colors.ThemeBase
+import com.otus.designsystem.theme.colors.ThemeChoice
+import com.otus.designsystem.theme.tokens.selection.FilterTokens
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner

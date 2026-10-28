@@ -20,9 +20,9 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import com.otus.designsystem.shared.controls.elements.LabelPill
-import com.otus.designsystem.theme.InboxTokens
-import com.otus.designsystem.theme.LabelTokens
-import com.otus.designsystem.theme.OtusColors
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.content.LabelTokens
+import com.otus.designsystem.theme.tokens.rows.InboxTokens
 
 /**
  * A compact list row. The app supplies display text, accessibility state, and leading content.

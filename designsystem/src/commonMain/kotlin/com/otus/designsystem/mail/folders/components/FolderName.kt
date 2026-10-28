@@ -5,7 +5,7 @@ import androidx.compose.ui.unit.Dp
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_folder
 import com.otus.designsystem.shared.folders.elements.FolderGlyph
-import com.otus.designsystem.theme.FolderColor
+import com.otus.designsystem.theme.colors.FolderColor
 import org.jetbrains.compose.resources.DrawableResource
 
 /**

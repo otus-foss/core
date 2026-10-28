@@ -28,9 +28,9 @@ import androidx.compose.ui.unit.dp
 import com.otus.designsystem.shared.pages.components.PageChrome
 import com.otus.designsystem.shared.pages.components.pinnedChrome
 import com.otus.designsystem.shared.sidebar.components.sidebarOpenZone
-import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.motionTween
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.motion.motionTween
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
  * Placement is independent of whether the header contains a title, input, or richer content.

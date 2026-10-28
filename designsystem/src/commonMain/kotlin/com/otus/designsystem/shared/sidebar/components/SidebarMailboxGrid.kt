@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.otus.designsystem.theme.SidebarTokens
+import com.otus.designsystem.theme.tokens.layout.SidebarTokens
 
 /**
  * [items] in three equal columns, each drawn by [tile], such as a

@@ -10,9 +10,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import com.otus.designsystem.shared.controls.elements.ChipFrame
 import com.otus.designsystem.shared.controls.elements.ChipLayout
 import com.otus.designsystem.shared.controls.elements.Symbol
-import com.otus.designsystem.theme.MoveTokens
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.selection.MoveTokens
+import com.otus.designsystem.theme.typography.panelTextStyle
 import org.jetbrains.compose.resources.DrawableResource
 
 /**

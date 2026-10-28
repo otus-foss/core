@@ -1,6 +1,6 @@
 package com.otus.designsystem.shared.dates.components
 
-import com.otus.designsystem.theme.CalendarTokens
+import com.otus.designsystem.theme.tokens.selection.CalendarTokens
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month

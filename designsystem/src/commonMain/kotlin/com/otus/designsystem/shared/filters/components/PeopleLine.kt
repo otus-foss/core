@@ -21,10 +21,10 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import com.otus.designsystem.shared.people.components.Recipient
 import com.otus.designsystem.shared.people.components.RemovablePersonChip
-import com.otus.designsystem.theme.FilterTokens
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.SheetTokens
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.overlays.SheetTokens
+import com.otus.designsystem.theme.tokens.selection.FilterTokens
+import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
  * One line of the People card in a filter panel, such as From: the `text3` [label] in its column,

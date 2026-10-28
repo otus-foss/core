@@ -16,8 +16,8 @@ import com.otus.designsystem.shared.controls.elements.CountPill
 import com.otus.designsystem.shared.rows.components.EntryCard
 import com.otus.designsystem.shared.rows.components.EntryTaps
 import com.otus.designsystem.shared.rows.components.RowSelection
-import com.otus.designsystem.theme.InboxTokens
-import com.otus.designsystem.theme.OtusColors
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.rows.InboxTokens
 
 /**
  * A two-line [EntryCard]: [CompactRowText.first] and the date, then [CompactRowText.second] with

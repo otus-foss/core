@@ -1,12 +1,12 @@
 package com.otus.settings.presentation
 
 import androidx.compose.ui.graphics.Color
-import com.otus.designsystem.theme.CustomTheme
-import com.otus.designsystem.theme.ThemeBase
-import com.otus.designsystem.theme.ThemeChoice
-import com.otus.designsystem.theme.ThemeColor
-import com.otus.designsystem.theme.parseHexColor
-import com.otus.designsystem.theme.toHex
+import com.otus.designsystem.theme.colors.CustomTheme
+import com.otus.designsystem.theme.colors.ThemeBase
+import com.otus.designsystem.theme.colors.ThemeChoice
+import com.otus.designsystem.theme.colors.ThemeColor
+import com.otus.designsystem.theme.colors.parseHexColor
+import com.otus.designsystem.theme.colors.toHex
 
 /**
  * Stores a choice as its built-in theme and accent, then the selected custom theme, each custom

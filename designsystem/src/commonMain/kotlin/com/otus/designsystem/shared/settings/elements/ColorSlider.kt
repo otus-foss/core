@@ -24,8 +24,8 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.setProgress
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.ThemeTokens
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.settings.ThemeTokens
 
 /**
  * A slider over a colored [track], such as a hue rainbow. Dragging or tapping the track sets a

@@ -8,9 +8,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.otus.designsystem.shared.settings.elements.AddSwatch
 import com.otus.designsystem.shared.settings.elements.ColorSwatch
-import com.otus.designsystem.theme.AccentPreset
-import com.otus.designsystem.theme.ThemeTokens
-import com.otus.designsystem.theme.toHex
+import com.otus.designsystem.theme.colors.AccentPreset
+import com.otus.designsystem.theme.colors.toHex
+import com.otus.designsystem.theme.tokens.settings.ThemeTokens
 import com.otus.settings.presentation.title
 
 /** The accent swatches, [accent] when it is a custom color, and a swatch to pick a custom one. */

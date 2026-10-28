@@ -21,7 +21,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
-import com.otus.designsystem.theme.SidebarTokens
+import com.otus.designsystem.theme.tokens.layout.SidebarTokens
 import kotlinx.coroutines.launch
 
 /**

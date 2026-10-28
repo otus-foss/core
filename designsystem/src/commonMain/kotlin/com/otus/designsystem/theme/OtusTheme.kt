@@ -12,6 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.colors.OtusPalette
 
 /** Applies [palette] to [OtusColors] and Material, then lays [content] on its page color. */
 @Composable

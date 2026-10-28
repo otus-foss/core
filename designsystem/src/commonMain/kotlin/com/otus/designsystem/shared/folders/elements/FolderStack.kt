@@ -4,8 +4,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.otus.designsystem.theme.FolderColor
-import com.otus.designsystem.theme.ReadTokens
+import com.otus.designsystem.theme.colors.FolderColor
+import com.otus.designsystem.theme.tokens.content.ReadTokens
 
 /**
  * Up to [ReadTokens.FOLDER_STACK_LIMIT] small folder glyphs that overlap, such as the folders of

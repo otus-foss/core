@@ -27,8 +27,8 @@ import com.otus.designsystem.shared.rows.components.DetailsTable
 import com.otus.designsystem.shared.selection.components.PickMark
 import com.otus.designsystem.shared.selection.components.PickRow
 import com.otus.designsystem.shared.selection.components.PickRowLayout
-import com.otus.designsystem.theme.FolderColor
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.colors.FolderColor
+import com.otus.designsystem.theme.typography.panelTextStyle
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner

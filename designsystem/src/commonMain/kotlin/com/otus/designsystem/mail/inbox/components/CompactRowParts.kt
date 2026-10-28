@@ -23,8 +23,8 @@ import com.otus.designsystem.resources.symbol_flag
 import com.otus.designsystem.resources.symbol_reply
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.folders.elements.FolderGlyph
-import com.otus.designsystem.theme.InboxTokens
-import com.otus.designsystem.theme.OtusColors
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.rows.InboxTokens
 import org.jetbrains.compose.resources.DrawableResource
 
 /** [line]'s icon in text2, then its parts on one line, with quiet parts in text3. */

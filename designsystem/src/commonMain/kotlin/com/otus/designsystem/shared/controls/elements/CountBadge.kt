@@ -9,9 +9,9 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.otus.designsystem.theme.LabelTokens
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.content.LabelTokens
+import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
  * A count in a circle filled like an [Avatar][com.otus.designsystem.shared.people.elements.Avatar], such as the

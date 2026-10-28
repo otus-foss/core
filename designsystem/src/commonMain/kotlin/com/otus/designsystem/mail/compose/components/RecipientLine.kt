@@ -38,10 +38,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import com.otus.designsystem.mail.compose.elements.ComposeLine
 import com.otus.designsystem.shared.people.components.Recipient
 import com.otus.designsystem.shared.people.components.RecipientChip
-import com.otus.designsystem.theme.ComposeTokens
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.editing.ComposeTokens
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
  * A line of people a message goes to, such as To: [label] in its column, then a chip for each of

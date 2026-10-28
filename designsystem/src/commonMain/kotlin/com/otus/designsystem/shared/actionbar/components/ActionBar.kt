@@ -41,10 +41,10 @@ import com.otus.designsystem.shared.overlays.components.MenuAction
 import com.otus.designsystem.shared.pages.components.PageChrome
 import com.otus.designsystem.shared.pages.components.ReportClearance
 import com.otus.designsystem.shared.pages.components.pinnedChrome
-import com.otus.designsystem.theme.ActionBarTokens
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
+import com.otus.designsystem.theme.typography.panelTextStyle
 import kotlin.math.roundToInt
 
 /**

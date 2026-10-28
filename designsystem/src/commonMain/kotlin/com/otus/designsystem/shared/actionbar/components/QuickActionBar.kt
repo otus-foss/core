@@ -19,7 +19,7 @@ import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.overlays.components.MenuAction
 import com.otus.designsystem.shared.overlays.components.MenuPopup
 import com.otus.designsystem.shared.overlays.components.menuSurface
-import com.otus.designsystem.theme.MenuTokens
+import com.otus.designsystem.theme.tokens.overlays.MenuTokens
 
 /**
  * A small bar of [actions] as icons that opens just above [at], a point inside the element it is

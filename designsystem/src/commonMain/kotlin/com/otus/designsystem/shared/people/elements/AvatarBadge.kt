@@ -20,10 +20,10 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import com.otus.designsystem.shared.controls.elements.Symbol
-import com.otus.designsystem.theme.AvatarTokens
-import com.otus.designsystem.theme.InboxTokens
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PanelTokens
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.people.AvatarTokens
+import com.otus.designsystem.theme.tokens.rows.InboxTokens
 import org.jetbrains.compose.resources.DrawableResource
 
 /**

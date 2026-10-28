@@ -4,8 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.SidebarTokens
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.layout.SidebarTokens
 
 /**
  * Marks the row of the place the user is in, such as the folder a message is in on the Move to

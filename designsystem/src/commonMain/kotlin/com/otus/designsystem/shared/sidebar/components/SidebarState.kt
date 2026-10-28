@@ -12,9 +12,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import com.otus.designsystem.theme.Motion
-import com.otus.designsystem.theme.MotionCurve
-import com.otus.designsystem.theme.MotionSpeed
+import com.otus.designsystem.theme.motion.Motion
+import com.otus.designsystem.theme.motion.MotionCurve
+import com.otus.designsystem.theme.motion.MotionSpeed
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
@@ -37,7 +37,7 @@ public class SidebarState(
     /** Panel width in pixels, which converts a swipe distance into progress. */
     internal var widthPx by mutableFloatStateOf(0f)
 
-    /** The [com.otus.designsystem.theme.LocalMotionScale] of the [Sidebar] that shows this state. */
+    /** The [com.otus.designsystem.theme.motion.LocalMotionScale] of the [Sidebar] that shows this state. */
     internal var motionScale = 1f
 
     private val mutex = MutatorMutex()

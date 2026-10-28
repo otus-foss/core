@@ -43,11 +43,11 @@ import com.otus.designsystem.shared.feedback.elements.ToastAction
 import com.otus.designsystem.shared.pages.components.aboveBottomBars
 import com.otus.designsystem.shared.panels.components.drawEdgeFade
 import com.otus.designsystem.shared.swipe.components.SwipeToDismiss
-import com.otus.designsystem.theme.ActionBarTokens
-import com.otus.designsystem.theme.MotionCurve
-import com.otus.designsystem.theme.MotionSpeed
-import com.otus.designsystem.theme.ToastTokens
-import com.otus.designsystem.theme.motionTween
+import com.otus.designsystem.theme.motion.MotionCurve
+import com.otus.designsystem.theme.motion.MotionSpeed
+import com.otus.designsystem.theme.motion.motionTween
+import com.otus.designsystem.theme.tokens.feedback.ToastTokens
+import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 import kotlinx.coroutines.flow.collectLatest
 
 /**

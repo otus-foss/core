@@ -1,7 +1,7 @@
 package com.otus.designsystem.mail.read.elements
 
 import androidx.compose.ui.graphics.Color
-import com.otus.designsystem.theme.OtusPalette
+import com.otus.designsystem.theme.colors.OtusPalette
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals

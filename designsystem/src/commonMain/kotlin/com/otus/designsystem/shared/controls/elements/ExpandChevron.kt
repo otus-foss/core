@@ -11,9 +11,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_chevron_right
-import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.SidebarTokens
-import com.otus.designsystem.theme.motionTween
+import com.otus.designsystem.theme.motion.motionTween
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.layout.SidebarTokens
 
 /** A chevron that points along the line while collapsed and turns down once [expanded]. */
 @Composable
