@@ -40,7 +40,6 @@ import com.otus.designsystem.theme.PanelTokens
 import com.otus.designsystem.theme.RuleChipTokens
 import com.otus.designsystem.theme.SettingTokens
 import com.otus.designsystem.theme.SheetTokens
-import org.jetbrains.compose.resources.DrawableResource
 
 /**
  * A folder on a folder settings page, indented by its [SidebarFolder.depth]: the folder icon, the
