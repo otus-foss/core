@@ -23,9 +23,9 @@ import com.otus.dateformat.currentLocalDate
 import com.otus.dateformat.formatRelative
 import com.otus.dateformat.formatRelativeRange
 import com.otus.designsystem.shared.controls.elements.ActionButton
-import com.otus.designsystem.theme.CalendarTokens
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.SheetTokens
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.overlays.SheetTokens
+import com.otus.designsystem.theme.tokens.selection.CalendarTokens
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.datetime.DateTimeUnit
@@ -66,7 +66,7 @@ public fun DateRangePicker(
 /**
  * The calendar of a [DateRangePicker] on its own, for a page that offers its own shortcuts, such
  * as the Date page of a filter panel. It fills the height [modifier] gives it, which must be
- * bounded, such as [com.otus.designsystem.theme.FilterTokens.rangeCalendarHeight] inside a
+ * bounded, such as [com.otus.designsystem.theme.tokens.selection.FilterTokens.rangeCalendarHeight] inside a
  * scrolling page. Taps pick the start and then the end, and a hold and drag picks a range.
  */
 @Composable

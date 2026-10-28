@@ -6,10 +6,10 @@ import com.otus.designsystem.shared.rows.components.Collapsible
 import com.otus.designsystem.shared.settings.components.SettingRow
 import com.otus.designsystem.shared.settings.elements.SwatchStack
 import com.otus.designsystem.shared.settings.elements.ValueButton
-import com.otus.designsystem.theme.ThemeChoice
-import com.otus.designsystem.theme.ThemeColor
-import com.otus.designsystem.theme.get
-import com.otus.designsystem.theme.toHex
+import com.otus.designsystem.theme.colors.ThemeChoice
+import com.otus.designsystem.theme.colors.ThemeColor
+import com.otus.designsystem.theme.colors.get
+import com.otus.designsystem.theme.colors.toHex
 import com.otus.settings.presentation.description
 import com.otus.settings.presentation.title
 

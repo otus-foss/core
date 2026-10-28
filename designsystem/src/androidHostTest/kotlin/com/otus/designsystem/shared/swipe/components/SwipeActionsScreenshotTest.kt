@@ -20,9 +20,9 @@ import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_archive
 import com.otus.designsystem.resources.symbol_delete
 import com.otus.designsystem.screenshot.screenshot
-import com.otus.designsystem.theme.EntryTokens
-import com.otus.designsystem.theme.InboxTokens
-import com.otus.designsystem.theme.OtusColors
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.rows.EntryTokens
+import com.otus.designsystem.theme.tokens.rows.InboxTokens
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner

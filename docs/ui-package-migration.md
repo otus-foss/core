@@ -1,8 +1,9 @@
 # UI package migration for 0.10.0
 
 Version 0.10.0 moves the design system's flat `elements` and
-`components` packages beneath an owner and a UI group. The artifact remains
-`com.otus:designsystem`. Theme tokens and generated resource identifiers retain their packages.
+`components` packages beneath an owner and a UI group. It also groups theme declarations by
+responsibility. The artifact remains `com.otus:designsystem`. `theme.OtusTheme` and generated
+resource identifiers retain their packages.
 
 ## Updating imports
 
@@ -16,6 +17,10 @@ import com.otus.designsystem.shared.contacts.components.ContactRow
 import com.otus.designsystem.shared.people.components.ChipAvatar
 import com.otus.designsystem.shared.rows.components.RowSelection
 import com.otus.designsystem.mail.read.elements.HtmlView
+import com.otus.designsystem.theme.OtusTheme
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.motion.Motion
+import com.otus.designsystem.theme.tokens.rows.InboxTokens
 ```
 
 Keep existing public declaration names. The migration changes source organization, not visual
@@ -26,7 +31,12 @@ behavior or business policy. It retains screenshot baselines and the Android nam
 The package mirrors `designsystem/src/<sourceSet>/kotlin/com/otus/designsystem/`:
 
 ```text
-theme/
+theme/OtusTheme.kt
+theme/colors/
+theme/motion/
+theme/brand/
+theme/typography/
+theme/tokens/<family>/
 shared/<group>/elements/
 shared/<group>/components/
 mail/<feature>/elements/
@@ -37,6 +47,13 @@ Shared groups own controls, inputs, people, contacts, dates, rows, folder visual
 overlays, filters, action bars, panels, sidebar, page layout, settings, feedback, reordering,
 and swipes. Mail groups own inbox rendering, composition, reading, folder compositions,
 attachments, and launch animation. Create only directories that contain code.
+
+Theme families are `layout`, `overlays`, `rows`, `selection`, `people`, `editing`, `content`,
+`feedback`, and `settings`. For example, `InboxTokens` moves to `theme.tokens.rows`,
+`ComposeTokens` to `theme.tokens.editing`, and `ReadTokens` to `theme.tokens.content`.
+`MoveTokens` and `FolderRowTokens` now have their own files in `selection` and `rows`.
+All remain theme code that shared UI can use. Palette and preference types, including
+`OtusPalette` and `ThemeChoice`, move to `theme.colors`; their values and stored formats stay the same.
 
 Keep a renderer's display values, visual state, and layout calculations beside it. Split a file
 when its declarations have different owners. The shared `Recipient` display value and person
@@ -94,3 +111,19 @@ produce duplicate Kotlin library names. The same failure occurs on unchanged Met
 before the package migration. The candidate repository is incomplete, so packaged-artifact
 consumer checks remain blocked. Resolve that publication failure and rerun the artifact checks
 before releasing 0.10.0. Xcode linking, simulator tests, and iOS resource loading remain unrun.
+
+### Theme and JSContact follow-up on 2026-10-28
+
+Meta passed `checkAll`, including 424 design-system tests and 165 JSContact tests. Both libraries
+compiled their `iosArm64` and `iosSimulatorArm64` targets. After the final checker correction,
+`qualityCheck` passed all 94 tooling tests, including 61 architecture tests.
+
+Mail at `c52820b3`, with the theme import changes, passed `checkAll` and both iOS compilations
+against the candidate source. Its 888 shared tests and 335 Android tests passed. Unchanged
+Calendar at `ac24487` also passed `checkAll` and both iOS compilations. Screenshot baselines and
+visual assets remain unchanged.
+
+The design system, date formatting, and JSContact published into an isolated local Maven
+repository. All 12 root/platform publications passed metadata and checksum verification. This
+does not resolve the full-suite settings publication blocker described above or validate an
+app against a complete packaged release.

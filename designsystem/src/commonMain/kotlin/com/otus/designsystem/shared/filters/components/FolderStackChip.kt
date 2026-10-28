@@ -15,10 +15,10 @@ import androidx.compose.ui.text.withStyle
 import com.otus.designsystem.shared.controls.elements.Chip
 import com.otus.designsystem.shared.filters.elements.ChipLabel
 import com.otus.designsystem.shared.folders.elements.FolderGlyph
-import com.otus.designsystem.theme.FilterTokens
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.selection.FilterTokens
+import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
  * A selected pill for chosen folders: up to [FilterTokens.FOLDER_STACK_LIMIT] overlapping

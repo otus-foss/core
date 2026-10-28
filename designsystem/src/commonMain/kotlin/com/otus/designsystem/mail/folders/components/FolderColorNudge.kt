@@ -34,10 +34,10 @@ import com.otus.designsystem.resources.symbol_close
 import com.otus.designsystem.resources.symbol_palette
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
-import com.otus.designsystem.theme.FolderColor
-import com.otus.designsystem.theme.NudgeTokens
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PanelTokens
+import com.otus.designsystem.theme.colors.FolderColor
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.feedback.NudgeTokens
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
 
 /**
  * A card above a list that offers a color for a folder that has none. [title] and [body] read as

@@ -40,8 +40,8 @@ import com.otus.designsystem.shared.overlays.components.SheetFrame
 import com.otus.designsystem.shared.pages.components.PageNote
 import com.otus.designsystem.shared.pages.components.Subpage
 import com.otus.designsystem.shared.settings.components.SettingsSection
-import com.otus.designsystem.theme.PageTokens
-import com.otus.designsystem.theme.SheetTokens
+import com.otus.designsystem.theme.tokens.layout.PageTokens
+import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 
 /** Connected JMAP accounts, and a form that verifies a new one before saving it. */
 @Composable

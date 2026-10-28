@@ -33,10 +33,10 @@ import com.otus.designsystem.shared.controls.elements.ExpandChevron
 import com.otus.designsystem.shared.controls.elements.LeadingSymbol
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.shared.rows.elements.nestIndent
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.SidebarTokens
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.layout.SidebarTokens
+import com.otus.designsystem.theme.typography.panelTextStyle
 import org.jetbrains.compose.resources.DrawableResource
 
 /**

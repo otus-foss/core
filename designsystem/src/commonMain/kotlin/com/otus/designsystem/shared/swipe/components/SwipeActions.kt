@@ -34,10 +34,10 @@ import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
-import com.otus.designsystem.theme.LocalMotionScale
-import com.otus.designsystem.theme.Motion
-import com.otus.designsystem.theme.MotionSpeed
-import com.otus.designsystem.theme.SwipeTokens
+import com.otus.designsystem.theme.motion.LocalMotionScale
+import com.otus.designsystem.theme.motion.Motion
+import com.otus.designsystem.theme.motion.MotionSpeed
+import com.otus.designsystem.theme.tokens.rows.SwipeTokens
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

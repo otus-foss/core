@@ -4,7 +4,7 @@ import com.otus.designsystem.mail.folders.components.FolderName
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_archive
 import com.otus.designsystem.shared.people.components.DemoPeople
-import com.otus.designsystem.theme.FolderColor
+import com.otus.designsystem.theme.colors.FolderColor
 
 /** Made-up messages and folders for the read view screenshots. */
 internal object DemoRead {

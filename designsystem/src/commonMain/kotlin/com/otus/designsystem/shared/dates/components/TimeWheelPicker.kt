@@ -23,8 +23,8 @@ import com.otus.designsystem.resources.symbol_close
 import com.otus.designsystem.shared.controls.elements.ActionButton
 import com.otus.designsystem.shared.controls.elements.IconButton
 import com.otus.designsystem.shared.controls.elements.Symbol
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.SheetTokens
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import kotlinx.datetime.LocalTime
 import kotlin.math.abs
 

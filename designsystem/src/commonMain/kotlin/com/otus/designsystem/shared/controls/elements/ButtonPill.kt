@@ -12,9 +12,9 @@ import androidx.compose.ui.unit.Dp
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_expand_less
 import com.otus.designsystem.resources.symbol_expand_more
-import com.otus.designsystem.theme.ComposeTokens
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.editing.ComposeTokens
+import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
  * A pill that acts, such as "+ Cc", with an optional [leading] icon, filled with [fill]. Screen

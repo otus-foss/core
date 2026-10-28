@@ -15,10 +15,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.SheetTokens
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.overlays.SheetTokens
+import com.otus.designsystem.theme.typography.panelTextStyle
 
 @Composable
 public fun ActionButton(

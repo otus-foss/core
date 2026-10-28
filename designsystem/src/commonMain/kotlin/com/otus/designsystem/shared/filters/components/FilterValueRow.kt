@@ -22,10 +22,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_chevron_right
 import com.otus.designsystem.shared.controls.elements.Symbol
-import com.otus.designsystem.theme.FilterTokens
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.SheetTokens
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.overlays.SheetTokens
+import com.otus.designsystem.theme.tokens.selection.FilterTokens
+import com.otus.designsystem.theme.typography.panelTextStyle
 import org.jetbrains.compose.resources.DrawableResource
 
 /**

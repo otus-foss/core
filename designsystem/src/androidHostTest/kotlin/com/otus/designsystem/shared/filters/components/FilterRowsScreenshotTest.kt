@@ -10,7 +10,7 @@ import com.otus.designsystem.shared.people.components.DemoPeople
 import com.otus.designsystem.shared.people.components.PersonAvatar
 import com.otus.designsystem.shared.people.components.Recipient
 import com.otus.designsystem.shared.selection.components.PickMark
-import com.otus.designsystem.theme.FilterTokens
+import com.otus.designsystem.theme.tokens.selection.FilterTokens
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner

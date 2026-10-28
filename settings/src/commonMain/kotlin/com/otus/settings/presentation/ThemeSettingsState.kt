@@ -4,8 +4,8 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.otus.designsystem.theme.OtusPalette
-import com.otus.designsystem.theme.ThemeChoice
+import com.otus.designsystem.theme.colors.OtusPalette
+import com.otus.designsystem.theme.colors.ThemeChoice
 
 /** Keeps the encoded [ThemeChoice] between launches, such as in platform preferences. */
 public interface ThemePreferenceStore {

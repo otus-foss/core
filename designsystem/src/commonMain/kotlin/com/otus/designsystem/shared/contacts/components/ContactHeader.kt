@@ -24,11 +24,11 @@ import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.people.components.ChipAvatar
 import com.otus.designsystem.shared.people.components.ExpandingAvatar
 import com.otus.designsystem.shared.people.components.PersonAvatar
-import com.otus.designsystem.theme.ContactTokens
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PageTokens
-import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.layout.PageTokens
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.people.ContactTokens
+import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
  * The top of a contact's page: a large [avatar] and, under it, `text2` [lines] such as the

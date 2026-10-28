@@ -35,10 +35,10 @@ import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.shared.people.components.AvatarStack
 import com.otus.designsystem.shared.sidebar.elements.SidebarCount
 import com.otus.designsystem.shared.sidebar.elements.SidebarExpandButton
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.ScopeSheetTokens
-import com.otus.designsystem.theme.SheetTokens
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.overlays.ScopeSheetTokens
+import com.otus.designsystem.theme.tokens.overlays.SheetTokens
+import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
  * A top-level [ScopeSheet] choice, such as every account, an account, or a pinned address. A

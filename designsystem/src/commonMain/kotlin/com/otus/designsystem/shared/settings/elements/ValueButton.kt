@@ -16,11 +16,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.SettingTokens
-import com.otus.designsystem.theme.ThemeTokens
-import com.otus.designsystem.theme.contrast
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.colors.contrast
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.settings.SettingTokens
+import com.otus.designsystem.theme.tokens.settings.ThemeTokens
 
 /**
  * The current value of a setting in an outlined chip, such as a choice or the word "Edit". A

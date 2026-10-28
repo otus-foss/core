@@ -21,12 +21,12 @@ import com.otus.designsystem.shared.controls.elements.ExpandChevron
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.shared.people.components.AvatarStack
 import com.otus.designsystem.shared.people.components.ChipAvatar
-import com.otus.designsystem.theme.FolderRowTokens
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.ScopeSheetTokens
-import com.otus.designsystem.theme.SheetTokens
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.overlays.ScopeSheetTokens
+import com.otus.designsystem.theme.tokens.overlays.SheetTokens
+import com.otus.designsystem.theme.tokens.rows.FolderRowTokens
+import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
  * Heads one account's part of a list, such as its folders: a small [avatar], the account's

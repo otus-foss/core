@@ -32,9 +32,9 @@ import com.otus.designsystem.shared.feedback.components.ToastMessage
 import com.otus.designsystem.shared.feedback.components.ToastState
 import com.otus.designsystem.shared.feedback.components.captureWindow
 import com.otus.designsystem.shared.feedback.elements.ToastAction
-import com.otus.designsystem.theme.ActionBarTokens
-import com.otus.designsystem.theme.OtusColors
 import com.otus.designsystem.theme.OtusTheme
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner

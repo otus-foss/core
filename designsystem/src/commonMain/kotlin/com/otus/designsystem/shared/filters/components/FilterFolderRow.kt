@@ -30,11 +30,11 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import com.otus.designsystem.shared.controls.elements.ExpandChevron
-import com.otus.designsystem.theme.FilterTokens
-import com.otus.designsystem.theme.OtusAlpha
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.colors.OtusAlpha
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.selection.FilterTokens
+import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
  * One folder of a checkable folder tree, 48 dp tall: a chevron for folders with subfolders

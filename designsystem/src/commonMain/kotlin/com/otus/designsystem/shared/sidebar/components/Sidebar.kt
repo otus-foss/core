@@ -44,10 +44,10 @@ import androidx.compose.ui.unit.min
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
-import com.otus.designsystem.theme.LocalMotionScale
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.SidebarTokens
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.motion.LocalMotionScale
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.layout.SidebarTokens
 import kotlinx.coroutines.launch
 
 /**

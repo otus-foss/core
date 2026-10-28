@@ -1,6 +1,6 @@
 package com.otus.settings.presentation.components
 
-import com.otus.designsystem.theme.CustomTheme
+import com.otus.designsystem.theme.colors.CustomTheme
 
 /** The open theme popup: renaming or deleting a custom theme. */
 internal sealed interface ThemeDialog {

@@ -7,9 +7,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.ReadTokens
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.content.ReadTokens
+import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
  * The first of [levels] quoted inside a [QuoteFold], shown whole under its person and date pill,

@@ -24,14 +24,14 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import com.otus.designsystem.shared.rows.components.RowDensity
-import com.otus.designsystem.theme.ComposeTokens
-import com.otus.designsystem.theme.OtusAlpha
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.SettingTokens
-import com.otus.designsystem.theme.SheetTokens
-import com.otus.designsystem.theme.SignatureTokens
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.colors.OtusAlpha
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.editing.ComposeTokens
+import com.otus.designsystem.theme.tokens.editing.SignatureTokens
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.overlays.SheetTokens
+import com.otus.designsystem.theme.tokens.settings.SettingTokens
+import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
  * A choice in a sheet list: an optional [leading] avatar, the [title], a smaller `text2` [subtitle],

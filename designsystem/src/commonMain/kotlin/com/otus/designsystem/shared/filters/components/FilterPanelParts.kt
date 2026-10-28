@@ -29,10 +29,10 @@ import androidx.compose.ui.text.font.FontWeight
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_chevron_left
 import com.otus.designsystem.shared.controls.elements.Symbol
-import com.otus.designsystem.theme.FilterTokens
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.selection.FilterTokens
+import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
  * A [FilterPanel]'s top row: the [title] on the left, or a back button named after the page it

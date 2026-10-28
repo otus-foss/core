@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.width
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_folder
-import com.otus.designsystem.theme.PanelTokens
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner

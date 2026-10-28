@@ -2,7 +2,7 @@ package com.otus.designsystem.mail.folders.components
 
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import com.otus.designsystem.shared.pages.components.pageScreenshot
-import com.otus.designsystem.theme.FolderColor
+import com.otus.designsystem.theme.colors.FolderColor
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner

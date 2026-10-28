@@ -32,12 +32,12 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
-import com.otus.designsystem.theme.MotionSpeed
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.ToastTokens
-import com.otus.designsystem.theme.motionTween
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.motion.MotionSpeed
+import com.otus.designsystem.theme.motion.motionTween
+import com.otus.designsystem.theme.tokens.feedback.ToastTokens
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
  * A short message in a pill, with an optional [action] at its end. A ring beside the action's

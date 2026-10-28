@@ -42,12 +42,12 @@ import com.otus.designsystem.shared.rows.elements.MAX_INDENT_STEPS
 import com.otus.designsystem.shared.rows.elements.nestIndent
 import com.otus.designsystem.shared.sidebar.elements.SidebarCount
 import com.otus.designsystem.shared.sidebar.elements.SidebarFolder
-import com.otus.designsystem.theme.FolderRowTokens
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.RuleChipTokens
-import com.otus.designsystem.theme.SettingTokens
-import com.otus.designsystem.theme.SheetTokens
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.overlays.SheetTokens
+import com.otus.designsystem.theme.tokens.rows.FolderRowTokens
+import com.otus.designsystem.theme.tokens.selection.RuleChipTokens
+import com.otus.designsystem.theme.tokens.settings.SettingTokens
 import org.jetbrains.compose.resources.DrawableResource
 
 /**

@@ -17,7 +17,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
-import com.otus.designsystem.theme.ReadTokens
+import com.otus.designsystem.theme.tokens.content.ReadTokens
 import kotlin.math.floor
 import kotlin.math.roundToInt
 

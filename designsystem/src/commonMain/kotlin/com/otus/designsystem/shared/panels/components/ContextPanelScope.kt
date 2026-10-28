@@ -32,9 +32,9 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onGloballyPositioned
 import com.otus.designsystem.shared.controls.elements.LocalControlVisualBounds
-import com.otus.designsystem.theme.LocalMotionScale
-import com.otus.designsystem.theme.Motion
-import com.otus.designsystem.theme.PanelTokens
+import com.otus.designsystem.theme.motion.LocalMotionScale
+import com.otus.designsystem.theme.motion.Motion
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
 
 /** Wrap each chip in [item] so its measured position drives its own cutout. */
 public class ContextPanelScope internal constructor(

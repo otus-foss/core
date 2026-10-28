@@ -25,12 +25,12 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
-import com.otus.designsystem.theme.FilterTokens
-import com.otus.designsystem.theme.OtusAlpha
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.SheetTokens
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.colors.OtusAlpha
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.overlays.SheetTokens
+import com.otus.designsystem.theme.tokens.selection.FilterTokens
+import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
  * A [FilterPanel]'s fixed bottom row: a Reset pill, dimmed while [resetEnabled] is false, and the

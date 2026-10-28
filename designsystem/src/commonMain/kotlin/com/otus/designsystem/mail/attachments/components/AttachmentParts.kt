@@ -36,10 +36,10 @@ import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_download
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.rows.components.topHairline
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.ReadTokens
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.content.ReadTokens
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
  * Up to [ReadTokens.THUMB_LIMIT] small round thumbnails that overlap, each ringed in the strip's

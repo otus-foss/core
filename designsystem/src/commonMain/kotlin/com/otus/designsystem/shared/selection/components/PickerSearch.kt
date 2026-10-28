@@ -22,12 +22,12 @@ import com.otus.designsystem.shared.controls.elements.IconButton
 import com.otus.designsystem.shared.controls.elements.IconButtonLook
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.input.elements.SearchField
-import com.otus.designsystem.theme.MotionCurve
-import com.otus.designsystem.theme.MotionSpeed
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.SheetTokens
-import com.otus.designsystem.theme.motionTween
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.motion.MotionCurve
+import com.otus.designsystem.theme.motion.MotionSpeed
+import com.otus.designsystem.theme.motion.motionTween
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 
 /**
  * A rounded search field for a picker. Its clear button fades and grows in once there is text, and

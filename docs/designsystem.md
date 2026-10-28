@@ -21,9 +21,24 @@ theme. The Otus theme with Otus blue is the palette recorded in [mail design fou
 Elements and components are grouped beneath `shared/<group>` and `mail/<feature>`. For example,
 `ContactRow` lives in `com.otus.designsystem.shared.contacts.components`, and `HtmlView` lives in
 `com.otus.designsystem.mail.read.elements`. The UI hierarchy still applies inside and across
-groups. `theme` and the generated `resources.Res` package remain at the module root.
+groups. `theme.OtusTheme` and the generated `resources.Res` package remain at the module root.
 See [the migration guide](ui-package-migration.md) for the old-to-new declaration mapping and
 [decision 0018](decisions/0018-ui-domain-packages.md) for dependency rules.
+
+Theme declarations use these packages beneath `com.otus.designsystem.theme`:
+
+| Package | Responsibility |
+| --- | --- |
+| Root | `OtusTheme`, the composition entry point |
+| `colors` | Palettes, theme choices, accents, folder colors, and color calculations |
+| `motion` | Animation timing, curves, motion scale, and keyframe tracks |
+| `brand` | App icon styles, launch artwork, and branded animation timelines |
+| `typography` | Text styles and font selection |
+| `tokens.<family>` | Layout, overlays, rows, selection, people, editing, content, feedback, and settings tokens |
+
+For example, import `theme.colors.OtusColors`, `theme.motion.Motion`, and
+`theme.tokens.rows.InboxTokens` beneath the design-system namespace. Theme code cannot depend
+on shared or app-specific UI groups. Token values and rendered appearance are unchanged.
 
 ## Contents
 
@@ -382,7 +397,7 @@ without app dependencies.
 
 ## Corners
 
-Every radius comes from one scale in `theme/CornerTokens.kt`. Feature tokens such as
+Every radius comes from one scale in `theme/tokens/layout/CornerTokens.kt`. Feature tokens such as
 `SheetTokens.radius` or `ComposeTokens.recipientRadius` name a step, so a change to the scale
 reaches every part that uses it. A part inside another takes the outer radius minus its inset:
 a menu row is `MenuTokens.radius - MenuTokens.inset`, and a theme sketch is
@@ -409,7 +424,7 @@ row's and the action bar's radius, so neither bar loses an edge while one turns 
 ## Motion
 
 Every animation in the design system and in Mail takes its duration and curve from `Motion`, in
-`theme/Motion.kt`. The rules for picking a speed and a curve are in
+`theme/motion/Motion.kt`. The rules for picking a speed and a curve are in
 [mail design foundations](suite/mail-design.md#motion).
 
 `MotionCurve` holds five cubic Bézier curves:

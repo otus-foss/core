@@ -14,9 +14,9 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.SidebarTokens
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.layout.SidebarTokens
+import com.otus.designsystem.theme.typography.panelTextStyle
 
 /** A mailbox's count in an `accentDark` pill, ringed in [surface], the fill of the tile or row it sits on. */
 @Composable

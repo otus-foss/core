@@ -37,13 +37,13 @@ import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_more_horiz
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.overlays.components.OptionsDivider
-import com.otus.designsystem.theme.ActionBarTokens
-import com.otus.designsystem.theme.MenuTokens
-import com.otus.designsystem.theme.MotionCurve
-import com.otus.designsystem.theme.MotionSpeed
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.motionTween
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.motion.MotionCurve
+import com.otus.designsystem.theme.motion.MotionSpeed
+import com.otus.designsystem.theme.motion.motionTween
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
+import com.otus.designsystem.theme.tokens.overlays.MenuTokens
 
 /**
  * A bar's group: [content] in a row with ⋯ at its end, named [moreLabel]. ⋯ grows the group

@@ -20,9 +20,9 @@ import androidx.compose.ui.semantics.Role
 import com.otus.designsystem.shared.controls.elements.LeadingSymbol
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.SheetTokens
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.overlays.SheetTokens
+import com.otus.designsystem.theme.typography.panelTextStyle
 import org.jetbrains.compose.resources.DrawableResource
 
 /** A tappable row that opens something: a subpage, a choice, or an editor. */

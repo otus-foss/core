@@ -19,10 +19,10 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import com.otus.designsystem.shared.overlays.components.SheetFrame
-import com.otus.designsystem.theme.ChangeLogTokens
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.SheetTokens
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.overlays.SheetTokens
+import com.otus.designsystem.theme.tokens.settings.ChangeLogTokens
 
 /**
  * A [SheetFrame] that lists [releases] one after another, newest first as given: each release's

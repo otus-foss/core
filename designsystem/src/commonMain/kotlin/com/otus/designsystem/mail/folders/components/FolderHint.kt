@@ -15,9 +15,9 @@ import androidx.compose.ui.layout.SubcomposeMeasureScope
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.TextUnit
 import com.otus.designsystem.shared.folders.elements.FolderPath
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.ReadTokens
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.content.ReadTokens
+import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
  * Folders on one line, such as "Also in Finance / Invoices · Freelancing": an optional `text3`

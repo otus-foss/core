@@ -2,9 +2,9 @@ package com.otus.designsystem.shared.people.components
 
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
-import com.otus.designsystem.theme.ComposeTokens
-import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.ReadTokens
+import com.otus.designsystem.theme.tokens.content.ReadTokens
+import com.otus.designsystem.theme.tokens.editing.ComposeTokens
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
 
 /** How big a person pill is: [Small] inside text, such as a quote's author, or [Regular], like a recipient chip. */
 internal enum class PersonPillSize(

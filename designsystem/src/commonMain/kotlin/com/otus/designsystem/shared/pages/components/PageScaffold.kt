@@ -26,10 +26,10 @@ import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.panels.components.ChipPlacement
 import com.otus.designsystem.shared.panels.components.ContextPanel
 import com.otus.designsystem.shared.panels.components.ContextPanelScope
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PageTokens
-import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.layout.PageTokens
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
  * A page with a context panel header and a scrolling body. The leading chevron runs [onNavigation],

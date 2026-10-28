@@ -13,7 +13,7 @@ import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_short_text
 import com.otus.designsystem.shared.people.components.ChipAvatar
 import com.otus.designsystem.shared.rows.components.RowDensity
-import com.otus.designsystem.theme.RuleChipTokens
+import com.otus.designsystem.theme.tokens.selection.RuleChipTokens
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner

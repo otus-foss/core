@@ -19,17 +19,17 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Velocity
-import com.otus.designsystem.theme.ChoiceSheetTokens
-import com.otus.designsystem.theme.Motion
-import com.otus.designsystem.theme.MotionCurve
-import com.otus.designsystem.theme.MotionSpeed
+import com.otus.designsystem.theme.motion.Motion
+import com.otus.designsystem.theme.motion.MotionCurve
+import com.otus.designsystem.theme.motion.MotionSpeed
+import com.otus.designsystem.theme.tokens.overlays.ChoiceSheetTokens
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.job
 
 /**
  * How far the sheet is pushed below its resting place: 1 is fully hidden, 0 fully shown.
- * [motionScale] is the [com.otus.designsystem.theme.LocalMotionScale] of the sheet that owns it.
+ * [motionScale] is the [com.otus.designsystem.theme.motion.LocalMotionScale] of the sheet that owns it.
  */
 internal class SheetPosition(
     private val motionScale: Float = 1f,

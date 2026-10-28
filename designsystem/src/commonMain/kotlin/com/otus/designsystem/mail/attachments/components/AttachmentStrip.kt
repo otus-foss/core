@@ -24,7 +24,7 @@ import com.otus.designsystem.shared.rows.components.foldedForm
 import com.otus.designsystem.shared.rows.components.stripCardFrame
 import com.otus.designsystem.shared.rows.components.unfoldedForm
 import com.otus.designsystem.shared.rows.components.unfolding
-import com.otus.designsystem.theme.ReadTokens
+import com.otus.designsystem.theme.tokens.content.ReadTokens
 
 /**
  * The files of a message in a strip above the action bar, never inline in its text. Folded, it

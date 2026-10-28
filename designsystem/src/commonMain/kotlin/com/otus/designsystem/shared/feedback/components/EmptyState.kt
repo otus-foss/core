@@ -14,8 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.otus.designsystem.shared.controls.elements.ButtonPill
 import com.otus.designsystem.shared.controls.elements.Symbol
-import com.otus.designsystem.theme.InboxTokens
-import com.otus.designsystem.theme.OtusColors
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.rows.InboxTokens
 import org.jetbrains.compose.resources.DrawableResource
 
 /** Centered, scrollable empty content with an optional action. */

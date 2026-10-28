@@ -28,10 +28,10 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import com.otus.designsystem.shared.overlays.components.MenuAction
-import com.otus.designsystem.theme.ActionBarTokens
-import com.otus.designsystem.theme.MotionCurve
-import com.otus.designsystem.theme.MotionSpeed
-import com.otus.designsystem.theme.motionTween
+import com.otus.designsystem.theme.motion.MotionCurve
+import com.otus.designsystem.theme.motion.MotionSpeed
+import com.otus.designsystem.theme.motion.motionTween
+import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 
 /**
  * A minimized [ActionBar]: [RoundPrimary] at the bar's end, as far from the screen's end edge as

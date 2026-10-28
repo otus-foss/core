@@ -14,7 +14,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.otus.designsystem.shared.feedback.elements.RefreshIndicator
-import com.otus.designsystem.theme.RefreshTokens
+import com.otus.designsystem.theme.tokens.feedback.RefreshTokens
 
 /**
  * Pulling [content] down past a fixed threshold runs [onRefresh]. A [RefreshIndicator] slides down

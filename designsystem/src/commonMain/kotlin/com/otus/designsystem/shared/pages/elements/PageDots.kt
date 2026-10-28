@@ -17,10 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import com.otus.designsystem.theme.MotionSpeed
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.ReadTokens
-import com.otus.designsystem.theme.motionTween
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.motion.MotionSpeed
+import com.otus.designsystem.theme.motion.motionTween
+import com.otus.designsystem.theme.tokens.content.ReadTokens
 
 /**
  * Where a page sits among [count] pages, newest first: the [current] page is a wide `text1` pill,

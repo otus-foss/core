@@ -7,8 +7,8 @@ import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_expand_less
 import com.otus.designsystem.resources.symbol_expand_more
 import com.otus.designsystem.shared.controls.elements.Symbol
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.ReadTokens
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.content.ReadTokens
 
 /** The `text2` chevron at a strip's end: up while it can grow, down while it can fold. */
 @Composable

@@ -18,10 +18,10 @@ import androidx.compose.ui.unit.dp
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_check
 import com.otus.designsystem.shared.controls.elements.Symbol
-import com.otus.designsystem.theme.ActionBarTokens
-import com.otus.designsystem.theme.InboxTokens
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.motionTween
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.motion.motionTween
+import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
+import com.otus.designsystem.theme.tokens.rows.InboxTokens
 
 /**
  * The tint behind a selected row. Corners square off where [RowSelection.joinedAbove] or

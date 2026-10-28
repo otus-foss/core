@@ -17,9 +17,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import com.otus.designsystem.shared.controls.elements.StripButton
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.rows.components.StripCard
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.ReadTokens
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.content.ReadTokens
+import com.otus.designsystem.theme.typography.panelTextStyle
 import org.jetbrains.compose.resources.DrawableResource
 
 /**

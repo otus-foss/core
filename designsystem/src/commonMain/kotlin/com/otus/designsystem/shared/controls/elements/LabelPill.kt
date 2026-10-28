@@ -13,9 +13,9 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
-import com.otus.designsystem.theme.LabelTokens
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PanelTokens
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.content.LabelTokens
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import org.jetbrains.compose.resources.DrawableResource
 
 /**

@@ -35,9 +35,9 @@ import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.shared.sidebar.elements.SidebarDetail
 import com.otus.designsystem.shared.sidebar.elements.SidebarOwl
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.SidebarTokens
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.layout.SidebarTokens
 
 /**
  * The [Sidebar]'s footer: the [SidebarOwl] in the sidebar's bottom corner, then the app's release

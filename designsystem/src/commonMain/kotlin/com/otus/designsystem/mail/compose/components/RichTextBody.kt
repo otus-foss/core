@@ -35,10 +35,10 @@ import androidx.compose.ui.zIndex
 import com.mohamedrejeb.richeditor.ui.BasicRichTextEditor
 import com.otus.designsystem.mail.compose.elements.RichBlock
 import com.otus.designsystem.mail.compose.elements.RichText
-import com.otus.designsystem.theme.ComposeTokens
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PageTokens
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.editing.ComposeTokens
+import com.otus.designsystem.theme.tokens.layout.PageTokens
+import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
  * The borderless editor for [text], below the header lines of a message. It grows with the text

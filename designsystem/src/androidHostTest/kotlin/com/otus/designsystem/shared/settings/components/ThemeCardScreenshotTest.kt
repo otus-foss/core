@@ -8,9 +8,9 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.unit.dp
 import com.otus.designsystem.screenshot.screenshot
 import com.otus.designsystem.shared.overlays.components.MenuAction
-import com.otus.designsystem.theme.OtusPalette
-import com.otus.designsystem.theme.ThemeBase
-import com.otus.designsystem.theme.ThemeChoice
+import com.otus.designsystem.theme.colors.OtusPalette
+import com.otus.designsystem.theme.colors.ThemeBase
+import com.otus.designsystem.theme.colors.ThemeChoice
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner

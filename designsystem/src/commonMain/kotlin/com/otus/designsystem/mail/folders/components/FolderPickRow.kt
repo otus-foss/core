@@ -7,10 +7,10 @@ import androidx.compose.ui.Modifier
 import com.otus.designsystem.shared.folders.elements.FolderPath
 import com.otus.designsystem.shared.selection.components.PickMark
 import com.otus.designsystem.shared.selection.components.PickRowFrame
-import com.otus.designsystem.theme.ComposeTokens
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.editing.ComposeTokens
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
  * A [folder] to tick in a sheet, such as the folders a message is in: its glyph, its path with the

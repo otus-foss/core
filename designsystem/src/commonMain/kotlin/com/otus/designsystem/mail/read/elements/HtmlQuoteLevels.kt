@@ -1,7 +1,7 @@
 package com.otus.designsystem.mail.read.elements
 
-import com.otus.designsystem.theme.OtusPalette
-import com.otus.designsystem.theme.ReadTokens
+import com.otus.designsystem.theme.colors.OtusPalette
+import com.otus.designsystem.theme.tokens.content.ReadTokens
 
 /**
  * Plain [text] as HTML: escaped, with its line breaks kept, and its links as links, as the body

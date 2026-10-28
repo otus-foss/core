@@ -26,10 +26,10 @@ import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.otus.designsystem.theme.EntryTokens
-import com.otus.designsystem.theme.OtusAlpha
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.motionTween
+import com.otus.designsystem.theme.colors.OtusAlpha
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.motion.motionTween
+import com.otus.designsystem.theme.tokens.rows.EntryTokens
 
 /**
  * One entry of a list, such as a mail or a person, on its own card: the [leading] avatar, which

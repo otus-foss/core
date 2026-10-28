@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.zIndex
-import com.otus.designsystem.theme.LocalMotionScale
+import com.otus.designsystem.theme.motion.LocalMotionScale
 
 /**
  * Shows [base] and, while [item] is set, a page for it on top, such as an open message over its

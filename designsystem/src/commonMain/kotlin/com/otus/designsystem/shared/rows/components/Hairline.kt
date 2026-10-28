@@ -6,7 +6,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.otus.designsystem.theme.SettingTokens
+import com.otus.designsystem.theme.tokens.settings.SettingTokens
 
 /**
  * A hairline along the top of this element, [inset] from both sides, separating it from the one

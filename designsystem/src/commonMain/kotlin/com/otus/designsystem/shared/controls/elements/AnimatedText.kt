@@ -18,10 +18,10 @@ import androidx.compose.ui.semantics.text
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
-import com.otus.designsystem.theme.LocalMotionScale
-import com.otus.designsystem.theme.Motion
-import com.otus.designsystem.theme.MotionCurve
-import com.otus.designsystem.theme.MotionSpeed
+import com.otus.designsystem.theme.motion.LocalMotionScale
+import com.otus.designsystem.theme.motion.Motion
+import com.otus.designsystem.theme.motion.MotionCurve
+import com.otus.designsystem.theme.motion.MotionSpeed
 
 /**
  * Replace a label with a clipped vertical slide and fade. Increasing order moves upward;

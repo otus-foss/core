@@ -14,9 +14,9 @@ import com.otus.designsystem.shared.controls.elements.ActionButton
 import com.otus.designsystem.shared.overlays.components.SheetHeader
 import com.otus.designsystem.shared.overlays.components.SheetSurface
 import com.otus.designsystem.shared.rows.elements.SectionCaption
-import com.otus.designsystem.theme.ChangeLogTokens
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.SheetTokens
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.overlays.SheetTokens
+import com.otus.designsystem.theme.tokens.settings.ChangeLogTokens
 
 /**
  * A sheet that lists what changed, one captioned [sections] group of bulleted lines after another.

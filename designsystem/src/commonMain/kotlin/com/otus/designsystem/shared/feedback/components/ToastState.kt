@@ -8,7 +8,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.otus.designsystem.shared.feedback.elements.ToastAction
-import com.otus.designsystem.theme.ToastTokens
+import com.otus.designsystem.theme.tokens.feedback.ToastTokens
 
 /**
  * A message for [ToastHost]. A new message with the same non-null [group] as one on screen

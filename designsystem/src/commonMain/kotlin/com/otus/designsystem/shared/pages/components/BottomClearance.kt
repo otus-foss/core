@@ -21,9 +21,9 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.otus.designsystem.theme.ActionBarTokens
-import com.otus.designsystem.theme.MotionSpeed
-import com.otus.designsystem.theme.motionTween
+import com.otus.designsystem.theme.motion.MotionSpeed
+import com.otus.designsystem.theme.motion.motionTween
+import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 
 /**
  * How far up from the window's bottom the bars on screen reach, so parts that float over every

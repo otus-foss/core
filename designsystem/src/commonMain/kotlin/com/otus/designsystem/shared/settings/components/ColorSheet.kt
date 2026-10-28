@@ -26,15 +26,15 @@ import com.otus.designsystem.shared.overlays.components.SheetFrame
 import com.otus.designsystem.shared.overlays.components.SheetHeaderAction
 import com.otus.designsystem.shared.reorder.components.HALF
 import com.otus.designsystem.shared.settings.elements.ColorSlider
-import com.otus.designsystem.theme.Hsl
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.SheetTokens
-import com.otus.designsystem.theme.ThemeTokens
-import com.otus.designsystem.theme.hslColor
-import com.otus.designsystem.theme.parseHexColor
-import com.otus.designsystem.theme.toHex
-import com.otus.designsystem.theme.toHsl
+import com.otus.designsystem.theme.colors.Hsl
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.colors.hslColor
+import com.otus.designsystem.theme.colors.parseHexColor
+import com.otus.designsystem.theme.colors.toHex
+import com.otus.designsystem.theme.colors.toHsl
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.overlays.SheetTokens
+import com.otus.designsystem.theme.tokens.settings.ThemeTokens
 
 /**
  * Picks any color by hue, intensity and lightness, or by hex code, starting from [initial]. Done

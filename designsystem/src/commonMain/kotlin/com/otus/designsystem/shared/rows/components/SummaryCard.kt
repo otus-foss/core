@@ -16,9 +16,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import com.otus.designsystem.shared.people.components.NamedAvatar
 import com.otus.designsystem.shared.people.components.SmallAvatar
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.SheetTokens
-import com.otus.designsystem.theme.SummaryTokens
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.overlays.SheetTokens
+import com.otus.designsystem.theme.tokens.people.SummaryTokens
 
 /**
  * What a sheet acts on, such as the message being moved: [leading], often an avatar, beside

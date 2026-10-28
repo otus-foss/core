@@ -13,7 +13,7 @@ import com.otus.designsystem.shared.overlays.components.DialogAction
 import com.otus.designsystem.shared.people.components.PersonAvatar
 import com.otus.designsystem.shared.selection.components.PickMark
 import com.otus.designsystem.shared.selection.components.PickRow
-import com.otus.designsystem.theme.AvatarTokens
+import com.otus.designsystem.theme.tokens.people.AvatarTokens
 
 /**
  * Edits one avatar for every address of [edit]'s account. When some addresses already have an

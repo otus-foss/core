@@ -39,8 +39,8 @@ import com.otus.designsystem.shared.people.elements.Avatar
 import com.otus.designsystem.shared.rows.components.RowDensity
 import com.otus.designsystem.shared.rows.components.topHairline
 import com.otus.designsystem.shared.selection.components.valueOutline
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.RuleChipTokens
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.selection.RuleChipTokens
 
 /**
  * One rule condition in an outline: a fixed label column, a slot with an avatar or grey icon, and

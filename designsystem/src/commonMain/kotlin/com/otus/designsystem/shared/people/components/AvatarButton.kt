@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
-import com.otus.designsystem.theme.PanelTokens
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
 
 /** [avatar] at [size] as a button in a 48 dp target, which screen readers announce as [label]. */
 @Composable

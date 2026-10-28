@@ -19,8 +19,8 @@ import com.otus.designsystem.resources.symbol_folder_open_fill
 import com.otus.designsystem.shared.controls.elements.LeadingSymbol
 import com.otus.designsystem.shared.controls.elements.LocalIconTint
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
-import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.SidebarTokens
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.layout.SidebarTokens
 import org.jetbrains.compose.resources.DrawableResource
 
 /**

@@ -13,9 +13,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.ReadTokens
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.content.ReadTokens
+import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
  * Label and value rows, such as a message's sender details: From, To, Date, and Folders. The labels

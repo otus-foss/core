@@ -15,8 +15,8 @@ import com.otus.designsystem.shared.actionbar.components.LocalBarParts
 import com.otus.designsystem.shared.controls.components.SegmentedToggle
 import com.otus.designsystem.shared.overlays.components.OptionsItem
 import com.otus.designsystem.shared.overlays.components.OptionsList
-import com.otus.designsystem.theme.ActionBarTokens
-import com.otus.designsystem.theme.ComposeTokens
+import com.otus.designsystem.theme.tokens.editing.ComposeTokens
+import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 
 /**
  * The bottom bar while an image is selected, where the page's bar sits: the [sizing]'s presets

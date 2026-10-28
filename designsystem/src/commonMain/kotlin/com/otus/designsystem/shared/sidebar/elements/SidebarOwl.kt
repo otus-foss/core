@@ -32,14 +32,14 @@ import com.otus.designsystem.resources.brand_owl_eye_right
 import com.otus.designsystem.resources.brand_owl_glint_left
 import com.otus.designsystem.resources.brand_owl_glint_right
 import com.otus.designsystem.resources.brand_owl_happy
-import com.otus.designsystem.theme.KeyframeTrack
-import com.otus.designsystem.theme.LocalMotionScale
-import com.otus.designsystem.theme.Motion
-import com.otus.designsystem.theme.OWL_ART_HEIGHT
-import com.otus.designsystem.theme.OWL_ART_WIDTH
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.OwlArt
-import com.otus.designsystem.theme.OwlTimeline
+import com.otus.designsystem.theme.brand.OWL_ART_HEIGHT
+import com.otus.designsystem.theme.brand.OWL_ART_WIDTH
+import com.otus.designsystem.theme.brand.OwlArt
+import com.otus.designsystem.theme.brand.OwlTimeline
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.motion.KeyframeTrack
+import com.otus.designsystem.theme.motion.LocalMotionScale
+import com.otus.designsystem.theme.motion.Motion
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 

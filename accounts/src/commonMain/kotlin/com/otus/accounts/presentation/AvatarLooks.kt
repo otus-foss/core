@@ -7,8 +7,8 @@ import com.otus.avatar.GeneratedAvatar
 import com.otus.avatar.ResolvedAvatar
 import com.otus.designsystem.shared.people.components.ChipAvatar
 import com.otus.designsystem.shared.people.elements.AvatarSymbols
-import com.otus.designsystem.theme.FolderColor
-import com.otus.designsystem.theme.parseHexColor
+import com.otus.designsystem.theme.colors.FolderColor
+import com.otus.designsystem.theme.colors.parseHexColor
 import org.jetbrains.compose.resources.DrawableResource
 
 /**

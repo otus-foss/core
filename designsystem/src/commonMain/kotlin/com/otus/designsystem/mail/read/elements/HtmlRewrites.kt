@@ -2,8 +2,8 @@ package com.otus.designsystem.mail.read.elements
 
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
-import com.otus.designsystem.theme.OtusPalette
-import com.otus.designsystem.theme.ReadTokens
+import com.otus.designsystem.theme.colors.OtusPalette
+import com.otus.designsystem.theme.tokens.content.ReadTokens
 
 /**
  * [html] with each remote `<img>` swapped for a dashed placeholder of the same size, so the layout

@@ -6,8 +6,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.otus.designsystem.shared.controls.elements.ActionButton
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PageTokens
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.layout.PageTokens
 
 /**
  * Asks before a destructive change, such as removing an account or deleting a folder. [message]

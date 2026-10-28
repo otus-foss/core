@@ -42,10 +42,10 @@ import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.shared.overlays.components.ContextMenu
 import com.otus.designsystem.shared.overlays.components.MenuAction
 import com.otus.designsystem.shared.overlays.components.onPressDown
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.OtusPalette
-import com.otus.designsystem.theme.PanelTokens
-import com.otus.designsystem.theme.ThemeTokens
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.colors.OtusPalette
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.settings.ThemeTokens
 
 /**
  * A theme to pick: a small sketch of a page drawn in [sketch]'s colors above [title] and

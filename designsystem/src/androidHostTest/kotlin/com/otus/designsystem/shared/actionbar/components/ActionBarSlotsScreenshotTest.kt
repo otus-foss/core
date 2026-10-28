@@ -18,8 +18,8 @@ import com.otus.designsystem.screenshot.screenshot
 import com.otus.designsystem.shared.overlays.components.MenuAction
 import com.otus.designsystem.shared.people.components.DemoActions.secondary
 import com.otus.designsystem.shared.people.components.DemoActions.write
-import com.otus.designsystem.theme.ThemeBase
-import com.otus.designsystem.theme.ThemeChoice
+import com.otus.designsystem.theme.colors.ThemeBase
+import com.otus.designsystem.theme.colors.ThemeChoice
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner

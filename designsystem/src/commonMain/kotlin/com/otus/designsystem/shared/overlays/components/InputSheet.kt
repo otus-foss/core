@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import com.otus.designsystem.shared.input.elements.InputField
-import com.otus.designsystem.theme.SheetTokens
+import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 
 /**
  * A [SheetFrame] with one text field, such as a new name, focused when it opens. Its header button

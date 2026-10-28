@@ -6,8 +6,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import com.otus.designsystem.shared.controls.elements.ChipFrame
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.panelTextStyle
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
  * A short date in a pill beside a [Chip][com.otus.designsystem.shared.controls.elements.Chip], such as "Yesterday"

@@ -12,8 +12,8 @@ import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.selection.components.PickMark
 import com.otus.designsystem.shared.selection.components.PickRowFrame
 import com.otus.designsystem.shared.selection.components.PickRowText
-import com.otus.designsystem.theme.FilterTokens
-import com.otus.designsystem.theme.OtusColors
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.selection.FilterTokens
 
 /**
  * A person, address, or account to pick on a filter page, [FilterTokens.pickRowHeight] tall: an

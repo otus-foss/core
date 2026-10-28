@@ -8,7 +8,7 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.otus.designsystem.theme.motionTween
+import com.otus.designsystem.theme.motion.motionTween
 
 /**
  * [content] that unfolds downward and fades in while [expanded], and folds back up when it is

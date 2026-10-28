@@ -8,8 +8,8 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.LayoutDirection
 import com.otus.designsystem.shared.rows.elements.MAX_INDENT_STEPS
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.ReorderTreeTokens
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.rows.ReorderTreeTokens
 
 /**
  * Draws the drop line of a reorderable tree over its rows, [y] px from the top and indented to

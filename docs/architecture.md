@@ -31,6 +31,10 @@ named `jmap-mail` uses the package `com.otus.jmap.mail` and publishes the Maven 
     commonTest/kotlin/com/otus/<module>/   Behavior tests
 ```
 
+The repeated `src/<sourceSet>/kotlin` paths tell Kotlin which code each target compiles. Shared
+code belongs in `commonMain`; Android and iOS implementations belong in their platform source
+sets. Keep this build structure and organize responsibilities beneath the module's package.
+
 ### Extracted libraries
 
 The first modules move existing code. `jmap` moved in version 0.1.0; `designsystem`, `dateformat`,
@@ -69,8 +73,9 @@ The checker in `tools/check_architecture.py` enforces these rules at source leve
   `mail/<feature>/elements` and `components` for Mail rendering. Future Calendar rendering uses
   `calendar/<feature>` with the same layers. Elements never use components, including those in
   other groups. Shared UI cannot depend on Mail or Calendar UI groups, and the two app-specific
-  groups cannot depend on each other. `theme` stays at the root and cannot depend on these UI
-  groups. The module may format dates through `dateformat`, but cannot depend on account or
+  groups cannot depend on each other. Theme code lives under the root `theme` subtree, with
+  subpackages for colors, motion, branding, typography, and token families. None may depend on
+  these UI groups. The module may format dates through `dateformat`, but cannot depend on account or
   settings features, protocol clients, networking, or storage. See
   [decision 0018](decisions/0018-ui-domain-packages.md).
 - The shared `accounts` and `settings` features may use Compose in `presentation` only.
@@ -79,7 +84,7 @@ The checker in `tools/check_architecture.py` enforces these rules at source leve
   Presentation uses domain contracts, never data implementations or protocol clients.
 - Every element and component takes values and callbacks. ViewModels, repositories, networking,
   storage, and navigation controllers stay outside them. Shared features do not import one
-  another; app wiring composes them. Literal colors stay in design-system `theme`.
+  another; app wiring composes them. Literal colors stay in the design-system `theme` subtree.
 - `domain` packages use no UI, platform, networking, or database APIs.
 - No catch-all `utils`, `helpers`, or `manager` packages, wildcard imports, or inline
   suppressions.
@@ -121,7 +126,12 @@ The package layout groups rendering by ownership, responsibility, and UI layer:
 
 ```text
 com/otus/designsystem/
-  theme/
+  theme/OtusTheme.kt
+  theme/colors/
+  theme/motion/
+  theme/brand/
+  theme/typography/
+  theme/tokens/<family>/
   shared/<group>/elements/
   shared/<group>/components/
   mail/<feature>/elements/
@@ -134,6 +144,10 @@ Only create a layer directory when it contains code. Platform implementations an
 these paths. Keep component-specific display values and visual state beside their component;
 app business models and services do not move into these groups. See the
 [package migration guide](ui-package-migration.md) for the declaration mapping.
+
+Token families group related visual rules, such as layout, rows, overlays, and editing.
+`InboxTokens`, `ComposeTokens`, and `ReadTokens` remain available to shared UI under `theme`;
+their names do not make them Mail-owned dependencies.
 
 `designsystem` also owns `ContentRow`, `DetailRow`, `EmptyState`, `InboxTokens`, and the public
 `com.otus.designsystem.resources.Res` symbol bundle. Mail supplies display values and actions

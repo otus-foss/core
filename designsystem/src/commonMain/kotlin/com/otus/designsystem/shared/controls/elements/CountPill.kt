@@ -10,9 +10,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.clearAndSetSemantics
-import com.otus.designsystem.theme.LabelTokens
-import com.otus.designsystem.theme.OtusColors
-import com.otus.designsystem.theme.PanelTokens
+import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.content.LabelTokens
+import com.otus.designsystem.theme.tokens.layout.PanelTokens
 
 /**
  * A small outlined capsule with a count, such as the mails in a conversation. It is decoration:
