@@ -33,20 +33,9 @@ public fun EmptyState(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(InboxTokens.itemGap),
         ) {
-            Symbol(
-                icon,
-                size = InboxTokens.emptyIconSize,
-            )
-            Text(
-                title,
-                fontSize = InboxTokens.subjectSize,
-                textAlign = TextAlign.Center,
-            )
-            Text(
-                description,
-                color = OtusColors.text2,
-                textAlign = TextAlign.Center,
-            )
+            Symbol(icon, size = InboxTokens.emptyIconSize)
+            Text(title, fontSize = InboxTokens.subjectSize, textAlign = TextAlign.Center)
+            Text(description, color = OtusColors.text2, textAlign = TextAlign.Center)
             if (actionLabel != null) ButtonPill(actionLabel, onAction, fill = OtusColors.bgLight)
         }
     }

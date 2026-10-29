@@ -25,13 +25,11 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.semantics.toggleableState
 import androidx.compose.ui.state.ToggleableState
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.text.withStyle
 import com.otus.designsystem.shared.controls.elements.ExpandChevron
+import com.otus.designsystem.shared.filters.elements.ChipLabel
+import com.otus.designsystem.shared.filters.elements.annotated
 import com.otus.designsystem.theme.colors.OtusAlpha
-import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.selection.FilterTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
@@ -80,10 +78,7 @@ public fun FilterFolderRow(
         }
         glyph()
         Text(
-            buildAnnotatedString {
-                folder.path?.let { withStyle(SpanStyle(color = OtusColors.text3)) { append("$it / ") } }
-                append(folder.name)
-            },
+            ChipLabel(folder.name, folder.path).annotated(),
             Modifier.weight(1f),
             style = panelTextStyle(),
             maxLines = 1,

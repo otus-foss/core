@@ -1,25 +1,14 @@
 package com.otus.designsystem.shared.dates.components
 
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
-import com.otus.designsystem.resources.Res
-import com.otus.designsystem.resources.symbol_close
 import com.otus.designsystem.shared.controls.elements.ActionButton
-import com.otus.designsystem.shared.controls.elements.IconButton
-import com.otus.designsystem.shared.controls.elements.Symbol
-import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import kotlinx.datetime.LocalTime
 import kotlin.math.abs
 
@@ -43,17 +32,7 @@ public fun TimeWheelPicker(
     val time = times[chosen.coerceIn(times.indices)]
     val minutes = times.filter { it.hour == time.hour }
     DatePickerDialog(onDismiss) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                title,
-                Modifier.weight(1f).semantics {
-                    heading()
-                },
-                fontSize = SheetTokens.titleSize,
-                fontWeight = FontWeight.SemiBold,
-            )
-            IconButton("Close time chooser", onDismiss) { Symbol(Res.drawable.symbol_close) }
-        }
+        PickerTitle(title, "Close time chooser", onDismiss)
         DateWheels(Modifier.weight(1f)) {
             DatePickerColumn(
                 "Hour",

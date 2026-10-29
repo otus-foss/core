@@ -68,7 +68,6 @@ internal fun PrimaryShell(
     modifier: Modifier = Modifier,
 ) {
     val shape = RoundedCornerShape(ActionBarTokens.radius)
-    val interactions = remember { MutableInteractionSource() }
     val menu = rememberBarMenu()
     val shown = entry.shownContext(context, primary.label)
     val animation = rememberCollapse(context != null, entry)
@@ -78,9 +77,7 @@ internal fun PrimaryShell(
         modifier
             .heightIn(min = ActionBarTokens.height)
             .background(OtusColors.bgDark, shape)
-            .semantics { contentDescription = listOfNotNull(primary.label, context?.description).joinToString(", ") }
-            .clickable(interactions, null, enabled = primary.enabled, role = Role.Button, onClick = menu.click(primary))
-            .controlPressFeedback(interactions, shape),
+            .primaryButton(primary, context, menu, shape),
     ) {
         // Drawn before the action, so the action's accent border covers it where the two meet.
         Box(Modifier.matchParentSize().border(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape))
@@ -243,11 +240,12 @@ internal fun ContextContent(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         val motionScale = LocalMotionScale.current
-        AnimatedContent(context.token, contentKey = {
-            it.key
-        }, transitionSpec = { crossfade(motionScale) }, label = "Bar token") {
-            BarTokenView(it)
-        }
+        AnimatedContent(
+            context.token,
+            contentKey = { it.key },
+            transitionSpec = { crossfade(motionScale) },
+            label = "Bar token",
+        ) { BarTokenView(it) }
         Column {
             val lead = context.lead
             if (lead == null) {
@@ -277,11 +275,3 @@ private fun FadingText(
 
 private fun crossfade(motionScale: Float) =
     fadeIn(textEnterSpec(motionScale)) togetherWith fadeOut(textExitSpec(motionScale))
-
-/**
- * The last context shown, kept while the context fades out. It is not state, because it changes
- * only during a recomposition.
- */
-internal class LastContext {
-    var value: BarContext? = null
-}

@@ -13,8 +13,11 @@ import androidx.compose.ui.Modifier
 import com.otus.designsystem.shared.controls.elements.ActionButton
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.tokens.selection.CalendarTokens
+import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.daysUntil
+import kotlinx.datetime.plus
 import kotlinx.datetime.todayIn
 import kotlin.time.Clock
 
@@ -46,9 +49,13 @@ public fun BirthdayPicker(
         DatePickerHeading(title, "Leave the year as No year when you don’t know it.", onDismiss)
         DateWheels(Modifier.weight(1f)) {
             DatePickerColumn("Day", days.map(Int::toString), shownDay - 1, { day = it + 1 }, Modifier.weight(1f))
-            DatePickerColumn("Month", MONTH_NAMES, month - 1, {
-                month = it + 1
-            }, Modifier.weight(CalendarTokens.MONTH_COLUMN_WEIGHT))
+            DatePickerColumn(
+                "Month",
+                MONTH_NAMES,
+                month - 1,
+                { month = it + 1 },
+                Modifier.weight(CalendarTokens.MONTH_COLUMN_WEIGHT),
+            )
             DatePickerColumn(
                 "Year",
                 years,
@@ -69,11 +76,9 @@ private fun daysIn(
     month: Int,
 ): Int {
     val first = LocalDate(year, month, 1)
-    val next = if (month == MONTHS) LocalDate(year + 1, 1, 1) else LocalDate(year, month + 1, 1)
-    return next.toEpochDays().toInt() - first.toEpochDays().toInt()
+    return first.daysUntil(first.plus(1, DateTimeUnit.MONTH))
 }
 
 private const val NO_YEAR = "No year"
 private const val YEARS_BACK = 120
 private const val LEAP_YEAR = 2000
-private const val MONTHS = 12

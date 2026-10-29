@@ -1,6 +1,5 @@
 package com.otus.designsystem.shared.contacts.components
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -130,10 +129,8 @@ private fun FieldFrame(
             .heightIn(min = ContactTokens.fieldHeight)
             .background(if (highlighted) OtusColors.selectedFill else OtusColors.bgDark, shape)
             .border(
-                BorderStroke(
-                    PanelTokens.borderWidth,
-                    if (highlighted) OtusColors.selectedFill else OtusColors.strokeBgDark,
-                ),
+                PanelTokens.borderWidth,
+                if (highlighted) OtusColors.selectedFill else OtusColors.strokeBgDark,
                 shape,
             )
             // A trailing button's touch target spaces it from the edge; without one, the label needs the inset.

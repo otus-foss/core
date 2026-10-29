@@ -44,30 +44,21 @@ public fun IconButton(
         modifier
             .size(PanelTokens.touchTarget)
             .semantics { contentDescription = description }
-            .clickable(
-                enabled = enabled,
-                role = Role.Button,
-                interactionSource = interactions,
-                indication = null,
-                onClick = onClick,
-            ),
+            .clickable(interactions, indication = null, enabled = enabled, role = Role.Button, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
         Box(Modifier.size(PanelTokens.chipHeight)) {
             Surface(
                 modifier =
                     Modifier
-                        .size(
-                            PanelTokens.chipHeight,
-                        ).reportControlVisualBounds()
+                        .size(PanelTokens.chipHeight)
+                        .reportControlVisualBounds()
                         .controlPressFeedback(interactions),
                 shape = CircleShape,
                 color = if (look == IconButtonLook.Bare) Color.Transparent else OtusColors.bgDark,
                 contentColor = if (enabled) OtusColors.text1 else OtusColors.text3,
                 border =
-                    if (look ==
-                        IconButtonLook.Outlined
-                    ) {
+                    if (look == IconButtonLook.Outlined) {
                         BorderStroke(PanelTokens.borderWidth, OtusColors.strokeBgDark)
                     } else {
                         null

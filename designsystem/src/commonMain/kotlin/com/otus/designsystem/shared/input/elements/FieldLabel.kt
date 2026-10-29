@@ -43,10 +43,8 @@ public fun FieldLabel(
         action?.let {
             Box(
                 Modifier.layout { measurable, constraints ->
-                    val placeable =
-                        measurable.measure(
-                            constraints.copy(minHeight = 0, maxHeight = Constraints.Infinity),
-                        )
+                    val unbounded = constraints.copy(minHeight = 0, maxHeight = Constraints.Infinity)
+                    val placeable = measurable.measure(unbounded)
                     layout(placeable.width, 0) { placeable.place(0, -placeable.height / 2) }
                 },
             ) { it() }

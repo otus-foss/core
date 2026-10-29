@@ -49,8 +49,7 @@ public class LetterIndexState {
     /** Marks the letter level with [position], or the nearest one past either end. */
     internal fun hover(position: Offset) {
         val rows = bounds.entries.sortedBy { it.value.top }
-        active =
-            (rows.firstOrNull { position.y < it.value.bottom } ?: rows.lastOrNull())?.key
+        active = (rows.firstOrNull { position.y < it.value.bottom } ?: rows.lastOrNull())?.key
     }
 
     internal fun open(

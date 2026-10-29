@@ -6,7 +6,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -66,7 +64,7 @@ public fun ExpandingBarGroup(
         onBackCompleted = close,
     )
     // The bar sits at the bottom, so growing the group taller grows it upward.
-    Column(modifier.groupSurface()) {
+    Column(modifier.barSurface()) {
         AnimatedVisibility(
             open,
             enter =
@@ -109,17 +107,10 @@ private fun GroupRow(
         ) {
             Box(
                 Modifier
-                    .size(
-                        PanelTokens.chipHeight,
-                    ).background(if (open) OtusColors.bgLight else Color.Transparent, CircleShape),
+                    .size(PanelTokens.chipHeight)
+                    .background(if (open) OtusColors.bgLight else Color.Transparent, CircleShape),
                 contentAlignment = Alignment.Center,
             ) { Symbol(Res.drawable.symbol_more_horiz) }
         }
     }
-}
-
-/** The group's `bgDark` surface with its outline, as an [ActionBar]'s group has. */
-private fun Modifier.groupSurface(): Modifier {
-    val shape = RoundedCornerShape(ActionBarTokens.radius)
-    return background(OtusColors.bgDark, shape).border(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape)
 }

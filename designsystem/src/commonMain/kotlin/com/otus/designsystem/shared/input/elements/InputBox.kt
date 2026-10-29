@@ -1,6 +1,5 @@
 package com.otus.designsystem.shared.input.elements
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -39,7 +38,7 @@ internal fun Modifier.inputFrame(endsWithButton: Boolean): Modifier {
     return fillMaxWidth()
         .heightIn(min = PanelTokens.touchTarget)
         .background(OtusColors.bgDark, shape)
-        .border(BorderStroke(PanelTokens.borderWidth, OtusColors.strokeBgDark), shape)
+        .border(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape)
         .padding(start = SheetTokens.gap, end = if (endsWithButton) PanelTokens.iconGap else SheetTokens.gap)
 }
 

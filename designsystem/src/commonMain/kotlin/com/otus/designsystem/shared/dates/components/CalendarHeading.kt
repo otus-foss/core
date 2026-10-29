@@ -33,14 +33,10 @@ internal fun CalendarHeading(
             },
         )
     }
-    val monthLabel =
-        month.month.name
-            .lowercase()
-            .replaceFirstChar { it.uppercase() }
     MonthNavigation(
         label =
             MonthNavigationLabel(
-                monthLabel,
+                MONTH_NAMES[month.month.ordinal],
                 month.year.toString(),
                 month.year * Month.entries.size + month.month.ordinal,
             ),

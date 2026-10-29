@@ -41,6 +41,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.lerp
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
@@ -191,12 +192,6 @@ private fun Modifier.grownTo(
         val height = lerp(start.toFloat(), placeable.height.toFloat(), progress).roundToInt()
         layout(placeable.width, height) { placeable.place(0, 0) }
     }
-
-private fun lerp(
-    start: Float,
-    stop: Float,
-    fraction: Float,
-): Float = start + (stop - start) * fraction
 
 /**
  * Hides the content behind the last [height], where the footer floats, and fades it out over

@@ -27,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.findRootCoordinates
@@ -87,22 +88,14 @@ public fun ActionBar(
             val width = constraints.maxWidth
             val gap = ActionBarTokens.gap.roundToPx()
             val group = groups.single()
-            val ownGroup =
-                if (secondary.isEmpty() && onAdd == null) {
-                    0
-                } else {
-                    group.maxIntrinsicWidth(ActionBarTokens.height.roundToPx()) +
-                        gap
-                }
+            val hasGroup = secondary.isNotEmpty() || onAdd != null
+            val ownGroup = if (hasGroup) group.maxIntrinsicWidth(ActionBarTokens.height.roundToPx()) + gap else 0
             val shellWidth = entry.blend((width - ownGroup).toFloat()) { it.shellWidth.toFloat() }.roundToInt()
             val shell = shells.single().measure(constraints.copy(minWidth = shellWidth, maxWidth = shellWidth))
             // The group ends one gap before the shell, also while the shell moves in.
             val groupWidth = width - shellWidth - gap
             val placedGroup =
-                group
-                    .takeIf {
-                        groupWidth > 0
-                    }?.measure(constraints.copy(minWidth = groupWidth, maxWidth = groupWidth))
+                group.takeIf { groupWidth > 0 }?.measure(constraints.copy(minWidth = groupWidth, maxWidth = groupWidth))
             val height = maxOf(shell.height, placedGroup?.height ?: 0)
             layout(width, height) {
                 placedGroup?.placeRelative(0, (height - placedGroup.height) / 2)
@@ -138,8 +131,7 @@ private fun SecondaryGroup(
         modifier
             .height(ActionBarTokens.height)
             .clip(shape)
-            .background(OtusColors.bgDark, shape)
-            .border(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape),
+            .barSurface(shape),
     ) {
         Row(
             Modifier
@@ -166,6 +158,10 @@ private fun SecondaryGroup(
         }
     }
 }
+
+/** A bar part's `bgDark` surface inside its `strokeBgDark` outline, in [shape]. */
+internal fun Modifier.barSurface(shape: Shape = RoundedCornerShape(ActionBarTokens.radius)): Modifier =
+    background(OtusColors.bgDark, shape).border(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape)
 
 /**
  * Places [bar] over the bottom of [content] at [actionBarInset]. [content] receives bottom padding

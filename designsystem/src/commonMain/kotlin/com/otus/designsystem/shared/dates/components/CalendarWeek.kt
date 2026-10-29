@@ -101,11 +101,4 @@ private fun CalendarDateCell(
 }
 
 private fun monthLabel(date: LocalDate): String? =
-    if (date.day == 1) {
-        date.month.name
-            .take(CalendarTokens.MONTH_LABEL_LENGTH)
-            .lowercase()
-            .replaceFirstChar { it.uppercase() }
-    } else {
-        null
-    }
+    if (date.day == 1) MONTH_NAMES[date.month.ordinal].take(CalendarTokens.MONTH_LABEL_LENGTH) else null

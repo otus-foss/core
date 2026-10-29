@@ -23,6 +23,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
@@ -69,13 +70,7 @@ public fun FilterChip(
             }
 
             FilterChipRole.Radio -> {
-                Modifier.selectable(
-                    on,
-                    interactions,
-                    null,
-                    role = Role.RadioButton,
-                    onClick = onClick,
-                )
+                Modifier.selectable(on, interactions, null, role = Role.RadioButton, onClick = onClick)
             }
 
             FilterChipRole.Button -> {
@@ -115,15 +110,20 @@ public fun FilterChip(
 
 @Composable
 private fun FilterChipText(label: ChipLabel) {
-    val faint = OtusColors.text3
-    val text =
-        buildAnnotatedString {
-            label.prefix?.let { withStyle(SpanStyle(color = faint)) { append("$it / ") } }
-            append(label.text)
-        }
     Text(
-        text,
+        label.annotated(),
         style = panelTextStyle().copy(color = Color.Unspecified, fontSize = FilterTokens.chipTextSize),
         maxLines = 1,
     )
+}
+
+/** The label's text after its `text3` prefix and a slash, such as "Freelancing / Invoices". */
+@Composable
+internal fun ChipLabel.annotated(): AnnotatedString {
+    val faint = OtusColors.text3
+    val label = this
+    return buildAnnotatedString {
+        label.prefix?.let { withStyle(SpanStyle(color = faint)) { append("$it / ") } }
+        append(label.text)
+    }
 }

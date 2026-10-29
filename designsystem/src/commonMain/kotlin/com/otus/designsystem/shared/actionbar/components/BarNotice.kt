@@ -1,7 +1,6 @@
 package com.otus.designsystem.shared.actionbar.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -39,12 +38,10 @@ public fun BarNotice(
     onAction: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val shape = RoundedCornerShape(ActionBarTokens.radius)
     Row(
         modifier
             .fillMaxWidth()
-            .background(OtusColors.bgDark, shape)
-            .border(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape)
+            .barSurface()
             .padding(start = ActionBarTokens.contextInset, end = buttonInset),
         horizontalArrangement = Arrangement.spacedBy(ActionBarTokens.tokenGap),
         verticalAlignment = Alignment.CenterVertically,

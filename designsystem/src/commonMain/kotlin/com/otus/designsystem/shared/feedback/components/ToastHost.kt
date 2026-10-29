@@ -110,15 +110,9 @@ private fun ToastGroup(
         val own = measurables.map { if (it == measurables.last()) front.height else it.minIntrinsicHeight(width) }
         val heights = own.map { lerp(front.height, it, progress) }
         val placeables =
-            measurables.mapIndexed { index, measurable ->
-                if (index ==
-                    measurables.lastIndex
-                ) {
-                    front
-                } else {
-                    measurable.measure(Constraints.fixed(width, heights[index]))
-                }
-            }
+            measurables.dropLast(1).mapIndexed { index, measurable ->
+                measurable.measure(Constraints.fixed(width, heights[index]))
+            } + front
         val gap = ToastTokens.gap.roundToPx()
         val peek = ToastTokens.peek.roundToPx()
         val stacked = front.height + peek * minOf(count - 1, ToastTokens.PEEK_LIMIT)
