@@ -100,10 +100,7 @@ class JmapRequestTest {
             val session = client.session(wellKnown, ADA)
             val error =
                 assertFailsWith<JmapException.Unsupported> {
-                    client.request(
-                        session,
-                        ADA,
-                    ) { call(GetMethod(MAILBOX, "d1")) }
+                    client.request(session, ADA) { call(GetMethod(MAILBOX, "d1")) }
                 }
             assertEquals(JmapCapability.MAIL, error.capability)
             assertEquals(1, requests.size, "Nothing was sent for the unsupported call")
@@ -124,7 +121,7 @@ class JmapRequestTest {
     fun customMethodsUseTheSameMachinery() =
         runTest {
             val echo =
-                object : JmapMethod<String>("Core/echo", JmapCapability.CORE, null) {
+                object : JmapMethod<String>("Core/echo", JmapCapability.CORE, accountId = null) {
                     override fun arguments() = JsonObject(mapOf("hello" to JsonPrimitive("world")))
 
                     override fun decode(arguments: JsonObject) = (arguments["hello"] as JsonPrimitive).content

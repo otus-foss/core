@@ -7,8 +7,8 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.OutgoingContent
 import io.ktor.http.headersOf
 import kotlinx.coroutines.test.runTest
-import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.buildJsonObject
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -24,7 +24,7 @@ class JmapUploadTest {
             "https://mail.example.org/jmap/",
             "Ada",
             setOf(JmapCapability.CORE),
-            mapOf("d 1" to JmapAccount("Ada", true, false, emptySet())),
+            mapOf("d 1" to JmapAccount("Ada", isPersonal = true, isReadOnly = false, emptySet())),
             emptyMap(),
             "s",
             setOf("https://mail.example.org:443"),
@@ -32,7 +32,13 @@ class JmapUploadTest {
             capabilityObjects =
                 mapOf(
                     JmapCapability.CORE to
-                        JsonObject(listOfNotNull(maxSizeUpload?.let { "maxSizeUpload" to JsonPrimitive(it) }).toMap()),
+                        buildJsonObject {
+                            if (maxSizeUpload !=
+                                null
+                            ) {
+                                put("maxSizeUpload", JsonPrimitive(maxSizeUpload))
+                            }
+                        },
                 ),
         )
 
