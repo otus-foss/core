@@ -34,7 +34,7 @@ class CalendarScreenshotTest {
     private val allowed = LocalDate(2020, 1, 1)..LocalDate(2024, 12, 31)
 
     @Test
-    fun rangeStartOnly() = compose.screenScreenshot("date_range_picker_start") { Range("2024-03-12", null) }
+    fun rangeStartOnly() = compose.screenScreenshot("date_range_picker_start") { Range("2024-03-12", end = null) }
 
     @Test
     fun rangeInOneMonth() = compose.screenScreenshot("date_range_picker_range") { Range("2024-03-04", "2024-03-15") }
@@ -46,19 +46,19 @@ class CalendarScreenshotTest {
     @Test
     fun monthWheel() =
         compose.screenScreenshot("date_wheel_picker_month") {
-            DateWheelPicker(YearMonth(2024, 3), null, allowed, dayRequired = false, {}, { _, _ -> })
+            DateWheelPicker(YearMonth(2024, 3), initialDay = null, allowed, dayRequired = false, {}, { _, _ -> })
         }
 
     @Test
     fun dayWheelUnpicked() =
         compose.screenScreenshot("date_wheel_picker_day_required") {
-            DateWheelPicker(YearMonth(2024, 3), null, allowed, dayRequired = true, {}, { _, _ -> })
+            DateWheelPicker(YearMonth(2024, 3), initialDay = null, allowed, dayRequired = true, {}, { _, _ -> })
         }
 
     @Test
     fun dayWheelPicked() =
         compose.screenScreenshot("date_wheel_picker_day") {
-            DateWheelPicker(YearMonth(2024, 3), 12, allowed, dayRequired = true, {}, { _, _ -> })
+            DateWheelPicker(YearMonth(2024, 3), initialDay = 12, allowed, dayRequired = true, {}, { _, _ -> })
         }
 
     @Composable

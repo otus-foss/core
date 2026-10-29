@@ -62,7 +62,7 @@ class ControlPressFeedbackScreenshotTest {
         LaunchedEffect(interaction) {
             // The feedback starts collecting in its own effect, so wait a frame before emitting.
             withFrameNanos {}
-            interaction?.let { interactions.emit(it) }
+            if (interaction != null) interactions.emit(interaction)
         }
         Box(
             Modifier
