@@ -49,6 +49,5 @@ class JmapResponseTest {
         assertFailsWith<JmapException.NotJmap> { response("""["EmailSubmission/set", {}, "other"]""")[call] }
     }
 
-    private fun response(invocations: String) =
-        parseResponse(parseObject("""{"methodResponses":[$invocations]}"""))
+    private fun response(invocations: String) = parseResponse(parseObject("""{"methodResponses":[$invocations]}"""))
 }
