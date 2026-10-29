@@ -38,7 +38,7 @@ class ContactsSupportTest {
         ).forEach { value ->
             assertEquals(ContactsCapability(), account(parseObject(value)).contacts, value)
         }
-        val withoutObject = JmapAccount("Ada", true, false, setOf(JmapCapability.CONTACTS))
+        val withoutObject = JmapAccount("Ada", isPersonal = true, isReadOnly = false, setOf(JmapCapability.CONTACTS))
         assertEquals(ContactsCapability(), withoutObject.contacts)
     }
 

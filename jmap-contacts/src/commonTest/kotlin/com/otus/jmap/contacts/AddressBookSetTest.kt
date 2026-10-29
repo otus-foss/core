@@ -8,7 +8,6 @@ import com.otus.jmap.jmapDecoding
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.jsonArray
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -36,7 +35,7 @@ class AddressBookSetTest {
                     """{"accountId": "a0x9", "create": {"k1": {"name": "Work", "isSubscribed": true}},
                     "onSuccessSetIsDefault": "#k1"}""",
                 ),
-                server.methodCalls().single().jsonArray[1],
+                server.singleCall()[1],
             )
         }
 
