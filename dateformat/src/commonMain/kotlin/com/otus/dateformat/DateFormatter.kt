@@ -17,10 +17,8 @@ public class DateFormatter(
 
     public fun format(date: LocalDate): String {
         val day = date.day.toString().padStart(TWO_DIGITS, '0')
-        val month =
-            date.month.number
-                .toString()
-                .padStart(TWO_DIGITS, '0')
+        val monthNumber = date.month.number
+        val month = monthNumber.toString().padStart(TWO_DIGITS, '0')
         val year = date.year.toString().padStart(FOUR_DIGITS, '0')
         return when (preference) {
             DateFormatPreference.DeviceLocale -> requireNotNull(localized).format(date)

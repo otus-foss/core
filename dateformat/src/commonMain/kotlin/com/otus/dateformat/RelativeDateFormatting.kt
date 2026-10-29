@@ -25,8 +25,7 @@ public fun DateFormatter.formatRelativeRange(
     separator: String = " → ",
 ): String = formatRelative(start, today) + separator + formatRelative(end, today)
 
-public fun currentLocalDate(): LocalDate =
-    Clock.System
-        .now()
-        .toLocalDateTime(TimeZone.currentSystemDefault())
-        .date
+public fun currentLocalDate(): LocalDate {
+    val now = Clock.System.now()
+    return now.toLocalDateTime(TimeZone.currentSystemDefault()).date
+}
