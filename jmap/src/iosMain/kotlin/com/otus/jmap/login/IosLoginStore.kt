@@ -69,8 +69,8 @@ public class IosLoginStore internal constructor(
 
     /** Takes ownership of the Keychain's [value] and reads it as UTF-8 text. */
     private fun foundSecret(value: CFTypeRef?): LoginSecret {
-        val data = CFBridgingRelease(value) as? NSData
-        val text = data?.let { NSString.create(it, NSUTF8StringEncoding)?.toString() }
+        val data = CFBridgingRelease(value) as? NSData ?: return LoginSecret.Unreadable()
+        val text = NSString.create(data, NSUTF8StringEncoding)?.toString()
         return text?.let { LoginSecret.Found(it) } ?: LoginSecret.Unreadable()
     }
 

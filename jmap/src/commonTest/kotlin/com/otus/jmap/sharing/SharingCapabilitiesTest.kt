@@ -5,6 +5,7 @@ import com.otus.jmap.JmapAccount
 import com.otus.jmap.JmapCapability
 import com.otus.jmap.JmapClient
 import com.otus.jmap.JmapJson
+import com.otus.jmap.JmapSession
 import com.otus.jmap.capabilityObjects
 import com.otus.jmap.fixtureServer
 import kotlinx.coroutines.test.runTest
@@ -18,8 +19,7 @@ class SharingCapabilitiesTest {
     @Test
     fun readsTheOwnerOfTheRfcExampleAccount() =
         runTest {
-            val (engine, _) = fixtureServer(SHARING_SESSION) { error("nothing reaches the API") }
-            val session = JmapClient(engine).session(SESSION_URL, ADA)
+            val session = sharingSession()
             val jane = session.accounts.getValue("u12345678")
             assertEquals(PrincipalOwner("u33084183", "P105aga511jaa"), jane.principalOwner)
             assertNull(jane.principals)
@@ -28,8 +28,7 @@ class SharingCapabilitiesTest {
     @Test
     fun findsThePrincipalsAccountAndTheCurrentUser() =
         runTest {
-            val (engine, _) = fixtureServer(SHARING_SESSION) { error("nothing reaches the API") }
-            val session = JmapClient(engine).session(SESSION_URL, ADA)
+            val session = sharingSession()
             val directory = session.accountFor(JmapCapability.PRINCIPALS)
             assertEquals("u33084183", directory)
             val principals = session.accounts.getValue("u33084183")
@@ -81,4 +80,9 @@ class SharingCapabilitiesTest {
             capabilityObjects = objects,
         )
     }
+}
+
+private suspend fun sharingSession(): JmapSession {
+    val (engine, _) = fixtureServer(SHARING_SESSION) { error("nothing reaches the API") }
+    return JmapClient(engine).session(SESSION_URL, ADA)
 }
