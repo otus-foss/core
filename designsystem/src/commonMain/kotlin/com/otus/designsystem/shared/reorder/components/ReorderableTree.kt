@@ -49,10 +49,9 @@ public fun <T> ReorderableTree(
     val depths = items.map(depth)
     val drag = remember { ReorderDrag(overhang = HALF) }
     SideEffect {
-        drag.layout(keys, 0f) { from, offset ->
-            treeDropTarget(drag.rowHeights, from, offset, nestedSpan(depths, from))
-                ?.takeIf { canDrop(from, it) }
-                ?.let { onDrop(from, it) }
+        drag.layout(keys, spacing = 0f) { from, offset ->
+            val target = treeDropTarget(drag.rowHeights, from, offset, nestedSpan(depths, from)) ?: return@layout
+            if (canDrop(from, target)) onDrop(from, target)
         }
     }
     val heights = keys.map { drag.heights[it] ?: 0 }
@@ -99,11 +98,11 @@ private fun <T> rememberTreeMoves(
         fun move(
             index: Int,
             gap: Int,
-        ): (() -> Unit)? =
-            TreeDropTarget
-                .Before(gap)
-                .takeIf { gap in 0..items.size && canDrop(index, it) }
-                ?.let { target -> { latestDrop(index, target) } }
+        ): (() -> Unit)? {
+            val target = TreeDropTarget.Before(gap)
+            if (gap !in 0..items.size || !canDrop(index, target)) return null
+            return { latestDrop(index, target) }
+        }
         items.indices.map { TreeMoves(up = move(it, it - 1), down = move(it, it + 2)) }
     }
 }

@@ -13,7 +13,7 @@ internal fun treeDropTarget(
     offset: Float,
     span: Int = 0,
 ): TreeDropTarget? {
-    val tops = rowTops(heights, 0f)
+    val tops = rowTops(heights, spacing = 0f)
     val block = from..from + span
     val center = tops[from] + offset + heights[from] * HALF
     val over = heights.indices.firstOrNull { center < tops[it] + heights[it] } ?: heights.lastIndex
@@ -32,11 +32,7 @@ internal fun treeDropTarget(
 internal fun nestedSpan(
     depths: List<Int>,
     from: Int,
-): Int =
-    depths
-        .drop(from + 1)
-        .takeWhile { it > depths[from] }
-        .size
+): Int = depths.drop(from + 1).takeWhile { it > depths[from] }.size
 
 /**
  * How far down the tree the line for [target] sits: at the top of the row below the gap, or at the
@@ -46,7 +42,7 @@ internal fun dropLineY(
     heights: List<Int>,
     target: TreeDropTarget,
 ): Float {
-    val tops = rowTops(heights, 0f)
+    val tops = rowTops(heights, spacing = 0f)
     return when (target) {
         is TreeDropTarget.Before -> tops.getOrElse(target.index) { tops.last() + heights.last() }
         is TreeDropTarget.Into -> tops[target.index] + heights[target.index]
