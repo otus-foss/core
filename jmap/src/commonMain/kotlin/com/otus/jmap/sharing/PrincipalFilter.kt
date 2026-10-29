@@ -24,12 +24,12 @@ public data class PrincipalFilter(
     public fun toFilter(): JmapFilter =
         JmapFilter.Condition(
             buildJsonObject {
-                accountIds?.let { put("accountIds", strings(it)) }
-                email?.let { put("email", JsonPrimitive(it)) }
-                name?.let { put("name", JsonPrimitive(it)) }
-                text?.let { put("text", JsonPrimitive(it)) }
-                type?.let { put("type", JsonPrimitive(it.value)) }
-                timeZone?.let { put("timeZone", JsonPrimitive(it)) }
+                if (accountIds != null) put("accountIds", strings(accountIds))
+                if (email != null) put("email", JsonPrimitive(email))
+                if (name != null) put("name", JsonPrimitive(name))
+                if (text != null) put("text", JsonPrimitive(text))
+                if (type != null) put("type", JsonPrimitive(type.value))
+                if (timeZone != null) put("timeZone", JsonPrimitive(timeZone))
             },
         )
 }
