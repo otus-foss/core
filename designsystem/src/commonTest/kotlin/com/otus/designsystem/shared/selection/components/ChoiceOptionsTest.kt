@@ -12,15 +12,16 @@ class ChoiceOptionsTest {
 
     @Test
     fun withoutAUsableDefaultEveryOptionSharesOneGroup() {
-        assertEquals(listOf(listOf("Day", "Year")), ChoiceOptions(listOf("Day", "Year"), "Day").groups)
+        assertEquals(listOf(listOf("Day", "Year")), ChoiceOptions(listOf("Day", "Year"), selected = "Day").groups)
         assertEquals(
             listOf(listOf("Day", "Year")),
-            ChoiceOptions(listOf("Day", "Year"), "Day", default = "Week").groups,
+            ChoiceOptions(listOf("Day", "Year"), selected = "Day", default = "Week").groups,
         )
     }
 
     @Test
     fun aDefaultThatIsTheOnlyOptionLeavesNoEmptyGroup() {
-        assertEquals(listOf(listOf("Device")), ChoiceOptions(listOf("Device"), "Device", default = "Device").groups)
+        val options = ChoiceOptions(listOf("Device"), selected = "Device", default = "Device")
+        assertEquals(listOf(listOf("Device")), options.groups)
     }
 }

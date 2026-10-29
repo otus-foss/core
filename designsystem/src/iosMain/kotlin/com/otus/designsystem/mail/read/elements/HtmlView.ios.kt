@@ -50,29 +50,36 @@ public actual fun HtmlView(
         remember { LinkDelegate(renderKey, onOpenLink = { openLink(it) }, onShowRemote = { showRemote?.invoke() }) }
     key(document) {
         UIKitView(
-            factory = {
-                val configuration =
-                    WKWebViewConfiguration().apply {
-                        defaultWebpagePreferences.allowsContentJavaScript = false
-                        // Each view gets a fresh store in memory, so cookies and cached responses a
-                        // message's images leave cannot follow the user to other messages.
-                        websiteDataStore = WKWebsiteDataStore.nonPersistentDataStore()
-                    }
-                WKWebView(CGRectZero.readValue(), configuration).apply {
-                    navigationDelegate = delegate
-                    setOpaque(false)
-                    if (loadRemote) {
-                        loadHTMLString(document, baseURL = null)
-                    } else {
-                        withNetworkBlock { rules ->
-                            rules?.let { configuration.userContentController.addContentRuleList(it) }
-                            loadHTMLString(document, baseURL = null)
-                        }
-                    }
-                }
-            },
+            factory = { htmlWebView(document, loadRemote, delegate) },
             modifier = modifier,
         )
+    }
+}
+
+@OptIn(ExperimentalForeignApi::class)
+private fun htmlWebView(
+    document: String,
+    loadRemote: Boolean,
+    delegate: WKNavigationDelegateProtocol,
+): WKWebView {
+    val configuration =
+        WKWebViewConfiguration().apply {
+            defaultWebpagePreferences.allowsContentJavaScript = false
+            // Each view gets a fresh store in memory, so cookies and cached responses a
+            // message's images leave cannot follow the user to other messages.
+            websiteDataStore = WKWebsiteDataStore.nonPersistentDataStore()
+        }
+    return WKWebView(CGRectZero.readValue(), configuration).apply {
+        navigationDelegate = delegate
+        setOpaque(false)
+        if (loadRemote) {
+            loadHTMLString(document, baseURL = null)
+        } else {
+            withNetworkBlock { rules ->
+                if (rules != null) configuration.userContentController.addContentRuleList(rules)
+                loadHTMLString(document, baseURL = null)
+            }
+        }
     }
 }
 
@@ -111,7 +118,8 @@ private class LinkDelegate(
  * thread. Null when WebKit cannot compile it; the policy alone still blocks remote content then.
  */
 private fun withNetworkBlock(use: (WKContentRuleList?) -> Unit) {
-    networkBlock?.let { return use(it) }
+    val cached = networkBlock
+    if (cached != null) return use(cached)
     val store = WKContentRuleListStore.defaultStore() ?: return use(null)
     store.compileContentRuleListForIdentifier(
         NETWORK_BLOCK_ID,
