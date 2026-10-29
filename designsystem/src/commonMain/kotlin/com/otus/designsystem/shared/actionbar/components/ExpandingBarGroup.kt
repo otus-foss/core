@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,6 +36,7 @@ import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_more_horiz
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.overlays.components.OptionsDivider
+import com.otus.designsystem.shared.panels.elements.darkSurface
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.MotionCurve
 import com.otus.designsystem.theme.motion.MotionSpeed
@@ -64,7 +66,7 @@ public fun ExpandingBarGroup(
         onBackCompleted = close,
     )
     // The bar sits at the bottom, so growing the group taller grows it upward.
-    Column(modifier.barSurface()) {
+    Column(modifier.darkSurface(RoundedCornerShape(ActionBarTokens.radius))) {
         AnimatedVisibility(
             open,
             enter =

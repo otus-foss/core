@@ -1,7 +1,6 @@
 package com.otus.designsystem.mail.folders.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -34,6 +33,7 @@ import com.otus.designsystem.resources.symbol_close
 import com.otus.designsystem.resources.symbol_palette
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
+import com.otus.designsystem.shared.panels.elements.darkSurface
 import com.otus.designsystem.theme.colors.FolderColor
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.feedback.NudgeTokens
@@ -57,8 +57,7 @@ public fun FolderColorNudge(
     Column(
         modifier
             .fillMaxWidth()
-            .background(OtusColors.bgDark, shape)
-            .border(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape)
+            .darkSurface(shape)
             .padding(horizontal = NudgeTokens.paddingHorizontal, vertical = NudgeTokens.paddingVertical),
         verticalArrangement = Arrangement.spacedBy(NudgeTokens.rowGap),
     ) {

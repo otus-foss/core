@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntSize
 import com.otus.designsystem.shared.controls.elements.Symbol
+import com.otus.designsystem.shared.panels.elements.darkSurface
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.MotionCurve
 import com.otus.designsystem.theme.motion.MotionSpeed
@@ -91,7 +92,7 @@ private fun ContextShell(
         // Drawn on the resizing container, so the round end follows the width as it changes.
         Modifier
             .fillMaxHeight()
-            .barSurface(pill),
+            .darkSurface(pill),
         enter = expandHorizontally(grow, Alignment.End) { circleWidth },
         exit = shrinkHorizontally(shrink, Alignment.End) { circleWidth },
     ) {

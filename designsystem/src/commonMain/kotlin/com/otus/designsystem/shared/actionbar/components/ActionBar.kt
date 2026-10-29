@@ -1,7 +1,5 @@
 package com.otus.designsystem.shared.actionbar.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -27,7 +25,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.findRootCoordinates
@@ -42,8 +39,7 @@ import com.otus.designsystem.shared.overlays.components.MenuAction
 import com.otus.designsystem.shared.pages.components.PageChrome
 import com.otus.designsystem.shared.pages.components.ReportClearance
 import com.otus.designsystem.shared.pages.components.pinnedChrome
-import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.shared.panels.elements.darkSurface
 import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 import kotlin.math.roundToInt
@@ -131,7 +127,7 @@ private fun SecondaryGroup(
         modifier
             .height(ActionBarTokens.height)
             .clip(shape)
-            .barSurface(shape),
+            .darkSurface(shape),
     ) {
         Row(
             Modifier
@@ -158,10 +154,6 @@ private fun SecondaryGroup(
         }
     }
 }
-
-/** A bar part's `bgDark` surface inside its `strokeBgDark` outline, in [shape]. */
-internal fun Modifier.barSurface(shape: Shape = RoundedCornerShape(ActionBarTokens.radius)): Modifier =
-    background(OtusColors.bgDark, shape).border(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape)
 
 /**
  * Places [bar] over the bottom of [content] at [actionBarInset]. [content] receives bottom padding

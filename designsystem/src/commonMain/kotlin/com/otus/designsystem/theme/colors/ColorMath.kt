@@ -47,6 +47,9 @@ public fun contrast(
     return (max(a, b) + CONTRAST_OFFSET) / (min(a, b) + CONTRAST_OFFSET)
 }
 
+/** `text1` or `bgDark`, whichever contrasts more with [fill], for letters and symbols drawn on it. */
+internal fun readableOn(fill: Color): Color = listOf(OtusColors.text1, OtusColors.bgDark).maxBy { contrast(it, fill) }
+
 /** The color as `#RRGGBB`, upper case. */
 public fun Color.toHex(): String = "#" + (toArgb() and RGB_MASK).toString(HEX).padStart(HEX_DIGITS, '0').uppercase()
 
