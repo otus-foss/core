@@ -45,20 +45,11 @@ class JmapAccountRepositoryTest {
                 stalwartLike(session) { body ->
                     val request = Json.parseToJsonElement(body).jsonObject
                     assertTrue(request.getValue("using").jsonArray.any { it.jsonPrimitive.content == capability })
-                    val call =
-                        request
-                            .getValue("methodCalls")
-                            .jsonArray
-                            .single()
-                            .jsonArray
+                    val calls = request.getValue("methodCalls").jsonArray
+                    val call = calls.single().jsonArray
                     assertEquals("TaskList/get", call[0].jsonPrimitive.content)
-                    assertEquals(
-                        "d333333",
-                        call[1]
-                            .jsonObject
-                            .getValue("accountId")
-                            .jsonPrimitive.content,
-                    )
+                    val arguments = call[1].jsonObject
+                    assertEquals("d333333", arguments.getValue("accountId").jsonPrimitive.content)
                     """{"methodResponses": [["TaskList/get", {"state": "t", "list": [{"id": "a"}]}, "c0"]]}"""
                 }
             val client = JmapClient(engine)
@@ -129,30 +120,15 @@ class JmapAccountRepositoryTest {
         runTest {
             val engine =
                 MockEngine { request ->
-                    when (request.url.host) {
-                        "mail.example.org" -> {
-                            respond(
-                                "",
-                                HttpStatusCode.TemporaryRedirect,
-                                headersOf(HttpHeaders.Location, "https://login.example.net/s"),
-                            )
-                        }
-
-                        else -> {
-                            if (request.url.encodedPath == "/s") {
-                                respond(
-                                    STALWART_SESSION,
-                                    HttpStatusCode.OK,
-                                    headersOf(HttpHeaders.ContentType, "application/json"),
-                                )
-                            } else {
-                                respond(
-                                    mailboxes,
-                                    HttpStatusCode.OK,
-                                    headersOf(HttpHeaders.ContentType, "application/json"),
-                                )
-                            }
-                        }
+                    if (request.url.host == "mail.example.org") {
+                        respond(
+                            "",
+                            HttpStatusCode.TemporaryRedirect,
+                            headersOf(HttpHeaders.Location, "https://login.example.net/s"),
+                        )
+                    } else {
+                        val body = if (request.url.encodedPath == "/s") STALWART_SESSION else mailboxes
+                        respond(body, HttpStatusCode.OK, headersOf(HttpHeaders.ContentType, "application/json"))
                     }
                 }
             val confirm = assertIs<ConnectOutcome.ConfirmHost>(repository(engine).connect(draft))

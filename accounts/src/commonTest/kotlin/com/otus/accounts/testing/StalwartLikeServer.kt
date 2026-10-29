@@ -28,12 +28,14 @@ fun stalwartLike(
 ): MockEngine =
     MockEngine { request ->
         val json = headersOf(HttpHeaders.ContentType, "application/json")
+        val discovery = request.url.encodedPath == "/.well-known/jmap"
+        val authorized = request.headers[HttpHeaders.Authorization] == ADA_SECRET_HEADER
         when {
-            request.headers[HttpHeaders.Authorization] != ADA_SECRET_HEADER -> {
+            !authorized -> {
                 respond("", HttpStatusCode.Unauthorized)
             }
 
-            request.url.encodedPath == "/.well-known/jmap" -> {
+            discovery -> {
                 respond("", HttpStatusCode.TemporaryRedirect, headersOf(HttpHeaders.Location, "/jmap/session"))
             }
 
@@ -42,7 +44,11 @@ fun stalwartLike(
             }
 
             request.url.encodedPath == "/jmap/" -> {
-                respond(api((request.body as TextContent).text), HttpStatusCode.OK, json)
+                respond(
+                    api((request.body as TextContent).text),
+                    HttpStatusCode.OK,
+                    json,
+                )
             }
 
             else -> {

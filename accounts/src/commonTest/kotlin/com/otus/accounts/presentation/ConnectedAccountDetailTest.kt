@@ -34,10 +34,7 @@ class ConnectedAccountDetailTest {
                 "mail.example.org",
                 emailAddresses = listOf("Ada@example.org", "work@other.example", "work@other.example", "*@example.org"),
             )
-        assertEquals(
-            "*@example.org\nmail.example.org",
-            connectedAccountDetail(account),
-        )
+        assertEquals("*@example.org\nmail.example.org", connectedAccountDetail(account))
     }
 
     @Test
