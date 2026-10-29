@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -21,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_unfold_more
 import com.otus.designsystem.shared.controls.elements.Symbol
@@ -59,9 +61,7 @@ public fun ThreadStrip(
             ThreadSummary(entries, summary, detail)
         } else {
             entries.forEachIndexed { index, entry ->
-                if (index >
-                    0
-                ) {
+                if (index > 0) {
                     Box(Modifier.fillMaxWidth().height(PanelTokens.borderWidth).background(OtusColors.bgLight))
                 }
                 ThreadRow(entry)
@@ -72,15 +72,7 @@ public fun ThreadStrip(
 
 @Composable
 private fun ThreadRow(entry: ThreadEntry) {
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .heightIn(
-                min = ThreadTokens.rowHeight,
-            ).padding(horizontal = ActionBarTokens.contextInset),
-        horizontalArrangement = Arrangement.spacedBy(ActionBarTokens.contextInset),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
+    StripLine(ThreadTokens.rowHeight) {
         PersonAvatar(entry.avatar, ThreadTokens.avatarSize)
         Text(
             entry.name,
@@ -100,15 +92,7 @@ private fun ThreadSummary(
     summary: String,
     detail: String,
 ) {
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .heightIn(
-                min = ThreadTokens.summaryHeight,
-            ).padding(horizontal = ActionBarTokens.contextInset),
-        horizontalArrangement = Arrangement.spacedBy(ActionBarTokens.contextInset),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
+    StripLine(ThreadTokens.summaryHeight) {
         AvatarStack(entries.take(ThreadTokens.ROW_LIMIT).map { it.avatar }, ring = OtusColors.bgDark)
         Column(Modifier.weight(1f)) {
             Text(
@@ -127,10 +111,27 @@ private fun ThreadSummary(
                 overflow = TextOverflow.Ellipsis,
             )
         }
-        CompositionLocalProvider(
-            LocalContentColor provides OtusColors.text2,
-        ) { Symbol(Res.drawable.symbol_unfold_more) }
+        CompositionLocalProvider(LocalContentColor provides OtusColors.text2) {
+            Symbol(Res.drawable.symbol_unfold_more)
+        }
     }
+}
+
+/** One line of the strip, at least [minHeight] tall, its parts spaced like the action bar's context. */
+@Composable
+private fun StripLine(
+    minHeight: Dp,
+    content: @Composable RowScope.() -> Unit,
+) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .heightIn(min = minHeight)
+            .padding(horizontal = ActionBarTokens.contextInset),
+        horizontalArrangement = Arrangement.spacedBy(ActionBarTokens.contextInset),
+        verticalAlignment = Alignment.CenterVertically,
+        content = content,
+    )
 }
 
 /** A message in the thread sheet: avatar, sender, date, and one line of its text. */

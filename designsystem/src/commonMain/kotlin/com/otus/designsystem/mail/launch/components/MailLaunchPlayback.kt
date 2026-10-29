@@ -22,20 +22,18 @@ internal class MailLaunchPlayback {
 
     /** Plays the intro, then the loop from its settled pose, until cancelled. */
     suspend fun play(scale: Float) {
-        run(1f, scale)
+        playToEnd(scale)
         timeline = MailLaunchTimeline.Loop
         progress.snapTo(MailLaunchTimeline.LOOP_SETTLED)
         while (true) {
-            run(1f, scale)
+            playToEnd(scale)
             progress.snapTo(0f)
         }
     }
 
-    private suspend fun run(
-        to: Float,
-        scale: Float,
-    ) {
-        val millis = Motion.scaled(timeline.millis * (to - fraction), scale)
-        progress.animateTo(to, TweenSpec(millis, easing = LinearEasing))
+    /** Plays the rest of [timeline], from [fraction] to its end. */
+    private suspend fun playToEnd(scale: Float) {
+        val millis = Motion.scaled(timeline.millis * (1f - fraction), scale)
+        progress.animateTo(1f, TweenSpec(millis, easing = LinearEasing))
     }
 }

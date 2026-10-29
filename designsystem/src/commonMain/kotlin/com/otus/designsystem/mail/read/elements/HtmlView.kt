@@ -4,9 +4,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.LayoutDirection
 import com.otus.designsystem.theme.colors.OtusPalette
+import com.otus.designsystem.theme.colors.toHex
 import kotlin.math.roundToInt
 
 /**
@@ -130,11 +130,7 @@ private val COLOR_ATTRIBUTE = Regex("""(?i)<[^>]*\s(?:bg)?color\s*=""")
 private val STYLES = Regex("""(?is)<style\b[^>]*>(.*?)</style>|\sstyle\s*=\s*(?:"([^"]*)"|'([^']*)')""")
 private val CSS_COLOR = Regex("""(?i)(?:^|[\s;{])(?:color|background(?:-color)?)\s*:""")
 
-internal fun Color.css(): String = "#" + (toArgb() and RGB).toString(HEX).padStart(RGB_DIGITS, '0')
-
-private const val RGB = 0xFFFFFF
-private const val HEX = 16
-private const val RGB_DIGITS = 6
+internal fun Color.css(): String = toHex().lowercase()
 
 /** An HTML `<link>` start tag: the tag name ends at whitespace, `/`, or `>`, in any case. */
 private val LINK_TAG = Regex("<link(?=[\\s/>])", RegexOption.IGNORE_CASE)

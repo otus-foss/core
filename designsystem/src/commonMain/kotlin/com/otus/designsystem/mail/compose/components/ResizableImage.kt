@@ -103,10 +103,7 @@ public fun ResizableImage(
         modifier
             .zIndex(if (selected) 1f else 0f)
             .onGloballyPositioned {
-                if (!dragging.value) {
-                    topHidden =
-                        it.boundsInWindow().top > it.positionInWindow().y + 1f
-                }
+                if (!dragging.value) topHidden = it.boundsInWindow().top > it.positionInWindow().y + 1f
             }.then(if (dragging.value) Modifier.sizeGuides(sizing, labelsBelow = topHidden) else Modifier),
     ) {
         Image(
@@ -155,6 +152,10 @@ private fun ResizeHandle(
     val haptics = LocalHapticFeedback.current
     val current by rememberUpdatedState(sizing)
     var dragged by remember { mutableStateOf<Dp?>(null) }
+    val endDrag = {
+        dragged = null
+        dragging.value = false
+    }
     val half = PanelTokens.touchTarget / 2
     Box(
         modifier
@@ -164,14 +165,8 @@ private fun ResizeHandle(
             .pointerInput(Unit) {
                 detectDragGestures(
                     onDragStart = { dragging.value = true },
-                    onDragEnd = {
-                        dragged = null
-                        dragging.value = false
-                    },
-                    onDragCancel = {
-                        dragged = null
-                        dragging.value = false
-                    },
+                    onDragEnd = endDrag,
+                    onDragCancel = endDrag,
                 ) { change, drag ->
                     change.consume()
                     val raw = ((dragged ?: current.width) + with(density) { drag.x.toDp() }).coerceIn(current.range)
