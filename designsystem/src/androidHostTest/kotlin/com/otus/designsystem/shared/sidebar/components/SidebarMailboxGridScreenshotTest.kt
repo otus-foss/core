@@ -1,6 +1,5 @@
 package com.otus.designsystem.shared.sidebar.components
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -14,8 +13,8 @@ import com.otus.designsystem.resources.symbol_inbox
 import com.otus.designsystem.resources.symbol_report
 import com.otus.designsystem.resources.symbol_send
 import com.otus.designsystem.screenshot.screenshot
-import com.otus.designsystem.shared.sidebar.elements.SidebarInboxEntry
 import com.otus.designsystem.shared.sidebar.elements.SidebarMailboxTile
+import com.otus.designsystem.shared.sidebar.elements.SidebarTileSize
 import org.jetbrains.compose.resources.DrawableResource
 import org.junit.Rule
 import org.junit.runner.RunWith
@@ -32,25 +31,51 @@ class SidebarMailboxGridScreenshotTest {
     val compose = createComposeRule()
 
     @Test
-    fun inboxOverTiles() =
+    fun tilesOfEverySize() =
         compose.screenshot("sidebar_mailbox_grid") {
-            Column(Modifier.width(320.dp)) {
-                SidebarInboxEntry("Inbox", Res.drawable.symbol_inbox, selected = true, {}, count = "42")
-                SidebarMailboxGrid(TILES) { (label, icon, count) ->
-                    SidebarMailboxTile(label, icon, selected = false, {}, count = count)
-                }
+            SidebarMailboxGrid(TILES, Modifier.width(320.dp), sizeOf = { it.size }) { tile ->
+                SidebarMailboxTile(
+                    tile.label,
+                    tile.icon,
+                    selected = tile.label == "Inbox",
+                    {},
+                    count = tile.count,
+                    size = tile.size,
+                )
             }
         }
 
+    @Test
+    fun editorShowsHandlesOnEveryTile() =
+        compose.screenshot("sidebar_tile_editor") {
+            SidebarTileEditor(
+                TILES,
+                tileOf = { EditableTile(it.label, it.label, it.size) },
+                onMove = { _, _ -> },
+                onResize = { _, _ -> },
+                onRemove = {},
+                modifier = Modifier.width(344.dp),
+            ) { tile -> SidebarMailboxTile(tile.label, tile.icon, selected = false, {}, size = tile.size) }
+        }
+
+    private data class Tile(
+        val label: String,
+        val icon: DrawableResource,
+        val count: String? = null,
+        val size: SidebarTileSize = SidebarTileSize.Small,
+    )
+
     private companion object {
+        // Junk is too wide for the rest of its row, so it starts the next and leaves a gap.
         val TILES =
-            listOf<Triple<String, DrawableResource, String?>>(
-                Triple("Read later", Res.drawable.symbol_bookmark, "2"),
-                Triple("Drafts", Res.drawable.symbol_draft, "1"),
-                Triple("Sent", Res.drawable.symbol_send, null),
-                Triple("Archive", Res.drawable.symbol_archive, "5"),
-                Triple("Junk", Res.drawable.symbol_report, "4"),
-                Triple("Trash", Res.drawable.symbol_delete, null),
+            listOf(
+                Tile("Inbox", Res.drawable.symbol_inbox, "42", SidebarTileSize.Full),
+                Tile("Read later", Res.drawable.symbol_bookmark, "2"),
+                Tile("Drafts", Res.drawable.symbol_draft, "1", SidebarTileSize.Wide),
+                Tile("Sent", Res.drawable.symbol_send),
+                Tile("Archive", Res.drawable.symbol_archive, "5"),
+                Tile("Junk", Res.drawable.symbol_report, "4", SidebarTileSize.Wide),
+                Tile("Trash", Res.drawable.symbol_delete),
             )
     }
 }
