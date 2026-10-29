@@ -219,8 +219,7 @@ private fun ToastContent(
         if (!reachable) {
             Box(
                 Modifier.matchParentSize().clickable(interactionSource = null, indication = null) {
-                    state.expanded =
-                        true
+                    state.expanded = true
                 },
             )
         }

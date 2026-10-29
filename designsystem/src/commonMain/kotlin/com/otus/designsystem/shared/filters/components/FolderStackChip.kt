@@ -32,7 +32,7 @@ public fun FolderStackChip(
     modifier: Modifier = Modifier,
     more: String? = null,
 ) {
-    Chip(null, onClick, modifier.semantics { contentDescription = description }, selected = true) {
+    Chip(label = null, onClick, modifier.semantics { contentDescription = description }, selected = true) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(PanelTokens.iconGap),
             verticalAlignment = Alignment.CenterVertically,
@@ -43,7 +43,9 @@ public fun FolderStackChip(
                 }
             }
             Text(label.annotated(), style = panelTextStyle().copy(color = Color.Unspecified), maxLines = 1)
-            more?.let { Text(it, style = panelTextStyle(), color = OtusColors.text2, fontSize = PanelTokens.countSize) }
+            if (more != null) {
+                Text(more, style = panelTextStyle(), color = OtusColors.text2, fontSize = PanelTokens.countSize)
+            }
         }
     }
 }

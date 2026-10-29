@@ -185,7 +185,7 @@ private object LastAtEnd : Arrangement.Horizontal {
     }
 }
 
-private fun Modifier.chipAction(
+internal fun Modifier.chipAction(
     interactions: MutableInteractionSource,
     selected: Boolean?,
     enabled: Boolean,

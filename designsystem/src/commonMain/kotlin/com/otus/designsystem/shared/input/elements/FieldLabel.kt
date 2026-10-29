@@ -40,7 +40,7 @@ public fun FieldLabel(
             fontSize = SheetTokens.detailSize,
             color = OtusColors.text2,
         )
-        action?.let { Box(Modifier.overhang()) { it() } }
+        if (action != null) Box(Modifier.overhang()) { action() }
     }
 }
 
