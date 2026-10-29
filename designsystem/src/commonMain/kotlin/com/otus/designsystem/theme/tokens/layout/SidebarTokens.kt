@@ -44,8 +44,20 @@ internal object SidebarTokens {
     val badgeRing = 2.dp
     val badgeSize = 10.sp
 
-    /** The gap between mailbox tiles, and between the tiles and the row above them. */
+    /** The gap between mailbox tiles. */
     val tileGap = 8.dp
+
+    /** In the tile editor, the minus on a tile's top-start corner and its icon. */
+    val removeBadge = 22.dp
+    val removeIcon = 16.dp
+
+    /** In the tile editor, the arc on a tile's bottom-end corner that resizes it. */
+    val resizeArc = 10.dp
+    val resizeStroke = 3.dp
+    val resizeInset = 8.dp
+
+    /** In the tile editor, a lifted tile grows by this factor. */
+    const val LIFTED_SCALE = 1.04f
 
     /** The owl in the footer, at the sidebar's bottom edge. */
     val owlHeight = 48.dp
