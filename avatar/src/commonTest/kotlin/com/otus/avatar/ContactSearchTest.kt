@@ -87,13 +87,8 @@ class ContactSearchTest {
     fun unreadableMatchesAndMissingImagesDoNotHideLaterPhotos() =
         runTest {
             val fixture = SearchFixture(pageSize = 1, count = 3, matchAt = 0)
-            assertContentEquals(
-                byteArrayOf(1),
-                fixture
-                    .search { card ->
-                        if (card.id == "c2") AvatarImage(byteArrayOf(1)) else null
-                    }?.bytes,
-            )
+            val image = fixture.search { card -> if (card.id == "c2") AvatarImage(byteArrayOf(1)) else null }
+            assertContentEquals(byteArrayOf(1), image?.bytes)
             assertEquals(listOf(0L, 1L, 2L), fixture.positions)
         }
 
@@ -145,12 +140,8 @@ private class SearchFixture(
                         } else {
                             beforePage()
                             val body = (request.body as TextContent).text
-                            val calls =
-                                JmapJson
-                                    .parseToJsonElement(body)
-                                    .jsonObject
-                                    .getValue("methodCalls")
-                                    .jsonArray
+                            val requestJson = JmapJson.parseToJsonElement(body).jsonObject
+                            val calls = requestJson.getValue("methodCalls").jsonArray
                             val arguments = calls.first().jsonArray[1].jsonObject
                             filters += arguments.getValue("filter")
                             val position =

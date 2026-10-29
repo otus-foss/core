@@ -85,7 +85,8 @@ public class JmapOwnAvatars(
                 else -> SetMethod(CardType, account, create = newCard(email, name, books, avatar, photo))
             }
         val result = connection.call(method)
-        result.firstError?.let { error ->
+        val error = result.firstError
+        if (error != null) {
             val reason = if (error.type == "forbidden") OwnAvatarFailure.ReadOnly else OwnAvatarFailure.Failed
             throw OwnAvatarException(reason, IllegalStateException(error.description ?: error.type))
         }

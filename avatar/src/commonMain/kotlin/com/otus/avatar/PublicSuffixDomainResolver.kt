@@ -15,7 +15,14 @@ public class PublicSuffixDomainResolver(
     override suspend fun resolve(host: String): String? {
         val parsed =
             lock.withLock {
-                rules ?: withContext(Dispatchers.Default) { PublicSuffixRules(loadRules()) }.also { rules = it }
+                val cached = rules
+                if (cached != null) {
+                    cached
+                } else {
+                    val loaded = withContext(Dispatchers.Default) { PublicSuffixRules(loadRules()) }
+                    rules = loaded
+                    loaded
+                }
             }
         return parsed.registrableDomain(host)
     }
@@ -57,9 +64,8 @@ internal class PublicSuffixRules(
 }
 
 /** The rule on a list line: its first word, lowercased. Comment lines start with `//`. */
-private fun ruleOf(line: String): String =
-    line
-        .trim()
-        .substringBefore(' ')
-        .substringBefore('\t')
-        .lowercase()
+private fun ruleOf(line: String): String {
+    val trimmed = line.trim()
+    val word = trimmed.substringBefore(' ').substringBefore('\t')
+    return word.lowercase()
+}

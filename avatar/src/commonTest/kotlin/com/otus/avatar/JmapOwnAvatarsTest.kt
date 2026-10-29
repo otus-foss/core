@@ -32,13 +32,9 @@ class JmapOwnAvatarsTest {
             server.avatars.save("ada", "ada@example.org", "Ada", photo)
             val patch = server.update()
             assertEquals(setOf("media"), patch.keys)
-            val media =
-                patch
-                    .getValue("media")
-                    .jsonObject
-                    .getValue(AVATAR_PHOTO_KEY)
-                    .jsonObject
-            assertEquals(JsonPrimitive("data:image/png;base64,AQID"), media["uri"])
+            val media = patch.getValue("media").jsonObject
+            val savedPhoto = media.getValue(AVATAR_PHOTO_KEY).jsonObject
+            assertEquals(JsonPrimitive("data:image/png;base64,AQID"), savedPhoto["uri"])
         }
 
     @Test
@@ -80,13 +76,8 @@ class JmapOwnAvatarsTest {
         runTest {
             val server = SelfCardServer(card = null)
             server.avatars.save("ada", "Ada@Example.org", "Ada", letters)
-            val created =
-                server
-                    .set()
-                    .getValue("create")
-                    .jsonObject.values
-                    .single()
-                    .jsonObject
+            val creations = server.set().getValue("create").jsonObject
+            val created = creations.values.single().jsonObject
             assertEquals("""{"own":true}""", created.getValue("addressBookIds").toString())
             assertTrue("ada@example.org" in created.getValue("emails").toString())
             assertEquals(letters.style, avatarStyleIn(created["vCard"]))
@@ -161,10 +152,10 @@ class JmapOwnAvatarsTest {
  * get by its id returns.
  */
 private class SelfCardServer(
-    card: String?,
-    books: String = "$OWN_BOOK,$SHARED_BOOK",
+    private val card: String?,
+    private val books: String = "$OWN_BOOK,$SHARED_BOOK",
     /** A fixed answer to every set; by default each set is answered with exactly what it asked. */
-    setResult: String? = null,
+    private val setResult: String? = null,
 ) {
     val sets = mutableListOf<JsonObject>()
     private var made: String? = null
@@ -175,40 +166,12 @@ private class SelfCardServer(
                 val json = headersOf(HttpHeaders.ContentType, "application/json")
                 if (request.url.encodedPath == "/jmap/session") return@addHandler respond(SESSION, headers = json)
                 val body = (request.body as TextContent).text
-                val calls =
-                    Json
-                        .parseToJsonElement(body)
-                        .jsonObject
-                        .getValue("methodCalls")
-                        .jsonArray
+                val requestJson = Json.parseToJsonElement(body).jsonObject
+                val calls = requestJson.getValue("methodCalls").jsonArray
                 val responses =
                     calls.joinToString(",") { call ->
                         val (name, arguments, id) = call.jsonArray
-                        val result =
-                            when (val method = (name as JsonPrimitive).content) {
-                                "AddressBook/get" -> {
-                                    """{"list":[$books]}"""
-                                }
-
-                                "ContactCard/query" -> {
-                                    """{"ids":[${if (card == null) "" else "\"c\""}]}"""
-                                }
-
-                                "ContactCard/get" -> {
-                                    val byId = arguments.jsonObject["ids"] is JsonArray
-                                    """{"list":[${(if (byId) made else card).orEmpty()}]}"""
-                                }
-
-                                "ContactCard/set" -> {
-                                    sets += arguments.jsonObject
-                                    if ("create" in arguments.jsonObject) made = MADE_CARD
-                                    setResult ?: accepted(arguments.jsonObject)
-                                }
-
-                                else -> {
-                                    error("Unexpected $method")
-                                }
-                            }
+                        val result = result((name as JsonPrimitive).content, arguments.jsonObject)
                         """[$name,$result,$id]"""
                     }
                 respond("""{"methodResponses":[$responses]}""", headers = json)
@@ -218,14 +181,35 @@ private class SelfCardServer(
     val avatars =
         JmapOwnAvatars(JmapConnections(JmapClient(engine), logins), logins, AvatarService()) { AvatarOptions() }
 
+    private fun result(
+        method: String,
+        arguments: JsonObject,
+    ): String =
+        when (method) {
+            "AddressBook/get" -> """{"list":[$books]}"""
+            "ContactCard/query" -> """{"ids":[${if (card == null) "" else "\"c\""}]}"""
+            "ContactCard/get" -> getResult(arguments)
+            "ContactCard/set" -> setResult(arguments)
+            else -> error("Unexpected $method")
+        }
+
+    private fun getResult(arguments: JsonObject): String {
+        val byId = arguments["ids"] is JsonArray
+        return """{"list":[${(if (byId) made else card).orEmpty()}]}"""
+    }
+
+    private fun setResult(arguments: JsonObject): String {
+        sets += arguments
+        if ("create" in arguments) made = MADE_CARD
+        return setResult ?: accepted(arguments)
+    }
+
     fun set(): JsonObject = sets.single()
 
-    fun update(): JsonObject =
-        set()
-            .getValue("update")
-            .jsonObject
-            .getValue("c")
-            .jsonObject
+    fun update(): JsonObject {
+        val updates = set().getValue("update").jsonObject
+        return updates.getValue("c").jsonObject
+    }
 }
 
 private const val ADA_EMAIL = """"emails":{"e":{"address":"ada@example.org"}}"""
