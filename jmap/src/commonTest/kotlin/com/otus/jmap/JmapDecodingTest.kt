@@ -3,7 +3,6 @@ package com.otus.jmap
 import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.jsonObject
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -20,12 +19,7 @@ class JmapDecodingTest {
             }
         val call = JmapRequestBuilder().call(method)
         val response =
-            parseResponse(
-                JmapJson
-                    .parseToJsonElement(
-                        """{"methodResponses":[["Core/echo",{"hello":{}},"c0"]],"sessionState":"s1"}""",
-                    ).jsonObject,
-            )
+            parseResponse(parseObject("""{"methodResponses":[["Core/echo",{"hello":{}},"c0"]],"sessionState":"s1"}"""))
         assertFailsWith<JmapException.NotJmap> { response[call] }
         assertFailsWith<JmapException.NotJmap> { jmapDecoding { emptyMap<String, String>().getValue("missing") } }
     }
@@ -62,11 +56,10 @@ class JmapDecodingTest {
     ): QueryResult =
         jmapDecoding {
             QueryMethod(MAILBOX, "d1").decode(
-                JmapJson
-                    .parseToJsonElement(
-                        """{"accountId":"d1","queryState":"q1","canCalculateChanges":false,
-            "position":$position,"ids":[],"total":$total}""",
-                    ).jsonObject,
+                parseObject(
+                    """{"accountId":"d1","queryState":"q1","canCalculateChanges":false,
+                    "position":$position,"ids":[],"total":$total}""",
+                ),
             )
         }
 }

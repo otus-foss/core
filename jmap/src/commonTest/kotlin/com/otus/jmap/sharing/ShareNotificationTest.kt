@@ -4,16 +4,15 @@ import com.otus.jmap.GetMethod
 import com.otus.jmap.GetResult
 import com.otus.jmap.JmapCapability
 import com.otus.jmap.JmapException
-import com.otus.jmap.JmapJson
 import com.otus.jmap.JmapSort
 import com.otus.jmap.QueryMethod
 import com.otus.jmap.SetMethod
 import com.otus.jmap.jmapDecoding
+import com.otus.jmap.parseObject
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.jsonObject
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -145,7 +144,5 @@ class ShareNotificationTest {
     }
 
     private fun get(body: String): GetResult<ShareNotification> =
-        jmapDecoding {
-            GetMethod(ShareNotificationType, "u33084183").decode(JmapJson.parseToJsonElement(body).jsonObject)
-        }
+        jmapDecoding { GetMethod(ShareNotificationType, "u33084183").decode(parseObject(body)) }
 }

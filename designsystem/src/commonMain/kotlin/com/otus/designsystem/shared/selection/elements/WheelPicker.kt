@@ -35,6 +35,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
@@ -72,13 +73,13 @@ internal fun WheelPicker(
     BoxWithConstraints(modifier.fillMaxWidth()) {
         val density = LocalDensity.current
         val rowHeight = maxOf(PanelTokens.touchTarget, with(density) { WheelTokens.lineHeight.toDp() })
-        val padding = ((maxHeight - rowHeight) / 2).coerceAtLeast(WheelTokens.zeroInset)
+        val padding = ((maxHeight - rowHeight) / 2).coerceAtLeast(0.dp)
         LazyColumn(
             Modifier
                 .fillMaxSize()
                 .selectableGroup()
                 .semantics { contentDescription = "$title choices" }
-                .wheelGuides(rowHeight.value * density.density),
+                .wheelGuides(with(density) { rowHeight.toPx() }),
             state = scroll,
             contentPadding = PaddingValues(vertical = padding),
             flingBehavior = rememberSnapFlingBehavior(scroll),

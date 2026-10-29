@@ -52,21 +52,21 @@ public class ContextPanelScope internal constructor(
             DisposableEffect(itemKey) { onDispose { geometry.removeItem(itemKey) } }
             CompositionLocalProvider(
                 LocalControlVisualBounds provides { geometry.trackItem(itemKey, it, visibility) },
-            ) {
-                content()
-            }
+                content = content,
+            )
         }
     }
 
     /**
-     * Stretches a chip, such as a [PickerChip][com.otus.designsystem.shared.selection.components.PickerChip], across
-     * the rail's visible width.
+     * Stretches a chip, such as a
+     * [PickerChip][com.otus.designsystem.shared.selection.components.PickerChip], across the rail's
+     * visible width.
      */
     public fun Modifier.fillRail(): Modifier =
         layout { measurable, constraints ->
-            val width = geometry.railWidth.takeIf { it > 0 }
-            val placeable =
-                measurable.measure(width?.let { constraints.copy(minWidth = it, maxWidth = it) } ?: constraints)
+            val width = geometry.railWidth
+            val fitted = if (width > 0) constraints.copy(minWidth = width, maxWidth = width) else constraints
+            val placeable = measurable.measure(fitted)
             layout(placeable.width, placeable.height) { placeable.place(0, 0) }
         }
 
@@ -137,9 +137,7 @@ internal fun PanelChipRail(
         Row(
             Modifier.fillMaxWidth().horizontalScroll(scroll, overscrollEffect = null),
             horizontalArrangement = Arrangement.spacedBy(PanelTokens.chipGap),
-        ) {
-            content()
-        }
+        ) { content() }
     }
 }
 

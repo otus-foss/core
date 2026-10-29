@@ -32,11 +32,7 @@ internal class AvatarLookupCache(
             var owner = false
             val lookup =
                 lock.withLock {
-                    entries
-                        .remove(key)
-                        ?.also { entries[key] = it }
-                        ?.takeIf(::fresh)
-                        ?.let { return it }
+                    recent(key)?.takeIf { it.isFresh(now(), lifetime) }?.let { return it }
                     if (started != generation) {
                         owner = true
                         Lookup(started)
@@ -114,17 +110,23 @@ internal class AvatarLookupCache(
                 storageLock.withLock {
                     if (lock.withLock { generation == lookup.generation }) peekStored(key) else null
                 }
-            if (saved != null && fresh(saved)) return saved.also { result = it }
+            if (saved != null && saved.isFresh(now(), lifetime)) {
+                result = saved
+                return saved
+            }
             // A failed or empty fetch keeps the stale result rather than dropping a known avatar.
             val entry = (fetch() ?: saved)?.copy(created = now()) ?: StoredAvatar(null, now())
             storageLock.withLock {
                 val current =
                     lock.withLock {
-                        (generation == lookup.generation).also { if (it) remember(key, entry) }
+                        val current = generation == lookup.generation
+                        if (current) remember(key, entry)
+                        current
                     }
                 if (current) store.write(key, entry)
             }
-            return entry.also { result = it }
+            result = entry
+            return entry
         } finally {
             withContext(NonCancellable) {
                 lock.withLock { if (pending[key] === lookup) pending.remove(key) }
@@ -134,15 +136,15 @@ internal class AvatarLookupCache(
     }
 
     /** Storage lock held; metadata lock never covers disk IO or network work. */
-    private suspend fun peekStored(key: AvatarCacheKey): StoredAvatar? =
-        lock.withLock { entries.remove(key)?.also { entries[key] = it } }
-            ?: store.read(key)?.also { lock.withLock { remember(key, it) } }
-
-    private fun fresh(entry: StoredAvatar): Boolean {
-        val age = now() - entry.created
-        val ttl = if (entry.image == null && entry.style == null) minOf(lifetime, MISS_LIFETIME) else lifetime
-        return age >= 0 && age < ttl
+    private suspend fun peekStored(key: AvatarCacheKey): StoredAvatar? {
+        lock.withLock { recent(key) }?.let { return it }
+        val stored = store.read(key)
+        if (stored != null) lock.withLock { remember(key, stored) }
+        return stored
     }
+
+    /** The entry for [key], moved to the end so the least recently used one is evicted first. */
+    private fun recent(key: AvatarCacheKey): StoredAvatar? = entries.remove(key)?.also { entries[key] = it }
 
     private fun remember(
         key: AvatarCacheKey,
@@ -159,9 +161,19 @@ internal class AvatarLookupCache(
     )
 
     private companion object {
-        const val MISS_LIFETIME = 5 * 60 * 1000L
-
         /** A creation time old enough that the record never counts as fresh. */
         const val EXPIRED = 0L
     }
 }
+
+/** Whether this entry is younger than [lifetime] at [now], or within five minutes for a miss. */
+private fun StoredAvatar.isFresh(
+    now: Long,
+    lifetime: Long,
+): Boolean {
+    val age = now - created
+    val ttl = if (image == null && style == null) minOf(lifetime, MISS_LIFETIME) else lifetime
+    return age >= 0 && age < ttl
+}
+
+private const val MISS_LIFETIME = 5 * 60 * 1000L

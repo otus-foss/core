@@ -162,10 +162,7 @@ private fun Modifier.fadeOut(): Modifier {
     return graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen).drawWithContent {
         drawContent()
         drawRect(
-            Brush.verticalGradient(
-                ReadTokens.QUOTE_FADE_START to opaque,
-                1f to opaque.copy(alpha = 0f),
-            ),
+            Brush.verticalGradient(ReadTokens.QUOTE_FADE_START to opaque, 1f to opaque.copy(alpha = 0f)),
             blendMode = BlendMode.DstIn,
         )
     }

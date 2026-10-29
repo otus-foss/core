@@ -57,9 +57,8 @@ public fun ContactRow(
  * A person or group in a contact list, on an [EntryCard] as mail is in the inbox: the [avatar],
  * the [title] over a `text2` [subtitle], then its [end]: a detail such as "+1" for more
  * addresses and a pill, such as the shared address book the card comes from. [taps] says what a
- * tap and a hold do. While
- * [selection] is not null the list is selecting, and a selected entry turns accent with a check in
- * place of the avatar.
+ * tap and a hold do. While [selection] is not null the list is selecting, and a selected entry
+ * turns accent with a check in place of the avatar.
  */
 @Composable
 public fun ContactEntry(

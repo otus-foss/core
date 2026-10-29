@@ -1,10 +1,9 @@
 package com.otus.designsystem.shared.dates.components
 
-import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
-import kotlinx.datetime.minus
-import kotlinx.datetime.plus
+import kotlinx.datetime.YearMonth
+import kotlinx.datetime.yearMonth
 
 /** Valid wheel choices within the caller's inclusive date interval. */
 internal class DatePickerBounds(
@@ -25,10 +24,9 @@ internal class DatePickerBounds(
         year: Int,
         month: Int,
     ): IntRange {
-        val firstOfMonth = LocalDate(year, month, 1)
-        val lastOfMonth = firstOfMonth.plus(1, DateTimeUnit.MONTH).minus(1, DateTimeUnit.DAY)
-        val first = if (year == minDate.year && month == minDate.month.ordinal + 1) minDate.day else 1
-        val last = if (year == maxDate.year && month == maxDate.month.ordinal + 1) maxDate.day else lastOfMonth.day
+        val shown = YearMonth(year, month)
+        val first = if (shown == minDate.yearMonth) minDate.day else 1
+        val last = if (shown == maxDate.yearMonth) maxDate.day else shown.numberOfDays
         return first..last
     }
 }

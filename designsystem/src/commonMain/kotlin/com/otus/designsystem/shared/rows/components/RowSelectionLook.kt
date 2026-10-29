@@ -29,8 +29,8 @@ import com.otus.designsystem.theme.tokens.rows.InboxTokens
  */
 @Composable
 internal fun Modifier.selectionTint(selection: RowSelection?): Modifier {
-    val top = selectionCorner(selection?.joinedAbove == true)
-    val bottom = selectionCorner(selection?.joinedBelow == true)
+    val top = joinedCorner(selection?.joinedAbove == true, InboxTokens.selectionRadius)
+    val bottom = joinedCorner(selection?.joinedBelow == true, InboxTokens.selectionRadius)
     val tint =
         animateColorAsState(
             if (selection?.selected == true) OtusColors.accentDark else Color.Transparent,
@@ -49,9 +49,12 @@ internal fun SelectableLeading(
     Crossfade(selected, animationSpec = motionTween()) { if (it) SelectedMark(markSize) else leading() }
 }
 
+/** A corner of [radius] that squares off while a selected neighbor is [joined] to it. */
 @Composable
-private fun selectionCorner(joined: Boolean): Dp =
-    animateDpAsState(if (joined) 0.dp else InboxTokens.selectionRadius, motionTween()).value
+internal fun joinedCorner(
+    joined: Boolean,
+    radius: Dp,
+): Dp = animateDpAsState(if (joined) 0.dp else radius, motionTween()).value
 
 @Composable
 private fun SelectedMark(size: Dp) {

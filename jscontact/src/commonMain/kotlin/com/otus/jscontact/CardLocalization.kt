@@ -44,4 +44,4 @@ private const val LOCALIZATIONS = "localizations"
  * Rule 4 of section 1.4.3 allows a null patch only on an optional property, and the localized Card cannot show
  * that one of these was removed, so the patch itself is checked.
  */
-private val FILLED_IN_BY_DECODING = setOf("@type", "version")
+private val FILLED_IN_BY_DECODING = setOf(TYPE_PROPERTY, "version")

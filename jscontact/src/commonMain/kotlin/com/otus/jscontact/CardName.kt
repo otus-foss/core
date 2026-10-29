@@ -32,13 +32,12 @@ public data class Name(
     /** Unknown and vendor-specific properties, kept as received (RFC 9553, section 1.7.4). */
     @Transient val extra: Map<String, JsonElement> = emptyMap(),
 ) {
-    internal object Serializer :
-        JsContactSerializer<Name>(
-            generatedSerializer(),
-            "Name",
-            { it.extra },
-            { value, extra -> value.copy(extra = extra) },
-        )
+    internal object Serializer : JsContactSerializer<Name>(
+        generatedSerializer(),
+        "Name",
+        { it.extra },
+        { value, extra -> value.copy(extra = extra) },
+    )
 }
 
 /** One part of a [Name], such as a given name or a surname (RFC 9553, section 2.2.1.2). */
@@ -54,13 +53,12 @@ public data class NameComponent(
     /** Unknown and vendor-specific properties, kept as received (RFC 9553, section 1.7.4). */
     @Transient val extra: Map<String, JsonElement> = emptyMap(),
 ) {
-    internal object Serializer :
-        JsContactSerializer<NameComponent>(
-            generatedSerializer(),
-            "NameComponent",
-            { it.extra },
-            { value, extra -> value.copy(extra = extra) },
-        )
+    internal object Serializer : JsContactSerializer<NameComponent>(
+        generatedSerializer(),
+        "NameComponent",
+        { it.extra },
+        { value, extra -> value.copy(extra = extra) },
+    )
 }
 
 /**

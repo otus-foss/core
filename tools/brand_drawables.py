@@ -56,6 +56,10 @@ def vector_path(p: dict[str, str], indent: str) -> str:
     return f"{indent}<path\n{indent}    {inner} />"
 
 
+def vector_paths(paths: list[dict[str, str]], indent: str = "  ") -> list[str]:
+    return [vector_path(p, indent) for p in paths]
+
+
 def vector(size: float, body: list[str], dp: float | None = None) -> str:
     dp = dp or size
     return (
@@ -69,7 +73,7 @@ def vector(size: float, body: list[str], dp: float | None = None) -> str:
 
 def group(attrs: dict[str, str], paths: list[dict[str, str]]) -> list[str]:
     opening = "".join(f'\n      android:{key}="{value}"' for key, value in attrs.items())
-    return [f"  <group{opening}>", *(vector_path(p, "    ") for p in paths), "  </group>"]
+    return [f"  <group{opening}>", *vector_paths(paths, "    "), "  </group>"]
 
 
 def write(path: Path, text: str) -> None:
@@ -92,10 +96,10 @@ def recolor(paths: list[dict[str, str]], light: str, dark: str) -> list[dict[str
 def logo_and_owl() -> None:
     logo = art("otus-logo.svg")
     clip = [f'    <clip-path android:pathData="{logo[0]["d"]}" />']
-    body = ["  <group>", *clip, *(vector_path(p, "    ") for p in logo), "  </group>"]
+    body = ["  <group>", *clip, *vector_paths(logo, "    "), "  </group>"]
     write(COMPOSE / "brand_otus_logo.xml", vector(128, body))
     owl = art("otus-owl.svg")
-    write(COMPOSE / "brand_owl.xml", vector(128, [vector_path(p, "  ") for p in owl]))
+    write(COMPOSE / "brand_owl.xml", vector(128, vector_paths(owl)))
     # A one-color owl for symbol slots: the body with the eyes and beak cut out, cropped to the owl.
     cutout = {
         "d": " ".join(p["d"] for p in (owl[0], owl[1], owl[2], owl[5])),
@@ -126,7 +130,7 @@ def launch_layers() -> None:
     }
     for name, parts in layers.items():
         white = [{**p, "fill": WHITE} if p.get("fill", "none") != "none" else p for p in parts]
-        write(COMPOSE / f"{name}.xml", vector(128, [vector_path(p, "  ") for p in white]))
+        write(COMPOSE / f"{name}.xml", vector(128, vector_paths(white)))
 
 
 def launcher_icons() -> None:
@@ -145,7 +149,7 @@ def launcher_icons() -> None:
         painted = recolor(icon, color, ICON_BACKGROUND)
         write(
             ANDROID / f"mipmap-anydpi/{icon_name}.xml",
-            vector(126.075, [vector_path(p, "  ") for p in painted], 108),
+            vector(126.075, vector_paths(painted), 108),
         )
         write(
             ANDROID / f"drawable/{icon_name}_foreground.xml", vector(108, group(place, painted[1:]))

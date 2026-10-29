@@ -46,9 +46,9 @@ import com.otus.designsystem.theme.typography.panelTextStyle
  * Hosts a jump-to-letter index over [content], such as a whole page with a contact list filed by
  * letter. When the [state] opens, [content] blurs and the letters slide together from their
  * headings into one column on the same edge, with their counts in a second column; letters
- * whose heading is off screen slide in from that side. Tapping a letter, or lifting a finger dragged from a
- * [letterIndexHandle], jumps to it and closes the index. A tap beside the letters or Back closes
- * it without a jump.
+ * whose heading is off screen slide in from that side. Tapping a letter, or lifting a finger
+ * dragged from a [letterIndexHandle], jumps to it and closes the index. A tap beside the letters
+ * or Back closes it without a jump.
  */
 @Composable
 public fun LetterIndex(

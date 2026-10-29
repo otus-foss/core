@@ -120,13 +120,7 @@ internal fun SheetSurface(
     val pull = LocalSheetPull.current
     val flingVelocity = with(density) { ChoiceSheetTokens.dismissVelocity.toPx() }
     LaunchedEffect(Unit) {
-        if (pull ==
-            null
-        ) {
-            position.show(MotionCurve.Enter)
-        } else {
-            position.follow(pull, flingVelocity, close)
-        }
+        if (pull == null) position.show(MotionCurve.Enter) else position.follow(pull, flingVelocity, close)
     }
     Dialog(close, properties = selectionSheetDialogProperties()) {
         CompositionLocalProvider(LocalDensity provides density) {
@@ -165,8 +159,9 @@ internal fun SheetSurface(
     }
 }
 
+/** The dimmed backdrop of a sheet or dialog at [visible] strength; tapping it runs [onClick]. */
 @Composable
-private fun SheetScrim(
+internal fun SheetScrim(
     title: String,
     visible: Float,
     onClick: () -> Unit,
@@ -187,10 +182,8 @@ private fun SheetScrim(
  */
 private fun Modifier.holdHeight(held: HeldHeight): Modifier =
     layout { measurable, constraints ->
-        val placeable =
-            measurable.measure(
-                constraints.copy(minHeight = held.px.coerceIn(constraints.minHeight, constraints.maxHeight)),
-            )
+        val minHeight = held.px.coerceIn(constraints.minHeight, constraints.maxHeight)
+        val placeable = measurable.measure(constraints.copy(minHeight = minHeight))
         held.px = maxOf(held.px, placeable.height)
         layout(placeable.width, placeable.height) { placeable.place(0, 0) }
     }
@@ -222,14 +215,7 @@ internal fun SheetHeader(
     leadingAction: (@Composable () -> Unit)? = null,
 ) {
     Box(modifier.fillMaxWidth().height(ChoiceSheetTokens.headerHeight)) {
-        Box(
-            Modifier
-                .align(Alignment.TopCenter)
-                .padding(top = ChoiceSheetTokens.handleTop)
-                .size(ChoiceSheetTokens.handleWidth, ChoiceSheetTokens.handleHeight)
-                .clip(CircleShape)
-                .background(OtusColors.bgLight),
-        )
+        SheetHandle(Modifier.align(Alignment.TopCenter))
         leadingAction?.let { Box(Modifier.align(Alignment.CenterStart)) { it() } }
         Text(
             title,
@@ -247,6 +233,18 @@ internal fun SheetHeader(
             )
         }
     }
+}
+
+/** The grab handle at the top of a sheet's header, placed by [modifier]. */
+@Composable
+internal fun SheetHandle(modifier: Modifier = Modifier) {
+    Box(
+        modifier
+            .padding(top = ChoiceSheetTokens.handleTop)
+            .size(ChoiceSheetTokens.handleWidth, ChoiceSheetTokens.handleHeight)
+            .clip(CircleShape)
+            .background(OtusColors.bgLight),
+    )
 }
 
 /**

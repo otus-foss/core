@@ -60,8 +60,8 @@ public fun Chip(
  * The pill and its 48 dp touch target, shared by [Chip],
  * [SidebarPill][com.otus.designsystem.shared.sidebar.elements.SidebarPill], [IconPill], and the
  * button pills; [fill] fills it while unselected. [layout] sets how wide the pill is and where
- * its content starts. A chip with a [selected]
- * state reads as a checkbox; one without, a null, is a button.
+ * its content starts. A chip with a [selected] state reads as a checkbox; one without, a null, is
+ * a button.
  */
 @Composable
 internal fun ChipFrame(
@@ -89,7 +89,7 @@ internal fun ChipFrame(
         Surface(
             modifier =
                 Modifier
-                    .then(if (layout.width == ChipWidth.Fill) Modifier.fillMaxWidth() else Modifier)
+                    .then(layout.fillModifier())
                     .reportControlVisualBounds()
                     .controlPressFeedback(interactions),
             shape = CircleShape,
@@ -102,25 +102,8 @@ internal fun ChipFrame(
                 ),
         ) {
             Row(
-                if (layout.width == ChipWidth.Circle) {
-                    Modifier.size(layout.height)
-                } else {
-                    Modifier
-                        .then(if (layout.width == ChipWidth.Fill) Modifier.fillMaxWidth() else Modifier)
-                        .heightIn(min = layout.height)
-                        .padding(
-                            start = if (layout.avatarFirst) PanelTokens.iconGap else layout.start,
-                            end = layout.end,
-                            top = PanelTokens.iconGap,
-                            bottom = PanelTokens.iconGap,
-                        )
-                },
-                horizontalArrangement =
-                    if (layout.width == ChipWidth.Fill) {
-                        LastAtEnd
-                    } else {
-                        Arrangement.spacedBy(PanelTokens.iconGap, Alignment.CenterHorizontally)
-                    },
+                layout.contentModifier(),
+                horizontalArrangement = layout.arrangement(),
                 verticalAlignment = Alignment.CenterVertically,
                 content = content,
             )
@@ -155,6 +138,26 @@ internal data class ChipLayout(
     val start: Dp = PanelTokens.chipPadding,
     val end: Dp = PanelTokens.chipPadding,
 )
+
+private fun ChipLayout.fillModifier(): Modifier = if (width == ChipWidth.Fill) Modifier.fillMaxWidth() else Modifier
+
+/** Sizes and pads the pill's content row. */
+private fun ChipLayout.contentModifier(): Modifier =
+    if (width == ChipWidth.Circle) {
+        Modifier.size(height)
+    } else {
+        fillModifier()
+            .heightIn(min = height)
+            .padding(
+                start = if (avatarFirst) PanelTokens.iconGap else start,
+                end = end,
+                top = PanelTokens.iconGap,
+                bottom = PanelTokens.iconGap,
+            )
+    }
+
+private fun ChipLayout.arrangement(): Arrangement.Horizontal =
+    if (width == ChipWidth.Fill) LastAtEnd else Arrangement.spacedBy(PanelTokens.iconGap, Alignment.CenterHorizontally)
 
 /** How wide a [ChipFrame] is. */
 internal enum class ChipWidth {

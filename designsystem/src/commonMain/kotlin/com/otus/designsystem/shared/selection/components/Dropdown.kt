@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.window.PopupPositionProvider
 import com.otus.designsystem.shared.overlays.components.MenuPopup
+import com.otus.designsystem.shared.overlays.components.keptInside
 import com.otus.designsystem.shared.overlays.components.menuSurface
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.MotionSpeed
@@ -71,11 +72,8 @@ public fun Dropdown(
     val minRoom = with(density) { MenuTokens.dropdownMinRoom.roundToPx() }
     val position = remember(alignEnd, gap, edge, minRoom) { BelowAnchor(alignEnd, gap, edge, minRoom) }
     val room = with(density) { position.room.toDp() }
-    val window =
-        with(density) {
-            LocalWindowInfo.current.containerSize.width
-                .toDp()
-        }
+    val windowWidth = LocalWindowInfo.current.containerSize.width
+    val window = with(density) { windowWidth.toDp() }
     MenuPopup(position, onDismiss, focusable, unrolls) {
         Column(
             modifier
@@ -193,6 +191,6 @@ private class BelowAnchor(
         // Never over the anchor: with room on neither side, such as while the keyboard is up, it
         // opens below and moves once the window grows again.
         val y = if (fitsBelow || above < edge) below else above
-        return IntOffset(x.coerceIn(edge, maxOf(edge, windowSize.width - popupContentSize.width - edge)), y)
+        return IntOffset(x.keptInside(popupContentSize.width, windowSize.width, edge), y)
     }
 }

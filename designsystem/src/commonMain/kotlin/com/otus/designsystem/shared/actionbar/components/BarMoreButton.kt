@@ -1,7 +1,5 @@
 package com.otus.designsystem.shared.actionbar.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -21,8 +19,8 @@ import com.otus.designsystem.resources.symbol_more_horiz
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.shared.overlays.components.MenuAction
+import com.otus.designsystem.shared.panels.elements.darkSurface
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 
 /**
@@ -44,8 +42,7 @@ internal fun BarMoreButton(
             .semantics { contentDescription = more.label }
             .clickable(interactions, null, role = Role.Button, onClick = menu.click(more))
             .controlPressFeedback(interactions, CircleShape)
-            .background(OtusColors.bgDark, CircleShape)
-            .border(PanelTokens.borderWidth, OtusColors.strokeBgDark, CircleShape),
+            .darkSurface(CircleShape),
         contentAlignment = Alignment.Center,
     ) {
         CompositionLocalProvider(LocalContentColor provides OtusColors.text1) {

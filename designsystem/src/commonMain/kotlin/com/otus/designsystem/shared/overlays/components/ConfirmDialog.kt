@@ -25,17 +25,24 @@ public fun ConfirmDialog(
 ) {
     DialogFrame(title, onDismiss, closeButton = false) {
         Text(message, color = OtusColors.text2)
-        Row(horizontalArrangement = Arrangement.spacedBy(PageTokens.rowGap)) {
-            ActionButton(dismissLabel, onDismiss, Modifier.weight(1f))
-            ActionButton(
-                confirmLabel,
-                {
-                    onDismiss()
-                    onConfirm()
-                },
-                Modifier.weight(1f),
-                primary = true,
-            )
+        DialogButtons(dismissLabel, onDismiss, confirmLabel) {
+            onDismiss()
+            onConfirm()
         }
+    }
+}
+
+/** [dismissLabel] and the primary [confirmLabel] side by side, sharing the dialog's width. */
+@Composable
+internal fun DialogButtons(
+    dismissLabel: String,
+    onDismiss: () -> Unit,
+    confirmLabel: String,
+    confirmEnabled: Boolean = true,
+    onConfirm: () -> Unit,
+) {
+    Row(horizontalArrangement = Arrangement.spacedBy(PageTokens.rowGap)) {
+        ActionButton(dismissLabel, onDismiss, Modifier.weight(1f))
+        ActionButton(confirmLabel, onConfirm, Modifier.weight(1f), primary = true, enabled = confirmEnabled)
     }
 }

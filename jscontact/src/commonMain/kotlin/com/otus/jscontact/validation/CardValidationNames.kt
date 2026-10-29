@@ -36,10 +36,13 @@ private fun ValidationScope.checkSortAs(name: Name) {
     val kinds = name.components?.map { it.kind.value }?.toSet()
     enumKeys(SORT_AS, keys, RegisteredValues.nameComponentKinds)
     member(SORT_AS, keys) { values ->
-        ensure(kinds != null, "sortAs needs components ($NAME_SECTION)")
-        values
-            .filter { kinds != null && it !in kinds }
-            .forEach { kind -> report("No component has the kind \"$kind\" ($NAME_SECTION)", kind) }
+        if (kinds == null) {
+            report("sortAs needs components ($NAME_SECTION)")
+        } else {
+            values
+                .filterNot { it in kinds }
+                .forEach { kind -> report("No component has the kind \"$kind\" ($NAME_SECTION)", kind) }
+        }
     }
 }
 

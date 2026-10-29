@@ -5,6 +5,7 @@ import com.otus.jmap.JmapPatchBuilder
 import com.otus.jmap.jmapPatch
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlin.reflect.KProperty1
@@ -46,11 +47,7 @@ public class AddressBookPatch internal constructor(
 
     /** Sets the description, or removes it when [description] is null. */
     public fun description(description: String?) {
-        if (description == null) {
-            patch.remove("description")
-        } else {
-            patch.set(JsonPrimitive(description), "description")
-        }
+        setOrRemove("description", description?.let { JsonPrimitive(it) })
     }
 
     /** Moves the book in [AddressBookOrder]. From 0 up to 2^31 - 1. */
@@ -69,11 +66,7 @@ public class AddressBookPatch internal constructor(
      * sharing the book with anyone.
      */
     public fun shareWith(shareWith: Map<String, AddressBookRights>?) {
-        if (shareWith == null) {
-            patch.remove("shareWith")
-        } else {
-            patch.set(JmapJson.encodeToJsonElement(SHARE_WITH, shareWith), "shareWith")
-        }
+        setOrRemove("shareWith", shareWith?.let { JmapJson.encodeToJsonElement(SHARE_WITH, it) })
     }
 
     /** Shares the book with [principalId], or replaces that Principal's rights, with all four rights. */
@@ -103,6 +96,13 @@ public class AddressBookPatch internal constructor(
         right: KProperty1<AddressBookRights, Boolean>,
     ) {
         patch.set(JsonPrimitive(false), "shareWith", principalId, right.name)
+    }
+
+    private fun setOrRemove(
+        property: String,
+        value: JsonElement?,
+    ) {
+        if (value == null) patch.remove(property) else patch.set(value, property)
     }
 }
 

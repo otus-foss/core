@@ -31,14 +31,8 @@ private fun DrawScope.drawDropLine(
 ) {
     val thickness = ReorderTreeTokens.lineThickness.toPx()
     val radius = ReorderTreeTokens.ringRadius.toPx()
-    val start =
-        (
-            ReorderTreeTokens.lineStart + ReorderTreeTokens.indentStep *
-                depth.coerceIn(
-                    0,
-                    MAX_INDENT_STEPS,
-                )
-        ).toPx()
+    val indent = ReorderTreeTokens.indentStep * depth.coerceIn(0, MAX_INDENT_STEPS)
+    val start = (ReorderTreeTokens.lineStart + indent).toPx()
     val end = size.width - ReorderTreeTokens.lineEnd.toPx()
     val reach = radius + thickness / 2
     val middle = y.coerceIn(reach, (size.height - reach).coerceAtLeast(reach))

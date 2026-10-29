@@ -48,7 +48,4 @@ public val JmapAccount.principalOwner: PrincipalOwner?
 private fun <T> JmapAccount.capability(
     uri: String,
     serializer: KSerializer<T>,
-): T? =
-    capabilityObjects[uri]?.let { json ->
-        runCatching { JmapJson.decodeFromJsonElement(serializer, json) }.getOrNull()
-    }
+): T? = capabilityObjects[uri]?.let { runCatching { JmapJson.decodeFromJsonElement(serializer, it) }.getOrNull() }

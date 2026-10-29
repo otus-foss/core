@@ -7,8 +7,8 @@ import org.jetbrains.compose.resources.DrawableResource
  * One action in an [ActionBar]. A secondary action shows only its [symbol] and names itself with
  * [label] to accessibility services and in a long-press tooltip; the primary shows its label when
  * the bar has no context. A disabled action keeps its place. An action with a [menu] opens it in a
- * [ContextMenu][com.otus.designsystem.shared.overlays.components.ContextMenu] above the button instead of running
- * [onClick].
+ * [ContextMenu][com.otus.designsystem.shared.overlays.components.ContextMenu] above the button
+ * instead of running [onClick].
  */
 public class BarAction(
     public val label: String,
@@ -25,9 +25,8 @@ public class BarAction(
  * the label; pass it when the subtitle leaves out what the token shows, such as a count. A [lead]
  * takes the label's place as a small line above the subtitle, which then reads larger, as in
  * "Send to" above "Grace". Non-empty [choices] make the context its own button, which opens
- * them in a [ContextMenu][com.otus.designsystem.shared.overlays.components.ContextMenu] above the shell, such as
- * other address books to save to, while the
- * action keeps running the primary.
+ * them in a [ContextMenu][com.otus.designsystem.shared.overlays.components.ContextMenu] above the
+ * shell, such as other address books to save to, while the action keeps running the primary.
  */
 public class BarContext(
     public val subtitle: String,

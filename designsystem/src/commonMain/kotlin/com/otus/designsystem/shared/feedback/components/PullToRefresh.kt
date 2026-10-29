@@ -51,9 +51,8 @@ public fun PullToRefresh(
             refreshing = refreshing,
             modifier =
                 Modifier
-                    .align(
-                        Alignment.TopCenter,
-                    ).padding(top = indicatorInset)
+                    .align(Alignment.TopCenter)
+                    .padding(top = indicatorInset)
                     .pullRefreshIndicatorTransform(state),
         )
     }

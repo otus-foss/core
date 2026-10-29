@@ -22,6 +22,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
@@ -35,9 +36,9 @@ import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.selection.RuleChipTokens
 
 /**
- * A dashed [RuleChip][com.otus.designsystem.shared.filters.components.RuleChip]-sized button that adds a rule, such
- * as "Add rule". Its plus sits in the
- * avatar column and [label] in the value column, so both line up with the chips above it.
+ * A dashed [RuleChip][com.otus.designsystem.shared.filters.components.RuleChip]-sized button that
+ * adds a rule, such as "Add rule". Its plus sits in the avatar column and [label] in the value
+ * column, so both line up with the chips above it.
  */
 @Composable
 public fun AddRuleChip(
@@ -47,19 +48,10 @@ public fun AddRuleChip(
 ) {
     val interactions = remember { MutableInteractionSource() }
     val shape = RoundedCornerShape(RuleChipTokens.radius)
-    val outline = OtusColors.bgLight
     Row(
         modifier
-            .drawBehind {
-                val width = PanelTokens.borderWidth.toPx()
-                drawRoundRect(
-                    outline,
-                    topLeft = Offset(width / 2, width / 2),
-                    size = Size(size.width - width, size.height - width),
-                    cornerRadius = CornerRadius(minOf(RuleChipTokens.radius.toPx(), size.height / 2)),
-                    style = Stroke(width, pathEffect = outlineDash()),
-                )
-            }.clickable(interactions, indication = null, role = Role.Button, onClick = onClick)
+            .dashedOutline(OtusColors.bgLight)
+            .clickable(interactions, indication = null, role = Role.Button, onClick = onClick)
             .controlPressFeedback(interactions, shape)
             .height(RuleChipTokens.height)
             .padding(horizontal = RuleChipTokens.padding),
@@ -80,3 +72,16 @@ public fun AddRuleChip(
         )
     }
 }
+
+/** A dashed [color] outline inside the bounds, with a rule chip's corners. */
+private fun Modifier.dashedOutline(color: Color): Modifier =
+    drawBehind {
+        val width = PanelTokens.borderWidth.toPx()
+        drawRoundRect(
+            color,
+            topLeft = Offset(width / 2, width / 2),
+            size = Size(size.width - width, size.height - width),
+            cornerRadius = CornerRadius(minOf(RuleChipTokens.radius.toPx(), size.height / 2)),
+            style = Stroke(width, pathEffect = outlineDash()),
+        )
+    }

@@ -23,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
@@ -73,28 +74,31 @@ private fun FooterVersion(
     onUpdate: (() -> Unit)?,
     badge: @Composable () -> Unit,
 ) {
-    val interactions = remember { MutableInteractionSource() }
-    val shape = RoundedCornerShape(SidebarTokens.entryRadius)
     Row(
         Modifier
             .heightIn(min = PanelTokens.touchTarget)
-            .then(
-                if (onUpdate == null) {
-                    Modifier
-                } else {
-                    Modifier
-                        .semantics { contentDescription = "Update available, $version installed" }
-                        .clickable(interactions, indication = null, onClickLabel = "Get the update", onClick = onUpdate)
-                        .clip(shape)
-                        .controlPressFeedback(interactions, shape)
-                },
-            ).padding(horizontal = SidebarTokens.entryPadding),
+            .then(onUpdate?.let { Modifier.updateButton(version, it) } ?: Modifier)
+            .padding(horizontal = SidebarTokens.entryPadding),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(SidebarTokens.inset),
     ) {
         badge()
         SidebarDetail(version)
     }
+}
+
+/** Makes the version a button that calls [onUpdate], which screen readers hear as an available update. */
+@Composable
+private fun Modifier.updateButton(
+    version: String,
+    onUpdate: () -> Unit,
+): Modifier {
+    val interactions = remember { MutableInteractionSource() }
+    val shape = RoundedCornerShape(SidebarTokens.entryRadius)
+    return semantics { contentDescription = "Update available, $version installed" }
+        .clickable(interactions, indication = null, onClickLabel = "Get the update", onClick = onUpdate)
+        .clip(shape)
+        .controlPressFeedback(interactions, shape)
 }
 
 /**
@@ -107,27 +111,8 @@ private fun UpdateBadge(progress: Float?) {
     Box(
         Modifier
             .size(SidebarTokens.updateBadge)
-            .then(
-                if (progress == null) {
-                    Modifier
-                } else {
-                    Modifier
-                        .semantics { progressBarRangeInfo = ProgressBarRangeInfo(progress, 0f..1f) }
-                        .drawWithContent {
-                            drawContent()
-                            val width = SidebarTokens.updateRing.toPx()
-                            drawArc(
-                                ring,
-                                startAngle = -90f,
-                                sweepAngle = 360f * progress,
-                                useCenter = false,
-                                topLeft = Offset(width / 2, width / 2),
-                                size = Size(size.width - width, size.height - width),
-                                style = Stroke(width, cap = StrokeCap.Round),
-                            )
-                        }
-                },
-            ).background(OtusColors.bgRegular, CircleShape),
+            .then(progress?.let { Modifier.progressRing(it, ring) } ?: Modifier)
+            .background(OtusColors.bgRegular, CircleShape),
         contentAlignment = Alignment.Center,
     ) {
         CompositionLocalProvider(LocalContentColor provides OtusColors.text2) {
@@ -135,3 +120,23 @@ private fun UpdateBadge(progress: Float?) {
         }
     }
 }
+
+/** A [color] ring that fills clockwise from the top as [progress] goes from 0 to 1. */
+private fun Modifier.progressRing(
+    progress: Float,
+    color: Color,
+): Modifier =
+    semantics { progressBarRangeInfo = ProgressBarRangeInfo(progress, 0f..1f) }
+        .drawWithContent {
+            drawContent()
+            val width = SidebarTokens.updateRing.toPx()
+            drawArc(
+                color,
+                startAngle = -90f,
+                sweepAngle = 360f * progress,
+                useCenter = false,
+                topLeft = Offset(width / 2, width / 2),
+                size = Size(size.width - width, size.height - width),
+                style = Stroke(width, cap = StrokeCap.Round),
+            )
+        }

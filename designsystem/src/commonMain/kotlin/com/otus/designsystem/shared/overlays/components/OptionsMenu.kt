@@ -51,8 +51,8 @@ public fun OptionsMenu(
 
 /**
  * The rows of [items], as an [OptionsMenu] shows them, for any surface that lists options, such
- * as an [ExpandingBarGroup][com.otus.designsystem.shared.actionbar.components.ExpandingBarGroup]. An action runs
- * [onDone] before its own click, to close what holds it.
+ * as an [ExpandingBarGroup][com.otus.designsystem.shared.actionbar.components.ExpandingBarGroup].
+ * An action runs [onDone] before its own click, to close what holds it.
  */
 @Composable
 public fun OptionsList(
@@ -62,39 +62,41 @@ public fun OptionsList(
     Column {
         items.forEach { item ->
             when (item) {
-                is OptionsItem.Action -> {
-                    OptionsRow(
-                        item.icon,
-                        item.label,
-                        item.detail,
-                        Modifier
-                            .then(if (item.current) Modifier.currentChoice() else Modifier)
-                            .clickable(role = Role.Button) {
-                                onDone()
-                                item.onClick()
-                            },
-                    ) { if (item.opens) Symbol(Res.drawable.symbol_chevron_right, mirrorInRtl = true) }
-                }
-
-                is OptionsItem.Toggle -> {
-                    OptionsRow(
-                        item.icon,
-                        item.label,
-                        item.detail,
-                        Modifier.toggleable(item.checked, role = Role.Switch, onValueChange = item.onCheckedChange),
-                    ) { ToggleSwitch(item.checked) }
-                }
-
-                is OptionsItem.Caption -> {
-                    ListCaption(item.text)
-                }
-
-                OptionsItem.Divider -> {
-                    OptionsDivider()
-                }
+                is OptionsItem.Action -> ActionOption(item, onDone)
+                is OptionsItem.Toggle -> ToggleOption(item)
+                is OptionsItem.Caption -> ListCaption(item.text)
+                OptionsItem.Divider -> OptionsDivider()
             }
         }
     }
+}
+
+@Composable
+private fun ActionOption(
+    item: OptionsItem.Action,
+    onDone: () -> Unit,
+) {
+    OptionsRow(
+        item.icon,
+        item.label,
+        item.detail,
+        Modifier
+            .then(if (item.current) Modifier.currentChoice() else Modifier)
+            .clickable(role = Role.Button) {
+                onDone()
+                item.onClick()
+            },
+    ) { if (item.opens) Symbol(Res.drawable.symbol_chevron_right, mirrorInRtl = true) }
+}
+
+@Composable
+private fun ToggleOption(item: OptionsItem.Toggle) {
+    OptionsRow(
+        item.icon,
+        item.label,
+        item.detail,
+        Modifier.toggleable(item.checked, role = Role.Switch, onValueChange = item.onCheckedChange),
+    ) { ToggleSwitch(item.checked) }
 }
 
 /** The current choice: a `selectedFill` fill, rounded inside the menu, read as selected. */

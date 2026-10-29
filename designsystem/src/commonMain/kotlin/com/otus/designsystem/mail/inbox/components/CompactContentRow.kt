@@ -64,18 +64,7 @@ public fun CompactContentRow(
 /** The first line, then the count pill right after it or before the date, then the date. */
 @Composable
 private fun FirstLine(text: CompactRowText) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(InboxTokens.markGap),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Row(
-            Modifier.weight(1f),
-            horizontalArrangement = Arrangement.spacedBy(InboxTokens.markGap),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            RowLineText(text.first, firstLineStyle(), Modifier.weight(1f, fill = false))
-            text.countIn(CountPlacement.AfterFirst)?.let { CountPill(it) }
-        }
+    CountedLine(text.first, firstLineStyle(), text.countIn(CountPlacement.AfterFirst)) {
         text.countIn(CountPlacement.BeforeTrailing)?.let { CountPill(it) }
         Text(
             text.trailing,
@@ -90,6 +79,17 @@ private fun FirstLine(text: CompactRowText) {
 /** The second line with the count pill after it, then the marks, folder glyphs, and "+N". */
 @Composable
 private fun SecondLine(text: CompactRowText) {
+    CountedLine(text.second, secondLineStyle(), text.countIn(CountPlacement.AfterSecond)) { RowEndIcons(text) }
+}
+
+/** [line] with the [count] pill right after it, shrinking first, then [end], which never shrinks. */
+@Composable
+private fun CountedLine(
+    line: RowLine,
+    style: LineStyle,
+    count: String?,
+    end: @Composable () -> Unit,
+) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(InboxTokens.markGap),
         verticalAlignment = Alignment.CenterVertically,
@@ -99,10 +99,10 @@ private fun SecondLine(text: CompactRowText) {
             horizontalArrangement = Arrangement.spacedBy(InboxTokens.markGap),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            RowLineText(text.second, secondLineStyle(), Modifier.weight(1f, fill = false))
-            text.countIn(CountPlacement.AfterSecond)?.let { CountPill(it) }
+            RowLineText(line, style, Modifier.weight(1f, fill = false))
+            count?.let { CountPill(it) }
         }
-        RowEndIcons(text)
+        end()
     }
 }
 

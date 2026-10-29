@@ -55,19 +55,20 @@ public fun AttachmentChip(
     val shape = RoundedCornerShape(ComposeTokens.recipientRadius)
     var open by remember { mutableStateOf(false) }
     var height by remember { mutableIntStateOf(0) }
+    val opensMenu =
+        if (actions.isEmpty()) {
+            Modifier
+        } else {
+            Modifier.clickable(onClickLabel = "More options", role = Role.Button) { open = true }
+        }
     Row(
         modifier
             .heightIn(min = PanelTokens.touchTarget)
             .widthIn(max = ComposeTokens.attachmentMaxWidth)
             .onSizeChanged { height = it.height }
             .border(PanelTokens.borderWidth, OtusColors.bgLight, shape)
-            .then(
-                if (actions.isEmpty()) {
-                    Modifier
-                } else {
-                    Modifier.clickable(onClickLabel = "More options", role = Role.Button) { open = true }
-                },
-            ).semantics(mergeDescendants = true) { contentDescription = "$name, $detail" }
+            .then(opensMenu)
+            .semantics(mergeDescendants = true) { contentDescription = "$name, $detail" }
             .padding(start = PanelTokens.chipPadding),
         horizontalArrangement = Arrangement.spacedBy(PanelTokens.chipGap),
         verticalAlignment = Alignment.CenterVertically,

@@ -31,6 +31,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.minus
+import kotlinx.datetime.yearMonth
 
 /**
  * Picks a range of dates up to today: a summary of the range, shortcuts such as Last 7 days, and a
@@ -87,7 +88,7 @@ private class RangeCalendar(
     private val scope: CoroutineScope,
 ) {
     fun goToMonth(month: LocalDate) {
-        scope.launch { listState.animateScrollToItem(weeks.indexOf(LocalDate(month.year, month.month, 1))) }
+        scope.launch { listState.animateScrollToItem(weeks.indexOf(month.yearMonth.firstDay)) }
     }
 }
 

@@ -126,17 +126,15 @@ private fun CardLabel(
             )
         }
         when {
-            selected && onMenu != null -> {
-                MoreButton(title, onMenu)
-            }
-
-            selected -> {
-                CompositionLocalProvider(LocalContentColor provides OtusColors.text1) {
-                    Symbol(Res.drawable.symbol_check_circle)
-                }
-            }
+            selected && onMenu != null -> MoreButton(title, onMenu)
+            selected -> SelectedCheck()
         }
     }
+}
+
+@Composable
+private fun SelectedCheck() {
+    CompositionLocalProvider(LocalContentColor provides OtusColors.text1) { Symbol(Res.drawable.symbol_check_circle) }
 }
 
 /** A more button the size of the check it replaces, so the card keeps its height; its touch target overflows. */

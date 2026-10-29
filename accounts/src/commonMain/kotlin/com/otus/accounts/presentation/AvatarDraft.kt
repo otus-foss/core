@@ -67,19 +67,18 @@ internal data class AvatarDraft(
     fun preview(shown: ResolvedAvatar?): ChipAvatar {
         val initials = shown?.fallback?.initials.orEmpty()
         return when {
-            kind != AvatarKind.Photo -> {
-                (avatar as ContactAvatar.Styled).style.toChipAvatar()
-            }
-
-            source == PhotoSource.Website -> {
-                val icon = shown?.takeIf { it.origin == AvatarOrigin.Domain }?.image
-                if (icon == null) styledChip(initials, color) else ChipAvatar(initials, 0, icon.bytes)
-            }
-
-            else -> {
-                ChipAvatar(initials, shown?.fallback?.colorIndex ?: 0, (photo?.image ?: savedPhoto)?.bytes)
-            }
+            kind != AvatarKind.Photo -> (avatar as ContactAvatar.Styled).style.toChipAvatar()
+            source == PhotoSource.Website -> websitePreview(shown, initials)
+            else -> ChipAvatar(initials, shown?.fallback?.colorIndex ?: 0, (photo?.image ?: savedPhoto)?.bytes)
         }
+    }
+
+    private fun websitePreview(
+        shown: ResolvedAvatar?,
+        initials: String,
+    ): ChipAvatar {
+        val icon = shown?.takeIf { it.origin == AvatarOrigin.Domain }?.image
+        return if (icon == null) styledChip(initials, color) else ChipAvatar(initials, 0, icon.bytes)
     }
 
     private fun styled(mark: AvatarMark) = ContactAvatar.Styled(AvatarStyle(color, mark))
@@ -98,18 +97,11 @@ internal data class AvatarDraft(
             val source = if (canUpload) PhotoSource.Upload else PhotoSource.Website
             val initial = AvatarDraft(AvatarKind.Photo, color, avatarLetters(fallback?.initials.orEmpty()), source)
             val style = shown?.style
+            val savedPhoto = shown?.takeIf { it.origin == AvatarOrigin.Contact }?.image
             return when {
-                style != null -> {
-                    initial.with(style)
-                }
-
-                shown?.image != null && shown.origin == AvatarOrigin.Contact -> {
-                    initial.copy(source = PhotoSource.Upload, savedPhoto = shown.image)
-                }
-
-                else -> {
-                    initial
-                }
+                style != null -> initial.with(style)
+                savedPhoto != null -> initial.copy(source = PhotoSource.Upload, savedPhoto = savedPhoto)
+                else -> initial
             }
         }
 

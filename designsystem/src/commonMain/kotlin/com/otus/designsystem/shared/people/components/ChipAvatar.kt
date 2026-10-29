@@ -10,7 +10,7 @@ import com.otus.designsystem.shared.people.elements.avatarFill
 import com.otus.designsystem.shared.people.elements.rememberAvatarImage
 import com.otus.designsystem.theme.colors.FolderColor
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.colors.contrast
+import com.otus.designsystem.theme.colors.readableOn
 import org.jetbrains.compose.resources.DrawableResource
 
 /**
@@ -73,6 +73,4 @@ private val ChipAvatar.fill: Color
 
 /** Letters and symbols on a picked color use `text1` or `bgDark`, whichever contrasts more. */
 private val ChipAvatar.content: Color
-    get() =
-        picked?.let { fill -> listOf(OtusColors.text1, OtusColors.bgDark).maxBy { contrast(fill, it) } }
-            ?: OtusColors.text1
+    get() = picked?.let(::readableOn) ?: OtusColors.text1

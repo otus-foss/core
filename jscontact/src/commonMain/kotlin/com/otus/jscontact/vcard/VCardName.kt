@@ -19,13 +19,12 @@ internal fun readName(
     n: VCardProperty?,
 ): Name? {
     val components = n?.toNameComponents().orEmpty()
-    return (full ?: components.fullName().ifEmpty { null })?.let { text ->
-        Name(
-            components = components.ifEmpty { null },
-            isOrdered = false.takeIf { components.isNotEmpty() },
-            full = text,
-        )
-    }
+    val text = full ?: components.fullName().ifEmpty { null } ?: return null
+    return Name(
+        components = components.ifEmpty { null },
+        isOrdered = false.takeIf { components.isNotEmpty() },
+        full = text,
+    )
 }
 
 /**
@@ -34,10 +33,7 @@ internal fun readName(
  * credentials (RFC 9555, Table 1).
  */
 private fun VCardProperty.toNameComponents(): List<NameComponent> {
-    val slots =
-        value.splitUnescaped(';').map { slot ->
-            slot.splitUnescaped(',').map { it.unescapeText().trim() }.filter { it.isNotEmpty() }
-        }
+    val slots = value.splitUnescaped(';').map { it.textValues() }
     val generations = slots.getOrNull(N_KINDS.indexOf(GENERATION)).orEmpty()
     return N_KINDS.zip(slots).flatMap { (kind, values) ->
         values.filterNot { kind == NameComponentKind.Credential && it in generations }.map { NameComponent(it, kind) }

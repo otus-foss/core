@@ -123,8 +123,7 @@ private fun SetResult.validateOutcomes(
 }
 
 /** The server id in a `/set` or `/copy` `created` entry; both report it as the entry's `id`. */
-internal fun Map<String, JsonObject>.idCreatedAs(creationId: String): String? =
-    (get(creationId)?.get("id") as? JsonPrimitive)?.takeIf { it.isString }?.content
+internal fun Map<String, JsonObject>.idCreatedAs(creationId: String): String? = get(creationId)?.string("id")
 
 private fun SetResult.resolveCreatedId(id: String): String? =
     // A creation reference from an earlier method may resolve to an id unknown to this method.

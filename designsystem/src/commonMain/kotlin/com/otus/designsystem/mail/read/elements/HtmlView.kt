@@ -4,9 +4,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.LayoutDirection
 import com.otus.designsystem.theme.colors.OtusPalette
+import com.otus.designsystem.theme.colors.toHex
 import kotlin.math.roundToInt
 
 /**
@@ -112,15 +112,19 @@ internal fun PaddingValues.spacers(): HtmlSpacers =
 private fun spacer(height: Int): String = if (height > 0) "<div style=\"height:${height}px\"></div>" else ""
 
 /** Whether [html] sets a text or background color, in a color attribute, a style attribute, or a style sheet. */
-internal fun hasOwnColors(html: String): Boolean =
-    COLOR_ATTRIBUTE.containsMatchIn(html) ||
-        STYLES.findAll(html).any { styles -> styles.groupValues.drop(1).any(CSS_COLOR::containsMatchIn) }
+internal fun hasOwnColors(html: String): Boolean = COLOR_ATTRIBUTE.containsMatchIn(html) || stylesMatch(html, CSS_COLOR)
 
 /** Whether [html] lays itself out, in a table or on a background of its own, as designed mail does. */
 internal fun hasOwnLayout(html: String): Boolean =
     TABLE_TAG.containsMatchIn(html) ||
         BACKGROUND_ATTRIBUTE.containsMatchIn(html) ||
-        STYLES.findAll(html).any { styles -> styles.groupValues.drop(1).any(CSS_BACKGROUND::containsMatchIn) }
+        stylesMatch(html, CSS_BACKGROUND)
+
+/** Whether [declaration] matches inside a style sheet or style attribute of [html]. */
+private fun stylesMatch(
+    html: String,
+    declaration: Regex,
+): Boolean = STYLES.findAll(html).any { styles -> styles.groupValues.drop(1).any(declaration::containsMatchIn) }
 
 private val TABLE_TAG = Regex("<table(?=[\\s/>])", RegexOption.IGNORE_CASE)
 private val BACKGROUND_ATTRIBUTE = Regex("""(?i)<[^>]*\s(?:bgcolor|background)\s*=""")
@@ -130,11 +134,7 @@ private val COLOR_ATTRIBUTE = Regex("""(?i)<[^>]*\s(?:bg)?color\s*=""")
 private val STYLES = Regex("""(?is)<style\b[^>]*>(.*?)</style>|\sstyle\s*=\s*(?:"([^"]*)"|'([^']*)')""")
 private val CSS_COLOR = Regex("""(?i)(?:^|[\s;{])(?:color|background(?:-color)?)\s*:""")
 
-internal fun Color.css(): String = "#" + (toArgb() and RGB).toString(HEX).padStart(RGB_DIGITS, '0')
-
-private const val RGB = 0xFFFFFF
-private const val HEX = 16
-private const val RGB_DIGITS = 6
+internal fun Color.css(): String = toHex().lowercase()
 
 /** An HTML `<link>` start tag: the tag name ends at whitespace, `/`, or `>`, in any case. */
 private val LINK_TAG = Regex("<link(?=[\\s/>])", RegexOption.IGNORE_CASE)

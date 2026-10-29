@@ -69,9 +69,7 @@ public data class JmapSession(
      */
     public val vapidPublicKey: String?
         get() =
-            (capabilityObjects[JmapCapability.WEBPUSH_VAPID]?.get("applicationServerKey") as? JsonPrimitive)
-                ?.takeIf { it.isString && it.content.isNotEmpty() }
-                ?.content
+            capabilityObjects[JmapCapability.WEBPUSH_VAPID]?.string("applicationServerKey")?.takeIf { it.isNotEmpty() }
 
     /** The primary account for [capability], else the first account offering it, else null. */
     public fun accountFor(capability: String): String? =

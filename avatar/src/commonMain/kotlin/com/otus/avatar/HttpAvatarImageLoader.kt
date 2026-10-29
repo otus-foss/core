@@ -48,14 +48,7 @@ public class HttpAvatarImageLoader(
             requests++
             val result = http.prepareGet(target).execute { response -> readResponse(response, target, page) }
             val location = result.location ?: return result
-            target =
-                URLBuilder()
-                    .takeFrom(target)
-                    .apply {
-                        parameters.clear()
-                        fragment = ""
-                        takeFrom(location)
-                    }.build()
+            target = target.resolving(location).build()
         }
         return null
     }
@@ -71,33 +64,31 @@ public class HttpAvatarImageLoader(
                 ?.trim()
                 ?.lowercase()
         return when {
-            response.status.value in REDIRECTS -> {
-                ImageResponse(location = response.headers[HttpHeaders.Location])
-            }
-
-            response.status.value !in SUCCESS -> {
-                ImageResponse()
-            }
-
-            page && type == "text/html" -> {
-                val html =
-                    response
-                        .bodyAsChannel()
-                        .readBuffer(MAX_HTML_BYTES)
-                        .readByteArray()
-                        .decodeToString()
-                ImageResponse(page = AvatarWebsitePage(target.toString(), html))
-            }
-
-            !page && type in RASTER_TYPES && (response.contentLength() ?: 0) <= MAX_AVATAR_BYTES -> {
-                val bytes = response.bodyAsChannel().readBuffer(MAX_AVATAR_BYTES + 1).readByteArray()
-                ImageResponse(bytes.takeIf { it.isNotEmpty() && it.size <= MAX_AVATAR_BYTES }?.let(::AvatarImage))
-            }
-
-            else -> {
-                ImageResponse()
-            }
+            response.status.value in REDIRECTS -> ImageResponse(location = response.headers[HttpHeaders.Location])
+            response.status.value !in SUCCESS -> ImageResponse()
+            page && type == "text/html" -> ImageResponse(page = readPage(response, target))
+            !page && type in RASTER_TYPES -> ImageResponse(readImage(response))
+            else -> ImageResponse()
         }
+    }
+
+    private suspend fun readPage(
+        response: HttpResponse,
+        target: Url,
+    ): AvatarWebsitePage {
+        val html =
+            response
+                .bodyAsChannel()
+                .readBuffer(MAX_HTML_BYTES)
+                .readByteArray()
+                .decodeToString()
+        return AvatarWebsitePage(target.toString(), html)
+    }
+
+    private suspend fun readImage(response: HttpResponse): AvatarImage? {
+        if ((response.contentLength() ?: 0) > MAX_AVATAR_BYTES) return null
+        val bytes = response.bodyAsChannel().readBuffer(MAX_AVATAR_BYTES + 1).readByteArray()
+        return bytes.takeIf { it.isNotEmpty() && it.size <= MAX_AVATAR_BYTES }?.let(::AvatarImage)
     }
 
     /** Only the default HTTPS port, so a public name whose DNS answer is private cannot probe other ports. */
@@ -131,6 +122,16 @@ public class HttpAvatarImageLoader(
         val REDIRECTS = setOf(301, 302, 303, 307, 308)
     }
 }
+
+/** [reference] resolved against this URL, as a link on its page: without this URL's query or fragment. */
+internal fun Url.resolving(reference: String): URLBuilder =
+    URLBuilder()
+        .takeFrom(this)
+        .apply {
+            parameters.clear()
+            fragment = ""
+            takeFrom(reference)
+        }
 
 internal class AvatarWebsitePage(
     val url: String,

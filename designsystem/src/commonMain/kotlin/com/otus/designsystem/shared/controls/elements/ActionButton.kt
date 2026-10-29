@@ -45,9 +45,8 @@ public fun ActionButton(
     ) {
         Box(
             Modifier
-                .heightIn(
-                    min = PanelTokens.touchTarget,
-                ).padding(horizontal = contentPadding, vertical = PanelTokens.iconGap),
+                .heightIn(min = PanelTokens.touchTarget)
+                .padding(horizontal = contentPadding, vertical = PanelTokens.iconGap),
             contentAlignment = Alignment.Center,
         ) {
             if (labelContent == null) {

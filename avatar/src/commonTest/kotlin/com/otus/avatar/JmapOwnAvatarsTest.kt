@@ -2,8 +2,6 @@ package com.otus.avatar
 
 import com.otus.jmap.JmapClient
 import com.otus.jmap.JmapConnections
-import com.otus.jmap.login.InMemoryLoginStore
-import com.otus.jmap.login.JmapLogin
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.http.HttpHeaders
@@ -216,10 +214,7 @@ private class SelfCardServer(
                 respond("""{"methodResponses":[$responses]}""", headers = json)
             }
         }
-    private val logins =
-        InMemoryLoginStore().apply {
-            save(JmapLogin("ada", "https://mail.example.org/jmap/session", "ada@example.org", "Ada"), "secret")
-        }
+    private val logins = adaLogins()
     val avatars =
         JmapOwnAvatars(JmapConnections(JmapClient(engine), logins), logins, AvatarService()) { AvatarOptions() }
 

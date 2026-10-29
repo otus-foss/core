@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
@@ -32,7 +31,7 @@ import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_keep
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
-import com.otus.designsystem.shared.people.components.AvatarStack
+import com.otus.designsystem.shared.people.components.SilentAvatarStack
 import com.otus.designsystem.shared.sidebar.elements.SidebarCount
 import com.otus.designsystem.shared.sidebar.elements.SidebarExpandButton
 import com.otus.designsystem.theme.colors.OtusColors
@@ -44,9 +43,9 @@ import com.otus.designsystem.theme.typography.panelTextStyle
  * A top-level [ScopeSheet] choice, such as every account, an account, or a pinned address. A
  * row with a subtitle is a group, so its title is SemiBold. A group with nested [ScopeChildRow]s
  * passes [expanded] and gets a chevron that calls [onExpandedChange]; the caller shows the
- * nested rows in a [Collapsible][com.otus.designsystem.shared.rows.components.Collapsible]. The [chosen] row gets a
- * `selectedFill` fill. A long
- * press calls [onLongClick], which pins or unpins the choice.
+ * nested rows in a [Collapsible][com.otus.designsystem.shared.rows.components.Collapsible]. The
+ * [chosen] row gets a `selectedFill` fill. A long press calls [onLongClick], which pins or unpins
+ * the choice.
  */
 @Composable
 public fun ScopeRow(
@@ -112,13 +111,7 @@ private fun ScopeRowFrame(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(SheetTokens.gap),
     ) {
-        // The title names the choice; initials would only repeat it.
-        AvatarStack(
-            option.avatars,
-            Modifier.clearAndSetSemantics {},
-            ring = OtusColors.bgLight,
-            size = if (nested) ScopeSheetTokens.childAvatar else ScopeSheetTokens.avatar,
-        )
+        SilentAvatarStack(option.avatars, if (nested) ScopeSheetTokens.childAvatar else ScopeSheetTokens.avatar)
         ScopeText(option, Modifier.weight(1f))
         option.count?.let { SidebarCount(it) }
         if (option.pinned) {

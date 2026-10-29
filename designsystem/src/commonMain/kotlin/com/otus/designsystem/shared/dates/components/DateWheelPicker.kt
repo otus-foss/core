@@ -90,10 +90,16 @@ internal fun DateWheelPicker(
                 Modifier.weight(CalendarTokens.YEAR_COLUMN_WEIGHT),
             )
         }
-        DatePickerConfirm(dayRequired, selectedDay) {
-            val chosen = YearMonth(selectedYear, selectedMonth)
-            onConfirm(chosen, selectedDay?.let(chosen::onDay))
-        }
+        ActionButton(
+            "Go",
+            {
+                val chosen = YearMonth(selectedYear, selectedMonth)
+                onConfirm(chosen, selectedDay?.let(chosen::onDay))
+            },
+            Modifier.fillMaxWidth(),
+            primary = true,
+            enabled = !dayRequired || selectedDay != null,
+        )
     }
 }
 
@@ -101,15 +107,6 @@ private fun dayChoices(
     days: IntRange,
     dayRequired: Boolean,
 ): List<String> = listOf(if (dayRequired) "Pick" else "Any") + days.map(Int::toString)
-
-@Composable
-private fun DatePickerConfirm(
-    dayRequired: Boolean,
-    day: Int?,
-    onConfirm: () -> Unit,
-) {
-    ActionButton("Go", onConfirm, Modifier.fillMaxWidth(), primary = true, enabled = !dayRequired || day != null)
-}
 
 /** The wheels of a date picker side by side on a `bgRegular` card. */
 @Composable
@@ -160,11 +157,22 @@ internal val MONTH_NAMES =
         "December",
     )
 
-/** A wheel picker's [title], its close button, and a `text2` [note] on how to choose. */
+/** A date picker's [title], its close button, and a `text2` [note] on how to choose. */
 @Composable
 internal fun DatePickerHeading(
     title: String,
     note: String,
+    onDismiss: () -> Unit,
+) {
+    PickerTitle(title, "Close date chooser", onDismiss)
+    Text(note, color = OtusColors.text2, fontSize = SheetTokens.detailSize)
+}
+
+/** A wheel picker's [title] and its close button, which screen readers hear as [closeLabel]. */
+@Composable
+internal fun PickerTitle(
+    title: String,
+    closeLabel: String,
     onDismiss: () -> Unit,
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -174,11 +182,6 @@ internal fun DatePickerHeading(
             fontSize = SheetTokens.titleSize,
             fontWeight = FontWeight.SemiBold,
         )
-        IconButton("Close date chooser", onDismiss) { Symbol(Res.drawable.symbol_close) }
+        IconButton(closeLabel, onDismiss) { Symbol(Res.drawable.symbol_close) }
     }
-    Text(
-        note,
-        color = OtusColors.text2,
-        fontSize = SheetTokens.detailSize,
-    )
 }

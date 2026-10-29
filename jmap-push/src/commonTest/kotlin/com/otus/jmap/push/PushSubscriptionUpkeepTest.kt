@@ -42,7 +42,7 @@ class PushSubscriptionUpkeepTest {
     fun aRefusedVerificationCodeStartsANewSubscription() =
         runTest {
             val store = Store()
-            subscriptions(Server { if ("PushSubscription/get" in it) NO_SUBSCRIPTIONS else created() }, store).run {
+            subscriptions(subscribingServer(), store).run {
                 setEndpoint("ada", endpoint)
                 sync()
                 receive("ada", PushMessage.Verification("ps1", "wrong"))
@@ -75,7 +75,7 @@ class PushSubscriptionUpkeepTest {
     fun aSubscriptionThatIsNeverVerifiedIsCreatedAgain() =
         runTest {
             val store = Store()
-            val created = Server { if ("PushSubscription/get" in it) NO_SUBSCRIPTIONS else created() }
+            val created = subscribingServer()
             subscriptions(created, store).run {
                 setEndpoint("ada", endpoint)
                 sync()
@@ -113,7 +113,7 @@ class PushSubscriptionUpkeepTest {
     fun switchingToAPlainHttpEndpointDeletesTheOldSubscription() =
         runTest {
             val store = Store()
-            subscriptions(Server { if ("PushSubscription/get" in it) NO_SUBSCRIPTIONS else created() }, store).run {
+            subscriptions(subscribingServer(), store).run {
                 setEndpoint("ada", endpoint)
                 sync()
             }
@@ -130,7 +130,7 @@ class PushSubscriptionUpkeepTest {
     fun forgettingALoginDeletesItsSubscriptionAndRecord() =
         runTest {
             val store = Store()
-            subscriptions(Server { if ("PushSubscription/get" in it) NO_SUBSCRIPTIONS else created() }, store).run {
+            subscriptions(subscribingServer(), store).run {
                 setEndpoint("ada", endpoint)
                 sync()
             }

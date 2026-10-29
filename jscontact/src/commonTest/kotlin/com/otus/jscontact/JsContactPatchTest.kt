@@ -173,7 +173,7 @@ class JsContactPatchTest {
         patch: String,
     ): JsonObject = JsContactPatch.apply(target, json(patch))
 
-    private fun json(text: String): JsonObject = JsContactJson.parseToJsonElement(text).jsonObject
+    private fun json(text: String): JsonObject = CardJson.parse(text)
 }
 
 private const val SURNAME = """{"kind": "surname", "value": "Doe"}"""

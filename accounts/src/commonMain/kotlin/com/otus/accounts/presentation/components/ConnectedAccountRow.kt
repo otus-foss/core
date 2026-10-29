@@ -8,9 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.otus.accounts.domain.ConnectedAccount
 import com.otus.accounts.presentation.ownAddresses
-import com.otus.accounts.presentation.toChipAvatar
+import com.otus.accounts.presentation.toChipAvatarOr
 import com.otus.avatar.ResolvedAvatar
-import com.otus.avatar.generatedAvatar
 import com.otus.designsystem.shared.people.components.AvatarButton
 import com.otus.designsystem.shared.people.components.PersonChip
 import com.otus.designsystem.shared.people.components.Recipient
@@ -43,7 +42,7 @@ public fun ConnectedAccountRow(
             leading = {
                 val single = account.ownAddresses.singleOrNull()
                 AvatarButton(
-                    accountAvatar?.toChipAvatar() ?: generatedAvatar(account.name, account.username).toChipAvatar(),
+                    accountAvatar.toChipAvatarOr(account.name, account.username),
                     EntryTokens.avatarSize,
                     if (single != null) "Change the avatar of $single" else "Change the avatar of every address",
                     onClick = { if (single != null) onEditAvatar(single) else onEditAll() },
@@ -55,7 +54,7 @@ public fun ConnectedAccountRow(
             horizontalArrangement = Arrangement.spacedBy(PanelTokens.chipGap),
         ) {
             account.ownAddresses.forEach { email ->
-                val chip = avatar(email)?.toChipAvatar() ?: generatedAvatar(account.name, email).toChipAvatar()
+                val chip = avatar(email).toChipAvatarOr(account.name, email)
                 PersonChip(Recipient(email, chip, "Change the avatar of $email"), onClick = { onEditAvatar(email) })
             }
         }

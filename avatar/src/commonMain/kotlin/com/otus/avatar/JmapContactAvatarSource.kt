@@ -4,6 +4,7 @@ import com.otus.jmap.GetMethod
 import com.otus.jmap.JmapCapability
 import com.otus.jmap.JmapConnection
 import com.otus.jmap.JmapConnections
+import com.otus.jmap.login.JmapLogin
 import com.otus.jmap.login.LoginStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -25,9 +26,7 @@ public class JmapContactAvatarSource(
         allowExternalImages: Boolean,
     ): ContactAvatar? =
         nullOnFailure {
-            val login =
-                withContext(Dispatchers.IO) { logins.logins().firstOrNull { it.id == request.accountKey } }
-                    ?: return@nullOnFailure null
+            val login = logins.savedLogin(request.accountKey) ?: return@nullOnFailure null
             val connection = connections.connection(login)
             val session = connection.session()
             if (JmapCapability.CONTACTS !in session.capabilities) return@nullOnFailure null
@@ -96,6 +95,10 @@ public class JmapContactAvatarSource(
         }
     }
 }
+
+/** The saved login with [id], read off the main thread, or null when there is none. */
+internal suspend fun LoginStore.savedLogin(id: String): JmapLogin? =
+    withContext(Dispatchers.IO) { logins().firstOrNull { it.id == id } }
 
 /** Some servers keep data URIs instead of returning a blobId. Bound input before Base64 decoding. */
 private fun inlineContactImage(uri: String): AvatarImage? {

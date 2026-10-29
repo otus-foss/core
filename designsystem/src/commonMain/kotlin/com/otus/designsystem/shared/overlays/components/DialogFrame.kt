@@ -1,9 +1,6 @@
 package com.otus.designsystem.shared.overlays.components
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,11 +18,9 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
@@ -57,13 +52,7 @@ public fun DialogFrame(
     Dialog(onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         CompositionLocalProvider(LocalDensity provides density) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Box(
-                    Modifier
-                        .fillMaxSize()
-                        .background(OtusColors.scrim.copy(alpha = SheetTokens.SCRIM_ALPHA))
-                        .semantics { contentDescription = "Dismiss $title" }
-                        .clickable(remember { MutableInteractionSource() }, indication = null, onClick = onDismiss),
-                )
+                SheetScrim(title, visible = 1f, onClick = onDismiss)
                 Surface(
                     Modifier
                         .safeDrawingPadding()

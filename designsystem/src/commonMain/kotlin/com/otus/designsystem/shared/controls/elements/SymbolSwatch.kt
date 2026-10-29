@@ -25,8 +25,8 @@ import org.jetbrains.compose.resources.DrawableResource
 
 /**
  * One symbol to pick, such as an avatar icon, in the same ring as a selected
- * [ColorSwatch][com.otus.designsystem.shared.settings.elements.ColorSwatch]. [label]
- * names the symbol for screen readers.
+ * [ColorSwatch][com.otus.designsystem.shared.settings.elements.ColorSwatch]. [label] names the
+ * symbol for screen readers.
  */
 @Composable
 public fun SymbolSwatch(

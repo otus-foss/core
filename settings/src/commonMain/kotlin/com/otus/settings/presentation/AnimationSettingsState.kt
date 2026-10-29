@@ -25,4 +25,4 @@ public class AnimationSettingsState(
 
 /** An unknown name reads as [AnimationSpeed.Regular]. */
 internal fun decodeAnimationSpeed(value: String): AnimationSpeed =
-    AnimationSpeed.entries.firstOrNull { it.name.equals(value.trim(), ignoreCase = true) } ?: AnimationSpeed.Regular
+    entryNamed<AnimationSpeed>(value.trim()) ?: AnimationSpeed.Regular

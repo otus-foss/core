@@ -23,6 +23,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
@@ -62,31 +63,11 @@ public fun FilterChip(
 ) {
     val interactions = remember { MutableInteractionSource() }
     val on = selected && role != FilterChipRole.Button
-    val choose =
-        when (role) {
-            FilterChipRole.Checkbox -> {
-                Modifier.toggleable(on, interactions, null, role = Role.Checkbox) { onClick() }
-            }
-
-            FilterChipRole.Radio -> {
-                Modifier.selectable(
-                    on,
-                    interactions,
-                    null,
-                    role = Role.RadioButton,
-                    onClick = onClick,
-                )
-            }
-
-            FilterChipRole.Button -> {
-                Modifier.clickable(interactions, null, role = Role.Button, onClick = onClick)
-            }
-        }
     Box(
         modifier
             .minimumInteractiveComponentSize()
             .semantics { contentDescription = label.spoken }
-            .then(choose),
+            .chipChoice(role, on, interactions, onClick),
         contentAlignment = Alignment.Center,
     ) {
         Surface(
@@ -113,17 +94,35 @@ public fun FilterChip(
     }
 }
 
+/** Makes the chip a checkbox, a radio button, or a plain button, as [role] says. */
+private fun Modifier.chipChoice(
+    role: FilterChipRole,
+    on: Boolean,
+    interactions: MutableInteractionSource,
+    onClick: () -> Unit,
+): Modifier =
+    when (role) {
+        FilterChipRole.Checkbox -> toggleable(on, interactions, null, role = Role.Checkbox) { onClick() }
+        FilterChipRole.Radio -> selectable(on, interactions, null, role = Role.RadioButton, onClick = onClick)
+        FilterChipRole.Button -> clickable(interactions, null, role = Role.Button, onClick = onClick)
+    }
+
 @Composable
 private fun FilterChipText(label: ChipLabel) {
-    val faint = OtusColors.text3
-    val text =
-        buildAnnotatedString {
-            label.prefix?.let { withStyle(SpanStyle(color = faint)) { append("$it / ") } }
-            append(label.text)
-        }
     Text(
-        text,
+        label.annotated(),
         style = panelTextStyle().copy(color = Color.Unspecified, fontSize = FilterTokens.chipTextSize),
         maxLines = 1,
     )
+}
+
+/** The label's text after its `text3` prefix and a slash, such as "Freelancing / Invoices". */
+@Composable
+internal fun ChipLabel.annotated(): AnnotatedString {
+    val faint = OtusColors.text3
+    val label = this
+    return buildAnnotatedString {
+        label.prefix?.let { withStyle(SpanStyle(color = faint)) { append("$it / ") } }
+        append(label.text)
+    }
 }

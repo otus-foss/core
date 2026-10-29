@@ -12,9 +12,9 @@ import com.otus.designsystem.theme.typography.panelTextStyle
 import org.jetbrains.compose.resources.DrawableResource
 
 /**
- * A built-in mailbox in the sidebar: a [Chip][com.otus.designsystem.shared.controls.elements.Chip] filled
- * `bgRegular` to stand apart from the sidebar's
- * `bgDark`, with an optional [count] after the label in smaller `text2`.
+ * A built-in mailbox in the sidebar: a [Chip][com.otus.designsystem.shared.controls.elements.Chip]
+ * filled `bgRegular` to stand apart from the sidebar's `bgDark`, with an optional [count] after the
+ * label in smaller `text2`.
  */
 @Composable
 public fun SidebarPill(

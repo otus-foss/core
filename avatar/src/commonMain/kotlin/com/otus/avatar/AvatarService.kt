@@ -26,9 +26,8 @@ public class AvatarService(
         request: AvatarRequest,
         options: AvatarOptions = AvatarOptions(),
     ): ResolvedAvatar {
-        val normalized = request.copy(email = avatarEmailKey(request.email))
-        val fallback = generatedAvatar(request.name, normalized.email)
-        if (!isAvatarEmail(normalized.email)) return ResolvedAvatar(fallback)
+        val fallback = generatedAvatar(request.name, request.email)
+        val normalized = request.normalized() ?: return ResolvedAvatar(fallback)
         val started = cache.begin()
         val contact =
             cache.load(contactKey(normalized, options), started) {
@@ -49,25 +48,27 @@ public class AvatarService(
         options: AvatarOptions,
         started: Long,
     ): ResolvedAvatar {
-        val iconOptions = iconOptions(contact.style, options)
-        val domain =
-            if (contact.image == null) {
-                iconDomain(email, iconOptions)?.let { site ->
-                    cache
-                        .load(domainKey(site, iconOptions), started) {
-                            fetches.withPermit { domainImage(site, iconOptions)?.let { StoredAvatar(it, 0) } }
-                        }.image
-                }
-            } else {
-                null
-            }
+        val icon = if (contact.image == null) websiteIcon(email, iconOptions(contact.style, options), started) else null
         val origin =
             when {
                 contact.image != null -> AvatarOrigin.Contact
-                domain != null -> AvatarOrigin.Domain
+                icon != null -> AvatarOrigin.Domain
                 else -> null
             }
-        return ResolvedAvatar(fallback, contact.image ?: domain, origin, contact.style)
+        return ResolvedAvatar(fallback, contact.image ?: icon, origin, contact.style)
+    }
+
+    private suspend fun websiteIcon(
+        email: String,
+        options: AvatarOptions,
+        started: Long,
+    ): AvatarImage? {
+        val site = iconDomain(email, options) ?: return null
+        val stored =
+            cache.load(domainKey(site, options), started) {
+                fetches.withPermit { domainImage(site, options)?.let { StoredAvatar(it, 0) } }
+            }
+        return stored.image
     }
 
     /** Local images only, so refreshed rows keep their avatar before network work. */
@@ -75,8 +76,7 @@ public class AvatarService(
         request: AvatarRequest,
         options: AvatarOptions = AvatarOptions(),
     ): ResolvedAvatar? {
-        val normalized = request.copy(email = avatarEmailKey(request.email))
-        if (!isAvatarEmail(normalized.email)) return null
+        val normalized = request.normalized() ?: return null
         val contact = cache.peek(contactKey(normalized, options))
         val fallback = generatedAvatar(request.name, normalized.email)
         val style = contact?.style
@@ -106,14 +106,8 @@ public class AvatarService(
         request: AvatarRequest,
         avatar: ContactAvatar?,
     ) {
-        val normalized = request.copy(email = avatarEmailKey(request.email))
-        if (!isAvatarEmail(normalized.email)) return
-        val entry =
-            when (avatar) {
-                is ContactAvatar.Photo -> StoredAvatar(avatar.image, 0)
-                is ContactAvatar.Styled -> StoredAvatar(null, 0, avatar.style)
-                null -> null
-            }
+        val normalized = request.normalized() ?: return
+        val entry = avatar?.toStored()
         listOf(false, true).forEach { external ->
             val key = contactKey(normalized, AvatarOptions(externalContactImages = external))
             if (entry == null) cache.expire(key) else cache.put(key, entry)
@@ -129,7 +123,7 @@ public class AvatarService(
     ): StoredAvatar? =
         when (val found = nullOnFailure { contacts.avatar(request, options.externalContactImages) }) {
             is ContactAvatar.Photo -> avatarOrNull { found.image }?.let { StoredAvatar(it, 0) }
-            is ContactAvatar.Styled -> StoredAvatar(null, 0, found.style)
+            is ContactAvatar.Styled -> found.toStored()
             null -> null
         }
 
@@ -142,10 +136,9 @@ public class AvatarService(
         options: AvatarOptions,
     ): String? {
         val host = avatarIconDomain(email)?.takeIf { options.domainIcons } ?: return null
-        return resolvedDomain(host)?.takeIf { isPublicAvatarHost(it) && (host == it || host.endsWith(".$it")) }
+        val domain = nullOnFailure { domains.resolve(host) }
+        return domain?.takeIf { isPublicAvatarHost(it) && (host == it || host.endsWith(".$it")) }
     }
-
-    private suspend fun resolvedDomain(host: String): String? = nullOnFailure { domains.resolve(host) }
 
     private suspend fun domainImage(
         domain: String,
@@ -174,6 +167,16 @@ private fun iconOptions(
     style: AvatarStyle?,
     options: AvatarOptions,
 ) = if (style?.mark == AvatarMark.Website) options.copy(domainIcons = true) else options
+
+/** The request with its address as a cache key, or null when it is no address to look up. */
+private fun AvatarRequest.normalized(): AvatarRequest? =
+    copy(email = avatarEmailKey(email)).takeIf { isAvatarEmail(it.email) }
+
+private fun ContactAvatar.toStored(): StoredAvatar =
+    when (this) {
+        is ContactAvatar.Photo -> StoredAvatar(image, 0)
+        is ContactAvatar.Styled -> StoredAvatar(null, 0, style)
+    }
 
 private fun AvatarStyle?.wantsIcon() = this == null || mark == AvatarMark.Website
 

@@ -6,6 +6,7 @@ import io.ktor.client.request.preparePost
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
+import io.ktor.http.Url
 import io.ktor.http.content.ByteArrayContent
 import kotlinx.io.IOException
 import kotlinx.serialization.Serializable
@@ -44,7 +45,7 @@ internal class JmapUploads(
                 throw JmapException.Unreachable(error)
             }
         // Redirects are not followed, so a moved endpoint fails here without resending the blob.
-        response.failure()?.let { throw it }
+        response.requireSuccess()
         val dto = jmapDecoding { JmapJson.decodeFromString(UploadDto.serializer(), response.text) }
         return JmapUpload(dto.blobId, dto.type, dto.size)
     }
@@ -52,13 +53,10 @@ internal class JmapUploads(
     private fun uploadTarget(
         session: JmapSession,
         accountId: String,
-    ) = urls.trustedTarget(
-        session,
-        expandUriTemplate(
-            session.uploadUrl ?: throw JmapException.NotJmap("no blob upload endpoint"),
-            mapOf("accountId" to accountId),
-        ),
-    )
+    ): Url {
+        val template = session.uploadUrl ?: throw JmapException.NotJmap("no blob upload endpoint")
+        return urls.trustedTarget(session, expandUriTemplate(template, mapOf("accountId" to accountId)))
+    }
 }
 
 /** Refuses before sending anything the server would reject for size. */

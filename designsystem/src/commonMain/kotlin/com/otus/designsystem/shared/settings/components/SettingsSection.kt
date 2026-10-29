@@ -42,9 +42,7 @@ public fun SettingsSection(
             horizontalArrangement = Arrangement.spacedBy(SettingTokens.sectionLeadingGap),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            avatar?.let {
-                PersonAvatar(it, SettingTokens.sectionAvatar)
-            }
+            avatar?.let { PersonAvatar(it, SettingTokens.sectionAvatar) }
             Text(
                 title,
                 fontSize = SettingTokens.sectionTitleSize,

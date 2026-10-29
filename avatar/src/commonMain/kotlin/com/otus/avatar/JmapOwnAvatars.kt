@@ -21,11 +21,8 @@ import com.otus.jscontact.Media
 import com.otus.jscontact.MediaKind
 import com.otus.jscontact.Name
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonObject
 import kotlin.io.encoding.Base64
 import com.otus.jmap.contacts.AddressBookType as BookType
@@ -67,7 +64,7 @@ public class JmapOwnAvatars(
             throw OwnAvatarException(OwnAvatarFailure.Failed, error)
         }
         service.removeAccount(accountKey)
-        avatar?.let { service.saved(AvatarRequest(accountKey, email, name), it) }
+        if (avatar != null) service.saved(AvatarRequest(accountKey, email, name), avatar)
     }
 
     private suspend fun write(
@@ -83,37 +80,22 @@ public class JmapOwnAvatars(
         val photo = (avatar as? ContactAvatar.Photo)?.toMedia()
         val method =
             when {
-                card != null -> {
-                    SetMethod(CardType, account, update = mapOf(requireNotNull(card.id) to card.patch(avatar, photo)))
-                }
-
-                avatar == null -> {
-                    return
-                }
-
-                else -> {
-                    val book = books.sortedByDescending { it.isDefault }.firstOrNull()
-                    SetMethod(
-                        CardType,
-                        account,
-                        create =
-                            mapOf(NEW_CARD to newCard(email, name, book.writable().id, avatar, photo)),
-                    )
-                }
+                card != null -> SetMethod(CardType, account, update = card.update(avatar, photo))
+                avatar == null -> return
+                else -> SetMethod(CardType, account, create = newCard(email, name, books, avatar, photo))
             }
         val result = connection.call(method)
         result.firstError?.let { error ->
             val reason = if (error.type == "forbidden") OwnAvatarFailure.ReadOnly else OwnAvatarFailure.Failed
             throw OwnAvatarException(reason, IllegalStateException(error.description ?: error.type))
         }
-        result.createdId(NEW_CARD)?.let { id -> madeLock.withLock { made[accountKey to email] = id } }
+        val created = result.createdId(NEW_CARD) ?: return
+        madeLock.withLock { made[accountKey to email] = created }
     }
 
     /** The login's connection and the account that holds its contacts. */
     private suspend fun contactsAccount(accountKey: String): Pair<JmapConnection, String> {
-        val login =
-            withContext(Dispatchers.IO) { logins.logins().firstOrNull { it.id == accountKey } }
-                ?: throw OwnAvatarException(OwnAvatarFailure.Failed)
+        val login = logins.savedLogin(accountKey) ?: throw OwnAvatarException(OwnAvatarFailure.Failed)
         val connection = connections.connection(login)
         val account =
             connection.session().accountFor(JmapCapability.CONTACTS)
@@ -141,26 +123,37 @@ public class JmapOwnAvatars(
                         val query =
                             call(QueryMethod(CardType, account, ContactCardFilter(email = email).toFilter().toJson()))
                         get = call(GetMethod(CardType, account, JmapIds.Result(query.resultOf("/ids")), properties))
-                        made?.let { byId = call(GetMethod(CardType, account, JmapIds.Of(listOf(it)), properties)) }
+                        if (made != null) {
+                            byId = call(GetMethod(CardType, account, JmapIds.Of(listOf(made)), properties))
+                        }
                     }
                 val found = if (made != null) response[byId].list else emptyList()
                 (response[get].list + found).distinctBy { it.id }
             }
         return cards
-            .filter { card ->
-                card.addressBookIds.orEmpty().any { it.value && it.key in writable } &&
-                    card.emails
-                        .orEmpty()
-                        .values
-                        .any { avatarEmailKey(it.address) == email }
-            }.sortedWith(
-                compareBy({ !it.isAvatarCard }, { it.id }),
-            ).firstOrNull()
+            .filter { it.isSelfCard(email, writable) }
+            .sortedWith(compareBy({ !it.isAvatarCard }, { it.id }))
+            .firstOrNull()
     }
 }
 
+/** Whether this card has [email] and sits in one of the [writable] books. */
+private fun Card.isSelfCard(
+    email: String,
+    writable: Set<String>,
+): Boolean =
+    addressBookIds.orEmpty().any { it.value && it.key in writable } &&
+        emails.orEmpty().values.any { avatarEmailKey(it.address) == email }
+
 /** The book a new self card goes in; without one the user may write to, there is nowhere to save. */
-private fun AddressBook?.writable(): AddressBook = this ?: throw OwnAvatarException(OwnAvatarFailure.ReadOnly)
+private fun List<AddressBook>.saveTarget(): AddressBook =
+    sortedByDescending { it.isDefault }.firstOrNull() ?: throw OwnAvatarException(OwnAvatarFailure.ReadOnly)
+
+/** The `update` argument that sets this card's avatar. */
+private fun Card.update(
+    avatar: ContactAvatar?,
+    photo: Media?,
+): Map<String, JsonObject> = mapOf(requireNotNull(id) to patch(avatar, photo))
 
 private fun Card.patch(
     avatar: ContactAvatar?,
@@ -187,41 +180,36 @@ private fun Card.patch(
                 val properties = avatarPropertiesWith(vCard, style)
                 // The same goes for `vCard`.
                 if (vCard is JsonObject) {
-                    set(properties, VCARD_PROPERTY, PROPERTIES)
+                    set(properties, VCARD_PROPERTY, VCARD_PROPERTIES)
                 } else {
-                    set(
-                        JsonObject(
-                            mapOf(PROPERTIES to properties),
-                        ),
-                        VCARD_PROPERTY,
-                    )
+                    set(JsonObject(mapOf(VCARD_PROPERTIES to properties)), VCARD_PROPERTY)
                 }
             }
         }
     }
 }
 
+/** The `create` argument that makes a self card for [email] in the default writable book. */
 private fun newCard(
     email: String,
     name: String,
-    book: String,
+    books: List<AddressBook>,
     avatar: ContactAvatar,
     photo: Media?,
-) = Card(
-    kind = CardKind.Individual,
-    name = name.trim().takeIf { it.isNotEmpty() }?.let { Name(full = it) },
-    emails = mapOf(EMAIL_KEY to EmailAddress(email)),
-    media = photo?.let { mapOf(AVATAR_PHOTO_KEY to it) },
-    addressBookIds = mapOf(book to true),
-    extra =
-        (avatar as? ContactAvatar.Styled)
-            ?.let { mapOf(VCARD_PROPERTY to JsonObject(mapOf(PROPERTIES to avatarPropertiesWith(null, it.style)))) }
-            .orEmpty(),
-).toCreation()
+): Map<String, JsonObject> {
+    val card =
+        Card(
+            kind = CardKind.Individual,
+            name = name.trim().takeIf { it.isNotEmpty() }?.let { Name(full = it) },
+            emails = mapOf(EMAIL_KEY to EmailAddress(email)),
+            media = photo?.let { mapOf(AVATAR_PHOTO_KEY to it) },
+            addressBookIds = mapOf(books.saveTarget().id to true),
+        )
+    return mapOf(NEW_CARD to card.withAvatarStyle((avatar as? ContactAvatar.Styled)?.style).toCreation())
+}
 
 private fun ContactAvatar.Photo.toMedia() =
     Media(MediaKind.Photo, uri = "data:$mediaType;base64,${Base64.encode(image.bytes)}", mediaType = mediaType)
 
 private const val NEW_CARD = "self"
 private const val EMAIL_KEY = "e1"
-private const val PROPERTIES = "properties"

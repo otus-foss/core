@@ -40,16 +40,17 @@ internal suspend fun <T : Any> findContactAvatar(
             state = query.queryState
             val found =
                 cards
-                    .filter { card ->
-                        card.isIn(books) &&
-                            card.emails.values.any { avatarEmailKey(it.address) == avatarEmailKey(email) }
-                    }.sortedWith(compareBy({ !it.isIn(own) }, { !it.isOtusAvatar }, { it.id }))
+                    .filter { it.isIn(books) && it.hasAddress(email) }
+                    .sortedWith(compareBy({ !it.isIn(own) }, { !it.isOtusAvatar }, { it.id }))
                     .firstNotNullOfOrNull { load(it) }
             if (found != null) return@withTimeoutOrNull found
             position += query.ids.size
         }
         null
     }
+
+private fun ContactCard.hasAddress(email: String): Boolean =
+    emails.values.any { avatarEmailKey(it.address) == avatarEmailKey(email) }
 
 private suspend fun contactPage(
     connection: JmapConnection,

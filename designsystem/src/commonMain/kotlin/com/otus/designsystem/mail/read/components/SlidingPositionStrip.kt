@@ -45,12 +45,8 @@ public fun SlidingPositionStrip(
     PositionCard(spoken, onClick, modifier) {
         PageTrack(count, position, Modifier.weight(1f)) { index ->
             val content = page(index)
-            PositionInfo(
-                content.heading,
-                StripPosition(count, index, content.detail),
-                Modifier.fillMaxWidth(),
-                trailing,
-            )
+            val place = StripPosition(count, index, content.detail)
+            PositionInfo(content.heading, place, Modifier.fillMaxWidth(), trailing)
         }
     }
 }

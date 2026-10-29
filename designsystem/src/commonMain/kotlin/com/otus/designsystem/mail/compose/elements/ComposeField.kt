@@ -62,9 +62,7 @@ public fun ComposeField(
                 ),
             decorationBox = { field ->
                 Box(contentAlignment = Alignment.CenterStart) {
-                    if (value.isEmpty() &&
-                        placeholder != null
-                    ) {
+                    if (value.isEmpty() && placeholder != null) {
                         Text(placeholder, style = style, color = OtusColors.text3)
                     }
                     field()
@@ -76,8 +74,8 @@ public fun ComposeField(
 
 /**
  * The shared layout: a 48 dp line with the label in its column first and a hairline below, for
- * these fields and [com.otus.designsystem.mail.compose.components.RecipientLine]. A [topAligned] line, one that
- * wraps, keeps its label beside its first row.
+ * these fields and [com.otus.designsystem.mail.compose.components.RecipientLine]. A [topAligned]
+ * line, one that wraps, keeps its label beside its first row.
  */
 @Composable
 internal fun ComposeLine(
@@ -93,15 +91,13 @@ internal fun ComposeLine(
             .bottomHairline()
             .padding(horizontal = PageTokens.textInset),
         horizontalArrangement = Arrangement.spacedBy(ComposeTokens.labelGap),
-        // A line that wraps keeps its label beside its first row.
         verticalAlignment = if (topAligned) Alignment.Top else Alignment.CenterVertically,
     ) {
         // The field names itself, so the label is not read twice.
         Box(
             Modifier
-                .heightIn(
-                    min = PanelTokens.touchTarget,
-                ).widthIn(min = ComposeTokens.labelWidth)
+                .heightIn(min = PanelTokens.touchTarget)
+                .widthIn(min = ComposeTokens.labelWidth)
                 .clearAndSetSemantics {},
             contentAlignment = Alignment.CenterStart,
         ) { Text(label, style = panelTextStyle(), color = OtusColors.text2) }

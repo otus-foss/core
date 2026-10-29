@@ -128,7 +128,7 @@ internal object AnniversaryDateSerializer : KSerializer<AnniversaryDate> {
         val input = decoder as? JsonDecoder ?: throw SerializationException("AnniversaryDate needs JSON")
         val element = input.decodeJsonElement()
         val strategy: DeserializationStrategy<AnniversaryDate> =
-            when (val type = ((element as? JsonObject)?.get(TYPE_KEY) as? JsonPrimitive)?.content) {
+            when (val type = ((element as? JsonObject)?.get(TYPE_PROPERTY) as? JsonPrimitive)?.content) {
                 null, PARTIAL_DATE -> PartialDate.serializer()
                 TIMESTAMP -> Timestamp.serializer()
                 else -> throw SerializationException("Unknown AnniversaryDate type: $type")
@@ -147,6 +147,5 @@ internal object AnniversaryDateSerializer : KSerializer<AnniversaryDate> {
     }
 }
 
-private const val TYPE_KEY = "@type"
 private const val PARTIAL_DATE = "PartialDate"
 private const val TIMESTAMP = "Timestamp"

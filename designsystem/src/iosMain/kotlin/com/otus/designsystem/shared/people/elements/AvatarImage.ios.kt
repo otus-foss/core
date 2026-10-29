@@ -59,10 +59,7 @@ public actual fun decodeImage(
 ): ImageBitmap? {
     val source = imageSource(bytes) ?: return null
     try {
-        return if (hasAllowedSize(
-                source,
-            )
-        ) {
+        return if (hasAllowedSize(source)) {
             thumbnail(source, maxSize)?.let { rasterizeAndRelease(it, maxSize) }
         } else {
             null
@@ -148,13 +145,7 @@ private fun rasterize(
     val rowBytes = width * BYTES_PER_PIXEL
     val pixels = ByteArray(rowBytes * height)
     val info = ImageInfo(width, height, ColorType.RGBA_8888, ColorAlphaType.PREMUL)
-    return if (draw(
-            image,
-            pixels,
-            width,
-            height,
-        )
-    ) {
+    return if (draw(image, pixels, width, height)) {
         Image.makeRaster(info, pixels, rowBytes).toComposeImageBitmap()
     } else {
         null
@@ -180,11 +171,10 @@ private fun draw(
                     (width * BYTES_PER_PIXEL).convert(),
                     colors,
                     CGImageAlphaInfo.kCGImageAlphaPremultipliedLast.value,
-                )
-            context?.let { drawing ->
-                CGContextDrawImage(drawing, CGRectMake(0.0, 0.0, width.toDouble(), height.toDouble()), image)
-                CGContextRelease(drawing)
-            } != null
+                ) ?: return@usePinned false
+            CGContextDrawImage(context, CGRectMake(0.0, 0.0, width.toDouble(), height.toDouble()), image)
+            CGContextRelease(context)
+            true
         }
     } finally {
         CGColorSpaceRelease(colors)

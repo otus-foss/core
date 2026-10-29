@@ -8,8 +8,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
@@ -25,12 +23,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntSize
 import com.otus.designsystem.shared.controls.elements.Symbol
-import com.otus.designsystem.shared.controls.elements.controlPressFeedback
+import com.otus.designsystem.shared.panels.elements.darkSurface
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.MotionCurve
 import com.otus.designsystem.theme.motion.MotionSpeed
@@ -51,16 +46,13 @@ internal fun RoundPrimary(
     context: BarContext?,
     modifier: Modifier = Modifier,
 ) {
-    val interactions = remember { MutableInteractionSource() }
     val menu = rememberBarMenu()
     val pill = RoundedCornerShape(percent = 50)
     val front = rememberFrontBar(primary, context)
     Box(
         modifier
             .height(ActionBarTokens.height)
-            .semantics { contentDescription = listOfNotNull(primary.label, context?.description).joinToString(", ") }
-            .clickable(interactions, null, enabled = primary.enabled, role = Role.Button, onClick = menu.click(primary))
-            .controlPressFeedback(interactions, pill),
+            .primaryButton(primary, context, menu, pill),
         contentAlignment = Alignment.CenterEnd,
     ) {
         CompositionLocalProvider(
@@ -86,13 +78,8 @@ private fun ContextShell(
     pill: Shape,
 ) {
     val shown = front.context
-    // The last context and the title it went with stay drawn while the shell shrinks away.
-    val last = remember { LastContext() }
-    val title = remember { LastTitle() }
-    if (shown != null) {
-        last.value = shown
-        title.value = front.face.targetState.label
-    }
+    val last = remember { LastShown() }
+    if (shown != null) last.value = DrawnContext(front.face.targetState.label, shown)
     val visible = remember { MutableTransitionState(shown != null) }
     visible.targetState = shown != null
     val circleWidth = with(LocalDensity.current) { ActionBarTokens.height.roundToPx() }
@@ -105,8 +92,7 @@ private fun ContextShell(
         // Drawn on the resizing container, so the round end follows the width as it changes.
         Modifier
             .fillMaxHeight()
-            .background(OtusColors.bgDark, pill)
-            .border(PanelTokens.borderWidth, OtusColors.strokeBgDark, pill),
+            .darkSurface(pill),
         enter = expandHorizontally(grow, Alignment.End) { circleWidth },
         exit = shrinkHorizontally(shrink, Alignment.End) { circleWidth },
     ) {
@@ -116,8 +102,8 @@ private fun ContextShell(
         ) {
             last.value?.let {
                 ContextContent(
-                    title.value,
-                    it,
+                    it.title,
+                    it.context,
                     if (enabled) OtusColors.text2 else OtusColors.text3,
                     // The shell runs on behind the circle, so its round end sits under it.
                     Modifier.padding(
@@ -148,7 +134,10 @@ private fun Circle(
     ) { icon() }
 }
 
-/** The title shown beside the last context, kept like [LastContext] while the shell shrinks away. */
-private class LastTitle {
-    var value: String = ""
+/**
+ * The last context drawn and the title it went with, kept while the shell shrinks away. It is not
+ * state, because it changes only during a recomposition.
+ */
+private class LastShown {
+    var value: DrawnContext? = null
 }

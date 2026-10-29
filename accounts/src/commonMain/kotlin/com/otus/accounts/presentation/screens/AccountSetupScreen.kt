@@ -86,14 +86,9 @@ public fun AccountSetupScreen(
         state.accounts.firstOrNull { it.id == accountId }?.let { AvatarEditors(avatars, it, email) { editing = null } }
     }
     if (adding) {
-        SheetFrame("Connect an account", onDismiss = {
+        AddAccountSheet(state, service) {
             state.cancelConnect()
             adding = false
-        }) {
-            Column(
-                Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(SheetTokens.inset),
-                verticalArrangement = Arrangement.spacedBy(PageTokens.rowGap),
-            ) { AddAccountForm(state, service) }
         }
     }
     state.accounts.firstOrNull { it.id == removing }?.let { account ->
@@ -148,9 +143,7 @@ private fun AvatarEditors(
     email: String?,
     onDismiss: () -> Unit,
 ) {
-    if (email ==
-        null
-    ) {
+    if (email == null) {
         AccountAvatarEditor(avatars.accountEdit(account), onDismiss)
     } else {
         AvatarEditor(avatars, account, email, onDismiss)
@@ -175,6 +168,20 @@ private fun AvatarEditor(
 }
 
 @Composable
+private fun AddAccountSheet(
+    state: AccountsState,
+    service: AccountService,
+    onDismiss: () -> Unit,
+) {
+    SheetFrame("Connect an account", onDismiss = onDismiss) {
+        Column(
+            Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(SheetTokens.inset),
+            verticalArrangement = Arrangement.spacedBy(PageTokens.rowGap),
+        ) { AddAccountForm(state, service) }
+    }
+}
+
+@Composable
 private fun AddAccountForm(
     state: AccountsState,
     service: AccountService,
@@ -193,9 +200,14 @@ private fun AddAccountForm(
         }
     }
     PageNote("Enter your JMAP server and sign-in details.")
-    InputField("Server", server, {
-        server = it
-    }, placeholder = "${service.name}.example.com", supportingText = serverHint(address), kind = InputKind.Url)
+    InputField(
+        "Server",
+        server,
+        { server = it },
+        placeholder = "${service.name}.example.com",
+        supportingText = serverHint(address),
+        kind = InputKind.Url,
+    )
     InputField(
         "Username",
         username,
@@ -217,9 +229,7 @@ private fun AddAccountForm(
         if (connecting) "Connecting…" else "Connect",
         {
             if (address is JmapServerAddress.Valid) {
-                state.connect(
-                    JmapAccountDraft(address.sessionUrl, username.trim(), password),
-                )
+                state.connect(JmapAccountDraft(address.sessionUrl, username.trim(), password))
             }
         },
         Modifier.fillMaxWidth(),
@@ -229,9 +239,7 @@ private fun AddAccountForm(
     if (status is ConnectStatus.ConfirmHost) {
         ConfirmHostPrompt(status.host, state)
     } else {
-        statusText(status, service)?.let {
-            PageNote(it)
-        }
+        statusText(status, service)?.let { PageNote(it) }
     }
 }
 
