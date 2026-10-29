@@ -163,23 +163,24 @@ public class JmapClient(
         body: String?,
     ): RawResponse =
         try {
-            http
-                .prepareRequest {
+            val request =
+                http.prepareRequest {
                     this.method = method
                     url(target)
-                    auth?.let { header(HttpHeaders.Authorization, it.header()) }
+                    if (auth != null) header(HttpHeaders.Authorization, auth.header())
                     header(HttpHeaders.Accept, ContentType.Application.Json.toString())
-                    body?.let {
+                    if (body != null) {
                         contentType(ContentType.Application.Json)
-                        setBody(it)
+                        setBody(body)
                     }
-                }.execute { response ->
-                    RawResponse(
-                        response.status.value,
-                        response.headers[HttpHeaders.Location],
-                        response.limitedText(policy.maxResponseBytes),
-                    )
                 }
+            request.execute { response ->
+                RawResponse(
+                    response.status.value,
+                    response.headers[HttpHeaders.Location],
+                    response.limitedText(policy.maxResponseBytes),
+                )
+            }
         } catch (error: IOException) {
             throw JmapException.Unreachable(error)
         }

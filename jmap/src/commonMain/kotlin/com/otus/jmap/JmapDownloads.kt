@@ -30,15 +30,16 @@ internal class JmapDownloads(
         require(accountId in session.accounts)
         val target = downloadTarget(session, accountId, blobId, mediaType, name)
         return try {
-            http
-                .prepareGet(target) {
+            val request =
+                http.prepareGet(target) {
                     header(HttpHeaders.Authorization, auth.header())
                     header(HttpHeaders.Accept, mediaType)
-                }.execute { response ->
-                    RawResponse(response.status.value, null, "").requireSuccess()
-                    val bytes = response.limitedBytes(maxBytes)
-                    JmapBlob(bytes, response.headers[HttpHeaders.ContentType]?.substringBefore(';') ?: mediaType)
                 }
+            request.execute { response ->
+                RawResponse(response.status.value, location = null, text = "").requireSuccess()
+                val bytes = response.limitedBytes(maxBytes)
+                JmapBlob(bytes, response.headers[HttpHeaders.ContentType]?.substringBefore(';') ?: mediaType)
+            }
         } catch (error: IOException) {
             throw JmapException.Unreachable(error)
         }

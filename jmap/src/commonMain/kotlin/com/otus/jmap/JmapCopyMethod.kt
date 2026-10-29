@@ -37,9 +37,9 @@ public class CopyMethod(
     override fun arguments(): JsonObject =
         buildJsonObject {
             put("fromAccountId", JsonPrimitive(fromAccountId))
-            ifFromInState?.let { put("ifFromInState", JsonPrimitive(it)) }
+            if (ifFromInState != null) put("ifFromInState", JsonPrimitive(ifFromInState))
             put("accountId", JsonPrimitive(toAccountId))
-            ifInState?.let { put("ifInState", JsonPrimitive(it)) }
+            if (ifInState != null) put("ifInState", JsonPrimitive(ifInState))
             put("create", JsonObject(create))
             if (onSuccessDestroyOriginal) put("onSuccessDestroyOriginal", JsonPrimitive(true))
         }

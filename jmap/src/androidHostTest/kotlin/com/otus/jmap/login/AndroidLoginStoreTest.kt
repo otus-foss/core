@@ -50,20 +50,7 @@ class AndroidLoginStoreTest {
 
     @Test
     fun failedCommitsAreReportedForSaveAndRemoval() {
-        val failing =
-            object : SharedPreferences by preferences {
-                override fun edit(): SharedPreferences.Editor =
-                    object : SharedPreferences.Editor by preferences.edit() {
-                        override fun putString(
-                            key: String?,
-                            value: String?,
-                        ): SharedPreferences.Editor = this
-
-                        override fun remove(key: String?): SharedPreferences.Editor = this
-
-                        override fun commit() = false
-                    }
-            }
+        val failing = UncommittedPreferences(preferences)
         val unavailable = AndroidLoginStore(failing, cipher)
         assertFailsWith<LoginStoreException> { unavailable.save(login, "secret") }
         assertFailsWith<LoginStoreException> { unavailable.remove("a") }
@@ -89,4 +76,20 @@ private class TestLoginCipher : LoginCipher {
     }
 
     override fun open(value: String): LoginSecret = LoginSecret.Found(value.removePrefix("sealed:"))
+}
+
+private class UncommittedPreferences(
+    private val preferences: SharedPreferences,
+) : SharedPreferences by preferences {
+    override fun edit(): SharedPreferences.Editor =
+        object : SharedPreferences.Editor by preferences.edit() {
+            override fun putString(
+                key: String?,
+                value: String?,
+            ): SharedPreferences.Editor = this
+
+            override fun remove(key: String?): SharedPreferences.Editor = this
+
+            override fun commit() = false
+        }
 }

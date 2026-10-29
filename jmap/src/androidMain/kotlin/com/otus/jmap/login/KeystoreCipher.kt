@@ -53,7 +53,13 @@ internal class KeystoreCipher(
     }
 
     /** Synchronized so that two first uses cannot both generate, and replace, the key. */
-    private fun key(): SecretKey = key ?: synchronized(this) { key ?: loadKey().also { key = it } }
+    private fun key(): SecretKey = key ?: synchronized(this) { key ?: loadAndCacheKey() }
+
+    private fun loadAndCacheKey(): SecretKey {
+        val loaded = loadKey()
+        key = loaded
+        return loaded
+    }
 
     private fun encode(bytes: ByteArray) = Base64.encodeToString(bytes, Base64.NO_WRAP)
 
