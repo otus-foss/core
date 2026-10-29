@@ -45,19 +45,9 @@ public fun Avatar(
         contentAlignment = Alignment.Center,
     ) {
         when {
-            image != null -> {
-                Image(image, contentDescription = null, Modifier.matchParentSize(), contentScale = ContentScale.Crop)
-            }
-
-            symbol != null -> {
-                CompositionLocalProvider(LocalContentColor provides content) {
-                    Symbol(symbol, size = size * AvatarTokens.SYMBOL_SCALE)
-                }
-            }
-
-            else -> {
-                Text(initial, style = initialsStyle(size), color = content)
-            }
+            image != null -> AvatarPhoto(image, Modifier.matchParentSize())
+            symbol != null -> AvatarSymbol(symbol, size, content)
+            else -> Text(initial, style = initialsStyle(size), color = content)
         }
     }
 }
@@ -84,3 +74,22 @@ private fun initialsStyle(size: Dp): TextStyle {
 }
 
 private const val INITIALS_SCALE = 1f / 3
+
+@Composable
+internal fun AvatarPhoto(
+    image: ImageBitmap,
+    modifier: Modifier,
+) {
+    Image(image, contentDescription = null, modifier, contentScale = ContentScale.Crop)
+}
+
+@Composable
+internal fun AvatarSymbol(
+    symbol: DrawableResource,
+    size: Dp,
+    color: Color,
+) {
+    CompositionLocalProvider(LocalContentColor provides color) {
+        Symbol(symbol, size = size * AvatarTokens.SYMBOL_SCALE)
+    }
+}

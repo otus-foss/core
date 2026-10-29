@@ -40,7 +40,11 @@ internal class DecodedAvatarCache(
         return entry.image
     }
 
-    private fun recent(bytes: ByteArray): DecodedImage? = images.remove(bytes)?.also { images[bytes] = it }
+    private fun recent(bytes: ByteArray): DecodedImage? {
+        val image = images.remove(bytes) ?: return null
+        images[bytes] = image
+        return image
+    }
 
     private suspend fun decodeShared(bytes: ByteArray): DecodedImage {
         val pending = CompletableDeferred<DecodedImage?>()

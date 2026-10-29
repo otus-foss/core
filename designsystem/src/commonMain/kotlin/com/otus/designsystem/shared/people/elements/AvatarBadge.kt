@@ -1,6 +1,5 @@
 package com.otus.designsystem.shared.people.elements
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -8,21 +7,16 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
-import com.otus.designsystem.theme.tokens.people.AvatarTokens
 import com.otus.designsystem.theme.tokens.rows.InboxTokens
 import org.jetbrains.compose.resources.DrawableResource
 
@@ -38,8 +32,13 @@ public fun BadgedAvatar(
 ) {
     Box(modifier) {
         avatar()
-        badge?.let {
-            Box(Modifier.align(Alignment.BottomEnd).offset(-InboxTokens.badgeOffset, -InboxTokens.badgeOffset)) { it() }
+        if (badge != null) {
+            val position =
+                Modifier
+                    .align(
+                        Alignment.BottomEnd,
+                    ).offset(-InboxTokens.badgeOffset, -InboxTokens.badgeOffset)
+            Box(position) { badge() }
         }
     }
 }
@@ -70,26 +69,24 @@ public fun AvatarBadge(
         contentAlignment = Alignment.Center,
     ) {
         when {
-            image != null -> {
-                Image(image, contentDescription = null, Modifier.matchParentSize(), contentScale = ContentScale.Crop)
-            }
-
-            symbol != null -> {
-                CompositionLocalProvider(LocalContentColor provides content) {
-                    Symbol(symbol, size = InboxTokens.badgeSize * AvatarTokens.SYMBOL_SCALE)
-                }
-            }
-
-            else -> {
-                Text(
-                    initials,
-                    color = content,
-                    fontSize = InboxTokens.badgeInitialsSize,
-                    lineHeight = InboxTokens.badgeInitialsSize,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 1,
-                )
-            }
+            image != null -> AvatarPhoto(image, Modifier.matchParentSize())
+            symbol != null -> AvatarSymbol(symbol, InboxTokens.badgeSize, content)
+            else -> BadgeInitials(initials, content)
         }
     }
+}
+
+@Composable
+private fun BadgeInitials(
+    initials: String,
+    color: Color,
+) {
+    Text(
+        initials,
+        color = color,
+        fontSize = InboxTokens.badgeInitialsSize,
+        lineHeight = InboxTokens.badgeInitialsSize,
+        fontWeight = FontWeight.SemiBold,
+        maxLines = 1,
+    )
 }
