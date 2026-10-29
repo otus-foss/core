@@ -92,7 +92,8 @@ public fun ThemeCard(
             ThemeSketch(sketch)
             CardLabel(title, description, selected, openMenu)
         }
-        menuAt?.let { ContextMenu(actions, it) { menuAt = null } }
+        val menuPosition = menuAt
+        if (menuPosition != null) ContextMenu(actions, menuPosition) { menuAt = null }
     }
 }
 

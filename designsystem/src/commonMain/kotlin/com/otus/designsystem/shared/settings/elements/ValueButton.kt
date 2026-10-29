@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.style.TextOverflow
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.colors.readableOn
@@ -41,7 +42,7 @@ public fun ValueButton(
     Row(
         modifier
             .widthIn(max = SettingTokens.valueMaxWidth)
-            .then(if (fill == null) Modifier else Modifier.background(fill, shape))
+            .valueBackground(fill, shape)
             .border(PanelTokens.borderWidth, outline, shape)
             .padding(
                 start = if (swatch == null) SettingTokens.valuePaddingHorizontal else SettingTokens.valuePaddingSwatch,
@@ -52,11 +53,11 @@ public fun ValueButton(
         horizontalArrangement = Arrangement.spacedBy(SettingTokens.valueSwatchGap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        swatch?.let {
+        if (swatch != null) {
             Box(
                 Modifier
                     .size(ThemeTokens.valueDot)
-                    .background(it, CircleShape)
+                    .background(swatch, CircleShape)
                     .border(PanelTokens.borderWidth, OtusColors.text2, CircleShape),
             )
         }
@@ -69,3 +70,8 @@ public fun ValueButton(
         )
     }
 }
+
+private fun Modifier.valueBackground(
+    fill: Color?,
+    shape: Shape,
+): Modifier = if (fill == null) this else background(fill, shape)
