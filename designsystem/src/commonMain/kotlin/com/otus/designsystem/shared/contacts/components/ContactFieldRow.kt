@@ -94,11 +94,7 @@ public fun ContactFieldRow(
     var focused by remember { mutableStateOf(false) }
     Column(modifier.fillMaxWidth()) {
         FieldFrame(primary?.on == true, endsWithButton = primary != null || onRemove != null) {
-            look.icon?.let {
-                CompositionLocalProvider(LocalContentColor provides OtusColors.text2) {
-                    Box(Modifier.padding(end = SheetTokens.gap - PanelTokens.iconGap)) { Symbol(it) }
-                }
-            }
+            FieldIcon(look.icon)
             FieldText(value, onValueChange, description, look, Modifier.weight(1f)) { focused = it }
             LabelButton(look.label, description, look.labelChoices)
             TrailingButtons(description, primary, onRemove)
@@ -226,5 +222,13 @@ private fun LabelButton(
             }
         }
         if (open) OptionsMenu(choices) { open = false }
+    }
+}
+
+@Composable
+private fun FieldIcon(icon: DrawableResource?) {
+    if (icon == null) return
+    CompositionLocalProvider(LocalContentColor provides OtusColors.text2) {
+        Box(Modifier.padding(end = SheetTokens.gap - PanelTokens.iconGap)) { Symbol(icon) }
     }
 }

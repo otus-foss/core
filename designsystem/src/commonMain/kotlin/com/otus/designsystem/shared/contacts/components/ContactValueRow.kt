@@ -43,22 +43,28 @@ public fun ContactValueRow(
     Row(
         modifier
             .fillMaxWidth()
-            .then(if (highlighted) Modifier.background(OtusColors.selectedFill) else Modifier)
+            .highlightedValue(highlighted)
             .heightIn(min = ContactTokens.valueRowHeight)
-            .then(if (onClick == null) Modifier else Modifier.clickable(role = Role.Button, onClick = onClick))
+            .valueAction(onClick)
             .padding(horizontal = SheetTokens.inset, vertical = SheetTokens.rowPadding),
         horizontalArrangement = Arrangement.spacedBy(SheetTokens.gap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        icon?.let {
-            CompositionLocalProvider(LocalContentColor provides OtusColors.text2) { Symbol(it) }
+        if (icon != null) {
+            CompositionLocalProvider(LocalContentColor provides OtusColors.text2) { Symbol(icon) }
         }
         Column(Modifier.weight(1f)) {
             Text(value, style = panelTextStyle())
-            caption?.let {
-                Text(it, style = panelTextStyle(), color = OtusColors.text2, fontSize = ContactTokens.detailSize)
+            if (caption != null) {
+                Text(caption, style = panelTextStyle(), color = OtusColors.text2, fontSize = ContactTokens.detailSize)
             }
         }
-        label?.let { ValueButton(it, outline = if (highlighted) OtusColors.text3 else OtusColors.bgLight) }
+        if (label != null) ValueButton(label, outline = if (highlighted) OtusColors.text3 else OtusColors.bgLight)
     }
 }
+
+private fun Modifier.highlightedValue(highlighted: Boolean): Modifier =
+    if (highlighted) background(OtusColors.selectedFill) else this
+
+private fun Modifier.valueAction(onClick: (() -> Unit)?): Modifier =
+    if (onClick == null) this else clickable(role = Role.Button, onClick = onClick)
