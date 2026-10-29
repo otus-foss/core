@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add `DateFormatter.formatDayMonth`, the saved date format without the year, such as 04.10 for
+  DD.MM.YYYY. The device format uses the locale's own day and month order.
 - Group JSContact's internal vCard conversion and validation code into `vcard` and `validation`
   packages. Public APIs, including `Card`, `VCard`, and `isEmailAddress`, keep their packages and behavior.
 - Breaking: rename the `push` module and `com.otus:push` artifact to `jmap-push` and

@@ -10,11 +10,14 @@ import java.util.TimeZone
 
 public actual fun currentDateLocaleIdentifier(): String = Locale.getDefault().toLanguageTag()
 
-internal actual fun createLocalizedDateFormatter(localeIdentifier: String): LocalizedDateFormatter {
+internal actual fun createLocalizedDateFormatter(
+    localeIdentifier: String,
+    template: String,
+): LocalizedDateFormatter {
     val locale = Locale.forLanguageTag(localeIdentifier.replace('_', '-'))
     val utc = TimeZone.getTimeZone("UTC")
     val formatter =
-        SimpleDateFormat(DateFormat.getBestDateTimePattern(locale, "yyyyMMdd"), locale).apply {
+        SimpleDateFormat(DateFormat.getBestDateTimePattern(locale, template), locale).apply {
             calendar = GregorianCalendar(utc, locale).apply { gregorianChange = Date(Long.MIN_VALUE) }
             timeZone = utc
         }
