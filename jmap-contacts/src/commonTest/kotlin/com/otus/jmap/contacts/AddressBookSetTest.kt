@@ -42,9 +42,9 @@ class AddressBookSetTest {
 
     @Test
     fun destroyingABookWithItsCardsSendsOnDestroyRemoveContents() {
-        val arguments =
+        val method =
             AddressBookSetMethod("a0x9", destroy = listOf("b1"), ifInState = "~4150", onDestroyRemoveContents = true)
-                .arguments()
+        val arguments = method.arguments()
         assertEquals(
             parseObject(
                 """{"accountId": "a0x9", "ifInState": "~4150", "destroy": ["b1"], "onDestroyRemoveContents": true}""",

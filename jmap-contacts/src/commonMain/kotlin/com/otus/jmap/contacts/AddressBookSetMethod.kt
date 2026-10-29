@@ -43,7 +43,8 @@ public class AddressBookSetMethod(
                 buildJsonObject {
                     // Both arguments have defaults the server applies when they are absent.
                     if (onDestroyRemoveContents) put("onDestroyRemoveContents", JsonPrimitive(true))
-                    onSuccessSetIsDefault?.let { put("onSuccessSetIsDefault", JsonPrimitive(it)) }
+                    val defaultBook = onSuccessSetIsDefault
+                    if (defaultBook != null) put("onSuccessSetIsDefault", JsonPrimitive(defaultBook))
                 },
         )
 
