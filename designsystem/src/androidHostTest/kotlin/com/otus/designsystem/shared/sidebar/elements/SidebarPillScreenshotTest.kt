@@ -25,21 +25,21 @@ class SidebarPillScreenshotTest {
     @Test
     fun unselected() =
         compose.screenshot("sidebar_pill_unselected") {
-            SidebarPill("Drafts", Res.drawable.symbol_draft, false, {})
+            SidebarPill("Drafts", Res.drawable.symbol_draft, selected = false, {})
         }
 
     @Test
     fun selectedWithCount() =
         compose.screenshot("sidebar_pill_selected_count") {
-            SidebarPill("Inbox", Res.drawable.symbol_inbox, true, {}, count = "12")
+            SidebarPill("Inbox", Res.drawable.symbol_inbox, selected = true, {}, count = "12")
         }
 
     @Test
     fun besideIconPill() =
         compose.screenshot("sidebar_pill_row") {
             Row {
-                SidebarPill("Inbox", Res.drawable.symbol_inbox, false, {}, count = "3")
-                IconPill("Flagged", Res.drawable.symbol_flag, true, {})
+                SidebarPill("Inbox", Res.drawable.symbol_inbox, selected = false, {}, count = "3")
+                IconPill("Flagged", Res.drawable.symbol_flag, selected = true, {})
             }
         }
 }

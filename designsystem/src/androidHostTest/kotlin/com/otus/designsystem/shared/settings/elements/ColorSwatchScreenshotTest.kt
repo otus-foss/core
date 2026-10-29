@@ -23,12 +23,14 @@ class ColorSwatchScreenshotTest {
     @Test
     fun unselected() =
         compose.screenshot("color_swatch_unselected") {
-            ColorSwatch(OtusColors.accentRegular, "Blue", false, {})
+            ColorSwatch(OtusColors.accentRegular, "Blue", selected = false, {})
         }
 
     @Test
     fun selected() =
-        compose.screenshot("color_swatch_selected") { ColorSwatch(OtusColors.accentRegular, "Blue", true, {}) }
+        compose.screenshot(
+            "color_swatch_selected",
+        ) { ColorSwatch(OtusColors.accentRegular, "Blue", selected = true, {}) }
 
     @Test
     fun add() = compose.screenshot("color_swatch_add") { AddSwatch("Custom color", {}) }
@@ -37,16 +39,16 @@ class ColorSwatchScreenshotTest {
     fun row() =
         compose.screenshot("color_swatch_row") {
             Row {
-                ColorSwatch(OtusColors.accentLight, "Light blue", false, {})
-                ColorSwatch(OtusColors.accentRegular, "Blue", true, {})
-                ColorSwatch(OtusColors.text1, "White", false, {})
+                ColorSwatch(OtusColors.accentLight, "Light blue", selected = false, {})
+                ColorSwatch(OtusColors.accentRegular, "Blue", selected = true, {})
+                ColorSwatch(OtusColors.text1, "White", selected = false, {})
                 AddSwatch("Custom color", {})
             }
         }
 
     @Test
     fun selectedSwatchIsSelected() {
-        compose.setContent { ColorSwatch(OtusColors.accentRegular, "Blue", true, {}) }
+        compose.setContent { ColorSwatch(OtusColors.accentRegular, "Blue", selected = true, {}) }
         compose.onNodeWithContentDescription("Blue").assertIsSelected()
     }
 }
