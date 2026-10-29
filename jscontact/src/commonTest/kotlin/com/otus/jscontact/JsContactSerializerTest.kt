@@ -10,10 +10,8 @@ import kotlinx.serialization.encoding.AbstractDecoder
 import kotlinx.serialization.encoding.AbstractEncoder
 import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
@@ -68,7 +66,7 @@ class JsContactSerializerTest {
             foo.extra.keys,
         )
         assertEquals(JsonPrimitive("bar"), foo.extra["example.com:foo"])
-        assertEquals(parse(text), parse(encode(foo)))
+        assertEquals(CardJson.parse(text), CardJson.parse(encode(foo)))
         assertTrue(encode(foo).startsWith("""{"@type":"Foo","baz":5,"""), encode(foo))
     }
 
@@ -120,7 +118,7 @@ class JsContactSerializerTest {
                 put("baz", 1)
                 put("contexts", buildJsonObject { put("work", true) })
             },
-            parse(encode(DemoFoo(baz = 1, contexts = mapOf(ContactContext.Work to true)))),
+            CardJson.parse(encode(DemoFoo(baz = 1, contexts = mapOf(ContactContext.Work to true)))),
         )
     }
 
@@ -133,8 +131,6 @@ class JsContactSerializerTest {
     private fun decode(text: String): DemoFoo = JsContactJson.decodeFromString(DemoFoo.serializer(), text)
 
     private fun encode(foo: DemoFoo): String = JsContactJson.encodeToString(DemoFoo.serializer(), foo)
-
-    private fun parse(text: String): JsonObject = JsContactJson.parseToJsonElement(text).jsonObject
 }
 
 /** The demonstration object of RFC 9553, section 1.3.1, written the way every JSContact class is. */

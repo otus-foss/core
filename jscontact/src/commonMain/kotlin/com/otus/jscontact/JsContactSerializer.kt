@@ -38,8 +38,8 @@ internal abstract class JsContactSerializer<T : Any>(
         val members =
             input.decodeJsonElement() as? JsonObject
                 ?: throw SerializationException("$typeName is not a JSON object")
-        requireType(members[TYPE])
-        val properties = members - TYPE
+        requireType(members[TYPE_PROPERTY])
+        val properties = members - TYPE_PROPERTY
         val value = input.json.decodeFromJsonElement(generated, JsonObject(properties.filterKeys { it in knownNames }))
         return withExtra(value, properties.filterKeys { it !in knownNames })
     }
@@ -52,9 +52,9 @@ internal abstract class JsContactSerializer<T : Any>(
         val properties = output.json.encodeToJsonElement(generated, value).jsonObject
         // A key the class declares is never taken from extra, so encoding and decoding agree.
         val members =
-            mapOf(TYPE to JsonPrimitive(typeName)) +
-                (properties - TYPE) +
-                extraOf(value).filterKeys { it != TYPE && it !in knownNames }
+            mapOf(TYPE_PROPERTY to JsonPrimitive(typeName)) +
+                (properties - TYPE_PROPERTY) +
+                extraOf(value).filterKeys { it != TYPE_PROPERTY && it !in knownNames }
         output.encodeJsonElement(JsonObject(members))
     }
 
@@ -70,8 +70,7 @@ internal abstract class JsContactSerializer<T : Any>(
 
     private fun Encoder.asJson(): JsonEncoder =
         this as? JsonEncoder ?: throw SerializationException("$typeName can only be written as JSON")
-
-    private companion object {
-        const val TYPE = "@type"
-    }
 }
+
+/** The member that names the type of a JSContact object (RFC 9553, section 1.3.4). */
+internal const val TYPE_PROPERTY: String = "@type"

@@ -1,6 +1,7 @@
 package com.otus.dateformat
 
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.number
 
 /** Formats display values only. Domain dates, sorting, and protocol values stay ISO. */
 public class DateFormatter(
@@ -16,10 +17,7 @@ public class DateFormatter(
 
     public fun format(date: LocalDate): String {
         val day = date.day.toString().padStart(TWO_DIGITS, '0')
-        val month =
-            (date.month.ordinal + 1)
-                .toString()
-                .padStart(TWO_DIGITS, '0')
+        val month = date.month.number.toString().padStart(TWO_DIGITS, '0')
         val year = date.year.toString().padStart(FOUR_DIGITS, '0')
         return when (preference) {
             DateFormatPreference.DeviceLocale -> requireNotNull(localized).format(date)

@@ -17,11 +17,7 @@ import com.otus.jscontact.vcard.VCardKey.TZ
 internal fun VCardProperty.toAddress(): Address? {
     val components =
         value.splitUnescaped(';').zip(ADR_KINDS).flatMap { (slot, kind) ->
-            slot
-                .splitUnescaped(',')
-                .map { it.unescapeText().trim() }
-                .filter { it.isNotEmpty() }
-                .map { AddressComponent(it, kind) }
+            slot.textValues().map { AddressComponent(it, kind) }
         }
     return Address(
         components = components.ifEmpty { null },

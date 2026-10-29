@@ -1,5 +1,6 @@
 package com.otus.jscontact.validation
 
+import com.otus.jscontact.TYPE_PROPERTY
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.elementNames
 import kotlinx.serialization.json.JsonElement
@@ -70,7 +71,7 @@ internal fun ValidationScope.propertyNames(
     extra: Map<String, JsonElement>,
     serializer: KSerializer<*>,
 ) {
-    val declared = serializer.descriptor.elementNames.toSet() + TYPE
+    val declared = serializer.descriptor.elementNames.toSet() + TYPE_PROPERTY
     extra
         .keys
         .filterNot { it in declared }
@@ -102,8 +103,6 @@ private fun propertyNameProblem(
             null
         }
     }
-
-private const val TYPE = "@type"
 
 private const val RESERVED = "extra"
 

@@ -123,6 +123,13 @@ internal fun String.splitUnescaped(delimiter: Char): List<String> {
 }
 
 /**
+ * The values of a list, such as NICKNAME or one component of ADR, split at unescaped commas, with their escapes
+ * resolved and their outer whitespace trimmed. Empty values are dropped.
+ */
+internal fun String.textValues(): List<String> =
+    splitUnescaped(',').map { it.unescapeText().trim() }.filter { it.isNotEmpty() }
+
+/**
  * This quoted-printable value decoded (RFC 2045, section 6.7), as vCard 2.1 and 3.0 write it. The bytes are
  * UTF-8 unless [charset] is ISO-8859-1. Other charsets also decode as UTF-8, because common Kotlin has no
  * charset tables.
