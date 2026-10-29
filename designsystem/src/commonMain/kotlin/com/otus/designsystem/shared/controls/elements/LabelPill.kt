@@ -39,7 +39,7 @@ public fun LabelPill(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         CompositionLocalProvider(LocalContentColor provides color) {
-            icon?.let { Symbol(it, size = LabelTokens.iconSize) }
+            if (icon != null) Symbol(icon, size = LabelTokens.iconSize)
             Text(text, color = color, fontSize = LabelTokens.textSize, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
     }

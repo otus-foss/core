@@ -62,7 +62,7 @@ public fun BirthdayPicker(
             )
         }
         Row(horizontalArrangement = Arrangement.spacedBy(SheetTokens.gap)) {
-            onRemove?.let { ActionButton("Remove", it, Modifier.weight(1f)) }
+            if (onRemove != null) ActionButton("Remove", onRemove, Modifier.weight(1f))
             ActionButton("Done", { onConfirm(YearlyDate(month, shownDay, year)) }, Modifier.weight(1f), primary = true)
         }
     }

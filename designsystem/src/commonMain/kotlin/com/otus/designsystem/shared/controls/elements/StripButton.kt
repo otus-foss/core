@@ -44,7 +44,7 @@ internal fun StripButton(
     Box(
         modifier
             .sizeIn(minWidth = PanelTokens.touchTarget, minHeight = PanelTokens.touchTarget)
-            .clickable(interactions, null, role = Role.Button, onClick = onClick),
+            .clickable(interactions, indication = null, role = Role.Button, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
         Surface(
@@ -59,7 +59,7 @@ internal fun StripButton(
                 horizontalArrangement = Arrangement.spacedBy(ReadTokens.glyphGap),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                icon?.let { Symbol(it, size = ReadTokens.buttonIconSize) }
+                if (icon != null) Symbol(icon, size = ReadTokens.buttonIconSize)
                 Text(
                     label,
                     Modifier.widthIn(max = ReadTokens.stripButtonLabelMaxWidth),

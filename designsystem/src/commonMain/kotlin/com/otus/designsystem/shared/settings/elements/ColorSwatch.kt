@@ -56,9 +56,8 @@ public fun ColorSwatch(
         Box(
             Modifier
                 .size(ThemeTokens.swatchSize + ThemeTokens.swatchRingSpace * 2)
-                .then(
-                    if (selected) Modifier.border(ThemeTokens.swatchRing, OtusColors.text1, CircleShape) else Modifier,
-                ).padding(ThemeTokens.swatchRingSpace)
+                .swatchSelectionRing(selected)
+                .padding(ThemeTokens.swatchRingSpace)
                 .clip(CircleShape)
                 .background(color),
             contentAlignment = Alignment.Center,
@@ -111,3 +110,6 @@ public fun AddSwatch(
 internal fun outlineDash(): PathEffect = PathEffect.dashPathEffect(floatArrayOf(DASH, DASH))
 
 private const val DASH = 6f
+
+internal fun Modifier.swatchSelectionRing(selected: Boolean): Modifier =
+    if (selected) border(ThemeTokens.swatchRing, OtusColors.text1, CircleShape) else this
