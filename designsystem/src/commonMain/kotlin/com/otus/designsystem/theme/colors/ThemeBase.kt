@@ -18,10 +18,10 @@ public enum class ThemeBase(
 ) {
     /** Soft dark, the default. */
     Otus(
-        page = Color(0xFF202021),
-        raised = Color(0xFF151515),
-        light = Color(0xFF3F4041),
-        stroke = Color(0xFF27292C),
+        page = Color(0xFF161617),
+        raised = Color(0xFF111112),
+        light = Color(0xFF252628),
+        stroke = Color(0xFF1C1D1F),
         text1 = Color(0xFFEBECED),
         text2 = Color(0xFFC2C2C2),
         text3 = Color(0xFF8A8A8A),
@@ -29,10 +29,10 @@ public enum class ThemeBase(
 
     /** Darker than [Otus], with surfaces closer together so the page reads as one calm plane. */
     Ink(
-        page = Color(0xFF18181A),
-        raised = Color(0xFF121213),
-        light = Color(0xFF2C2D2F),
-        stroke = Color(0xFF212224),
+        page = Color(0xFF111112),
+        raised = Color(0xFF0E0E0F),
+        light = Color(0xFF1E1F20),
+        stroke = Color(0xFF18191A),
         text1 = Color(0xFFE3E4E5),
         text2 = Color(0xFFB9BABB),
         text3 = Color(0xFF86878A),

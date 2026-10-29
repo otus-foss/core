@@ -1,6 +1,7 @@
 package com.otus.settings.presentation
 
 import androidx.compose.ui.graphics.Color
+import com.otus.designsystem.theme.colors.AccentPreset
 import com.otus.designsystem.theme.colors.CustomTheme
 import com.otus.designsystem.theme.colors.ThemeBase
 import com.otus.designsystem.theme.colors.ThemeChoice
@@ -38,7 +39,7 @@ internal fun decodeThemeChoice(value: String): ThemeChoice {
         }
     return ThemeChoice(
         base = entryNamed<ThemeBase>(parts.first()) ?: default.base,
-        accent = parts.getOrNull(1)?.let(::parseHexColor) ?: default.accent,
+        accent = parts.getOrNull(1)?.let(::parseHexColor)?.let(AccentPreset::current) ?: default.accent,
         customThemes = themes,
         customId =
             rest
