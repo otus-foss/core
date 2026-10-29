@@ -53,12 +53,10 @@ import com.otus.designsystem.theme.tokens.settings.SettingTokens
  * A folder on a folder settings page, indented by its [SidebarFolder.depth]: the folder icon, the
  * name with an optional [detail] line under it, the optional count, and a settings icon. Tapping
  * the row calls [onClick], which opens the folder; a long press calls [onLongClick] with the
- * pressed point, such as to open a
- * [QuickActionBar][com.otus.designsystem.shared.actionbar.components.QuickActionBar] there. With subfolders,
- * [expanded] is non-null
- * and the icon is a toggle, an open folder while expanded. [SidebarFolder.icon] replaces the closed
- * folder icon, such as for a shared folder. The icon takes
- * [com.otus.designsystem.shared.controls.elements.LocalIconTint].
+ * pressed point, such as to open a [QuickActionBar][com.otus.designsystem.shared.actionbar.components.QuickActionBar]
+ * there. With subfolders, [expanded] is non-null and the icon is a toggle, an open folder while
+ * expanded. [SidebarFolder.icon] replaces the closed folder icon, such as for a shared folder. The
+ * icon takes [com.otus.designsystem.shared.controls.elements.LocalIconTint].
  */
 @Composable
 public fun FolderSettingRow(
@@ -74,10 +72,9 @@ public fun FolderSettingRow(
 }
 
 /**
- * A [FolderSettingRow] in a [ReorderableTree][com.otus.designsystem.shared.reorder.components.ReorderableTree] or
- * [ReorderableColumn][com.otus.designsystem.shared.reorder.components.ReorderableColumn], with the row's drag
- * handle
- * after its settings icon.
+ * A [FolderSettingRow] in a [ReorderableTree][com.otus.designsystem.shared.reorder.components.ReorderableTree]
+ * or [ReorderableColumn][com.otus.designsystem.shared.reorder.components.ReorderableColumn], with
+ * the row's drag handle after its settings icon.
  */
 @Composable
 public fun ReorderableScope.FolderSettingRow(

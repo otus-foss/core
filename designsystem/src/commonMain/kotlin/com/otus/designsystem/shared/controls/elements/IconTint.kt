@@ -16,8 +16,7 @@ import org.jetbrains.compose.resources.DrawableResource
  * backgrounds, the selected state, trailing icons, and disabled icons keep their colors.
  * [SidebarEntry][com.otus.designsystem.shared.sidebar.elements.SidebarEntry],
  * [ActionRow][com.otus.designsystem.shared.rows.elements.ActionRow], `SettingRow`, `SettingToggleRow`,
- * `ValuePicker`, and `ValueToken`
- * read it; a `ChoiceRow` takes its own `iconTint`.
+ * `ValuePicker`, and `ValueToken` read it; a `ChoiceRow` takes its own `iconTint`.
  */
 public val LocalIconTint: ProvidableCompositionLocal<Color?> = compositionLocalOf { null }
 

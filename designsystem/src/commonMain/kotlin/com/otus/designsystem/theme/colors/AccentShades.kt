@@ -31,11 +31,8 @@ internal fun accentShades(
     text1: Color,
 ): AccentShades {
     val otus = ThemeBase.Otus
-    if (listOf(accent, page, raised, text1) ==
-        listOf(AccentPreset.OtusBlue.color, otus.page, otus.raised, otus.text1)
-    ) {
-        return otusBlueShades
-    }
+    val otusDefaults = listOf(AccentPreset.OtusBlue.color, otus.page, otus.raised, otus.text1)
+    if (listOf(accent, page, raised, text1) == otusDefaults) return otusBlueShades
     val isLight = page.isLightPage
     val (hue, saturation, lightness) = accent.toHsl()
     val readable = { shade: Color -> contrast(shade, raised) >= MIN_CONTRAST && contrast(shade, page) >= MIN_CONTRAST }

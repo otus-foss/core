@@ -55,29 +55,11 @@ internal fun String.folded(): String {
 }
 
 /** This value with its backslash escapes resolved: `\n` or `\N`, `\,`, `\;`, and `\\` (RFC 6350, section 3.4). */
-internal fun String.unescapeText(): String {
-    val text = this
-    return buildString {
-        var escaped = false
-        for (char in text) {
-            when {
-                escaped -> {
-                    append(if (char == 'n' || char == 'N') '\n' else char)
-                    escaped = false
-                }
-
-                char == '\\' -> {
-                    escaped = true
-                }
-
-                else -> {
-                    append(char)
-                }
-            }
-        }
-        if (escaped) append('\\')
+internal fun String.unescapeText(): String =
+    replace(TEXT_ESCAPE) { match ->
+        val char = match.groupValues[1]
+        if (char == "n" || char == "N") "\n" else char
     }
-}
 
 /** This text escaped for a vCard value: backslashes, line breaks, commas, and semicolons (RFC 6350, section 3.4). */
 internal fun String.escapeText(): String =
@@ -97,30 +79,25 @@ internal fun String.splitUnescaped(delimiter: Char): List<String> {
         val part = StringBuilder()
         var escaped = false
         for (char in text) {
-            when {
-                escaped -> {
-                    part.append(char)
-                    escaped = false
-                }
-
-                char == '\\' -> {
-                    part.append(char)
-                    escaped = true
-                }
-
-                char == delimiter -> {
-                    add(part.toString())
-                    part.clear()
-                }
-
-                else -> {
-                    part.append(char)
-                }
+            if (char == delimiter && !escaped) {
+                add(part.toString())
+                part.clear()
+            } else {
+                part.append(char)
             }
+            // A backslash escapes the next character, unless the backslash is itself escaped.
+            escaped = !escaped && char == '\\'
         }
         add(part.toString())
     }
 }
+
+/**
+ * The values of a list, such as NICKNAME or one component of ADR, split at unescaped commas, with their escapes
+ * resolved and their outer whitespace trimmed. Empty values are dropped.
+ */
+internal fun String.textValues(): List<String> =
+    splitUnescaped(',').map { it.unescapeText().trim() }.filter { it.isNotEmpty() }
 
 /**
  * This quoted-printable value decoded (RFC 2045, section 6.7), as vCard 2.1 and 3.0 write it. The bytes are
@@ -168,3 +145,6 @@ private val LINE_BREAK = Regex("\r\n?")
 private val FOLD = Regex("\n[ \t]")
 private val QUOTED_BYTES = Regex("(?:=[0-9A-Fa-f]{2})+")
 private val CARET = Regex("""\^([n'^])""")
+
+// A backslash and the character it escapes, which may be any character, a line break included.
+private val TEXT_ESCAPE = Regex("""\\([\s\S])""")

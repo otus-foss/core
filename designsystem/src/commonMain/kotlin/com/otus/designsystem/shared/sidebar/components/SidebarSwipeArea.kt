@@ -13,6 +13,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.PointerInputScope
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.input.pointer.util.addPointerInputChange
@@ -22,6 +23,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import com.otus.designsystem.theme.tokens.layout.SidebarTokens
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 /**
@@ -46,31 +48,45 @@ public fun SidebarSwipeArea(
             .fillMaxSize()
             .onGloballyPositioned { zone.host = it }
             .pointerInput(state, sign, flingThreshold) {
-                awaitEachGesture {
-                    val down = awaitFirstDown(requireUnconsumed = false)
-                    if (!canOpen.value || !zone.contains(down.position.y)) return@awaitEachGesture
-                    val velocity = VelocityTracker()
-                    // Only a swipe toward the open side claims the gesture; anything else passes through.
-                    val start =
-                        awaitHorizontalTouchSlopOrCancellation(down.id) { change, over ->
-                            if (over * sign > 0f) {
-                                change.consume()
-                                scope.launch { state.stop() }
-                                state.dragBy(over * sign)
-                            }
-                        } ?: return@awaitEachGesture
-                    velocity.addPointerInputChange(start)
-                    horizontalDrag(start.id) { change ->
-                        velocity.addPointerInputChange(change)
-                        state.dragBy((change.position.x - change.previousPosition.x) * sign)
-                        change.consume()
-                    }
-                    val release = velocity.calculateVelocity().x * sign
-                    scope.launch { state.settle(release, flingThreshold) }
-                }
+                detectOpenSwipe(state, scope, sign, flingThreshold) { canOpen.value && zone.contains(it) }
             },
     ) {
         CompositionLocalProvider(LocalSidebarOpenZone provides zone, content = content)
+    }
+}
+
+/**
+ * Drags [state] open with a swipe toward the open side, [sign] being -1 in right-to-left layouts,
+ * that starts where [startsSwipe] allows, then settles it on release.
+ */
+private suspend fun PointerInputScope.detectOpenSwipe(
+    state: SidebarState,
+    scope: CoroutineScope,
+    sign: Float,
+    flingThreshold: Float,
+    startsSwipe: (y: Float) -> Boolean,
+) {
+    awaitEachGesture {
+        val down = awaitFirstDown(requireUnconsumed = false)
+        if (!startsSwipe(down.position.y)) return@awaitEachGesture
+        val velocity = VelocityTracker()
+        // Only a swipe toward the open side claims the gesture; anything else passes through.
+        val start =
+            awaitHorizontalTouchSlopOrCancellation(down.id) { change, over ->
+                if (over * sign > 0f) {
+                    change.consume()
+                    scope.launch { state.stop() }
+                    state.dragBy(over * sign)
+                }
+            } ?: return@awaitEachGesture
+        velocity.addPointerInputChange(start)
+        horizontalDrag(start.id) { change ->
+            velocity.addPointerInputChange(change)
+            state.dragBy((change.position.x - change.previousPosition.x) * sign)
+            change.consume()
+        }
+        val release = velocity.calculateVelocity().x * sign
+        scope.launch { state.settle(release, flingThreshold) }
     }
 }
 

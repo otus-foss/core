@@ -1,19 +1,15 @@
 package com.otus.designsystem.shared.overlays.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -25,7 +21,6 @@ import com.otus.designsystem.shared.controls.elements.IconButtonLook
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
-import com.otus.designsystem.theme.tokens.overlays.ChoiceSheetTokens
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 
 /**
@@ -43,20 +38,20 @@ public fun ClosableSheet(
     SheetSurface(title, onDismiss, onDone = { confirm?.onConfirm?.invoke() }) { close, done, closing ->
         ClosableHeader(title, close)
         content()
-        confirm?.let {
+        if (confirm != null) {
             ActionButton(
-                it.label,
+                confirm.label,
                 done,
                 Modifier.fillMaxWidth().padding(SheetTokens.inset),
                 primary = true,
-                enabled = it.enabled && !closing,
+                enabled = confirm.enabled && !closing,
             ) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(PanelTokens.iconGap * 2),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    it.icon?.let { icon -> Symbol(icon) }
-                    Text(it.label, color = if (it.enabled) OtusColors.text1 else OtusColors.text3)
+                    confirm.icon?.let { Symbol(it) }
+                    Text(confirm.label, color = if (confirm.enabled) OtusColors.text1 else OtusColors.text3)
                 }
             }
         }
@@ -69,14 +64,7 @@ private fun ClosableHeader(
     onClose: () -> Unit,
 ) {
     Box(Modifier.fillMaxWidth()) {
-        Box(
-            Modifier
-                .align(Alignment.TopCenter)
-                .padding(top = ChoiceSheetTokens.handleTop)
-                .size(ChoiceSheetTokens.handleWidth, ChoiceSheetTokens.handleHeight)
-                .clip(CircleShape)
-                .background(OtusColors.bgLight),
-        )
+        SheetHandle(Modifier.align(Alignment.TopCenter))
         Row(
             Modifier.fillMaxWidth().padding(
                 start = SheetTokens.inset,

@@ -61,7 +61,7 @@ private class CardReader(
             members = named(MEMBER, APPLE_MEMBER).associate { it.text to true }.ifEmpty { null },
             uid = first(UID)?.text,
             name = readName(named(FN).firstOrNull { !it.isDerived }?.text, first(N)),
-            nicknames = named(NICKNAME).flatMap { it.textList }.map { Nickname(it) }.keyed("k"),
+            nicknames = named(NICKNAME).flatMap { it.value.textValues() }.map { Nickname(it) }.keyed("k"),
             organizations = named(ORG).mapNotNull { it.toOrganization() }.keyed("o"),
             titles = named(TITLE, ROLE).map { it.toTitle() }.keyed("t"),
             emails = named(EMAIL).map { it.toEmail(labelOf(it)) }.keyed("e"),

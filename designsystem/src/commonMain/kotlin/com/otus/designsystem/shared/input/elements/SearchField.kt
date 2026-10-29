@@ -31,10 +31,10 @@ public fun SearchField(
         value = value,
         onValueChange = onValueChange,
         modifier =
-            modifier.fillMaxWidth().heightIn(min = PanelTokens.touchTarget).semantics {
-                contentDescription =
-                    placeholder
-            },
+            modifier
+                .fillMaxWidth()
+                .heightIn(min = PanelTokens.touchTarget)
+                .semantics { contentDescription = placeholder },
         singleLine = true,
         textStyle = style,
         cursorBrush = SolidColor(OtusColors.accentLight),

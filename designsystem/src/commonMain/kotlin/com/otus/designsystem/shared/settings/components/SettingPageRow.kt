@@ -19,11 +19,7 @@ public fun SettingPageRow(
     description: String? = null,
     icon: DrawableResource? = null,
 ) {
-    SettingRow(
-        title,
-        onOpen,
-        modifier,
-        description,
-        icon,
-    ) { Symbol(Res.drawable.symbol_chevron_right, mirrorInRtl = true) }
+    SettingRow(title, onOpen, modifier, description, icon) {
+        Symbol(Res.drawable.symbol_chevron_right, mirrorInRtl = true)
+    }
 }

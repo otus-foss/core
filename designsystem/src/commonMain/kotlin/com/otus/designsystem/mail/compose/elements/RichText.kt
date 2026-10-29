@@ -86,32 +86,12 @@ public class RichText(
     public fun toggle(format: TextFormat) {
         val state = current
         when (format) {
-            TextFormat.Bold -> {
-                state.toggleSpanStyle(SpanStyle(fontWeight = FontWeight.Bold))
-            }
-
-            TextFormat.Italic -> {
-                state.toggleSpanStyle(SpanStyle(fontStyle = FontStyle.Italic))
-            }
-
-            TextFormat.Bullets -> {
-                state.toggleUnorderedList()
-            }
-
-            TextFormat.Numbers -> {
-                state.toggleOrderedList()
-            }
-
-            TextFormat.Link -> {
-                if (state.isLink) state.removeLink()
-            }
-
-            TextFormat.Clear -> {
-                state.clearSpanStyles()
-                state.clearRichSpans()
-                if (state.isUnorderedList) state.removeUnorderedList()
-                if (state.isOrderedList) state.removeOrderedList()
-            }
+            TextFormat.Bold -> state.toggleSpanStyle(SpanStyle(fontWeight = FontWeight.Bold))
+            TextFormat.Italic -> state.toggleSpanStyle(SpanStyle(fontStyle = FontStyle.Italic))
+            TextFormat.Bullets -> state.toggleUnorderedList()
+            TextFormat.Numbers -> state.toggleOrderedList()
+            TextFormat.Link -> if (state.isLink) state.removeLink()
+            TextFormat.Clear -> state.clearFormatting()
         }
     }
 
@@ -133,6 +113,14 @@ public class RichText(
         active = joined
         focusNext = joined
     }
+}
+
+/** Removes every span style, link, and list at the cursor. */
+private fun RichTextState.clearFormatting() {
+    clearSpanStyles()
+    clearRichSpans()
+    if (isUnorderedList) removeUnorderedList()
+    if (isOrderedList) removeOrderedList()
 }
 
 /** One part of a [RichText]: a run of formatted text, or an image the text names by its `src`. */

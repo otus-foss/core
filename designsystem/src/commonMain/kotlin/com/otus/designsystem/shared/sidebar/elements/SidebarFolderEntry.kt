@@ -33,10 +33,9 @@ import com.otus.designsystem.theme.typography.panelTextStyle
  * A folder in the sidebar tree. With subfolders, [expanded] is non-null and the icon is a toggle:
  * an open folder while expanded, a closed one while collapsed. Tapping the row calls [onClick];
  * a long press calls [onLongClick], such as to open the folder's actions. The icon takes
- * [LocalIconTint][com.otus.designsystem.shared.controls.elements.LocalIconTint], such as the folder's color, and is
- * a filled folder then; otherwise it is an
- * outlined folder in text3. It fits [com.otus.designsystem.shared.rows.components.CollapsibleTree]'s
- * row callback.
+ * [LocalIconTint][com.otus.designsystem.shared.controls.elements.LocalIconTint], such as the
+ * folder's color, and is a filled folder then; otherwise it is an outlined folder in text3. It fits
+ * [com.otus.designsystem.shared.rows.components.CollapsibleTree]'s row callback.
  */
 @Composable
 public fun SidebarFolderEntry(

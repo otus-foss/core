@@ -54,18 +54,16 @@ private fun String.toPartialDate(): PartialDate? {
 /** The vCard 4.0 form of this date: `YYYYMMDD`, `--MMDD`, `YYYY-MM`, `YYYY`, or `YYYYMMDDTHHMMSSZ`. */
 private fun AnniversaryDate.toVCardDate(): String? =
     when (this) {
-        is Timestamp -> {
-            utc
-                .toString()
-                .substringBefore('.')
-                .removeSuffix("Z")
-                .filterNot { it == '-' || it == ':' } + "Z"
-        }
-
-        is PartialDate -> {
-            toVCardPartialDate()
-        }
+        is Timestamp -> toVCardTimestamp()
+        is PartialDate -> toVCardPartialDate()
     }
+
+private fun Timestamp.toVCardTimestamp(): String =
+    utc
+        .toString()
+        .substringBefore('.')
+        .removeSuffix("Z")
+        .filterNot { it == '-' || it == ':' } + "Z"
 
 private fun PartialDate.toVCardPartialDate(): String? {
     val yearText = year?.toString()?.padStart(YEAR_DIGITS, '0')

@@ -4,8 +4,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 /**
- * The corner radii every part rounds to. Feature tokens such as [SheetTokens][com.otus.designsystem.theme.tokens.overlays.SheetTokens] and [MenuTokens][com.otus.designsystem.theme.tokens.overlays.MenuTokens]
- * name their corner by one of these steps, so the scale changes here. A part inside another,
+ * The corner radii every part rounds to. Feature tokens such as
+ * [SheetTokens][com.otus.designsystem.theme.tokens.overlays.SheetTokens] and
+ * [MenuTokens][com.otus.designsystem.theme.tokens.overlays.MenuTokens] name their corner by one of
+ * these steps, so the scale changes here. A part inside another,
  * such as a menu row, takes the outer radius minus its inset instead of a step. Pills, avatars,
  * and circles round to half their height and take no step.
  */

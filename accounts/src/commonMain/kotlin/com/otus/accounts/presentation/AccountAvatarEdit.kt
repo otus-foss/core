@@ -3,7 +3,6 @@ package com.otus.accounts.presentation
 import com.otus.accounts.domain.ConnectedAccount
 import com.otus.avatar.ContactAvatar
 import com.otus.avatar.ResolvedAvatar
-import com.otus.avatar.generatedAvatar
 import com.otus.designsystem.shared.people.components.ChipAvatar
 
 /**
@@ -29,9 +28,6 @@ internal fun OwnAvatarsState.accountEdit(account: ConnectedAccount): AccountAvat
         accountAvatar(account),
         pickPhoto = if (canPickPhoto) ::pickPhoto else null,
         replaced = { replaced(account, it) },
-        avatarOf = { email ->
-            avatar(account, email)?.toChipAvatar()
-                ?: generatedAvatar(account.name, email).toChipAvatar()
-        },
+        avatarOf = { email -> avatar(account, email).toChipAvatarOr(account.name, email) },
         saveAll = { emails, avatar -> saveAll(account, emails, avatar) },
     )

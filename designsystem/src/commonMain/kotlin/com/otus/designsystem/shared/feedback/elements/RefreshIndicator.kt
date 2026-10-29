@@ -3,8 +3,6 @@ package com.otus.designsystem.shared.feedback.elements
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -22,11 +20,11 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
+import com.otus.designsystem.shared.panels.elements.darkSurface
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
 import com.otus.designsystem.theme.tokens.feedback.RefreshTokens
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -46,8 +44,7 @@ public fun RefreshIndicator(
     Box(
         modifier
             .size(RefreshTokens.indicatorSize)
-            .background(OtusColors.bgDark, CircleShape)
-            .border(PanelTokens.borderWidth, OtusColors.strokeBgDark, CircleShape),
+            .darkSurface(CircleShape),
     ) {
         Crossfade(refreshing, animationSpec = motionTween(MotionSpeed.Quick)) { spinning ->
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

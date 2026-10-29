@@ -84,8 +84,7 @@ public class JmapClient(
             if (response.status in REDIRECT_STATUSES && location != null) {
                 target = urls.resolve(target, location)
             } else {
-                if (!authorized) throw JmapException.RedirectedElsewhere(target.host, target.origin())
-                return parseSession(target, response, trusted)
+                return parseSession(target.requireTrusted(trusted), response, trusted)
             }
         }
         throw JmapException.TooManyRedirects()
@@ -121,8 +120,7 @@ public class JmapClient(
                 put("using", buildJsonArray { using.forEach { add(JsonPrimitive(it)) } })
                 put("methodCalls", buildJsonArray { calls.forEach { add(it.toJson()) } })
             }
-        val api = urls.parse(session.apiUrl)
-        if (api.origin() !in session.trustedOrigins) throw JmapException.RedirectedElsewhere(api.host, api.origin())
+        val api = urls.parse(session.apiUrl).requireTrusted(session.trustedOrigins)
         val response = exchange(HttpMethod.Post, api, auth, body.toString())
         return jmapDecoding { parseResponse(decode(response)) }
     }
@@ -133,8 +131,7 @@ public class JmapClient(
         trusted: Set<String>,
     ): JmapSession {
         val dto = jmapDecoding { JmapJson.decodeFromJsonElement(SessionDto.serializer(), decode(response)) }
-        val api = urls.resolve(url, dto.apiUrl)
-        if (api.origin() !in trusted) throw JmapException.RedirectedElsewhere(api.host, api.origin())
+        val api = urls.resolve(url, dto.apiUrl).requireTrusted(trusted)
         return JmapSession(
             sessionUrl = url.toString(),
             apiUrl = api.toString(),
@@ -224,6 +221,6 @@ private fun JmapCall<*>.toJson() =
     }
 
 private fun decode(response: RawResponse): JsonObject {
-    response.failure()?.let { throw it }
+    response.requireSuccess()
     return jmapDecoding { JmapJson.parseToJsonElement(response.text).jsonObject }
 }

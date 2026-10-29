@@ -17,8 +17,8 @@ import com.otus.designsystem.theme.motion.LocalMotionScale
  * list. The page slides in from the end edge and pushes [base] out, as [SlidingPages] does; when
  * [item] clears, the page keeps its last item while it slides back out. [base] stays composed
  * throughout, so it keeps its scroll and state. Chrome that both draw, such as their
- * [ContextPanel][com.otus.designsystem.shared.panels.components.ContextPanel] and action bar, stays in place while
- * the rest slides.
+ * [ContextPanel][com.otus.designsystem.shared.panels.components.ContextPanel] and action bar,
+ * stays in place while the rest slides.
  */
 @Composable
 public fun <T : Any> SlidingOverlay(
@@ -48,17 +48,19 @@ public fun <T : Any> SlidingOverlay(
                     parent,
                     host,
                     sign,
-                    { -progress.value },
-                    { transition.targetState },
-                ) { overlay.takeIf { sliding() } }
+                    fraction = { -progress.value },
+                    leaving = { transition.targetState },
+                    partner = { overlay.takeIf { sliding() } },
+                )
             overlay =
                 PageMotion(
                     parent,
                     host,
                     sign,
-                    { 1f - progress.value },
-                    { !transition.targetState },
-                ) { base.takeIf { sliding() } }
+                    fraction = { 1f - progress.value },
+                    leaving = { !transition.targetState },
+                    partner = { base.takeIf { sliding() } },
+                )
             base to overlay
         }
     Box(modifier.hostingChrome(parent, host)) {

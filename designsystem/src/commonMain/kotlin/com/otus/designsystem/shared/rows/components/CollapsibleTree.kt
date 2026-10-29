@@ -54,7 +54,7 @@ internal fun List<TreeEntry>.collapsedAway(collapsed: Set<String>): Set<String> 
         // The depth of the collapsed entry whose subtree is being skipped, if any.
         var hidingBelow: Int? = null
         this@collapsedAway.forEach { entry ->
-            if (hidingBelow?.let { entry.depth > it } == true) {
+            if (entry.depth > (hidingBelow ?: Int.MAX_VALUE)) {
                 add(entry.id)
             } else {
                 hidingBelow = entry.depth.takeIf { entry.id in collapsed }

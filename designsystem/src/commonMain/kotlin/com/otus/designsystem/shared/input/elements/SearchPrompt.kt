@@ -24,6 +24,7 @@ public fun SearchPrompt(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // A null source here broke Mail's search transition tests, InboxScreenTest and PanelHeaderAlignmentTest.
     val interactions = remember { MutableInteractionSource() }
     Box(
         modifier

@@ -24,7 +24,6 @@ import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.otus.designsystem.theme.colors.OtusAlpha
 import com.otus.designsystem.theme.colors.OtusColors
@@ -34,8 +33,8 @@ import com.otus.designsystem.theme.tokens.rows.EntryTokens
 /**
  * One entry of a list, such as a mail or a person, on its own card: the [leading] avatar, which
  * turns into a check while the entry is selected, then the [content]. [taps] says what a tap and
- * a hold do. Space entries
- * [EntryTokens.gap] apart; [rowSelection] works out each entry's [selection].
+ * a hold do. Space entries [EntryTokens.gap] apart; [rowSelection] works out each entry's
+ * [selection].
  *
  * A selected card fills with the accent. Where [RowSelection.joinedAbove] or
  * [RowSelection.joinedBelow] says a selected neighbor touches it, the corners square off and the
@@ -97,8 +96,8 @@ private fun Modifier.entryCard(
     val strength = if (dimmed) OtusAlpha.DIMMED else 1f
     val raised = lerp(OtusColors.bgRegular, OtusColors.bgDark, strength)
     val fill = animateColorAsState(if (selected) OtusColors.accentDark else raised, motionTween()).value
-    val top = joinedCorner(selection?.joinedAbove == true)
-    val bottom = joinedCorner(selection?.joinedBelow == true)
+    val top = joinedCorner(selection?.joinedAbove == true, EntryTokens.radius)
+    val bottom = joinedCorner(selection?.joinedBelow == true, EntryTokens.radius)
     // Only the lower entry of a joined pair reaches up, so the gap is covered once.
     val reach = animateDpAsState(if (selection?.joinedAbove == true) EntryTokens.gap else 0.dp, motionTween()).value
     val shape = RoundedCornerShape(top, top, bottom, bottom)
@@ -113,7 +112,3 @@ private fun Modifier.entryCard(
     }.then(if (outlined) Modifier.border(EntryTokens.outline, outline, shape) else Modifier)
         .clip(shape)
 }
-
-@Composable
-private fun joinedCorner(joined: Boolean): Dp =
-    animateDpAsState(if (joined) 0.dp else EntryTokens.radius, motionTween()).value

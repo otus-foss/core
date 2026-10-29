@@ -54,9 +54,8 @@ import kotlinx.coroutines.launch
  * App-independent navigation sidebar: a [header], such as [SidebarHeader], over the scrolling
  * [content], over a [footer], such as [SidebarFooter], that stays at the bottom. [title] names
  * the pane for screen readers. It is 336 dp wide, or narrower when that would leave less than
- * 56 dp of the page visible. It half-opens from the leading edge over the
- * current page, and a swipe back toward that edge closes it. Wrap the page in [SidebarSwipeArea]
- * to open it by swiping.
+ * 56 dp of the page visible. It half-opens from the leading edge over the current page, and a
+ * swipe back toward that edge closes it. Wrap the page in [SidebarSwipeArea] to open it by swiping.
  */
 @Composable
 public fun Sidebar(

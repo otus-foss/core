@@ -64,9 +64,10 @@ public data class ThemeChoice(
     public fun withCustomTheme(id: Int): ThemeChoice = copy(customId = id)
 
     /** The accent for every theme; it replaces the accent shades set by hand in the selected theme. */
-    public fun withAccent(accent: Color): ThemeChoice =
-        (customTheme?.let { withTheme(it.copy(colors = it.colors.filterKeys { color -> !color.isAccent })) } ?: this)
-            .copy(accent = accent)
+    public fun withAccent(accent: Color): ThemeChoice {
+        val theme = customTheme ?: return copy(accent = accent)
+        return withTheme(theme.copy(colors = theme.colors.filterKeys { !it.isAccent })).copy(accent = accent)
+    }
 
     /**
      * Sets [color] to [value] in the selected custom theme; null, or the color the theme would

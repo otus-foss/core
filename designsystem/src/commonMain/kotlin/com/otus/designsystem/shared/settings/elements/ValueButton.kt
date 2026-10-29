@@ -17,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.colors.contrast
+import com.otus.designsystem.theme.colors.readableOn
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.settings.SettingTokens
 import com.otus.designsystem.theme.tokens.settings.ThemeTokens
@@ -69,5 +69,3 @@ public fun ValueButton(
         )
     }
 }
-
-private fun readableOn(fill: Color): Color = listOf(OtusColors.text1, OtusColors.bgDark).maxBy { contrast(it, fill) }

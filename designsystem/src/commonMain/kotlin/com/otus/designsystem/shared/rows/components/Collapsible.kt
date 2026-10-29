@@ -12,9 +12,9 @@ import com.otus.designsystem.theme.motion.motionTween
 
 /**
  * [content] that unfolds downward and fades in while [expanded], and folds back up when it is
- * not, at the speed of the panel's chip rail and the
- * [com.otus.designsystem.shared.sidebar.elements.SidebarExpandButton]
- * chevron. Use it for the rows nested under a collapsible row.
+ * not, at the speed of the
+ * [com.otus.designsystem.shared.sidebar.elements.SidebarExpandButton] chevron. Use it for the rows
+ * nested under a collapsible row, or a part that comes and goes, such as the panel's chip rail.
  */
 @Composable
 public fun Collapsible(

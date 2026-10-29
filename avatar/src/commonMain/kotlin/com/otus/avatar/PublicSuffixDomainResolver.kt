@@ -28,13 +28,8 @@ internal class PublicSuffixRules(
     private val rules =
         text
             .lineSequence()
-            .map {
-                it
-                    .trim()
-                    .substringBefore(' ')
-                    .substringBefore('\t')
-                    .lowercase()
-            }.filter { it.isNotEmpty() && !it.startsWith("//") }
+            .map(::ruleOf)
+            .filter { it.isNotEmpty() && !it.startsWith("//") }
             .toList()
     private val exceptions = rules.filter { it.startsWith("!") }.map { it.drop(1) }.toSet()
     private val wildcards = rules.filter { it.startsWith("*.") }.map { it.drop(2) }.toSet()
@@ -60,3 +55,11 @@ internal class PublicSuffixRules(
         return labels.takeIf { it.size > suffixLength }?.takeLast(suffixLength + 1)?.joinToString(".")
     }
 }
+
+/** The rule on a list line: its first word, lowercased. Comment lines start with `//`. */
+private fun ruleOf(line: String): String =
+    line
+        .trim()
+        .substringBefore(' ')
+        .substringBefore('\t')
+        .lowercase()

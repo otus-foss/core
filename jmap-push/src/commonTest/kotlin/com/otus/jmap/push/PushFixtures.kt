@@ -74,6 +74,10 @@ internal fun created(expires: String = "2026-10-21T08:00:00Z") =
     """{"methodResponses": [["PushSubscription/set",
        {"created": {"push": {"id": "ps1", "expires": "$expires"}}}, "c0"]]}"""
 
+/** A server without subscriptions of its own, which creates `ps1` expiring at [expires]. */
+internal fun subscribingServer(expires: String = "2026-10-21T08:00:00Z") =
+    Server { if ("PushSubscription/get" in it) NO_SUBSCRIPTIONS else created(expires) }
+
 internal const val NO_SUBSCRIPTIONS =
     """{"methodResponses": [["PushSubscription/get", {"list": [], "notFound": []}, "c0"]]}"""
 
@@ -92,7 +96,7 @@ internal suspend fun subscribed(
     store: Store,
     expires: String = "2026-10-21T08:00:00Z",
 ) {
-    subscriptions(Server { if ("PushSubscription/get" in it) NO_SUBSCRIPTIONS else created(expires) }, store).run {
+    subscriptions(subscribingServer(expires), store).run {
         setEndpoint("ada", endpoint)
         sync()
         receive("ada", PushMessage.Verification("ps1", "v1"))

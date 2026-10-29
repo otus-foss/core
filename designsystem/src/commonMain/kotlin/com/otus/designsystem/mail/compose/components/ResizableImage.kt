@@ -103,10 +103,7 @@ public fun ResizableImage(
         modifier
             .zIndex(if (selected) 1f else 0f)
             .onGloballyPositioned {
-                if (!dragging.value) {
-                    topHidden =
-                        it.boundsInWindow().top > it.positionInWindow().y + 1f
-                }
+                if (!dragging.value) topHidden = it.boundsInWindow().top > it.positionInWindow().y + 1f
             }.then(if (dragging.value) Modifier.sizeGuides(sizing, labelsBelow = topHidden) else Modifier),
     ) {
         Image(
@@ -155,6 +152,10 @@ private fun ResizeHandle(
     val haptics = LocalHapticFeedback.current
     val current by rememberUpdatedState(sizing)
     var dragged by remember { mutableStateOf<Dp?>(null) }
+    val endDrag = {
+        dragged = null
+        dragging.value = false
+    }
     val half = PanelTokens.touchTarget / 2
     Box(
         modifier
@@ -164,14 +165,8 @@ private fun ResizeHandle(
             .pointerInput(Unit) {
                 detectDragGestures(
                     onDragStart = { dragging.value = true },
-                    onDragEnd = {
-                        dragged = null
-                        dragging.value = false
-                    },
-                    onDragCancel = {
-                        dragged = null
-                        dragging.value = false
-                    },
+                    onDragEnd = endDrag,
+                    onDragCancel = endDrag,
                 ) { change, drag ->
                     change.consume()
                     val raw = ((dragged ?: current.width) + with(density) { drag.x.toDp() }).coerceIn(current.range)
@@ -208,13 +203,12 @@ private fun SizeLabel(
     val label =
         sizing.presets.firstOrNull { it.width == sizing.width }?.name
             ?: "${sizing.width.value.roundToInt()} × ${height.value.roundToInt()} px"
+    val drop = if (below) ComposeTokens.guideReach + PanelTokens.iconGap else 0.dp
     Text(
         label,
         modifier
-            .offset(
-                x = PanelTokens.touchTarget / 2,
-                y = PanelTokens.touchTarget + if (below) ComposeTokens.guideReach + PanelTokens.iconGap else 0.dp,
-            ).background(OtusColors.text1, CircleShape)
+            .offset(x = PanelTokens.touchTarget / 2, y = PanelTokens.touchTarget + drop)
+            .background(OtusColors.text1, CircleShape)
             .padding(horizontal = PanelTokens.chipPadding, vertical = PanelTokens.iconGap),
         style = panelTextStyle(),
         color = OtusColors.bgDark,
@@ -234,10 +228,8 @@ private fun Modifier.sizeGuides(
     val style = panelTextStyle().merge(TextStyle(fontSize = ComposeTokens.detailSize))
     return drawBehind {
         val reach = ComposeTokens.guideReach.toPx()
-        val dash =
-            PathEffect.dashPathEffect(
-                floatArrayOf(ComposeTokens.guideDash.toPx(), ComposeTokens.guideDash.toPx()),
-            )
+        val dashLength = ComposeTokens.guideDash.toPx()
+        val dash = PathEffect.dashPathEffect(floatArrayOf(dashLength, dashLength))
         sizing.presets.forEach { preset ->
             val chosen = preset.width == sizing.width
             val color = if (chosen) OtusColors.text1 else OtusColors.text3
@@ -249,11 +241,8 @@ private fun Modifier.sizeGuides(
                 PanelTokens.borderWidth.toPx(),
                 pathEffect = dash,
             )
-            val text =
-                measurer.measure(
-                    preset.short,
-                    style.copy(color = color, fontWeight = if (chosen) FontWeight.Bold else null),
-                )
+            val weight = if (chosen) FontWeight.Bold else null
+            val text = measurer.measure(preset.short, style.copy(color = color, fontWeight = weight))
             // Centered on its line, but kept between the image's start and the widest size.
             val widest = sizing.range.endInclusive.toPx()
             val left = (x - text.size.width / 2f).coerceIn(0f, (widest - text.size.width).coerceAtLeast(0f))

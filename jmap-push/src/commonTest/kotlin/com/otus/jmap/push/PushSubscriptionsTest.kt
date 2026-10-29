@@ -12,7 +12,7 @@ class PushSubscriptionsTest {
     fun anEndpointBecomesASubscriptionThatAVerificationActivates() =
         runTest {
             val store = Store()
-            val server = Server { if ("PushSubscription/get" in it) NO_SUBSCRIPTIONS else created() }
+            val server = subscribingServer()
             val push = subscriptions(server, store)
             push.setEndpoint("ada", endpoint)
             assertEquals(mapOf("ada" to PushStatus.Waiting), push.status())
@@ -41,7 +41,7 @@ class PushSubscriptionsTest {
     fun aNewEndpointReplacesTheOldAndEarlierSubscriptionsOfThisDevice() =
         runTest {
             val store = Store()
-            val first = Server { if ("PushSubscription/get" in it) NO_SUBSCRIPTIONS else created() }
+            val first = subscribingServer()
             subscriptions(first, store).run {
                 setEndpoint("ada", endpoint)
                 sync()
@@ -81,7 +81,7 @@ class PushSubscriptionsTest {
     fun clearingTheEndpointDeletesTheSubscription() =
         runTest {
             val store = Store()
-            subscriptions(Server { if ("PushSubscription/get" in it) NO_SUBSCRIPTIONS else created() }, store).run {
+            subscriptions(subscribingServer(), store).run {
                 setEndpoint("ada", endpoint)
                 sync()
             }

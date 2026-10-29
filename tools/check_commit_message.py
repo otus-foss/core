@@ -26,12 +26,8 @@ def violations(message: str, *, allow_merge: bool = False) -> list[str]:
     if not lines:
         return ["The commit message is empty."]
     title = lines[0]
-    if any(
-        title.startswith(prefix) and title[len(prefix) :].strip()
-        for prefix in ("fixup! ", "squash! ", "amend! ")
-    ):
-        return []
-    if allow_merge and title.startswith("Merge ") and title[6:].strip():
+    exempt = ("fixup! ", "squash! ", "amend! ", *(["Merge "] if allow_merge else []))
+    if any(title.startswith(prefix) and title.removeprefix(prefix).strip() for prefix in exempt):
         return []
     if not TITLE.fullmatch(title):
         return [
@@ -49,21 +45,16 @@ def violations(message: str, *, allow_merge: bool = False) -> list[str]:
         if not line.strip():
             previous_blank = True
             continue
-        if line.startswith("- ") and not in_footer:
+        bullet = line.startswith("- ")
+        wrapped_bullet = line.startswith("  ") and bullets and not in_footer
+        wrapped_footer = in_footer and not bullet
+        if bullet and not in_footer:
             if not line[2:].strip():
                 errors.append("Each bullet must describe a change.")
             bullets += 1
         elif FOOTER.fullmatch(line) and bullets and (previous_blank or in_footer):
             in_footer = True
-        elif (
-            line.startswith("  ")
-            and bullets
-            and not in_footer
-            or in_footer
-            and not line.startswith("- ")
-        ):
-            pass
-        else:
+        elif not (wrapped_bullet or wrapped_footer):
             errors.append("Use '- ' body bullets; put optional footers after a blank line.")
         previous_blank = False
     if not 1 <= bullets <= 8:

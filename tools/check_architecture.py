@@ -26,6 +26,7 @@ SUPPRESSIONS = (
     r"@(?:file:\s*)?(?:[\w.]+\.)?Suppress(?:Lint|Warnings)?\b"
     r"|ktlint-disable|detekt:|swiftlint:disable|swiftformat:disable"
 )
+COMPOSABLE = r"@(?:androidx\.compose\.runtime\.)?Composable\b"
 SERVICE_TYPES = (
     r"\b\w*(?:ViewModel|Repository|NavController)\b|\b(?:viewModel|koinInject|hiltViewModel)\s*[(<]"
 )
@@ -105,8 +106,13 @@ def literal_color(code: str) -> bool:
     return bool(re.search(rf"\b(?:{names})\s*\(\s*(?:\w+\s*=\s*)?[-+]?\.?\d", code))
 
 
+def module_namespace(module: str) -> str:
+    """The package suffix of a module: its directory name with `-` as `.`."""
+    return module.replace("-", ".")
+
+
 def module_base(module: str) -> str:
-    return f"{NAMESPACE}.{module.replace('-', '.')}"
+    return f"{NAMESPACE}.{module_namespace(module)}"
 
 
 def is_ui_module(module: str) -> bool:
@@ -133,6 +139,11 @@ def scoped_ui_location(location: list[str]) -> bool:
     )
 
 
+def ui_layer(location: list[str]) -> list[str]:
+    """`["elements"]` or `["components"]` for scoped UI code, else empty."""
+    return location[2:3] if scoped_ui_location(location) else []
+
+
 def theme_location(location: list[str]) -> bool:
     return location[:1] == ["theme"] and all(
         re.fullmatch(PACKAGE_SEGMENT, part) for part in location[1:]
@@ -153,10 +164,10 @@ def ui_reference_violations(
 ) -> list[str]:
     errors = []
     scope = location[0] if location else None
-    layer = location[2:3] if scoped_ui_location(location) else []
+    layer = ui_layer(location)
     # Split modules have longer namespaces, such as designsystem.controls.
     namespaces = sorted(
-        (name.replace("-", ".") for name in ui_modules | {"designsystem"}),
+        (module_namespace(name) for name in ui_modules | {"designsystem"}),
         key=len,
         reverse=True,
     )
@@ -232,7 +243,7 @@ def violations(path: Path, text: str, ui_modules: frozenset[str] = frozenset()) 
     if is_ui_module(module):
         errors.extend(ui_violations(location, code, references, ui_modules))
     else:
-        composable = re.search(r"@(?:androidx\.compose\.runtime\.)?Composable\b", code)
+        composable = re.search(COMPOSABLE, code)
         if module not in FEATURE_UI_MODULES and (uses(code, UI_APIS) or composable):
             errors.append("Compose is limited to design-system, accounts, and settings modules")
         errors.extend(feature_violations(path, base, location, code))
@@ -245,7 +256,7 @@ def feature_violations(path: Path, base: str, location: list[str], code: str) ->
     layer = location[:1]
     if path.parts[0] in FEATURE_UI_MODULES and (not layer or layer[0] not in FEATURE_LAYERS):
         errors.append("shared feature code belongs in domain/data/presentation")
-    composable = re.search(r"@(?:androidx\.compose\.runtime\.)?Composable\b", code)
+    composable = re.search(COMPOSABLE, code)
     if (uses(code, UI_APIS) or composable) and layer != ["presentation"]:
         errors.append("Compose belongs in design-system modules or a feature's presentation layer")
     if (
@@ -294,15 +305,12 @@ def ui_violations(
         )
     if uses(code, DATA_APIS):
         errors.append("UI must not access network or database APIs")
-    layer = location[2:3] if scoped_ui_location(location) else []
+    layer = ui_layer(location)
     if layer in (["elements"], ["components"]) and re.search(SERVICE_TYPES, code):
         errors.append("elements/components take values and callbacks, not services or navigation")
-    allowed = ui_modules | UI_ALLOWED_MODULES
+    allowed = [module_namespace(module) for module in ui_modules | UI_ALLOWED_MODULES]
     for namespace in references:
-        if not any(
-            namespace == m.replace("-", ".") or namespace.startswith(m.replace("-", ".") + ".")
-            for m in allowed
-        ):
+        if not any(namespace == name or namespace.startswith(name + ".") for name in allowed):
             errors.append("design-system modules may depend only on design-system and dateformat")
     return errors
 

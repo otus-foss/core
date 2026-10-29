@@ -13,8 +13,8 @@ import androidx.compose.ui.Modifier
 import com.otus.designsystem.shared.controls.elements.ActionButton
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.tokens.selection.CalendarTokens
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.YearMonth
 import kotlinx.datetime.todayIn
 import kotlin.time.Clock
 
@@ -40,15 +40,19 @@ public fun BirthdayPicker(
     var day by rememberSaveable { mutableIntStateOf(initial?.day ?: 1) }
     var year by rememberSaveable { mutableStateOf(initial?.year) }
     // Without a year, February keeps its 29th, since the date may fall in a leap year.
-    val days = 1..daysIn(year ?: LEAP_YEAR, month)
+    val days = 1..YearMonth(year ?: LEAP_YEAR, month).numberOfDays
     val shownDay = day.coerceIn(days)
     DatePickerDialog(onDismiss) {
         DatePickerHeading(title, "Leave the year as No year when you don’t know it.", onDismiss)
         DateWheels(Modifier.weight(1f)) {
             DatePickerColumn("Day", days.map(Int::toString), shownDay - 1, { day = it + 1 }, Modifier.weight(1f))
-            DatePickerColumn("Month", MONTH_NAMES, month - 1, {
-                month = it + 1
-            }, Modifier.weight(CalendarTokens.MONTH_COLUMN_WEIGHT))
+            DatePickerColumn(
+                "Month",
+                MONTH_NAMES,
+                month - 1,
+                { month = it + 1 },
+                Modifier.weight(CalendarTokens.MONTH_COLUMN_WEIGHT),
+            )
             DatePickerColumn(
                 "Year",
                 years,
@@ -64,16 +68,6 @@ public fun BirthdayPicker(
     }
 }
 
-private fun daysIn(
-    year: Int,
-    month: Int,
-): Int {
-    val first = LocalDate(year, month, 1)
-    val next = if (month == MONTHS) LocalDate(year + 1, 1, 1) else LocalDate(year, month + 1, 1)
-    return next.toEpochDays().toInt() - first.toEpochDays().toInt()
-}
-
 private const val NO_YEAR = "No year"
 private const val YEARS_BACK = 120
 private const val LEAP_YEAR = 2000
-private const val MONTHS = 12

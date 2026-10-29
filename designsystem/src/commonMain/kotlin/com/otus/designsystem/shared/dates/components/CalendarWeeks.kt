@@ -7,6 +7,7 @@ import kotlinx.datetime.Month
 import kotlinx.datetime.daysUntil
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
+import kotlinx.datetime.yearMonth
 
 /** One Monday-based timeline; only the outer limits can contain empty cells. */
 internal class CalendarWeeks(
@@ -26,6 +27,6 @@ internal class CalendarWeeks(
     fun visibleMonth(index: Int): LocalDate {
         val monday = startOfWeek(index)
         val endOfWeek = monday.plus(CalendarTokens.DAYS_PER_WEEK - 1, DateTimeUnit.DAY).coerceIn(first, last)
-        return LocalDate(endOfWeek.year, endOfWeek.month, 1)
+        return endOfWeek.yearMonth.firstDay
     }
 }

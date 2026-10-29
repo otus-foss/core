@@ -74,11 +74,11 @@ internal class PinnedChromeNode(
 
     override fun onAttach() {
         layer = requireGraphicsContext().createGraphicsLayer()
-        motion =
-            currentValueOf(LocalPageMotion)?.also {
-                it.register(kind)
-                it.host.chrome += this
-            }
+        motion = currentValueOf(LocalPageMotion)
+        motion?.let {
+            it.register(kind)
+            it.host.chrome += this
+        }
     }
 
     override fun onDetach() {

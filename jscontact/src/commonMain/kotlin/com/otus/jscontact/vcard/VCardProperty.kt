@@ -38,10 +38,6 @@ internal data class VCardProperty(
     val text: String
         get() = value.unescapeText().trim()
 
-    /** The values of a list value, such as NICKNAME, split at unescaped commas. Empty values are dropped. */
-    val textList: List<String>
-        get() = value.splitUnescaped(',').map { it.unescapeText().trim() }.filter { it.isNotEmpty() }
-
     fun parameter(key: String): List<String> = parameters[key].orEmpty()
 
     /** The values of [key] joined again, for a parameter that holds one value with commas, such as LABEL. */

@@ -72,20 +72,12 @@ public class AccountsState(
                     reload()
                 }
                 ensureActive()
+                if (outcome is ConnectOutcome.ConfirmHost) pending = draft to outcome.origin
                 status =
                     when (outcome) {
-                        is ConnectOutcome.Connected -> {
-                            ConnectStatus.Connected(outcome.account.name)
-                        }
-
-                        is ConnectOutcome.Failed -> {
-                            ConnectStatus.Failed(outcome.reason)
-                        }
-
-                        is ConnectOutcome.ConfirmHost -> {
-                            pending = draft to outcome.origin
-                            ConnectStatus.ConfirmHost(outcome.host)
-                        }
+                        is ConnectOutcome.Connected -> ConnectStatus.Connected(outcome.account.name)
+                        is ConnectOutcome.Failed -> ConnectStatus.Failed(outcome.reason)
+                        is ConnectOutcome.ConfirmHost -> ConnectStatus.ConfirmHost(outcome.host)
                     }
             }
     }

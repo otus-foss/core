@@ -40,19 +40,16 @@ public fun FieldLabel(
             fontSize = SheetTokens.detailSize,
             color = OtusColors.text2,
         )
-        action?.let {
-            Box(
-                Modifier.layout { measurable, constraints ->
-                    val placeable =
-                        measurable.measure(
-                            constraints.copy(minHeight = 0, maxHeight = Constraints.Infinity),
-                        )
-                    layout(placeable.width, 0) { placeable.place(0, -placeable.height / 2) }
-                },
-            ) { it() }
-        }
+        action?.let { Box(Modifier.overhang()) { it() } }
     }
 }
+
+/** Measures the content at its own height but takes none, centering it on the line instead. */
+private fun Modifier.overhang(): Modifier =
+    layout { measurable, constraints ->
+        val placeable = measurable.measure(constraints.copy(minHeight = 0, maxHeight = Constraints.Infinity))
+        layout(placeable.width, 0) { placeable.place(0, -placeable.height / 2) }
+    }
 
 /** The ✕ inside a form field that removes the field, read to screen readers as [description]. */
 @Composable

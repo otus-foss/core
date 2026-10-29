@@ -96,11 +96,7 @@ internal fun Transition<PrimaryFace>.Swapping(
         modifier,
         // No size transform: the content follows its container at once, such as a label in a widening bar.
         transitionSpec = {
-            (
-                fadeIn(
-                    arrive,
-                ) + scaleIn(arrive)
-            ) togetherWith (fadeOut(leave) + scaleOut(leave)) using null
+            (fadeIn(arrive) + scaleIn(arrive)) togetherWith (fadeOut(leave) + scaleOut(leave)) using null
         },
         contentAlignment = contentAlignment,
     ) { content(it) }

@@ -78,9 +78,9 @@ internal fun FileTile(
         if (thumbnail != null) {
             Image(thumbnail, null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
         } else {
-            CompositionLocalProvider(
-                LocalContentColor provides OtusColors.text2,
-            ) { Symbol(file.kind.icon, size = iconSize) }
+            CompositionLocalProvider(LocalContentColor provides OtusColors.text2) {
+                Symbol(file.kind.icon, size = iconSize)
+            }
         }
     }
 }
@@ -152,9 +152,9 @@ internal fun FileRow(
                 .semantics { contentDescription = "Save ${file.name}" },
             contentAlignment = Alignment.Center,
         ) {
-            CompositionLocalProvider(
-                LocalContentColor provides OtusColors.text2,
-            ) { Symbol(Res.drawable.symbol_download) }
+            CompositionLocalProvider(LocalContentColor provides OtusColors.text2) {
+                Symbol(Res.drawable.symbol_download)
+            }
         }
     }
 }

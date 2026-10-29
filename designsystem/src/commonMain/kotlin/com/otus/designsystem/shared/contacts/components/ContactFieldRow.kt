@@ -1,6 +1,5 @@
 package com.otus.designsystem.shared.contacts.components
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -130,10 +129,8 @@ private fun FieldFrame(
             .heightIn(min = ContactTokens.fieldHeight)
             .background(if (highlighted) OtusColors.selectedFill else OtusColors.bgDark, shape)
             .border(
-                BorderStroke(
-                    PanelTokens.borderWidth,
-                    if (highlighted) OtusColors.selectedFill else OtusColors.strokeBgDark,
-                ),
+                PanelTokens.borderWidth,
+                if (highlighted) OtusColors.selectedFill else OtusColors.strokeBgDark,
                 shape,
             )
             // A trailing button's touch target spaces it from the edge; without one, the label needs the inset.
@@ -181,20 +178,19 @@ private fun TrailingButtons(
     onRemove: (() -> Unit)?,
 ) {
     TrailingIcons(
-        first =
-            primary?.let { star ->
-                {
-                    IconButton(if (star.on) "Primary" else "Make primary", star.onClick, look = IconButtonLook.Bare) {
-                        CompositionLocalProvider(
-                            LocalContentColor provides if (star.on) OtusColors.text1 else OtusColors.text2,
-                        ) {
-                            Symbol(if (star.on) Res.drawable.symbol_star_fill else Res.drawable.symbol_star)
-                        }
-                    }
-                }
-            },
+        first = primary?.let { star -> { StarButton(star) } },
         last = onRemove?.let { remove -> { RemoveFieldButton("Remove $description", remove) } },
     )
+}
+
+/** The star that marks the field primary, filled while it is. */
+@Composable
+private fun StarButton(star: PrimaryStar) {
+    IconButton(if (star.on) "Primary" else "Make primary", star.onClick, look = IconButtonLook.Bare) {
+        CompositionLocalProvider(LocalContentColor provides if (star.on) OtusColors.text1 else OtusColors.text2) {
+            Symbol(if (star.on) Res.drawable.symbol_star_fill else Res.drawable.symbol_star)
+        }
+    }
 }
 
 /**

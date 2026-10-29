@@ -22,8 +22,8 @@ import com.otus.designsystem.theme.colors.OtusColors
  * A pill with the current choice, its [avatars] and [label], and a down chevron, such as which
  * account a page shows or which address a draft is sent from. It calls [onClick], which opens a
  * picker; screen readers hear it as one button named [label]. Given a width, such as by
- * [ContextPanelScope.fillRail][com.otus.designsystem.shared.panels.components.ContextPanelScope.fillRail], it fills
- * it and puts the chevron at the end.
+ * [ContextPanelScope.fillRail][com.otus.designsystem.shared.panels.components.ContextPanelScope.fillRail],
+ * it fills it and puts the chevron at the end.
  */
 @Composable
 public fun PickerChip(

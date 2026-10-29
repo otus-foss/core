@@ -112,21 +112,33 @@ private fun FormattingRow(
         ) {
             leading?.let {
                 it()
-                Box(
-                    Modifier
-                        .padding(horizontal = PanelTokens.iconGap)
-                        .size(PanelTokens.borderWidth, ComposeTokens.formatDividerHeight)
-                        .background(OtusColors.bgLight),
-                )
+                LeadingDivider()
             }
             TextFormat.entries.forEach { format ->
-                FormatButton(format.label, format.symbol, text.isActive(format), {
-                    if (format == TextFormat.Link && !text.isActive(format)) onLink() else text.toggle(format)
-                })
+                FormatButton(format.label, format.symbol, text.isActive(format), { text.applyFormat(format, onLink) })
             }
         }
         trailing?.invoke()
     }
+}
+
+/** The line between [FormattingBar]'s leading button and the formats. */
+@Composable
+private fun LeadingDivider() {
+    Box(
+        Modifier
+            .padding(horizontal = PanelTokens.iconGap)
+            .size(PanelTokens.borderWidth, ComposeTokens.formatDividerHeight)
+            .background(OtusColors.bgLight),
+    )
+}
+
+/** Toggles [format], except that adding a link runs [onLink] so the caller can ask for an address. */
+private fun RichText.applyFormat(
+    format: TextFormat,
+    onLink: () -> Unit,
+) {
+    if (format == TextFormat.Link && !isActive(format)) onLink() else toggle(format)
 }
 
 /** One button of a [FormattingBar]; an [active] format is filled with `selectedFill`. */

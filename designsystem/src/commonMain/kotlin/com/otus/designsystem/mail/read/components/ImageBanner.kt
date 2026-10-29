@@ -1,7 +1,5 @@
 package com.otus.designsystem.mail.read.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,9 +15,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import com.otus.designsystem.shared.controls.elements.StripButton
 import com.otus.designsystem.shared.controls.elements.Symbol
+import com.otus.designsystem.shared.panels.elements.darkSurface
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.content.ReadTokens
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 import org.jetbrains.compose.resources.DrawableResource
 
@@ -40,8 +38,7 @@ public fun ImageBanner(
         modifier
             .fillMaxWidth()
             .heightIn(min = ReadTokens.bannerHeight)
-            .background(OtusColors.bgDark, shape)
-            .border(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape)
+            .darkSurface(shape)
             .padding(start = ReadTokens.bannerStart, end = ReadTokens.bannerEnd),
         horizontalArrangement = Arrangement.spacedBy(ReadTokens.stripGap),
         verticalAlignment = Alignment.CenterVertically,

@@ -3,8 +3,8 @@ package com.otus.accounts.presentation
 import com.otus.accounts.domain.ConnectedAccount
 import com.otus.avatar.AvatarMark
 import com.otus.avatar.AvatarStyle
-import com.otus.avatar.GeneratedAvatar
 import com.otus.avatar.ResolvedAvatar
+import com.otus.avatar.generatedAvatar
 import com.otus.designsystem.shared.people.components.ChipAvatar
 import com.otus.designsystem.shared.people.elements.AvatarSymbols
 import com.otus.designsystem.theme.colors.FolderColor
@@ -24,8 +24,11 @@ public fun ResolvedAvatar.toChipAvatar(): ChipAvatar {
     }
 }
 
-/** The initials over their color. */
-internal fun GeneratedAvatar.toChipAvatar(): ChipAvatar = ChipAvatar(initials, colorIndex)
+/** This avatar, or the generated one of [name] and [email] while there is none. */
+internal fun ResolvedAvatar?.toChipAvatarOr(
+    name: String,
+    email: String,
+): ChipAvatar = (this ?: ResolvedAvatar(generatedAvatar(name, email))).toChipAvatar()
 
 /** A style's color, and its letters or icon. An unknown icon name falls back to the color alone. */
 public fun AvatarStyle.toChipAvatar(): ChipAvatar =

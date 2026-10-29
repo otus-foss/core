@@ -42,19 +42,6 @@ public fun <T> ReorderableColumn(
     background: Color = OtusColors.bgRegular,
     row: @Composable ReorderableScope.(T) -> Unit,
 ) {
-    ReorderableLayout(items, key, onMove, modifier, spacing, background, row)
-}
-
-@Composable
-private fun <T> ReorderableLayout(
-    items: List<T>,
-    key: (T) -> Any,
-    onMove: (Int, Int) -> Unit,
-    modifier: Modifier,
-    spacing: Dp,
-    background: Color,
-    row: @Composable ReorderableScope.(T) -> Unit,
-) {
     val keys = items.map(key)
     val spacingPx = with(LocalDensity.current) { spacing.toPx() }
     val drag = remember { ReorderDrag() }

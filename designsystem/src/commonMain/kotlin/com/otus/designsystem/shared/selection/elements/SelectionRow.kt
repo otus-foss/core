@@ -43,28 +43,18 @@ public fun SelectionRow(
 ) {
     val interactions = remember { MutableInteractionSource() }
     val shape = RoundedCornerShape(SheetTokens.rowRadius)
+    val choose =
+        if (singleChoice) {
+            Modifier.selectable(selected, interactions, indication = null, role = Role.RadioButton, onClick = onClick)
+        } else {
+            Modifier.toggleable(selected, interactions, indication = null, role = Role.Checkbox) { onClick() }
+        }
     Row(
         modifier
             .fillMaxWidth()
             .heightIn(min = if (subtitle == null) SheetTokens.selectionRowHeight else SheetTokens.rowHeight)
-            .then(
-                if (singleChoice) {
-                    Modifier.selectable(
-                        selected = selected,
-                        interactionSource = interactions,
-                        indication = null,
-                        role = Role.RadioButton,
-                        onClick = onClick,
-                    )
-                } else {
-                    Modifier.toggleable(
-                        selected,
-                        interactionSource = interactions,
-                        indication = null,
-                        role = Role.Checkbox,
-                    ) { onClick() }
-                },
-            ).clip(shape)
+            .then(choose)
+            .clip(shape)
             .background(if (selected) OtusColors.selectedFill else OtusColors.bgDark)
             .controlPressFeedback(interactions, shape)
             .padding(horizontal = SheetTokens.gap, vertical = if (subtitle == null) 0.dp else SheetTokens.rowPadding),

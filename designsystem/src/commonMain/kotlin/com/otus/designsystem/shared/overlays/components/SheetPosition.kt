@@ -85,13 +85,8 @@ internal class SheetPosition(
         close: () -> Unit,
     ) {
         if (closing) return
-        if (velocity > flingVelocity ||
-            hidden > ChoiceSheetTokens.DISMISS_FRACTION
-        ) {
-            close()
-        } else {
-            show(MotionCurve.Standard)
-        }
+        val dismiss = velocity > flingVelocity || hidden > ChoiceSheetTokens.DISMISS_FRACTION
+        if (dismiss) close() else show(MotionCurve.Standard)
     }
 
     private suspend fun animateTo(
@@ -102,10 +97,8 @@ internal class SheetPosition(
         animation?.takeIf { it != job }?.cancel()
         animation = job
         try {
-            animate(hidden, target, animationSpec = Motion.tween(MotionSpeed.Normal, curve, motionScale)) { value, _ ->
-                hidden =
-                    value
-            }
+            val spec = Motion.tween<Float>(MotionSpeed.Normal, curve, motionScale)
+            animate(hidden, target, animationSpec = spec) { value, _ -> hidden = value }
         } finally {
             if (animation == job) animation = null
         }

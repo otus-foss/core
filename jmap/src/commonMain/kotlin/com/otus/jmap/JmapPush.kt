@@ -82,14 +82,7 @@ public class PushSubscriptionSetMethod(
 ) : JmapMethod<SetResult>("PushSubscription/set", JmapCapability.CORE, accountId = null) {
     override fun arguments(): JsonObject =
         buildJsonObject {
-            if (create.isNotEmpty()) {
-                put(
-                    "create",
-                    JsonObject(
-                        create.mapValues { JmapJson.encodeToJsonElement(NewPushSubscription.serializer(), it.value) },
-                    ),
-                )
-            }
+            if (create.isNotEmpty()) put("create", JsonObject(create.mapValues { it.value.toJson() }))
             if (update.isNotEmpty()) put("update", JsonObject(update))
             if (destroy.isNotEmpty()) put("destroy", strings(destroy))
         }
@@ -97,6 +90,8 @@ public class PushSubscriptionSetMethod(
     override fun decode(arguments: JsonObject): SetResult =
         decodeSetResult(arguments, create.keys, update.keys, destroy, hasState = false)
 }
+
+private fun NewPushSubscription.toJson() = JmapJson.encodeToJsonElement(NewPushSubscription.serializer(), this)
 
 /** What a server pushes (RFC 8620, section 7), as a push body or an event stream's `data`. */
 public sealed interface PushMessage {

@@ -78,7 +78,7 @@ class PushVerificationDeliveryTest {
     fun failedPauseSkipsOnlyThatLoginUntilTheNextSync() =
         runTest {
             val grace = login.copy(id = "grace")
-            val server = Server { if ("PushSubscription/get" in it) NO_SUBSCRIPTIONS else created() }
+            val server = subscribingServer()
             val logins =
                 InMemoryLoginStore().apply {
                     save(login, "secret")

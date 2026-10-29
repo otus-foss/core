@@ -74,9 +74,7 @@ public fun RecipientLine(
             shown.forEachIndexed { index, recipient -> RecipientChip(recipient, { onChipClick(index) }) }
             // A folded line shows no field: "+3 more" opens it, so the line keeps to its chips.
             if (folded) {
-                MoreChip(recipients.size - shown.size) {
-                    expanded = true
-                }
+                MoreChip(recipients.size - shown.size) { expanded = true }
             } else {
                 AddressField(label, input, Modifier.weight(1f))
             }
@@ -119,7 +117,9 @@ private fun AddressField(
                 .onFocusChanged { if (!it.isFocused) input.onCommit() }
                 .onPreviewKeyEvent { event ->
                     val backspace = event.key == Key.Backspace && event.type == KeyEventType.KeyDown
-                    (backspace && text.isEmpty()).also { if (it) input.onRemoveLast() }
+                    val removesLast = backspace && text.isEmpty()
+                    if (removesLast) input.onRemoveLast()
+                    removesLast
                 },
         singleLine = true,
         textStyle = panelTextStyle(),

@@ -22,25 +22,22 @@ internal class CalendarDragTargets(
         rtl: Boolean,
     ): LocalDate? {
         val container = viewport?.takeIf { it.isAttached } ?: return null
-        return rows.entries.firstNotNullOfOrNull { (week, coordinates) ->
-            if (coordinates.isAttached) {
-                val local = coordinates.localPositionOf(container, position)
-                dateInRow(week, coordinates, local, rtl)?.takeIf { it in allowedDates }
-            } else {
-                null
-            }
+        return rows.entries.firstNotNullOfOrNull { (week, row) ->
+            dateInRow(week, row, container, position, rtl)?.takeIf { it in allowedDates }
         }
     }
 }
 
 private fun dateInRow(
     week: LocalDate,
-    coordinates: LayoutCoordinates,
-    local: Offset,
+    row: LayoutCoordinates,
+    container: LayoutCoordinates,
+    position: Offset,
     rtl: Boolean,
 ): LocalDate? {
-    val size = coordinates.size
-    if (!Rect(Offset.Zero, size.toSize()).contains(local)) return null
+    val local = row.takeIf { it.isAttached }?.localPositionOf(container, position)
+    val size = row.size
+    if (local == null || !Rect(Offset.Zero, size.toSize()).contains(local)) return null
     val column = floor(local.x / size.width * CalendarTokens.DAYS_PER_WEEK).toInt()
     val logicalColumn = if (rtl) CalendarTokens.DAYS_PER_WEEK - 1 - column else column
     return week.plus(logicalColumn, DateTimeUnit.DAY)

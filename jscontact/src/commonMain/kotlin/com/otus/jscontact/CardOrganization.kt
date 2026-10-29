@@ -24,13 +24,12 @@ public data class Organization(
     /** Unknown and vendor-specific properties, kept as received (RFC 9553, section 1.7.4). */
     @Transient val extra: Map<String, JsonElement> = emptyMap(),
 ) {
-    internal object Serializer :
-        JsContactSerializer<Organization>(
-            generatedSerializer(),
-            "Organization",
-            { it.extra },
-            { value, extra -> value.copy(extra = extra) },
-        )
+    internal object Serializer : JsContactSerializer<Organization>(
+        generatedSerializer(),
+        "Organization",
+        { it.extra },
+        { value, extra -> value.copy(extra = extra) },
+    )
 }
 
 /** A unit of an [Organization], such as a division or a department (RFC 9553, section 2.2.3). */
@@ -44,11 +43,10 @@ public data class OrgUnit(
     /** Unknown and vendor-specific properties, kept as received (RFC 9553, section 1.7.4). */
     @Transient val extra: Map<String, JsonElement> = emptyMap(),
 ) {
-    internal object Serializer :
-        JsContactSerializer<OrgUnit>(
-            generatedSerializer(),
-            "OrgUnit",
-            { it.extra },
-            { value, extra -> value.copy(extra = extra) },
-        )
+    internal object Serializer : JsContactSerializer<OrgUnit>(
+        generatedSerializer(),
+        "OrgUnit",
+        { it.extra },
+        { value, extra -> value.copy(extra = extra) },
+    )
 }

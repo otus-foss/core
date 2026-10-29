@@ -96,16 +96,15 @@ private fun <T> rememberTreeMoves(
 ): List<TreeMoves> {
     val latestDrop by rememberUpdatedState(onDrop)
     return remember(items) {
-        items.indices.map { index ->
-            val moves =
-                listOf(index - 1, index + 2).map { gap ->
-                    TreeDropTarget
-                        .Before(gap)
-                        .takeIf { gap in 0..items.size && canDrop(index, it) }
-                        ?.let { target -> { latestDrop(index, target) } }
-                }
-            TreeMoves(moves[0], moves[1])
-        }
+        fun move(
+            index: Int,
+            gap: Int,
+        ): (() -> Unit)? =
+            TreeDropTarget
+                .Before(gap)
+                .takeIf { gap in 0..items.size && canDrop(index, it) }
+                ?.let { target -> { latestDrop(index, target) } }
+        items.indices.map { TreeMoves(up = move(it, it - 1), down = move(it, it + 2)) }
     }
 }
 

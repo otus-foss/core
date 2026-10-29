@@ -22,13 +22,12 @@ public data class SpeakToAs(
     /** Unknown and vendor-specific properties, kept as received (RFC 9553, section 1.7.4). */
     @Transient val extra: Map<String, JsonElement> = emptyMap(),
 ) {
-    internal object Serializer :
-        JsContactSerializer<SpeakToAs>(
-            generatedSerializer(),
-            "SpeakToAs",
-            { it.extra },
-            { value, extra -> value.copy(extra = extra) },
-        )
+    internal object Serializer : JsContactSerializer<SpeakToAs>(
+        generatedSerializer(),
+        "SpeakToAs",
+        { it.extra },
+        { value, extra -> value.copy(extra = extra) },
+    )
 }
 
 /** Pronouns the contact uses for themselves, such as "they/them" (RFC 9553, section 2.2.4). */
@@ -44,13 +43,12 @@ public data class Pronouns(
     /** Unknown and vendor-specific properties, kept as received (RFC 9553, section 1.7.4). */
     @Transient val extra: Map<String, JsonElement> = emptyMap(),
 ) {
-    internal object Serializer :
-        JsContactSerializer<Pronouns>(
-            generatedSerializer(),
-            "Pronouns",
-            { it.extra },
-            { value, extra -> value.copy(extra = extra) },
-        )
+    internal object Serializer : JsContactSerializer<Pronouns>(
+        generatedSerializer(),
+        "Pronouns",
+        { it.extra },
+        { value, extra -> value.copy(extra = extra) },
+    )
 }
 
 /**

@@ -1,8 +1,5 @@
 package com.otus.designsystem.shared.input.elements
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,6 +20,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import com.otus.designsystem.shared.controls.elements.Symbol
+import com.otus.designsystem.shared.panels.elements.darkSurface
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
@@ -38,8 +36,7 @@ internal fun Modifier.inputFrame(endsWithButton: Boolean): Modifier {
     val shape = RoundedCornerShape(SheetTokens.rowRadius)
     return fillMaxWidth()
         .heightIn(min = PanelTokens.touchTarget)
-        .background(OtusColors.bgDark, shape)
-        .border(BorderStroke(PanelTokens.borderWidth, OtusColors.strokeBgDark), shape)
+        .darkSurface(shape)
         .padding(start = SheetTokens.gap, end = if (endsWithButton) PanelTokens.iconGap else SheetTokens.gap)
 }
 

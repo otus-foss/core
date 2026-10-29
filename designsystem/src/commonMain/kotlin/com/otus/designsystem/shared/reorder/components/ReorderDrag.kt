@@ -49,7 +49,8 @@ internal class ReorderDrag(
     }
 
     fun moveBy(delta: Float) {
-        from.takeIf { it >= 0 }?.let { offset = clampDrag(rowHeights, it, offset + delta, spacing, overhang) }
+        val from = from
+        if (from >= 0) offset = clampDrag(rowHeights, from, offset + delta, spacing, overhang)
     }
 
     fun drop() {

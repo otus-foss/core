@@ -29,7 +29,13 @@ public fun ButtonPill(
     fill: Color = OtusColors.bgDark,
     leading: (@Composable () -> Unit)? = null,
 ) {
-    ChipFrame(onClick, modifier.semantics { contentDescription = description }, null, true, fill) {
+    ChipFrame(
+        onClick,
+        modifier.semantics { contentDescription = description },
+        selected = null,
+        enabled = true,
+        fill = fill,
+    ) {
         leading?.invoke()
         ChipText(label)
     }
@@ -53,9 +59,9 @@ public fun AddressPill(
     ChipFrame(
         onClick,
         modifier.semantics { contentDescription = description },
-        null,
-        true,
-        OtusColors.bgDark,
+        selected = null,
+        enabled = true,
+        fill = OtusColors.bgDark,
         layout = ChipLayout(avatarFirst = true),
     ) {
         avatar()

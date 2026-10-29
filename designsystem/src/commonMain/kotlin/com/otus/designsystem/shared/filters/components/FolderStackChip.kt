@@ -9,11 +9,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.withStyle
 import com.otus.designsystem.shared.controls.elements.Chip
 import com.otus.designsystem.shared.filters.elements.ChipLabel
+import com.otus.designsystem.shared.filters.elements.annotated
 import com.otus.designsystem.shared.folders.elements.FolderGlyph
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
@@ -44,13 +42,7 @@ public fun FolderStackChip(
                     FolderGlyph(it.color, icon = it.icon, size = PanelTokens.iconSize)
                 }
             }
-            val faint = OtusColors.text3
-            val text =
-                buildAnnotatedString {
-                    label.prefix?.let { withStyle(SpanStyle(color = faint)) { append("$it / ") } }
-                    append(label.text)
-                }
-            Text(text, style = panelTextStyle().copy(color = Color.Unspecified), maxLines = 1)
+            Text(label.annotated(), style = panelTextStyle().copy(color = Color.Unspecified), maxLines = 1)
             more?.let { Text(it, style = panelTextStyle(), color = OtusColors.text2, fontSize = PanelTokens.countSize) }
         }
     }

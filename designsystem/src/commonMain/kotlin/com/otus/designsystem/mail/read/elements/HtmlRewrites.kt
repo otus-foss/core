@@ -16,20 +16,25 @@ internal fun withImagePlaceholders(
 ): String =
     IMG_TAG.replace(html) { match ->
         val tag = match.value
-        val source =
-            SRC
-                .find(tag)
-                ?.groupValues
-                ?.drop(1)
-                ?.firstOrNull { it.isNotEmpty() }
-                .orEmpty()
-        if (!REMOTE.containsMatchIn(source)) {
-            tag
-        } else {
-            "<a href=\"${key.showImagesUrl}\" class=\"${key.className(BLOCKED)}\" style=\"${placeholderSize(tag)}\" " +
-                "aria-label=\"Show images\"></a>"
-        }
+        if (REMOTE.containsMatchIn(imageSource(tag))) placeholder(tag, key) else tag
     }
+
+/** The `src` of an `<img>` tag in any quotes, or empty without one. */
+private fun imageSource(tag: String): String =
+    SRC
+        .find(tag)
+        ?.groupValues
+        ?.drop(1)
+        ?.firstOrNull { it.isNotEmpty() }
+        .orEmpty()
+
+/** The show images link that stands in for the image [tag]. */
+private fun placeholder(
+    tag: String,
+    key: RenderKey,
+): String =
+    "<a href=\"${key.showImagesUrl}\" class=\"${key.className(BLOCKED)}\" style=\"${placeholderSize(tag)}\" " +
+        "aria-label=\"Show images\"></a>"
 
 /**
  * The placeholder's size from the image's own. With both sides in pixels it keeps their ratio and

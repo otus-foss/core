@@ -1,7 +1,5 @@
 package com.otus.designsystem.shared.actionbar.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -41,8 +39,7 @@ import com.otus.designsystem.shared.overlays.components.MenuAction
 import com.otus.designsystem.shared.pages.components.PageChrome
 import com.otus.designsystem.shared.pages.components.ReportClearance
 import com.otus.designsystem.shared.pages.components.pinnedChrome
-import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.shared.panels.elements.darkSurface
 import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 import kotlin.math.roundToInt
@@ -54,10 +51,10 @@ import kotlin.math.roundToInt
  * The whole shell then runs the primary. A bar that takes over from another, such as a page's bar
  * opening over the list's, moves its shell and action from where the other drew them in one motion;
  * see [BarEntry]. A [minimized] bar shows only the primary's icon, in a circle at the bar's end;
- * see [MinimizedBar] and [BarMinimized]. Inside a
- * [BarMorph], a full bar's group and shell move into the other bar's parts. With [onAdd], a full
- * bar with room ends its group in a [BarAddButton], such as where settings edit the bar. A
- * secondary action with a [BarAction.menu] opens it above its button.
+ * see [MinimizedBar] and [BarMinimized]. Inside a [BarMorph], a full bar's group and shell move
+ * into the other bar's parts. With [onAdd], a full bar with room ends its group in a
+ * [BarAddButton], such as where settings edit the bar. A secondary action with a [BarAction.menu]
+ * opens it above its button.
  */
 @Composable
 public fun ActionBar(
@@ -87,22 +84,14 @@ public fun ActionBar(
             val width = constraints.maxWidth
             val gap = ActionBarTokens.gap.roundToPx()
             val group = groups.single()
-            val ownGroup =
-                if (secondary.isEmpty() && onAdd == null) {
-                    0
-                } else {
-                    group.maxIntrinsicWidth(ActionBarTokens.height.roundToPx()) +
-                        gap
-                }
+            val hasGroup = secondary.isNotEmpty() || onAdd != null
+            val ownGroup = if (hasGroup) group.maxIntrinsicWidth(ActionBarTokens.height.roundToPx()) + gap else 0
             val shellWidth = entry.blend((width - ownGroup).toFloat()) { it.shellWidth.toFloat() }.roundToInt()
             val shell = shells.single().measure(constraints.copy(minWidth = shellWidth, maxWidth = shellWidth))
             // The group ends one gap before the shell, also while the shell moves in.
             val groupWidth = width - shellWidth - gap
             val placedGroup =
-                group
-                    .takeIf {
-                        groupWidth > 0
-                    }?.measure(constraints.copy(minWidth = groupWidth, maxWidth = groupWidth))
+                group.takeIf { groupWidth > 0 }?.measure(constraints.copy(minWidth = groupWidth, maxWidth = groupWidth))
             val height = maxOf(shell.height, placedGroup?.height ?: 0)
             layout(width, height) {
                 placedGroup?.placeRelative(0, (height - placedGroup.height) / 2)
@@ -115,8 +104,8 @@ public fun ActionBar(
 /**
  * How a minimized [ActionBar] differs from the full one. It puts [more] behind a round button at
  * its start, which opens them in a [ContextMenu][com.otus.designsystem.shared.overlays.components.ContextMenu].
- * While [hidden], such as while a search field is
- * about to take the keyboard, it scales out in place.
+ * While [hidden], such as while a search field is about to take the keyboard, it scales out in
+ * place.
  */
 public class BarMinimized(
     public val hidden: Boolean = false,
@@ -138,8 +127,7 @@ private fun SecondaryGroup(
         modifier
             .height(ActionBarTokens.height)
             .clip(shape)
-            .background(OtusColors.bgDark, shape)
-            .border(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape),
+            .darkSurface(shape),
     ) {
         Row(
             Modifier
@@ -171,8 +159,8 @@ private fun SecondaryGroup(
  * Places [bar] over the bottom of [content] at [actionBarInset]. [content] receives bottom padding
  * that lets its last item scroll above the bar; a null [bar] leaves the page as it is. How high
  * the bar reaches goes to
- * [LocalBottomClearance][com.otus.designsystem.shared.pages.components.LocalBottomClearance], so toasts float above
- * it.
+ * [LocalBottomClearance][com.otus.designsystem.shared.pages.components.LocalBottomClearance], so
+ * toasts float above it.
  */
 @Composable
 public fun ActionBarHost(
@@ -228,10 +216,8 @@ internal fun Modifier.overKeyboard(): Modifier {
     // A layout wider than its constraints is centered over them, so it reaches past both sides.
     return layout { measurable, constraints ->
         val extra = navigation.roundToPx() * 2
-        val placeable =
-            measurable.measure(
-                constraints.copy(minWidth = constraints.minWidth + extra, maxWidth = constraints.maxWidth + extra),
-            )
+        val wider = constraints.copy(minWidth = constraints.minWidth + extra, maxWidth = constraints.maxWidth + extra)
+        val placeable = measurable.measure(wider)
         layout(placeable.width, placeable.height) { placeable.place(0, 0) }
     }
 }

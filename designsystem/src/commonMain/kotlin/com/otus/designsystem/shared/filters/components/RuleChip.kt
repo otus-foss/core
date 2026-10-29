@@ -29,17 +29,16 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
-import com.otus.designsystem.shared.people.components.ChipAvatar
 import com.otus.designsystem.shared.people.components.PersonAvatar
 import com.otus.designsystem.shared.rows.components.RowDensity
 import com.otus.designsystem.shared.rows.components.topHairline
 import com.otus.designsystem.shared.selection.components.valueOutline
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.selection.RuleChipTokens
+import org.jetbrains.compose.resources.DrawableResource
 
 /**
  * One rule condition in an outline: a fixed label column, a slot with an avatar or grey icon, and
@@ -62,7 +61,7 @@ public fun RuleChip(
         compact,
         modifier
             .valueOutline(shape)
-            .then(onClick?.let { Modifier.ruleButton(it, shape) } ?: Modifier.semantics(mergeDescendants = true) {})
+            .ruleTarget(onClick, shape)
             .height(if (compact) RuleChipTokens.compactHeight else RuleChipTokens.height)
             .padding(horizontal = if (compact) RuleChipTokens.compactPadding else RuleChipTokens.padding),
     )
@@ -87,7 +86,7 @@ public fun RuleChipGroup(
     Column(
         modifier
             .valueOutline(shape)
-            .then(onClick?.let { Modifier.ruleButton(it, shape) } ?: Modifier.semantics(mergeDescendants = true) {})
+            .ruleTarget(onClick, shape)
             .padding(top = RuleChipTokens.groupTitleTop),
     ) {
         Text(
@@ -135,7 +134,7 @@ private fun RuleLineRow(
             overflow = TextOverflow.Ellipsis,
         )
         if (compact) {
-            line.avatar?.let { RuleAvatar(it, RuleChipTokens.compactAvatar) }
+            line.avatar?.let { PersonAvatar(it, RuleChipTokens.compactAvatar) }
         } else {
             RuleSlot(line)
         }
@@ -153,25 +152,17 @@ private fun RuleLineRow(
 private fun RuleSlot(line: RuleChipLine) {
     Box(Modifier.size(RuleChipTokens.slot), contentAlignment = Alignment.Center) {
         when {
-            line.avatar != null -> {
-                RuleAvatar(line.avatar, RuleChipTokens.slot)
-            }
-
-            line.icon != null -> {
-                CompositionLocalProvider(LocalContentColor provides OtusColors.text2) {
-                    Symbol(line.icon, size = RuleChipTokens.slotIcon)
-                }
-            }
+            line.avatar != null -> PersonAvatar(line.avatar, RuleChipTokens.slot)
+            line.icon != null -> SlotIcon(line.icon)
         }
     }
 }
 
 @Composable
-private fun RuleAvatar(
-    avatar: ChipAvatar,
-    size: Dp,
-) {
-    PersonAvatar(avatar, size)
+private fun SlotIcon(icon: DrawableResource) {
+    CompositionLocalProvider(LocalContentColor provides OtusColors.text2) {
+        Symbol(icon, size = RuleChipTokens.slotIcon)
+    }
 }
 
 @Composable
@@ -210,11 +201,13 @@ private fun RuleChipValue.annotated(): AnnotatedString {
     }
 }
 
+/** Makes a rule one button with [onClick], or without it, one element screen readers read whole. */
 @Composable
-private fun Modifier.ruleButton(
-    onClick: () -> Unit,
+private fun Modifier.ruleTarget(
+    onClick: (() -> Unit)?,
     shape: Shape,
 ): Modifier {
+    if (onClick == null) return semantics(mergeDescendants = true) {}
     val interactions = remember { MutableInteractionSource() }
     return clickable(interactions, indication = null, role = Role.Button, onClick = onClick)
         .controlPressFeedback(interactions, shape)

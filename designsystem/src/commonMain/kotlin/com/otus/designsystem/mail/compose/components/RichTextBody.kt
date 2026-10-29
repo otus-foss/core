@@ -106,7 +106,9 @@ private fun TextBlock(
                 }.onPreviewKeyEvent { event ->
                     val backspace = event.key == Key.Backspace && event.type == KeyEventType.KeyDown
                     val atStart = block.state.selection.collapsed && block.state.selection.start == 0
-                    (backspace && atStart && index > 0).also { if (it) text.images.removeBefore(index) }
+                    val removesImage = backspace && atStart && index > 0
+                    if (removesImage) text.images.removeBefore(index)
+                    removesImage
                 }.semantics { contentDescription = if (index == 0) placeholder else "$placeholder, continued" },
         textStyle = style,
         cursorBrush = SolidColor(OtusColors.accentLight),

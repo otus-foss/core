@@ -11,15 +11,11 @@ public fun hslColor(
     hue: Float,
     saturation: Float,
     lightness: Float,
-): Color =
-    Color(
-        Color
-            .hsl(
-                hue.mod(HUE_TURN),
-                saturation.coerceIn(0f, 1f),
-                lightness.coerceIn(0f, 1f),
-            ).toArgb(),
-    )
+): Color {
+    val exact = Color.hsl(hue.mod(HUE_TURN), saturation.coerceIn(0f, 1f), lightness.coerceIn(0f, 1f))
+    // ARGB holds 8 bits per channel, so the round trip does the rounding.
+    return Color(exact.toArgb())
+}
 
 public fun Color.toHsl(): Hsl {
     val high = max(red, max(green, blue))
@@ -46,6 +42,9 @@ public fun contrast(
     val b = second.luminance()
     return (max(a, b) + CONTRAST_OFFSET) / (min(a, b) + CONTRAST_OFFSET)
 }
+
+/** `text1` or `bgDark`, whichever contrasts more with [fill], for letters and symbols drawn on it. */
+internal fun readableOn(fill: Color): Color = listOf(OtusColors.text1, OtusColors.bgDark).maxBy { contrast(it, fill) }
 
 /** The color as `#RRGGBB`, upper case. */
 public fun Color.toHex(): String = "#" + (toArgb() and RGB_MASK).toString(HEX).padStart(HEX_DIGITS, '0').uppercase()

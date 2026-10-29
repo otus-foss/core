@@ -49,20 +49,19 @@ public class AndroidLoginStore internal constructor(
             commit { putString(LOGINS_KEY, LoginCodec.encode(logins)).remove(secretKey(id)) }
         }
 
-    /** An unreadable list is copied aside once, so a later save cannot destroy it. */
     private fun readLogins(): List<JmapLogin> {
         val raw = preferences.getString(LOGINS_KEY, null)
         return when (val decoded = LoginCodec.decode(raw)) {
-            is LoginCodec.Decoded.Logins -> {
-                decoded.logins
-            }
-
-            is LoginCodec.Decoded.Unreadable -> {
-                val backup = LOGINS_KEY + LoginCodec.UNREADABLE_SUFFIX
-                if (!preferences.contains(backup)) commit { putString(backup, raw) }
-                emptyList()
-            }
+            is LoginCodec.Decoded.Logins -> decoded.logins
+            is LoginCodec.Decoded.Unreadable -> setAsideUnreadable(raw)
         }
+    }
+
+    /** Copies an unreadable list aside once, so a later save cannot destroy it, and reads it as empty. */
+    private fun setAsideUnreadable(raw: String?): List<JmapLogin> {
+        val backup = LOGINS_KEY + LoginCodec.UNREADABLE_SUFFIX
+        if (!preferences.contains(backup)) commit { putString(backup, raw) }
+        return emptyList()
     }
 
     private fun commit(change: SharedPreferences.Editor.() -> SharedPreferences.Editor) {

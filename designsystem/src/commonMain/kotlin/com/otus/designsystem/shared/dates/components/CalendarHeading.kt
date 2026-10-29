@@ -33,14 +33,10 @@ internal fun CalendarHeading(
             },
         )
     }
-    val monthLabel =
-        month.month.name
-            .lowercase()
-            .replaceFirstChar { it.uppercase() }
     MonthNavigation(
         label =
             MonthNavigationLabel(
-                monthLabel,
+                MONTH_NAMES[month.month.ordinal],
                 month.year.toString(),
                 month.year * Month.entries.size + month.month.ordinal,
             ),
@@ -48,6 +44,6 @@ internal fun CalendarHeading(
         onChooseMonth = { choosingMonth = true },
         onNext = { onMonth(month.plus(1, DateTimeUnit.MONTH)) },
         previousEnabled = month.year > CalendarTokens.MIN_YEAR || month.month != Month.JANUARY,
-        nextEnabled = month < LocalDate(maxDate.year, maxDate.month, 1),
+        nextEnabled = month < maxDate.yearMonth.firstDay,
     )
 }

@@ -125,22 +125,8 @@ private fun ExpandedPhoto(
             contentScale = ContentScale.Crop,
             modifier =
                 Modifier
-                    .layout { measurable, constraints ->
-                        val px = side.toPx()
-                        val target =
-                            Rect(
-                                Offset((constraints.maxWidth - px) / 2, (constraints.maxHeight - px) / 2),
-                                Size(px, px),
-                            )
-                        val box = lerp(origin.translate(-(corner ?: Offset.Zero)), target, progress())
-                        val placeable =
-                            measurable.measure(
-                                Constraints.fixed(box.width.roundToInt(), box.height.roundToInt()),
-                            )
-                        layout(constraints.maxWidth, constraints.maxHeight) {
-                            placeable.place(box.left.roundToInt(), box.top.roundToInt())
-                        }
-                    }.graphicsLayer {
+                    .growFrom(origin, { corner }, side, progress)
+                    .graphicsLayer {
                         alpha = if (corner == null) 0f else 1f
                         shape =
                             RoundedCornerShape(lerp(this.size.minDimension / 2, SheetTokens.radius.toPx(), progress()))
@@ -149,6 +135,26 @@ private fun ExpandedPhoto(
         )
     }
 }
+
+/**
+ * Moves and sizes the photo along [progress] from [origin], on screen, to a [side] square centered
+ * in the popup, whose own screen position is [corner].
+ */
+private fun Modifier.growFrom(
+    origin: Rect,
+    corner: () -> Offset?,
+    side: Dp,
+    progress: () -> Float,
+): Modifier =
+    layout { measurable, constraints ->
+        val px = side.toPx()
+        val target = Rect(Offset((constraints.maxWidth - px) / 2, (constraints.maxHeight - px) / 2), Size(px, px))
+        val box = lerp(origin.translate(-(corner() ?: Offset.Zero)), target, progress())
+        val placeable = measurable.measure(Constraints.fixed(box.width.roundToInt(), box.height.roundToInt()))
+        layout(constraints.maxWidth, constraints.maxHeight) {
+            placeable.place(box.left.roundToInt(), box.top.roundToInt())
+        }
+    }
 
 /** Places a full-window popup at its window's corner. */
 private object WindowOrigin : PopupPositionProvider {

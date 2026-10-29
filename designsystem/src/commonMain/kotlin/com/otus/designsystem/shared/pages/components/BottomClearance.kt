@@ -28,9 +28,9 @@ import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 /**
  * How far up from the window's bottom the bars on screen reach, so parts that float over every
  * page, such as toasts, can sit above them. Each
- * [ActionBarHost][com.otus.designsystem.shared.actionbar.components.ActionBarHost] with a bar reports its height
- * here while it is composed. Provide one with [LocalBottomClearance] around the pages and what
- * floats over them.
+ * [ActionBarHost][com.otus.designsystem.shared.actionbar.components.ActionBarHost] with a bar
+ * reports its height here while it is composed. Provide one with [LocalBottomClearance] around
+ * the pages and what floats over them.
  */
 @Stable
 public class BottomClearance {

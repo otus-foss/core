@@ -44,19 +44,20 @@ public fun Avatar(
         modifier.size(size).clip(CircleShape).background(fill),
         contentAlignment = Alignment.Center,
     ) {
-        if (image == null && symbol != null) {
-            CompositionLocalProvider(LocalContentColor provides content) {
-                Symbol(symbol, size = size * AvatarTokens.SYMBOL_SCALE)
+        when {
+            image != null -> {
+                Image(image, contentDescription = null, Modifier.matchParentSize(), contentScale = ContentScale.Crop)
             }
-        } else if (image == null) {
-            Text(initial, style = initialsStyle(size), color = content)
-        } else {
-            Image(
-                image,
-                contentDescription = null,
-                modifier = Modifier.matchParentSize(),
-                contentScale = ContentScale.Crop,
-            )
+
+            symbol != null -> {
+                CompositionLocalProvider(LocalContentColor provides content) {
+                    Symbol(symbol, size = size * AvatarTokens.SYMBOL_SCALE)
+                }
+            }
+
+            else -> {
+                Text(initial, style = initialsStyle(size), color = content)
+            }
         }
     }
 }

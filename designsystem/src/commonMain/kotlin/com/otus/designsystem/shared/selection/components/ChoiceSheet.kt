@@ -71,9 +71,7 @@ public fun <T> ChoiceSheet(
             choices.groups.forEach { group ->
                 Column(Modifier.clip(RoundedCornerShape(SheetTokens.rowRadius)).background(OtusColors.bgRegular)) {
                     group.forEachIndexed { index, option ->
-                        ChoiceOption(row(option), option == choices.selected, first = index == 0) {
-                            onSelect(option)
-                        }
+                        ChoiceOption(row(option), option == choices.selected, first = index == 0) { onSelect(option) }
                     }
                 }
             }
@@ -127,19 +125,8 @@ private fun ChoiceOption(
     ) {
         row.icon?.let { CompositionLocalProvider(LocalIconTint provides row.iconTint) { LeadingSymbol(it) } }
         row.swatch?.let { FolderColorSwatch(it) }
-        Column(
-            Modifier.weight(1f),
-            verticalArrangement =
-                Arrangement.spacedBy(
-                    if (row.keyword !=
-                        null
-                    ) {
-                        SummaryTokens.avatarGap
-                    } else {
-                        SettingTokens.textGap
-                    },
-                ),
-        ) {
+        val lineGap = if (row.keyword != null) SummaryTokens.avatarGap else SettingTokens.textGap
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(lineGap)) {
             if (row.keyword != null) {
                 ValueToken(row.label, keyword = row.keyword, avatar = row.person?.avatar)
             } else {

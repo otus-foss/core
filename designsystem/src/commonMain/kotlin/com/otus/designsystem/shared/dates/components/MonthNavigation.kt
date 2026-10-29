@@ -39,6 +39,7 @@ public fun MonthNavigation(
     previousEnabled: Boolean = true,
     nextEnabled: Boolean = true,
 ) {
+    val spoken = "${label.month} ${label.year}"
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = CircleShape,
@@ -52,9 +53,9 @@ public fun MonthNavigation(
                 Symbol(Res.drawable.symbol_chevron_left, mirrorInRtl = true)
             }
             ActionButton(
-                "${label.month} ${label.year}",
+                spoken,
                 onChooseMonth,
-                Modifier.weight(1f).semantics { text = AnnotatedString("${label.month} ${label.year}") },
+                Modifier.weight(1f).semantics { text = AnnotatedString(spoken) },
                 primary = true,
                 labelContent = {
                     Row(

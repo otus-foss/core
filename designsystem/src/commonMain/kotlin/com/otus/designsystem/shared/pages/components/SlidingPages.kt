@@ -27,8 +27,8 @@ import com.otus.designsystem.theme.motion.MotionSpeed
  * deeper than the current one, by [depth], comes in from the end edge; a shallower one returns
  * from the start edge on [MotionCurve.Reverse], so closing a page retraces its opening. Pages at
  * the same depth, such as sidebar destinations, come in from the end. Chrome that both pages draw,
- * such as their [ContextPanel][com.otus.designsystem.shared.panels.components.ContextPanel] and action bar, stays
- * in place while the rest of the page slides.
+ * such as their [ContextPanel][com.otus.designsystem.shared.panels.components.ContextPanel] and
+ * action bar, stays in place while the rest of the page slides.
  */
 @Composable
 public fun <T> SlidingPages(

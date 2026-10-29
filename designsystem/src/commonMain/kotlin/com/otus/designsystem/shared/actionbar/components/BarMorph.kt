@@ -39,12 +39,12 @@ import kotlin.math.sin
 
 /**
  * Shows the bar [content] draws for [shown], such as a
- * [FormattingBar][com.otus.designsystem.mail.compose.components.FormattingBar], a full [ActionBar], or an
- * [ImageBar][com.otus.designsystem.mail.compose.components.ImageBar], and morphs from one to the next when [shown]
- * changes. Each part first takes its
- * match's height, then its width, so a row splits into a group and shell, or they merge into a
- * row. While the width changes, the parts' content blurs and the arriving content fades in over
- * the leaving one. A bar without a group or a shell, such as a minimized one, fades instead.
+ * [FormattingBar][com.otus.designsystem.mail.compose.components.FormattingBar], a full [ActionBar],
+ * or an [ImageBar][com.otus.designsystem.mail.compose.components.ImageBar], and morphs from one to
+ * the next when [shown] changes. Each part first takes its match's height, then its width, so a
+ * row splits into a group and shell, or they merge into a row. While the width changes, the
+ * parts' content blurs and the arriving content fades in over the leaving one. A bar without a
+ * group or a shell, such as a minimized one, fades instead.
  */
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -116,11 +116,11 @@ private class Morph(
             if (millis == 0) {
                 snap()
             } else {
+                val easing = MotionCurve.Standard.easing
                 keyframes {
                     durationMillis = millis
-                    initial at 0 using MotionCurve.Standard.easing
-                    Rect(initial.left, target.top, initial.right, target.bottom) at heightMillis using
-                        MotionCurve.Standard.easing
+                    initial at 0 using easing
+                    Rect(initial.left, target.top, initial.right, target.bottom) at heightMillis using easing
                 }
             }
         }

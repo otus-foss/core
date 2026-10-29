@@ -11,7 +11,6 @@ import io.ktor.http.encodeURLParameter
 import io.ktor.http.takeFrom
 import io.ktor.utils.io.readBuffer
 import kotlinx.io.readByteArray
-import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 
 /** Parses and resolves URLs, refusing anything the policy does not allow. */
@@ -29,13 +28,7 @@ internal class JmapUrls(
     fun trustedTarget(
         session: JmapSession,
         expanded: String,
-    ): Url {
-        val target = resolve(parse(session.sessionUrl), expanded)
-        if (target.origin() !in session.trustedOrigins) {
-            throw JmapException.RedirectedElsewhere(target.host, target.origin())
-        }
-        return target
-    }
+    ): Url = resolve(parse(session.sessionUrl), expanded).requireTrusted(session.trustedOrigins)
 
     private fun build(
         text: String,
@@ -60,15 +53,24 @@ internal class JmapUrls(
 /** Credentials are scoped to scheme, host, and port. */
 internal fun Url.origin(): String = "${protocol.name}://${host.lowercase()}:$port"
 
+/** This URL, or [JmapException.RedirectedElsewhere] when its origin may not receive credentials. */
+internal fun Url.requireTrusted(trustedOrigins: Set<String>): Url {
+    if (origin() !in trustedOrigins) throw JmapException.RedirectedElsewhere(host, origin())
+    return this
+}
+
 internal class RawResponse(
     val status: Int,
     val location: String?,
     val text: String,
 ) {
-    /** The failure for a non-success status; a problem-details body (RFC 7807) adds its type. */
-    fun failure(): JmapException? =
+    /** Throws for a non-success status; a problem-details body (RFC 7807) adds its type. */
+    fun requireSuccess() {
+        if (status !in SUCCESS) throw failure()
+    }
+
+    private fun failure(): JmapException =
         when (status) {
-            in SUCCESS -> null
             UNAUTHORIZED -> JmapException.Unauthorized()
             FORBIDDEN -> JmapException.Forbidden()
             NOT_FOUND -> JmapException.NotJmap("nothing found at this address")
@@ -76,7 +78,7 @@ internal class RawResponse(
         }
 
     private fun problemType(): String? =
-        runCatching { JmapJson.parseToJsonElement(text).jsonObject }.getOrNull()?.let(JsonObject::problemTypeOf)
+        runCatching { JmapJson.parseToJsonElement(text).jsonObject }.getOrNull()?.string("type")
 
     private companion object {
         val SUCCESS = 200..299
@@ -86,15 +88,15 @@ internal class RawResponse(
     }
 }
 
-private fun JsonObject.problemTypeOf(): String? = string("type")
-
 /** Reads at most [limit] bytes; a larger body throws instead of exhausting memory. */
-internal suspend fun HttpResponse.limitedText(limit: Long): String {
+internal suspend fun HttpResponse.limitedBytes(limit: Long): ByteArray {
     if ((contentLength() ?: 0) > limit) throw JmapException.ResponseTooLarge(limit)
     val bytes = bodyAsChannel().readBuffer(limit + 1).readByteArray()
     if (bytes.size > limit) throw JmapException.ResponseTooLarge(limit)
-    return bytes.decodeToString()
+    return bytes
 }
+
+internal suspend fun HttpResponse.limitedText(limit: Long): String = limitedBytes(limit).decodeToString()
 
 /**
  * RFC 6570 level 1. Encode each value before substitution, including slashes and URI delimiters.

@@ -111,7 +111,8 @@ public class PushSubscriptions(
             lock.withLock {
                 val saved = withContext(Dispatchers.IO) { store.records() }
                 val record = saved[loginId] ?: return@withLock
-                savedLogins()?.find { it.id == loginId }?.let { synced(it, record.copy(endpoint = null)) }
+                val login = savedLogins()?.find { it.id == loginId }
+                if (login != null) synced(login, record.copy(endpoint = null))
                 withContext(Dispatchers.IO) { store.save(saved - loginId) }
             }
         }
@@ -122,13 +123,11 @@ public class PushSubscriptions(
         record: PushRecord,
     ): PushRecord? =
         try {
-            ServerSubscription(
-                connections.connection(login),
-                deviceClientId,
-                types,
-                clock,
-            ) { pauseOrSkip(beforeCreate, login.id) }
-                .synced(record)
+            val server =
+                ServerSubscription(connections.connection(login), deviceClientId, types, clock) {
+                    pauseOrSkip(beforeCreate, login.id)
+                }
+            server.synced(record)
         } catch (_: JmapException) {
             record
         } catch (_: PauseFailed) {

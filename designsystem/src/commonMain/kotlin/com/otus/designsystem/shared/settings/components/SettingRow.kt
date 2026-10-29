@@ -46,9 +46,9 @@ import kotlin.math.min
 /**
  * A flat settings row: [title] and an optional [description] beside [trailing], such as a
  * [com.otus.designsystem.shared.settings.elements.ValueButton], a chevron, or a
- * [com.otus.designsystem.shared.rows.elements.RowButton]. A hairline separates it from what is above it, so
- * the first row in its parent, such as at the top of a page, has none. With
- * [onClick] the whole row is one button; without it, only its trailing controls act. A
+ * [com.otus.designsystem.shared.rows.elements.RowButton]. A hairline separates it from what is
+ * above it, so the first row in its parent, such as at the top of a page, has none. With [onClick]
+ * the whole row is one button; without it, only its trailing controls act. A
  * [RowDensity.Compact] row drops the hairline and fits one line in
  * [PanelTokens.compactRowHeight]; a taller trailing control reaches into its padding instead of
  * making it taller.
@@ -167,21 +167,20 @@ private fun SettingRowLayout(
 ) {
     val compact = density == RowDensity.Compact
     var first by remember { mutableStateOf(false) }
+    val separation =
+        if (compact) {
+            Modifier.heightIn(min = PanelTokens.compactRowHeight)
+        } else {
+            Modifier
+                .onPlaced { first = it.positionInParent().y < 1f }
+                .topHairline(OtusColors.bgLight, PageTokens.textInset) { !first }
+        }
+    val verticalPadding = if (compact) SettingTokens.compactRowPadding else SettingTokens.rowPadding
     Row(
         modifier
             .fillMaxWidth()
-            .then(
-                if (compact) {
-                    Modifier.heightIn(min = PanelTokens.compactRowHeight)
-                } else {
-                    Modifier
-                        .onPlaced { first = it.positionInParent().y < 1f }
-                        .topHairline(OtusColors.bgLight, PageTokens.textInset) { !first }
-                },
-            ).padding(
-                horizontal = PageTokens.textInset,
-                vertical = if (compact) SettingTokens.compactRowPadding else SettingTokens.rowPadding,
-            ),
+            .then(separation)
+            .padding(horizontal = PageTokens.textInset, vertical = verticalPadding),
         horizontalArrangement = Arrangement.spacedBy(SettingTokens.rowGap),
         verticalAlignment = Alignment.CenterVertically,
     ) {

@@ -31,4 +31,4 @@ public class AppIconSettingsState(
 
 /** An unknown name reads as [AppIconStyle.Accent]. */
 internal fun decodeAppIconStyle(value: String): AppIconStyle =
-    AppIconStyle.entries.firstOrNull { it.name.equals(value.trim(), ignoreCase = true) } ?: AppIconStyle.Accent
+    entryNamed<AppIconStyle>(value.trim()) ?: AppIconStyle.Accent
