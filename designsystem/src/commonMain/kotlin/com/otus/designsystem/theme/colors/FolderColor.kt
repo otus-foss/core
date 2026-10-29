@@ -16,7 +16,7 @@ public enum class FolderColor(
     private val onDark: Color?,
     private val onLight: Color?,
 ) {
-    Default("Default", null, null),
+    Default(label = "Default", onDark = null, onLight = null),
     Red("Red", Color(0xFFFFB5B8), Color(0xFFE12B2B)),
     Orange("Orange", Color(0xFFFFB973), Color(0xFFC45205)),
     Yellow("Yellow", Color(0xFFF2C200), Color(0xFF996B00)),

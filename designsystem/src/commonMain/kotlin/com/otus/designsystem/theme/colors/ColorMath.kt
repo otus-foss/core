@@ -22,7 +22,7 @@ public fun Color.toHsl(): Hsl {
     val low = min(red, min(green, blue))
     val lightness = (high + low) / 2
     val spread = high - low
-    if (spread == 0f) return Hsl(0f, 0f, lightness)
+    if (spread == 0f) return Hsl(hue = 0f, saturation = 0f, lightness)
     val saturation = if (lightness > HALF) spread / (2 - high - low) else spread / (high + low)
     val sector =
         when (high) {
@@ -38,9 +38,11 @@ public fun contrast(
     first: Color,
     second: Color,
 ): Float {
-    val a = first.luminance()
-    val b = second.luminance()
-    return (max(a, b) + CONTRAST_OFFSET) / (min(a, b) + CONTRAST_OFFSET)
+    val firstLuminance = first.luminance()
+    val secondLuminance = second.luminance()
+    val lighter = max(firstLuminance, secondLuminance)
+    val darker = min(firstLuminance, secondLuminance)
+    return (lighter + CONTRAST_OFFSET) / (darker + CONTRAST_OFFSET)
 }
 
 /** `text1` or `bgDark`, whichever contrasts more with [fill], for letters and symbols drawn on it. */
@@ -50,13 +52,12 @@ internal fun readableOn(fill: Color): Color = listOf(OtusColors.text1, OtusColor
 public fun Color.toHex(): String = "#" + (toArgb() and RGB_MASK).toString(HEX).padStart(HEX_DIGITS, '0').uppercase()
 
 /** Reads `#RRGGBB` or `RRGGBB`; null for anything else. */
-public fun parseHexColor(text: String): Color? =
-    text
-        .trim()
-        .removePrefix("#")
-        .takeIf { it.length == HEX_DIGITS && it.all { char -> char.isDigit() || char.lowercaseChar() in 'a'..'f' } }
-        ?.toLong(HEX)
-        ?.let { Color(OPAQUE or it) }
+public fun parseHexColor(text: String): Color? {
+    val hex = text.trim().removePrefix("#")
+    val valid = hex.length == HEX_DIGITS && hex.all { it.isDigit() || it.lowercaseChar() in 'a'..'f' }
+    if (!valid) return null
+    return Color(OPAQUE or hex.toLong(HEX))
+}
 
 private const val HUE_TURN = 360f
 private const val SECTORS = 6f

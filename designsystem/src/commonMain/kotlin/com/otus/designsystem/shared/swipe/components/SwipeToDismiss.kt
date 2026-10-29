@@ -48,6 +48,7 @@ import com.otus.designsystem.theme.motion.motionTween
 import com.otus.designsystem.theme.tokens.feedback.ToastTokens
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.math.abs
@@ -95,15 +96,14 @@ public fun SwipeToDismiss(
                     settle =
                         scope.launch {
                             if (dismissing) {
-                                launch {
-                                    fade.animateTo(
-                                        0f,
-                                        Motion.tween(MotionSpeed.Normal, MotionCurve.Exit, motionScale),
-                                    )
-                                }
-                                // A whole window's width carries it past the screen's edge from anywhere.
-                                slide(offset, offset.sign * window, MotionCurve.Exit, motionScale) { offset = it }
-                                currentOnDismiss()
+                                dismissToast(
+                                    fade,
+                                    window,
+                                    motionScale,
+                                    offset = { offset },
+                                    onOffset = { offset = it },
+                                    onDismiss = { currentOnDismiss() },
+                                )
                             } else {
                                 slide(offset, 0f, MotionCurve.Standard, motionScale) { offset = it }
                             }
@@ -205,3 +205,17 @@ private fun Modifier.dismissPill(
         drawPath(pill(0f), OtusColors.bgDark, alpha)
         drawPath(pill(border / 2f), OtusColors.strokeBgDark, alpha, Stroke(border))
     }
+
+private suspend fun CoroutineScope.dismissToast(
+    fade: Animatable<Float, *>,
+    windowWidth: Int,
+    motionScale: Float,
+    offset: () -> Float,
+    onOffset: (Float) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    launch { fade.animateTo(0f, Motion.tween(MotionSpeed.Normal, MotionCurve.Exit, motionScale)) }
+    // A whole window's width carries it past the screen's edge from anywhere.
+    slide(offset(), offset().sign * windowWidth, MotionCurve.Exit, motionScale, onOffset)
+    onDismiss()
+}
