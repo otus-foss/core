@@ -17,6 +17,6 @@ public fun SpecificDatePicker(
     initialDay: Int? = null,
 ) {
     DateWheelPicker(initialMonth, initialDay, allowedDates, dayRequired = true, onDismiss) { _, date ->
-        date?.let(onConfirm)
+        if (date != null) onConfirm(date)
     }
 }
