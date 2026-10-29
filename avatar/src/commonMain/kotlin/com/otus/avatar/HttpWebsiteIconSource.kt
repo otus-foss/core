@@ -31,16 +31,23 @@ private fun websiteIcon(
     pageUrl: String,
 ): WebsiteIcon? {
     val attributes = linkAttributes(tag)
-    val rel = attributes["rel"]?.lowercase()?.split(Regex("\\s+")) ?: return null
+    val rel = attributes["rel"]?.lowercase()?.split(Regex("\\s+")).orEmpty()
     val touch = "apple-touch-icon" in rel || "apple-touch-icon-precomposed" in rel
-    if (!touch && "icon" !in rel) return null
-    if (attributes["type"]?.contains("svg", ignoreCase = true) == true) return null
-    val href = attributes["href"]?.replace("&amp;", "&") ?: return null
-    if (href.isBlank()) return null
-    val url = runCatching { Url(pageUrl).resolving(href).buildString() }.getOrNull() ?: return null
-    if (Url(url).encodedPath.endsWith(".svg", ignoreCase = true)) return null
-    return WebsiteIcon(url, iconSize(attributes["sizes"].orEmpty(), touch))
+    val icon = touch || "icon" in rel
+    val svg = attributes["type"]?.contains("svg", ignoreCase = true) == true
+    val href = attributes["href"]?.replace("&amp;", "&")
+    if (!icon || svg || href.isNullOrBlank()) return null
+    return rasterUrl(pageUrl, href)?.let { WebsiteIcon(it, iconSize(attributes["sizes"].orEmpty(), touch)) }
 }
+
+/** [href] resolved against [pageUrl], or null when it does not resolve or names an SVG file. */
+private fun rasterUrl(
+    pageUrl: String,
+    href: String,
+): String? =
+    runCatching { Url(pageUrl).resolving(href).buildString() }
+        .getOrNull()
+        ?.takeUnless { Url(it).encodedPath.endsWith(".svg", ignoreCase = true) }
 
 /** The attributes of an HTML tag by lowercase name, with quoted or bare values. */
 private fun linkAttributes(tag: String): Map<String, String> =

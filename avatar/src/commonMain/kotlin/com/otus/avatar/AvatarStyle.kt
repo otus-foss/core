@@ -6,6 +6,7 @@ import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.contentOrNull
 
 /**
@@ -63,19 +64,19 @@ public fun avatarStyleIn(vCard: JsonElement?): AvatarStyle? =
 public fun avatarPropertiesWith(
     vCard: JsonElement?,
     style: AvatarStyle?,
-): JsonArray =
-    JsonArray(vCard.avatarProperties().filterNot { it.isAvatarStyle() } + listOfNotNull(style?.vCardProperty()))
-
-/** This style as a jCard property: its name, no parameters, its value type, and its value. */
-private fun AvatarStyle.vCardProperty(): JsonArray =
-    JsonArray(
-        listOf(
-            JsonPrimitive(AVATAR_STYLE_PROPERTY),
-            JsonObject(emptyMap()),
-            JsonPrimitive("text"),
-            JsonPrimitive(encoded()),
-        ),
-    )
+): JsonArray {
+    val kept = vCard.avatarProperties().filterNot { it.isAvatarStyle() }
+    if (style == null) return JsonArray(kept)
+    // A jCard property: its name, no parameters, its value type, and its value.
+    val property =
+        buildJsonArray {
+            add(JsonPrimitive(AVATAR_STYLE_PROPERTY))
+            add(JsonObject(emptyMap()))
+            add(JsonPrimitive("text"))
+            add(JsonPrimitive(style.encoded()))
+        }
+    return JsonArray(kept + listOf(property))
+}
 
 /** Whether the `vCard` value of a card holds a style. */
 public fun hasAvatarStyle(vCard: JsonElement?): Boolean = vCard.avatarProperties().any { it.isAvatarStyle() }

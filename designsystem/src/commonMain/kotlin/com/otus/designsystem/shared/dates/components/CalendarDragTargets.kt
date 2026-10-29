@@ -35,10 +35,9 @@ private fun dateInRow(
     position: Offset,
     rtl: Boolean,
 ): LocalDate? {
-    if (!row.isAttached) return null
-    val local = row.localPositionOf(container, position)
+    val local = row.takeIf { it.isAttached }?.localPositionOf(container, position)
     val size = row.size
-    if (!Rect(Offset.Zero, size.toSize()).contains(local)) return null
+    if (local == null || !Rect(Offset.Zero, size.toSize()).contains(local)) return null
     val column = floor(local.x / size.width * CalendarTokens.DAYS_PER_WEEK).toInt()
     val logicalColumn = if (rtl) CalendarTokens.DAYS_PER_WEEK - 1 - column else column
     return week.plus(logicalColumn, DateTimeUnit.DAY)

@@ -136,10 +136,9 @@ public class AvatarService(
         options: AvatarOptions,
     ): String? {
         val host = avatarIconDomain(email)?.takeIf { options.domainIcons } ?: return null
-        return resolvedDomain(host)?.takeIf { isPublicAvatarHost(it) && (host == it || host.endsWith(".$it")) }
+        val domain = nullOnFailure { domains.resolve(host) }
+        return domain?.takeIf { isPublicAvatarHost(it) && (host == it || host.endsWith(".$it")) }
     }
-
-    private suspend fun resolvedDomain(host: String): String? = nullOnFailure { domains.resolve(host) }
 
     private suspend fun domainImage(
         domain: String,

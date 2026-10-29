@@ -32,7 +32,7 @@ internal class AvatarLookupCache(
             var owner = false
             val lookup =
                 lock.withLock {
-                    recent(key)?.takeIf(::fresh)?.let { return it }
+                    recent(key)?.takeIf { it.isFresh(now(), lifetime) }?.let { return it }
                     if (started != generation) {
                         owner = true
                         Lookup(started)
@@ -106,7 +106,25 @@ internal class AvatarLookupCache(
     ): StoredAvatar {
         var result: StoredAvatar? = null
         try {
-            val entry = storedOrFetched(key, lookup, fetch)
+            val saved =
+                storageLock.withLock {
+                    if (lock.withLock { generation == lookup.generation }) peekStored(key) else null
+                }
+            if (saved != null && saved.isFresh(now(), lifetime)) {
+                result = saved
+                return saved
+            }
+            // A failed or empty fetch keeps the stale result rather than dropping a known avatar.
+            val entry = (fetch() ?: saved)?.copy(created = now()) ?: StoredAvatar(null, now())
+            storageLock.withLock {
+                val current =
+                    lock.withLock {
+                        val current = generation == lookup.generation
+                        if (current) remember(key, entry)
+                        current
+                    }
+                if (current) store.write(key, entry)
+            }
             result = entry
             return entry
         } finally {
@@ -117,50 +135,16 @@ internal class AvatarLookupCache(
         }
     }
 
-    private suspend fun storedOrFetched(
-        key: AvatarCacheKey,
-        lookup: Lookup,
-        fetch: suspend () -> StoredAvatar?,
-    ): StoredAvatar {
-        val saved = storageLock.withLock { if (lock.withLock { isCurrent(lookup) }) peekStored(key) else null }
-        if (saved != null && fresh(saved)) return saved
-        // A failed or empty fetch keeps the stale result rather than dropping a known avatar.
-        val entry = (fetch() ?: saved)?.copy(created = now()) ?: StoredAvatar(null, now())
-        storageLock.withLock {
-            if (lock.withLock { rememberIfCurrent(key, entry, lookup) }) store.write(key, entry)
-        }
-        return entry
-    }
-
     /** Storage lock held; metadata lock never covers disk IO or network work. */
     private suspend fun peekStored(key: AvatarCacheKey): StoredAvatar? {
         lock.withLock { recent(key) }?.let { return it }
-        val stored = store.read(key) ?: return null
-        lock.withLock { remember(key, stored) }
+        val stored = store.read(key)
+        if (stored != null) lock.withLock { remember(key, stored) }
         return stored
-    }
-
-    /** Whether no clear, put, or expire ran since [lookup] started. */
-    private fun isCurrent(lookup: Lookup): Boolean = generation == lookup.generation
-
-    private fun rememberIfCurrent(
-        key: AvatarCacheKey,
-        entry: StoredAvatar,
-        lookup: Lookup,
-    ): Boolean {
-        if (!isCurrent(lookup)) return false
-        remember(key, entry)
-        return true
     }
 
     /** The entry for [key], moved to the end so the least recently used one is evicted first. */
     private fun recent(key: AvatarCacheKey): StoredAvatar? = entries.remove(key)?.also { entries[key] = it }
-
-    private fun fresh(entry: StoredAvatar): Boolean {
-        val age = now() - entry.created
-        val ttl = if (entry.image == null && entry.style == null) minOf(lifetime, MISS_LIFETIME) else lifetime
-        return age >= 0 && age < ttl
-    }
 
     private fun remember(
         key: AvatarCacheKey,
@@ -177,9 +161,19 @@ internal class AvatarLookupCache(
     )
 
     private companion object {
-        const val MISS_LIFETIME = 5 * 60 * 1000L
-
         /** A creation time old enough that the record never counts as fresh. */
         const val EXPIRED = 0L
     }
 }
+
+/** Whether this entry is younger than [lifetime] at [now], or within five minutes for a miss. */
+private fun StoredAvatar.isFresh(
+    now: Long,
+    lifetime: Long,
+): Boolean {
+    val age = now - created
+    val ttl = if (image == null && style == null) minOf(lifetime, MISS_LIFETIME) else lifetime
+    return age >= 0 && age < ttl
+}
+
+private const val MISS_LIFETIME = 5 * 60 * 1000L
