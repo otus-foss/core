@@ -40,8 +40,8 @@ public fun AvatarStackChip(
             horizontalArrangement = Arrangement.spacedBy(PanelTokens.iconGap),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            prefix?.let {
-                Text(it, style = panelTextStyle(), color = OtusColors.text2, fontSize = PanelTokens.countSize)
+            if (prefix != null) {
+                Text(prefix, style = panelTextStyle(), color = OtusColors.text2, fontSize = PanelTokens.countSize)
             }
             AvatarStack(avatars, ring = OtusColors.selectedFill)
         }

@@ -84,6 +84,7 @@ internal fun ExpandingAvatar(
     }
     // One box holds the popup too, so a parent with gaps between children never sees it arrive.
     Box(modifier) {
+        val interactions = remember { MutableInteractionSource() }
         PersonAvatar(
             avatar,
             size,
@@ -91,7 +92,7 @@ internal fun ExpandingAvatar(
                 .onGloballyPositioned { origin = Rect(it.positionOnScreen(), it.size.toSize()) }
                 // The photo above stands in for it while open, so it is never seen twice.
                 .graphicsLayer { alpha = if (open) 0f else 1f }
-                .clickable(remember { MutableInteractionSource() }, null, role = Role.Button) { open = true }
+                .clickable(interactions, indication = null, role = Role.Button) { open = true }
                 .semantics { contentDescription = "Show photo" },
         )
         if (open) {
@@ -111,12 +112,13 @@ private fun ExpandedPhoto(
 ) {
     // Where the popup itself sits on screen; unknown until its first layout, so the photo waits.
     var corner by remember { mutableStateOf<Offset?>(null) }
+    val interactions = remember { MutableInteractionSource() }
     BoxWithConstraints(
         Modifier
             .fillMaxSize()
             .onGloballyPositioned { corner = it.positionOnScreen() }
             .drawBehind { drawRect(OtusColors.scrim, alpha = progress()) }
-            .clickable(remember { MutableInteractionSource() }, null, onClickLabel = "Close photo", onClick = onClose),
+            .clickable(interactions, indication = null, onClickLabel = "Close photo", onClick = onClose),
     ) {
         val side = min(maxWidth - PageTokens.pageInset * 2, maxHeight * PHOTO_HEIGHT_FRACTION)
         Image(

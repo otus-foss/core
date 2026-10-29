@@ -51,7 +51,7 @@ private fun Face(
     Column(
         Modifier
             .width(AvatarTokens.featuredWidth)
-            .then(face.onClick?.let { Modifier.clickable(role = Role.Button, onClick = it) } ?: Modifier),
+            .avatarAction(face.onClick),
         verticalArrangement = Arrangement.spacedBy(PageTokens.rowGap),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -67,3 +67,6 @@ private fun Face(
 }
 
 private const val TOP_ROW = 2
+
+private fun Modifier.avatarAction(onClick: (() -> Unit)?): Modifier =
+    if (onClick == null) this else clickable(role = Role.Button, onClick = onClick)
