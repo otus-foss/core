@@ -269,11 +269,10 @@ class VCardTest {
     }
 
     /** The one Card of a vCard 4.0 entry with [lines] between BEGIN and END. */
-    private fun card(vararg lines: String): Card =
-        VCard
-            .parse((listOf("BEGIN:VCARD", "VERSION:4.0") + lines + "END:VCARD").joinToString("\r\n"))
-            .cards
-            .single()
+    private fun card(vararg lines: String): Card {
+        val text = (listOf("BEGIN:VCARD", "VERSION:4.0") + lines + "END:VCARD").joinToString("\r\n")
+        return VCard.parse(text).cards.single()
+    }
 
     private companion object {
         val WORK = mapOf(ContactContext.Work to true)
