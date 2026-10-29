@@ -31,10 +31,5 @@ internal fun Modifier.reorderSlot(
             translationY = if (dragged) drag.offset else shift
             alpha = if (dragged) draggedAlpha else 1f
         }.background(background)
-        .then(
-            if (dragged) {
-                Modifier.background(OtusColors.bgLight, draggedShape)
-            } else {
-                Modifier
-            },
-        ).onSizeChanged { drag.heights[key] = it.height }
+        .then(if (dragged) Modifier.background(OtusColors.bgLight, draggedShape) else Modifier)
+        .onSizeChanged { drag.heights[key] = it.height }

@@ -46,9 +46,9 @@ import kotlin.math.min
 /**
  * A flat settings row: [title] and an optional [description] beside [trailing], such as a
  * [com.otus.designsystem.shared.settings.elements.ValueButton], a chevron, or a
- * [com.otus.designsystem.shared.rows.elements.RowButton]. A hairline separates it from what is above it, so
- * the first row in its parent, such as at the top of a page, has none. With
- * [onClick] the whole row is one button; without it, only its trailing controls act. A
+ * [com.otus.designsystem.shared.rows.elements.RowButton]. A hairline separates it from what is
+ * above it, so the first row in its parent, such as at the top of a page, has none. With [onClick]
+ * the whole row is one button; without it, only its trailing controls act. A
  * [RowDensity.Compact] row drops the hairline and fits one line in
  * [PanelTokens.compactRowHeight]; a taller trailing control reaches into its padding instead of
  * making it taller.

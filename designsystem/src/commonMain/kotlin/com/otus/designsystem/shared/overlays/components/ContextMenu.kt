@@ -169,23 +169,26 @@ private class AtPoint(
     ): IntOffset {
         val x = anchorBounds.left + point.x
         val y = anchorBounds.top + point.y
-        val fitsRight = x + popupContentSize.width <= windowSize.width - edge
-        val fitsBelow = y + popupContentSize.height <= windowSize.height - edge
         return IntOffset(
-            (if (fitsRight) x else x - popupContentSize.width).coerceIn(
-                edge,
-                maxOf(
-                    edge,
-                    windowSize.width - popupContentSize.width - edge,
-                ),
-            ),
-            (if (fitsBelow) y else y - popupContentSize.height).coerceIn(
-                edge,
-                maxOf(
-                    edge,
-                    windowSize.height - popupContentSize.height - edge,
-                ),
-            ),
+            flipToFit(x, popupContentSize.width, windowSize.width),
+            flipToFit(y, popupContentSize.height, windowSize.height),
         )
     }
+
+    /** Starts the menu at [at], or ends it there when its [size] would not fit before the window's end. */
+    private fun flipToFit(
+        at: Int,
+        size: Int,
+        window: Int,
+    ): Int = (if (at + size <= window - edge) at else at - size).keptInside(size, window, edge)
 }
+
+/**
+ * This start of a popup [size] pixels long, moved to stay [edge] pixels inside a [window] that long,
+ * or to [edge] when the popup is too long for that.
+ */
+internal fun Int.keptInside(
+    size: Int,
+    window: Int,
+    edge: Int,
+): Int = coerceIn(edge, maxOf(edge, window - size - edge))

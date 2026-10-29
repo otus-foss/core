@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
@@ -54,4 +55,16 @@ public fun AvatarStack(
             )
         }
     }
+}
+
+/**
+ * [avatars] in a `bgLight` ring beside a title that names them, hidden from screen readers, since
+ * their initials would only repeat the title.
+ */
+@Composable
+internal fun SilentAvatarStack(
+    avatars: List<ChipAvatar>,
+    size: Dp,
+) {
+    AvatarStack(avatars, Modifier.clearAndSetSemantics {}, ring = OtusColors.bgLight, size = size)
 }

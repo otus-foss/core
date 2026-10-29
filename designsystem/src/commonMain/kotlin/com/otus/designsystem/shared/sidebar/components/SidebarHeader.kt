@@ -20,7 +20,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -32,8 +31,8 @@ import com.otus.designsystem.shared.controls.elements.IconButton
 import com.otus.designsystem.shared.controls.elements.IconButtonLook
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
-import com.otus.designsystem.shared.people.components.AvatarStack
 import com.otus.designsystem.shared.people.components.ChipAvatar
+import com.otus.designsystem.shared.people.components.SilentAvatarStack
 import com.otus.designsystem.shared.sidebar.elements.SidebarDetail
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
@@ -43,9 +42,9 @@ import com.otus.designsystem.theme.typography.panelTextStyle
 /**
  * The [Sidebar]'s header: [avatars], [title], and an optional [subtitle], then an unfold button
  * and Settings. Tapping the title or the unfold button calls [onPick], which opens a picker such
- * as a [ScopeSheet][com.otus.designsystem.shared.selection.components.ScopeSheet]; [pickLabel] names that action
- * for screen readers. It shares the context
- * panel's header height, so the title lines up with the page title.
+ * as a [ScopeSheet][com.otus.designsystem.shared.selection.components.ScopeSheet]; [pickLabel] names
+ * that action for screen readers. It shares the context panel's header height, so the title lines
+ * up with the page title.
  */
 @Composable
 public fun SidebarHeader(
@@ -106,15 +105,7 @@ internal fun RowScope.ScopeTitle(
     subtitle: String?,
     avatars: List<ChipAvatar>,
 ) {
-    if (avatars.isNotEmpty()) {
-        // The title names the scope; initials would only repeat it.
-        AvatarStack(
-            avatars,
-            Modifier.clearAndSetSemantics {},
-            ring = OtusColors.bgLight,
-            size = SidebarTokens.headerAvatar,
-        )
-    }
+    if (avatars.isNotEmpty()) SilentAvatarStack(avatars, SidebarTokens.headerAvatar)
     Column(Modifier.weight(1f)) {
         Text(
             title,

@@ -66,12 +66,7 @@ public fun ColorSlider(
                 .background(track, CircleShape)
                 .pointerInput(range, width) { detectTapGestures { change(valueAt(it.x)) } }
                 .pointerInput(range, width) {
-                    detectHorizontalDragGestures {
-                        pointer,
-                        _,
-                        ->
-                        change(valueAt(pointer.position.x))
-                    }
+                    detectHorizontalDragGestures { pointer, _ -> change(valueAt(pointer.position.x)) }
                 },
         )
         val fraction = ((value - range.start) / span).coerceIn(0f, 1f)

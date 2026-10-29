@@ -3,10 +3,8 @@ package com.otus.designsystem.shared.panels.components
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +25,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.otus.designsystem.shared.pages.components.PageChrome
 import com.otus.designsystem.shared.pages.components.pinnedChrome
+import com.otus.designsystem.shared.rows.components.Collapsible
 import com.otus.designsystem.shared.sidebar.components.sidebarOpenZone
 import com.otus.designsystem.theme.motion.motionTween
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
@@ -83,12 +82,7 @@ public fun ContextPanel(
                 inset,
                 content,
             )
-            AnimatedVisibility(
-                railShown,
-                enter = expandVertically(motionTween(), expandFrom = Alignment.Top) + fadeIn(motionTween()),
-                exit = shrinkVertically(motionTween(), shrinkTowards = Alignment.Top) + fadeOut(motionTween()),
-                label = "Panel chip rail",
-            ) {
+            Collapsible(railShown) {
                 Row(
                     Modifier
                         .fillMaxWidth()
@@ -123,9 +117,8 @@ private fun PanelHeader(
     Row(
         modifier
             .fillMaxWidth()
-            .heightIn(
-                min = PanelTokens.touchTarget + inset * 2,
-            ).padding(end = PanelTokens.panelInset),
+            .heightIn(min = PanelTokens.touchTarget + inset * 2)
+            .padding(end = PanelTokens.panelInset),
         // Top-aligned, so content that wraps to more lines grows down and Back stays on the first.
         verticalAlignment = Alignment.Top,
     ) {

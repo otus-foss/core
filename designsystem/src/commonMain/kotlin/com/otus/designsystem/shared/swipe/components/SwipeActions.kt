@@ -48,9 +48,9 @@ import kotlin.math.roundToInt
  * Hosts a row that reveals [startToEnd] when dragged toward the end edge and [endToStart] when
  * dragged toward the start edge. An accent card the row's size waits behind it, so the row slides
  * off it; give [content] an opaque background, such as a
- * [CompactContentRow][com.otus.designsystem.mail.inbox.components.CompactContentRow] card. The action's icon grows
- * in
- * beside its label until the fixed threshold, where a haptic marks that release will act.
+ * [CompactContentRow][com.otus.designsystem.mail.inbox.components.CompactContentRow] card. The
+ * action's icon grows in beside its label until the fixed threshold, where a haptic marks that
+ * release will act.
  * Releasing past it flashes and runs the action once; shorter drags spring back. The row stops
  * once its action is fully revealed, and drags cannot move it again until it is still. A null
  * action leaves that direction still, and a horizontal drag never reaches the row as a tap.

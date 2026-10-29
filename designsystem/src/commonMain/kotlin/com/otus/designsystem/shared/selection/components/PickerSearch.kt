@@ -49,9 +49,8 @@ public fun PickerSearch(
     ) {
         Row(
             Modifier
-                .heightIn(
-                    min = PanelTokens.touchTarget,
-                ).padding(start = SheetTokens.inset, end = PanelTokens.iconGap),
+                .heightIn(min = PanelTokens.touchTarget)
+                .padding(start = SheetTokens.inset, end = PanelTokens.iconGap),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Symbol(Res.drawable.symbol_search)

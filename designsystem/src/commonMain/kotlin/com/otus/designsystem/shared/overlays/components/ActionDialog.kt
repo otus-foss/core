@@ -2,7 +2,6 @@ package com.otus.designsystem.shared.overlays.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -84,18 +83,9 @@ public fun InputDialog(
             Modifier.focusRequester(focus),
             supportingText = error.takeIf { value != initial },
         )
-        Row(horizontalArrangement = Arrangement.spacedBy(PageTokens.rowGap)) {
-            ActionButton("Cancel", onDismiss, Modifier.weight(1f))
-            ActionButton(
-                confirmLabel,
-                {
-                    onConfirm(value)
-                    onDismiss()
-                },
-                Modifier.weight(1f),
-                primary = true,
-                enabled = error == null,
-            )
+        DialogButtons("Cancel", onDismiss, confirmLabel, confirmEnabled = error == null) {
+            onConfirm(value)
+            onDismiss()
         }
     }
 }
