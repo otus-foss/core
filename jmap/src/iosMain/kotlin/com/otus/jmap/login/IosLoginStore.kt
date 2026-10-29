@@ -6,15 +6,11 @@ import kotlinx.cinterop.alloc
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.value
-import platform.CoreFoundation.CFDictionaryAddValue
-import platform.CoreFoundation.CFDictionaryCreateMutable
-import platform.CoreFoundation.CFMutableDictionaryRef
+import platform.CoreFoundation.CFDictionaryRef
 import platform.CoreFoundation.CFRelease
 import platform.CoreFoundation.CFTypeRef
 import platform.CoreFoundation.CFTypeRefVar
 import platform.CoreFoundation.kCFBooleanTrue
-import platform.CoreFoundation.kCFTypeDictionaryKeyCallBacks
-import platform.CoreFoundation.kCFTypeDictionaryValueCallBacks
 import platform.Foundation.CFBridgingRelease
 import platform.Foundation.CFBridgingRetain
 import platform.Foundation.NSData
@@ -62,15 +58,8 @@ public class IosLoginStore internal constructor(
                 when (keychain.read(query, result.ptr)) {
                     errSecSuccess -> {
                         val data = CFBridgingRelease(result.value) as? NSData
-                        data
-                            ?.let {
-                                NSString
-                                    .create(
-                                        it,
-                                        NSUTF8StringEncoding,
-                                    )?.toString()
-                            }?.let { LoginSecret.Found(it) }
-                            ?: LoginSecret.Unreadable()
+                        val text = data?.let { NSString.create(it, NSUTF8StringEncoding)?.toString() }
+                        text?.let { LoginSecret.Found(it) } ?: LoginSecret.Unreadable()
                     }
 
                     errSecItemNotFound -> {
@@ -159,20 +148,19 @@ public class IosLoginStore internal constructor(
     private fun <T> withQuery(
         id: String,
         vararg extra: Pair<CFTypeRef?, CFTypeRef?>,
-        block: (CFMutableDictionaryRef?) -> T,
+        block: (CFDictionaryRef?) -> T,
     ): T {
         val serviceRef = CFBridgingRetain(service)
         val accountRef = CFBridgingRetain(id)
-        val query =
-            CFDictionaryCreateMutable(null, 0, kCFTypeDictionaryKeyCallBacks.ptr, kCFTypeDictionaryValueCallBacks.ptr)
-        CFDictionaryAddValue(query, kSecClass, kSecClassGenericPassword)
-        CFDictionaryAddValue(query, kSecAttrService, serviceRef)
-        CFDictionaryAddValue(query, kSecAttrAccount, accountRef)
-        extra.forEach { (key, value) -> CFDictionaryAddValue(query, key, value) }
         return try {
-            block(query)
+            withKeychainAttributes(
+                kSecClass to kSecClassGenericPassword,
+                kSecAttrService to serviceRef,
+                kSecAttrAccount to accountRef,
+                *extra,
+                block = block,
+            )
         } finally {
-            CFRelease(query)
             CFRelease(serviceRef)
             CFRelease(accountRef)
         }

@@ -1,7 +1,6 @@
 package com.otus.jmap
 
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.jsonObject
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -75,5 +74,5 @@ class JmapSetValidationTest {
     private fun decode(
         method: SetMethod,
         body: String,
-    ): SetResult = jmapDecoding { method.decode(JmapJson.parseToJsonElement(body).jsonObject) }
+    ): SetResult = jmapDecoding { method.decode(parseObject(body)) }
 }

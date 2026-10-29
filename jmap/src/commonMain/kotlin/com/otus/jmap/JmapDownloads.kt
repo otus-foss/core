@@ -3,13 +3,9 @@ package com.otus.jmap
 import io.ktor.client.HttpClient
 import io.ktor.client.request.header
 import io.ktor.client.request.prepareGet
-import io.ktor.client.statement.bodyAsChannel
 import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
-import io.ktor.http.contentLength
-import io.ktor.utils.io.readBuffer
 import kotlinx.io.IOException
-import kotlinx.io.readByteArray
 
 public class JmapBlob(
     public val bytes: ByteArray,
@@ -40,9 +36,7 @@ internal class JmapDownloads(
                     header(HttpHeaders.Accept, mediaType)
                 }.execute { response ->
                     RawResponse(response.status.value, null, "").failure()?.let { throw it }
-                    checkBlobSize(response.contentLength() ?: 0, maxBytes)
-                    val bytes = response.bodyAsChannel().readBuffer(maxBytes + 1).readByteArray()
-                    checkBlobSize(bytes.size.toLong(), maxBytes)
+                    val bytes = response.limitedBytes(maxBytes)
                     JmapBlob(bytes, response.headers[HttpHeaders.ContentType]?.substringBefore(';') ?: mediaType)
                 }
         } catch (error: IOException) {
@@ -67,10 +61,3 @@ internal class JmapDownloads(
 
 /** The `{name}` for a download whose caller has no file name (RFC 8620, section 6.2). */
 internal const val DEFAULT_DOWNLOAD_NAME = "download"
-
-private fun checkBlobSize(
-    size: Long,
-    limit: Long,
-) {
-    if (size > limit) throw JmapException.ResponseTooLarge(limit)
-}

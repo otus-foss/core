@@ -49,7 +49,7 @@ class ContactCardPatchHandlesTest {
                 addressBookIds.set(card.addressBookIds!!.keys)
             }
         // The vendor property is not a Card property, so no handle writes it.
-        assertEquals(JsonObject(card.json() - "@type" - "id" - VENDOR_PROPERTY), patch)
+        assertEquals(JsonObject(card.toJsonObject() - "@type" - "id" - VENDOR_PROPERTY), patch)
     }
 
     @Test
@@ -59,31 +59,16 @@ class ContactCardPatchHandlesTest {
                 phones.put("tel0", card.phones!!.getValue("tel0"))
                 anniversaries.put("k8", card.anniversaries!!.getValue("k8"))
             }
-        assertEquals(
-            card
-                .json()
-                .getValue("phones")
-                .jsonObject
-                .getValue("tel0"),
-            patch["phones/tel0"],
-        )
-        assertEquals(
-            card
-                .json()
-                .getValue("anniversaries")
-                .jsonObject
-                .getValue("k8"),
-            patch["anniversaries/k8"],
-        )
+        val whole = card.toJsonObject()
+        assertEquals(whole.getValue("phones").jsonObject.getValue("tel0"), patch["phones/tel0"])
+        assertEquals(whole.getValue("anniversaries").jsonObject.getValue("k8"), patch["anniversaries/k8"])
     }
 
     @Test
     fun aCreationIsTheCardWithoutItsServerSetId() {
-        assertEquals(JsonObject(card.json() - "id"), card.toCreation())
+        assertEquals(JsonObject(card.toJsonObject() - "id"), card.toCreation())
         assertEquals(JsonPrimitive("kept as received"), card.toCreation()[VENDOR_PROPERTY])
     }
-
-    private fun Card.json(): JsonObject = JsContactJson.encodeToJsonElement(Card.serializer(), this).jsonObject
 }
 
 private const val VENDOR_PROPERTY = "example.com:foo"

@@ -144,9 +144,9 @@ internal class ServerSubscription(
     private fun age(record: PushRecord): Duration =
         record.since?.let(Instant::parseOrNull)?.let { clock.now() - it } ?: Duration.INFINITE
 
-    private fun now(): String = Instant.fromEpochSeconds(clock.now().epochSeconds).toString()
+    private fun now(): String = utcDate(clock.now())
 
-    private fun expiry(): String = Instant.fromEpochSeconds((clock.now() + LIFETIME).epochSeconds).toString()
+    private fun expiry(): String = utcDate(clock.now() + LIFETIME)
 
     private companion object {
         const val CREATION = "push"
@@ -161,5 +161,8 @@ internal class ServerSubscription(
         val VERIFY_WITHIN: Duration = 1.hours
     }
 }
+
+/** A UTCDate in whole seconds, such as `2026-10-14T08:00:00Z`. */
+private fun utcDate(instant: Instant): String = Instant.fromEpochSeconds(instant.epochSeconds).toString()
 
 private fun JsonObject.stringOf(key: String): String? = (get(key) as? JsonPrimitive)?.takeIf { it.isString }?.content

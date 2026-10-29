@@ -1,7 +1,6 @@
 package com.otus.jmap
 
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.jsonObject
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -51,5 +50,5 @@ class JmapResponseTest {
     }
 
     private fun response(invocations: String) =
-        parseResponse(JmapJson.parseToJsonElement("""{"methodResponses":[$invocations]}""").jsonObject)
+        parseResponse(parseObject("""{"methodResponses":[$invocations]}"""))
 }

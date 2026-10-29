@@ -29,13 +29,7 @@ internal class JmapUrls(
     fun trustedTarget(
         session: JmapSession,
         expanded: String,
-    ): Url {
-        val target = resolve(parse(session.sessionUrl), expanded)
-        if (target.origin() !in session.trustedOrigins) {
-            throw JmapException.RedirectedElsewhere(target.host, target.origin())
-        }
-        return target
-    }
+    ): Url = resolve(parse(session.sessionUrl), expanded).requireTrusted(session.trustedOrigins)
 
     private fun build(
         text: String,
@@ -59,6 +53,12 @@ internal class JmapUrls(
 
 /** Credentials are scoped to scheme, host, and port. */
 internal fun Url.origin(): String = "${protocol.name}://${host.lowercase()}:$port"
+
+/** This URL, or [JmapException.RedirectedElsewhere] when its origin may not receive credentials. */
+internal fun Url.requireTrusted(trustedOrigins: Set<String>): Url {
+    if (origin() !in trustedOrigins) throw JmapException.RedirectedElsewhere(host, origin())
+    return this
+}
 
 internal class RawResponse(
     val status: Int,
@@ -89,12 +89,14 @@ internal class RawResponse(
 private fun JsonObject.problemTypeOf(): String? = string("type")
 
 /** Reads at most [limit] bytes; a larger body throws instead of exhausting memory. */
-internal suspend fun HttpResponse.limitedText(limit: Long): String {
+internal suspend fun HttpResponse.limitedBytes(limit: Long): ByteArray {
     if ((contentLength() ?: 0) > limit) throw JmapException.ResponseTooLarge(limit)
     val bytes = bodyAsChannel().readBuffer(limit + 1).readByteArray()
     if (bytes.size > limit) throw JmapException.ResponseTooLarge(limit)
-    return bytes.decodeToString()
+    return bytes
 }
+
+internal suspend fun HttpResponse.limitedText(limit: Long): String = limitedBytes(limit).decodeToString()
 
 /**
  * RFC 6570 level 1. Encode each value before substitution, including slashes and URI delimiters.
