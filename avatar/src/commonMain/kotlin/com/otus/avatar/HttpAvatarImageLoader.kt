@@ -76,12 +76,8 @@ public class HttpAvatarImageLoader(
         response: HttpResponse,
         target: Url,
     ): AvatarWebsitePage {
-        val html =
-            response
-                .bodyAsChannel()
-                .readBuffer(MAX_HTML_BYTES)
-                .readByteArray()
-                .decodeToString()
+        val buffer = response.bodyAsChannel().readBuffer(MAX_HTML_BYTES)
+        val html = buffer.readByteArray().decodeToString()
         return AvatarWebsitePage(target.toString(), html)
     }
 

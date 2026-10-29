@@ -47,11 +47,10 @@ public class JmapContactAvatarSource(
     private suspend fun readableBooks(
         connection: JmapConnection,
         account: String,
-    ): List<AvatarAddressBook> =
-        connection
-            .call(GetMethod(AddressBookType, account))
-            .list
-            .filter { it.myRights.mayRead && (it.isSubscribed || it.myRights.mayWrite) }
+    ): List<AvatarAddressBook> {
+        val books = connection.call(GetMethod(AddressBookType, account)).list
+        return books.filter { it.myRights.mayRead && (it.isSubscribed || it.myRights.mayWrite) }
+    }
 
     private suspend fun loadCard(
         connection: JmapConnection,
