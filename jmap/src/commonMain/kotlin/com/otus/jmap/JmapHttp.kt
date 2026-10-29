@@ -11,7 +11,6 @@ import io.ktor.http.encodeURLParameter
 import io.ktor.http.takeFrom
 import io.ktor.utils.io.readBuffer
 import kotlinx.io.readByteArray
-import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 
 /** Parses and resolves URLs, refusing anything the policy does not allow. */
@@ -65,10 +64,13 @@ internal class RawResponse(
     val location: String?,
     val text: String,
 ) {
-    /** The failure for a non-success status; a problem-details body (RFC 7807) adds its type. */
-    fun failure(): JmapException? =
+    /** Throws for a non-success status; a problem-details body (RFC 7807) adds its type. */
+    fun requireSuccess() {
+        if (status !in SUCCESS) throw failure()
+    }
+
+    private fun failure(): JmapException =
         when (status) {
-            in SUCCESS -> null
             UNAUTHORIZED -> JmapException.Unauthorized()
             FORBIDDEN -> JmapException.Forbidden()
             NOT_FOUND -> JmapException.NotJmap("nothing found at this address")
@@ -76,7 +78,7 @@ internal class RawResponse(
         }
 
     private fun problemType(): String? =
-        runCatching { JmapJson.parseToJsonElement(text).jsonObject }.getOrNull()?.let(JsonObject::problemTypeOf)
+        runCatching { JmapJson.parseToJsonElement(text).jsonObject }.getOrNull()?.string("type")
 
     private companion object {
         val SUCCESS = 200..299
@@ -85,8 +87,6 @@ internal class RawResponse(
         const val NOT_FOUND = 404
     }
 }
-
-private fun JsonObject.problemTypeOf(): String? = string("type")
 
 /** Reads at most [limit] bytes; a larger body throws instead of exhausting memory. */
 internal suspend fun HttpResponse.limitedBytes(limit: Long): ByteArray {

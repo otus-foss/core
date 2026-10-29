@@ -57,21 +57,20 @@ private class HtmlSealer(
                 .takeWhile { it.isLetterOrDigit() }
                 .lowercase()
         return when {
-            closing -> {
-                close(name)
-                end
-            }
-
-            name in RAW_TEXT -> {
-                rawTextEnd(name, end)
-            }
-
-            else -> {
-                val selfClosed = name in FOREIGN && html[end - 2] == '/'
-                if (name in CONTAINERS && !selfClosed) open += name
-                end
-            }
+            closing -> endTag(name, end)
+            name in RAW_TEXT -> rawTextEnd(name, end)
+            else -> startTag(name, end)
         }
+    }
+
+    /** A start tag opens a container, unless it is a foreign one that closes itself with `/>`. */
+    private fun startTag(
+        name: String,
+        end: Int,
+    ): Int {
+        val selfClosed = name in FOREIGN && html[end - 2] == '/'
+        if (name in CONTAINERS && !selfClosed) open += name
+        return end
     }
 
     /** Where a tag that starts at [start] ends, past its `>`; a `>` inside a quoted value does not end it. */
@@ -101,9 +100,13 @@ private class HtmlSealer(
     }
 
     /** An end tag closes the last open element of its name and every element opened inside it. */
-    private fun close(name: String) {
+    private fun endTag(
+        name: String,
+        end: Int,
+    ): Int {
         val index = open.lastIndexOf(name)
         if (index >= 0) open.subList(index, open.size).clear()
+        return end
     }
 
     /** Drops the cut-off markup from [start] on, and ends the scan. */

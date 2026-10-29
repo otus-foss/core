@@ -10,18 +10,16 @@ internal object LoginCodec {
     private val json = Json { ignoreUnknownKeys = true }
 
     /** Unreadable data is returned with its cause; the store keeps a copy before replacing it. */
-    fun decode(text: String?): Decoded =
-        if (text == null) {
-            Decoded.Logins(emptyList())
-        } else {
-            try {
-                Decoded.Logins(json.decodeFromString(serializer, text))
-            } catch (error: SerializationException) {
-                Decoded.Unreadable(error)
-            } catch (error: IllegalArgumentException) {
-                Decoded.Unreadable(error)
-            }
+    fun decode(text: String?): Decoded {
+        if (text == null) return Decoded.Logins(emptyList())
+        return try {
+            Decoded.Logins(json.decodeFromString(serializer, text))
+        } catch (error: SerializationException) {
+            Decoded.Unreadable(error)
+        } catch (error: IllegalArgumentException) {
+            Decoded.Unreadable(error)
         }
+    }
 
     sealed interface Decoded {
         class Logins(

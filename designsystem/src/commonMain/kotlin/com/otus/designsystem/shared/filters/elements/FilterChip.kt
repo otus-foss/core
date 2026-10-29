@@ -63,25 +63,11 @@ public fun FilterChip(
 ) {
     val interactions = remember { MutableInteractionSource() }
     val on = selected && role != FilterChipRole.Button
-    val choose =
-        when (role) {
-            FilterChipRole.Checkbox -> {
-                Modifier.toggleable(on, interactions, null, role = Role.Checkbox) { onClick() }
-            }
-
-            FilterChipRole.Radio -> {
-                Modifier.selectable(on, interactions, null, role = Role.RadioButton, onClick = onClick)
-            }
-
-            FilterChipRole.Button -> {
-                Modifier.clickable(interactions, null, role = Role.Button, onClick = onClick)
-            }
-        }
     Box(
         modifier
             .minimumInteractiveComponentSize()
             .semantics { contentDescription = label.spoken }
-            .then(choose),
+            .chipChoice(role, on, interactions, onClick),
         contentAlignment = Alignment.Center,
     ) {
         Surface(
@@ -107,6 +93,19 @@ public fun FilterChip(
         }
     }
 }
+
+/** Makes the chip a checkbox, a radio button, or a plain button, as [role] says. */
+private fun Modifier.chipChoice(
+    role: FilterChipRole,
+    on: Boolean,
+    interactions: MutableInteractionSource,
+    onClick: () -> Unit,
+): Modifier =
+    when (role) {
+        FilterChipRole.Checkbox -> toggleable(on, interactions, null, role = Role.Checkbox) { onClick() }
+        FilterChipRole.Radio -> selectable(on, interactions, null, role = Role.RadioButton, onClick = onClick)
+        FilterChipRole.Button -> clickable(interactions, null, role = Role.Button, onClick = onClick)
+    }
 
 @Composable
 private fun FilterChipText(label: ChipLabel) {

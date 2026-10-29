@@ -33,31 +33,21 @@ public class FileAvatarStore(
                 return@access null
             }
             files.source(path).buffered().use { source ->
-                val created = source.readLong()
-                val kind = source.readByte().toInt()
-                val bytes = source.readByteArray()
-                when {
-                    created < 0 -> {
-                        null
-                    }
-
-                    kind == MISS_RECORD && bytes.isEmpty() -> {
-                        StoredAvatar(null, created)
-                    }
-
-                    kind == IMAGE_RECORD && bytes.isNotEmpty() -> {
-                        StoredAvatar(AvatarImage(bytes), created)
-                    }
-
-                    kind == STYLE_RECORD -> {
-                        decodedAvatarStyle(bytes.decodeToString())?.let { StoredAvatar(null, created, it) }
-                    }
-
-                    else -> {
-                        null
-                    }
-                }
+                decodedRecord(source.readLong(), source.readByte().toInt(), source.readByteArray())
             }
+        }
+
+    private fun decodedRecord(
+        created: Long,
+        kind: Int,
+        bytes: ByteArray,
+    ): StoredAvatar? =
+        when {
+            created < 0 -> null
+            kind == MISS_RECORD && bytes.isEmpty() -> StoredAvatar(null, created)
+            kind == IMAGE_RECORD && bytes.isNotEmpty() -> StoredAvatar(AvatarImage(bytes), created)
+            kind == STYLE_RECORD -> decodedAvatarStyle(bytes.decodeToString())?.let { StoredAvatar(null, created, it) }
+            else -> null
         }
 
     override suspend fun write(
@@ -67,19 +57,19 @@ public class FileAvatarStore(
         access {
             val bytes = entry.image?.bytes ?: entry.style?.encoded()?.encodeToByteArray()
             if (bytes != null && (bytes.isEmpty() || bytes.size > MAX_AVATAR_BYTES)) return@access
+            val kind =
+                when {
+                    bytes == null -> MISS_RECORD
+                    entry.image == null -> STYLE_RECORD
+                    else -> IMAGE_RECORD
+                }
             files.createDirectories(directory)
             val target = path(key)
             val temporary = Path(directory, "${target.name}.part")
             try {
                 files.sink(temporary).buffered().use { sink ->
                     sink.writeLong(entry.created)
-                    sink.writeByte(
-                        when {
-                            bytes == null -> MISS_RECORD
-                            entry.image == null -> STYLE_RECORD
-                            else -> IMAGE_RECORD
-                        }.toByte(),
-                    )
+                    sink.writeByte(kind.toByte())
                     if (bytes != null) sink.write(bytes)
                 }
                 files.atomicMove(temporary, target)
@@ -116,22 +106,22 @@ public class FileAvatarStore(
     private fun prune() {
         // A process killed during a write can leave a temporary record behind.
         records().filter { it.name.endsWith(".part") }.forEach { files.delete(it) }
-        val records =
-            records()
-                .map { path ->
-                    val size = files.metadataOrNull(path)?.size ?: 0
-                    val created = runCatching { files.source(path).buffered().use { it.readLong() } }.getOrDefault(0)
-                    DiskRecord(path, size, created)
-                }.sortedBy { it.created }
+        val records = records().map(::diskRecord).sortedBy { it.created }
         var bytes = records.sumOf { it.size }
         var count = records.size
-        records.forEach { record ->
-            if (bytes > maxBytes || count > maxEntries) {
-                files.delete(record.path)
-                bytes -= record.size
-                count--
-            }
+        // Oldest first, until the rest fits.
+        for (record in records) {
+            if (bytes <= maxBytes && count <= maxEntries) break
+            files.delete(record.path)
+            bytes -= record.size
+            count--
         }
+    }
+
+    private fun diskRecord(path: Path): DiskRecord {
+        val size = files.metadataOrNull(path)?.size ?: 0
+        val created = runCatching { files.source(path).buffered().use { it.readLong() } }.getOrDefault(0)
+        return DiskRecord(path, size, created)
     }
 
     private suspend fun <T> access(block: () -> T): T? =

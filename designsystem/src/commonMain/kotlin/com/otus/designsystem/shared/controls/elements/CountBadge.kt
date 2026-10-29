@@ -14,9 +14,9 @@ import com.otus.designsystem.theme.tokens.content.LabelTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
- * A count in a circle filled like an [Avatar][com.otus.designsystem.shared.people.elements.Avatar], such as the
- * unread mail beside a pill's label. A
- * longer count, such as "99+", stretches the circle into a pill. The label beside it names what it
+ * A count in a circle filled like an [Avatar][com.otus.designsystem.shared.people.elements.Avatar],
+ * such as the unread mail beside a pill's label. A longer count, such as "99+", stretches the
+ * circle into a pill. The label beside it names what it
  * counts, so it stays decorative.
  */
 @Composable

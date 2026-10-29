@@ -60,22 +60,19 @@ public class IosLoginStore internal constructor(
             memScoped {
                 val result = alloc<CFTypeRefVar>()
                 when (keychain.read(query, result.ptr)) {
-                    errSecSuccess -> {
-                        val data = CFBridgingRelease(result.value) as? NSData
-                        val text = data?.let { NSString.create(it, NSUTF8StringEncoding)?.toString() }
-                        text?.let { LoginSecret.Found(it) } ?: LoginSecret.Unreadable()
-                    }
-
-                    errSecItemNotFound -> {
-                        LoginSecret.Missing
-                    }
-
-                    else -> {
-                        LoginSecret.Unreadable()
-                    }
+                    errSecSuccess -> foundSecret(result.value)
+                    errSecItemNotFound -> LoginSecret.Missing
+                    else -> LoginSecret.Unreadable()
                 }
             }
         }
+
+    /** Takes ownership of the Keychain's [value] and reads it as UTF-8 text. */
+    private fun foundSecret(value: CFTypeRef?): LoginSecret {
+        val data = CFBridgingRelease(value) as? NSData
+        val text = data?.let { NSString.create(it, NSUTF8StringEncoding)?.toString() }
+        return text?.let { LoginSecret.Found(it) } ?: LoginSecret.Unreadable()
+    }
 
     override fun save(
         login: JmapLogin,
@@ -124,20 +121,19 @@ public class IosLoginStore internal constructor(
         if (saved != errSecSuccess) throw LoginStoreException("The Keychain refused the secret (status $saved).")
     }
 
-    /** An unreadable list is copied aside once, so a later save cannot destroy it. */
     private fun readLogins(): List<JmapLogin> {
         val raw = defaults.stringForKey(listKey)
         return when (val decoded = LoginCodec.decode(raw)) {
-            is LoginCodec.Decoded.Logins -> {
-                decoded.logins
-            }
-
-            is LoginCodec.Decoded.Unreadable -> {
-                val backup = listKey + LoginCodec.UNREADABLE_SUFFIX
-                if (defaults.stringForKey(backup) == null) defaults.setObject(raw, backup)
-                emptyList()
-            }
+            is LoginCodec.Decoded.Logins -> decoded.logins
+            is LoginCodec.Decoded.Unreadable -> setAsideUnreadable(raw)
         }
+    }
+
+    /** Copies an unreadable list aside once, so a later save cannot destroy it, and reads it as empty. */
+    private fun setAsideUnreadable(raw: String?): List<JmapLogin> {
+        val backup = listKey + LoginCodec.UNREADABLE_SUFFIX
+        if (defaults.stringForKey(backup) == null) defaults.setObject(raw, backup)
+        return emptyList()
     }
 
     private fun <T> locked(block: () -> T): T {

@@ -19,13 +19,12 @@ public data class Nickname(
     /** Unknown and vendor-specific properties, kept as received (RFC 9553, section 1.7.4). */
     @Transient val extra: Map<String, JsonElement> = emptyMap(),
 ) {
-    internal object Serializer :
-        JsContactSerializer<Nickname>(
-            generatedSerializer(),
-            "Nickname",
-            { it.extra },
-            { value, extra -> value.copy(extra = extra) },
-        )
+    internal object Serializer : JsContactSerializer<Nickname>(
+        generatedSerializer(),
+        "Nickname",
+        { it.extra },
+        { value, extra -> value.copy(extra = extra) },
+    )
 }
 
 /** A job title or role of the entity, as a value of the Card `titles` map (RFC 9553, section 2.2.5). */
@@ -41,13 +40,12 @@ public data class Title(
     /** Unknown and vendor-specific properties, kept as received (RFC 9553, section 1.7.4). */
     @Transient val extra: Map<String, JsonElement> = emptyMap(),
 ) {
-    internal object Serializer :
-        JsContactSerializer<Title>(
-            generatedSerializer(),
-            "Title",
-            { it.extra },
-            { value, extra -> value.copy(extra = extra) },
-        )
+    internal object Serializer : JsContactSerializer<Title>(
+        generatedSerializer(),
+        "Title",
+        { it.extra },
+        { value, extra -> value.copy(extra = extra) },
+    )
 }
 
 /**

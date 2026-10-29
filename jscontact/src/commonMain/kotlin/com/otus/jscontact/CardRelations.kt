@@ -21,13 +21,12 @@ public data class Relation(
     /** Unknown and vendor-specific properties, kept as received (RFC 9553, section 1.7.4). */
     @Transient val extra: Map<String, JsonElement> = emptyMap(),
 ) {
-    internal object Serializer :
-        JsContactSerializer<Relation>(
-            generatedSerializer(),
-            "Relation",
-            { it.extra },
-            { value, extra -> value.copy(extra = extra) },
-        )
+    internal object Serializer : JsContactSerializer<Relation>(
+        generatedSerializer(),
+        "Relation",
+        { it.extra },
+        { value, extra -> value.copy(extra = extra) },
+    )
 }
 
 /**

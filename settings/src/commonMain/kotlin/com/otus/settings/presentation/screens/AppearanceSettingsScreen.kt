@@ -28,6 +28,7 @@ import com.otus.settings.presentation.DateFormatSettingsState
 import com.otus.settings.presentation.ThemeSettingsState
 import com.otus.settings.presentation.dateFormatExample
 import com.otus.settings.presentation.themeTitle
+import kotlinx.datetime.LocalDate
 
 /**
  * Shared appearance settings. The Look section opens the theme page with [onTheme], named by the
@@ -45,7 +46,7 @@ public fun AppearanceSettingsScreen(
 ) {
     val locale = currentDateLocaleIdentifier()
     val today = remember { currentLocalDate() }
-    var choosing by rememberSaveable { mutableStateOf(false) }
+    var choosingDateFormat by rememberSaveable { mutableStateOf(false) }
     var choosingSpeed by rememberSaveable { mutableStateOf(false) }
     Subpage("Appearance", onBack) {
         SettingsSection("Look") {
@@ -58,7 +59,7 @@ public fun AppearanceSettingsScreen(
             look()
             SettingRow(
                 "Date format",
-                { choosing = true },
+                { choosingDateFormat = true },
                 description = "Shown as ${dateFormatExample(dateFormat.preference, locale, today)}",
                 icon = Res.drawable.symbol_calendar_month,
             ) { ValueButton(dateFormat.preference.shortLabel) }
@@ -69,21 +70,29 @@ public fun AppearanceSettingsScreen(
             ) { ValueButton(animation.speed.label) }
         }
     }
-    if (choosing) {
-        ChoiceSheet(
-            title = "Date format",
-            choices =
-                ChoiceOptions(
-                    DateFormatPreference.entries,
-                    selected = dateFormat.preference,
-                    default = DateFormatPreference.DeviceLocale,
-                ),
-            row = { ChoiceRow(it.patternLabel, dateFormatExample(it, locale, today)) },
-            onSelect = dateFormat::select,
-            onDismiss = { choosing = false },
-        )
-    }
+    if (choosingDateFormat) DateFormatSheet(dateFormat, locale, today) { choosingDateFormat = false }
     if (choosingSpeed) AnimationSpeedSheet(animation) { choosingSpeed = false }
+}
+
+@Composable
+private fun DateFormatSheet(
+    dateFormat: DateFormatSettingsState,
+    locale: String,
+    today: LocalDate,
+    onDismiss: () -> Unit,
+) {
+    ChoiceSheet(
+        title = "Date format",
+        choices =
+            ChoiceOptions(
+                DateFormatPreference.entries,
+                selected = dateFormat.preference,
+                default = DateFormatPreference.DeviceLocale,
+            ),
+        row = { ChoiceRow(it.patternLabel, dateFormatExample(it, locale, today)) },
+        onSelect = dateFormat::select,
+        onDismiss = onDismiss,
+    )
 }
 
 @Composable

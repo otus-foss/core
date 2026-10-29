@@ -45,12 +45,10 @@ public class JmapAccountRepository(
 ) : AccountRepository {
     /** Asks every login's server at once, so the list waits for the slowest server, not for each in turn. */
     override suspend fun accounts(): List<ConnectedAccount> =
-        coroutineScope {
-            storage { logins.logins() }
-                .map { login ->
-                    async { login.toConnected().copy(emailAddresses = identityAddresses(login, service, connections)) }
-                }.awaitAll()
-        }
+        coroutineScope { storage { logins.logins() }.map { async { connected(it) } }.awaitAll() }
+
+    private suspend fun connected(login: JmapLogin): ConnectedAccount =
+        login.toConnected().copy(emailAddresses = identityAddresses(login, service, connections))
 
     override suspend fun connect(draft: JmapAccountDraft): ConnectOutcome {
         if (!isValidUsername(draft.username)) return ConnectOutcome.Failed(ConnectFailure.InvalidUsername)
@@ -113,28 +111,34 @@ public class JmapAccountRepository(
     ): ConnectOutcome {
         currentCoroutineContext().ensureActive()
         return withContext(NonCancellable) {
-            val login =
-                withContext(Dispatchers.IO) {
-                    // Reconnecting the same user on the same server replaces its login instead of adding one.
-                    val existing =
-                        logins.logins().firstOrNull {
-                            it.username == draft.username && it.sessionUrl == draft.sessionUrl
-                        }
-                    JmapLogin(
-                        id = existing?.id ?: "${draft.username} ${draft.sessionUrl}",
-                        sessionUrl = draft.sessionUrl,
-                        username = draft.username,
-                        name =
-                            session.accountFor(service.capability)?.let { session.accounts[it]?.name }?.ifBlank { null }
-                                ?: draft.username,
-                        trustedOrigins = draft.trustedOrigins,
-                    ).also { logins.save(it, draft.password) }
-                }
+            val login = withContext(Dispatchers.IO) { saveLogin(draft, session) }
             connections.forget(login.id)
             onAccountChanged(login.id)
             ConnectOutcome.Connected(login.toConnected())
         }
     }
+
+    /** Stores the login for [draft]; reconnecting the same user on the same server replaces its login. */
+    private fun saveLogin(
+        draft: JmapAccountDraft,
+        session: JmapSession,
+    ): JmapLogin {
+        val existing =
+            logins.logins().firstOrNull { it.username == draft.username && it.sessionUrl == draft.sessionUrl }
+        val login =
+            JmapLogin(
+                id = existing?.id ?: "${draft.username} ${draft.sessionUrl}",
+                sessionUrl = draft.sessionUrl,
+                username = draft.username,
+                name = accountName(session) ?: draft.username,
+                trustedOrigins = draft.trustedOrigins,
+            )
+        logins.save(login, draft.password)
+        return login
+    }
+
+    private fun accountName(session: JmapSession): String? =
+        session.accountFor(service.capability)?.let { session.accounts[it]?.name }?.ifBlank { null }
 }
 
 internal fun JmapException.toFailure(): ConnectFailure =
@@ -149,12 +153,7 @@ internal fun JmapException.toFailure(): ConnectFailure =
     }
 
 private fun JmapLogin.toConnected() =
-    ConnectedAccount(
-        id,
-        name,
-        username,
-        runCatching { Url(sessionUrl).host }.getOrDefault(sessionUrl),
-    )
+    ConnectedAccount(id, name, username, server = runCatching { Url(sessionUrl).host }.getOrDefault(sessionUrl))
 
 /**
  * [host] as the user should see it before trusting [origin]: with the port when it is not the

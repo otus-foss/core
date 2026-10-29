@@ -112,15 +112,19 @@ internal fun PaddingValues.spacers(): HtmlSpacers =
 private fun spacer(height: Int): String = if (height > 0) "<div style=\"height:${height}px\"></div>" else ""
 
 /** Whether [html] sets a text or background color, in a color attribute, a style attribute, or a style sheet. */
-internal fun hasOwnColors(html: String): Boolean =
-    COLOR_ATTRIBUTE.containsMatchIn(html) ||
-        STYLES.findAll(html).any { styles -> styles.groupValues.drop(1).any(CSS_COLOR::containsMatchIn) }
+internal fun hasOwnColors(html: String): Boolean = COLOR_ATTRIBUTE.containsMatchIn(html) || stylesMatch(html, CSS_COLOR)
 
 /** Whether [html] lays itself out, in a table or on a background of its own, as designed mail does. */
 internal fun hasOwnLayout(html: String): Boolean =
     TABLE_TAG.containsMatchIn(html) ||
         BACKGROUND_ATTRIBUTE.containsMatchIn(html) ||
-        STYLES.findAll(html).any { styles -> styles.groupValues.drop(1).any(CSS_BACKGROUND::containsMatchIn) }
+        stylesMatch(html, CSS_BACKGROUND)
+
+/** Whether [declaration] matches inside a style sheet or style attribute of [html]. */
+private fun stylesMatch(
+    html: String,
+    declaration: Regex,
+): Boolean = STYLES.findAll(html).any { styles -> styles.groupValues.drop(1).any(declaration::containsMatchIn) }
 
 private val TABLE_TAG = Regex("<table(?=[\\s/>])", RegexOption.IGNORE_CASE)
 private val BACKGROUND_ATTRIBUTE = Regex("""(?i)<[^>]*\s(?:bgcolor|background)\s*=""")

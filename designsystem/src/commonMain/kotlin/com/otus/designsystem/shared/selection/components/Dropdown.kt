@@ -72,11 +72,8 @@ public fun Dropdown(
     val minRoom = with(density) { MenuTokens.dropdownMinRoom.roundToPx() }
     val position = remember(alignEnd, gap, edge, minRoom) { BelowAnchor(alignEnd, gap, edge, minRoom) }
     val room = with(density) { position.room.toDp() }
-    val window =
-        with(density) {
-            LocalWindowInfo.current.containerSize.width
-                .toDp()
-        }
+    val windowWidth = LocalWindowInfo.current.containerSize.width
+    val window = with(density) { windowWidth.toDp() }
     MenuPopup(position, onDismiss, focusable, unrolls) {
         Column(
             modifier

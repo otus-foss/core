@@ -221,6 +221,6 @@ private fun JmapCall<*>.toJson() =
     }
 
 private fun decode(response: RawResponse): JsonObject {
-    response.failure()?.let { throw it }
+    response.requireSuccess()
     return jmapDecoding { JmapJson.parseToJsonElement(response.text).jsonObject }
 }

@@ -33,11 +33,8 @@ public fun LabelPill(
     Row(
         modifier
             .height(LabelTokens.height)
-            .border(
-                PanelTokens.borderWidth,
-                if (highlighted) OtusColors.text3 else OtusColors.bgLight,
-                CircleShape,
-            ).padding(horizontal = LabelTokens.horizontalPadding),
+            .border(PanelTokens.borderWidth, if (highlighted) OtusColors.text3 else OtusColors.bgLight, CircleShape)
+            .padding(horizontal = LabelTokens.horizontalPadding),
         horizontalArrangement = Arrangement.spacedBy(LabelTokens.iconGap),
         verticalAlignment = Alignment.CenterVertically,
     ) {

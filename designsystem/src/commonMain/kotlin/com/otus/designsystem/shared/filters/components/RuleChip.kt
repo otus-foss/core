@@ -38,6 +38,7 @@ import com.otus.designsystem.shared.rows.components.topHairline
 import com.otus.designsystem.shared.selection.components.valueOutline
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.selection.RuleChipTokens
+import org.jetbrains.compose.resources.DrawableResource
 
 /**
  * One rule condition in an outline: a fixed label column, a slot with an avatar or grey icon, and
@@ -151,16 +152,16 @@ private fun RuleLineRow(
 private fun RuleSlot(line: RuleChipLine) {
     Box(Modifier.size(RuleChipTokens.slot), contentAlignment = Alignment.Center) {
         when {
-            line.avatar != null -> {
-                PersonAvatar(line.avatar, RuleChipTokens.slot)
-            }
-
-            line.icon != null -> {
-                CompositionLocalProvider(LocalContentColor provides OtusColors.text2) {
-                    Symbol(line.icon, size = RuleChipTokens.slotIcon)
-                }
-            }
+            line.avatar != null -> PersonAvatar(line.avatar, RuleChipTokens.slot)
+            line.icon != null -> SlotIcon(line.icon)
         }
+    }
+}
+
+@Composable
+private fun SlotIcon(icon: DrawableResource) {
+    CompositionLocalProvider(LocalContentColor provides OtusColors.text2) {
+        Symbol(icon, size = RuleChipTokens.slotIcon)
     }
 }
 

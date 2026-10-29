@@ -65,8 +65,7 @@ private fun EditableAvatar(
     onEdit: () -> Unit,
 ) {
     Box(
-        Modifier
-            .clickable(onClickLabel = "Edit avatar", role = Role.Button, onClick = onEdit),
+        Modifier.clickable(onClickLabel = "Edit avatar", role = Role.Button, onClick = onEdit),
         contentAlignment = Alignment.BottomEnd,
     ) {
         PersonAvatar(avatar, ContactTokens.headerAvatarSize)

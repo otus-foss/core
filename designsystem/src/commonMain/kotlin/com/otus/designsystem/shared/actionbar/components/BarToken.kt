@@ -61,25 +61,20 @@ public sealed interface BarToken {
 @Composable
 internal fun BarTokenView(token: BarToken) {
     when (token) {
-        is BarToken.Person -> {
-            TokenAvatar(token.avatar)
-        }
+        is BarToken.Person -> TokenAvatar(token.avatar)
+        is BarToken.People -> PeopleToken(token)
+        is BarToken.Count -> NumberCircle(token.count.toString(), ring = false)
+        is BarToken.Date -> DateSquare(token)
+    }
+}
 
-        is BarToken.People -> {
-            val overlap = if (token.second == null) ActionBarTokens.tokenOverlap else ActionBarTokens.pairOverlap
-            Row(horizontalArrangement = Arrangement.spacedBy(-overlap)) {
-                TokenAvatar(token.first)
-                token.second?.let { RingedAvatar(it) } ?: NumberCircle("+${token.count - 1}", ring = true)
-            }
-        }
-
-        is BarToken.Count -> {
-            NumberCircle(token.count.toString(), ring = false)
-        }
-
-        is BarToken.Date -> {
-            DateSquare(token)
-        }
+/** The first person's avatar, overlapped by the second one's or by the number of others. */
+@Composable
+private fun PeopleToken(people: BarToken.People) {
+    val overlap = if (people.second == null) ActionBarTokens.tokenOverlap else ActionBarTokens.pairOverlap
+    Row(horizontalArrangement = Arrangement.spacedBy(-overlap)) {
+        TokenAvatar(people.first)
+        people.second?.let { RingedAvatar(it) } ?: NumberCircle("+${people.count - 1}", ring = true)
     }
 }
 

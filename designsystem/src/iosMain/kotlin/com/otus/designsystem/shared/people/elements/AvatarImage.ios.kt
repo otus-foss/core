@@ -171,11 +171,10 @@ private fun draw(
                     (width * BYTES_PER_PIXEL).convert(),
                     colors,
                     CGImageAlphaInfo.kCGImageAlphaPremultipliedLast.value,
-                )
-            context?.let { drawing ->
-                CGContextDrawImage(drawing, CGRectMake(0.0, 0.0, width.toDouble(), height.toDouble()), image)
-                CGContextRelease(drawing)
-            } != null
+                ) ?: return@usePinned false
+            CGContextDrawImage(context, CGRectMake(0.0, 0.0, width.toDouble(), height.toDouble()), image)
+            CGContextRelease(context)
+            true
         }
     } finally {
         CGColorSpaceRelease(colors)

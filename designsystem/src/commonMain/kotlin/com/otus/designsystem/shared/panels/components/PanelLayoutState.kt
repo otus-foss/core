@@ -69,7 +69,7 @@ internal class PanelLayoutState {
             items.mapNotNull { (id, item) ->
                 val scrolling = id != ActionKey
                 val pill = parent.boundsOf(item.coordinates)?.inflate(gap) ?: return@mapNotNull null
-                val visible = if (scrolling) pill.left < clip.right && pill.right > clip.left else true
+                val visible = !scrolling || (pill.left < clip.right && pill.right > clip.left)
                 val presence = item.resolve(covered = visible && pill.top < bottom + border)
                 if (presence == 0f) null else PanelHoleFrame(pill.scaleAboutCenter(presence), scrolling)
             }

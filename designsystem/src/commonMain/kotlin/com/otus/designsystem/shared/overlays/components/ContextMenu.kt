@@ -128,9 +128,7 @@ internal fun Modifier.menuSurface(): Modifier {
 public fun Modifier.onPressDown(onPress: (Offset) -> Unit): Modifier =
     pointerInput(onPress) {
         awaitEachGesture {
-            onPress(
-                awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Initial).position,
-            )
+            onPress(awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Initial).position)
         }
     }
 

@@ -9,6 +9,9 @@ public const val AVATAR_PHOTO_KEY: String = "otus"
 /** The JSContact property that carries a card's vCard properties, such as its avatar style. */
 internal const val VCARD_PROPERTY = "vCard"
 
+/** The key in a `vCard` value that lists its properties. */
+internal const val VCARD_PROPERTIES = "properties"
+
 /** The avatar style Otus keeps on this card, or null. It shows only when the card was read with `vCard`. */
 public val Card.avatarStyle: AvatarStyle? get() = avatarStyleIn(extra[VCARD_PROPERTY])
 
@@ -26,8 +29,6 @@ public fun Card.withAvatarStyle(style: AvatarStyle?): Card {
     val vCard = extra[VCARD_PROPERTY]
     if (style == null && !hasAvatarStyle(vCard)) return this
     val properties = avatarPropertiesWith(vCard, style)
-    return copy(
-        extra =
-            extra + (VCARD_PROPERTY to JsonObject((vCard as? JsonObject).orEmpty() + ("properties" to properties))),
-    )
+    val withProperties = JsonObject((vCard as? JsonObject).orEmpty() + (VCARD_PROPERTIES to properties))
+    return copy(extra = extra + (VCARD_PROPERTY to withProperties))
 }

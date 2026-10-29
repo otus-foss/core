@@ -22,8 +22,8 @@ import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
  * The bottom bar while an image is selected, where the page's bar sits: the [sizing]'s presets
  * in a segmented track, none chosen while the width is free, and ⋯, which grows the group into
  * the image's [options]. The accent ✓ in the primary's place runs [onDone]. Inside a
- * [BarMorph][com.otus.designsystem.shared.actionbar.components.BarMorph], the group and ✓ move into the other bar's
- * parts.
+ * [BarMorph][com.otus.designsystem.shared.actionbar.components.BarMorph], the group and ✓ move
+ * into the other bar's parts.
  */
 @Composable
 public fun ImageBar(

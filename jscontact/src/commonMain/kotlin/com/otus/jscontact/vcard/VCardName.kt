@@ -19,13 +19,12 @@ internal fun readName(
     n: VCardProperty?,
 ): Name? {
     val components = n?.toNameComponents().orEmpty()
-    return (full ?: components.fullName().ifEmpty { null })?.let { text ->
-        Name(
-            components = components.ifEmpty { null },
-            isOrdered = false.takeIf { components.isNotEmpty() },
-            full = text,
-        )
-    }
+    val text = full ?: components.fullName().ifEmpty { null } ?: return null
+    return Name(
+        components = components.ifEmpty { null },
+        isOrdered = false.takeIf { components.isNotEmpty() },
+        full = text,
+    )
 }
 
 /**

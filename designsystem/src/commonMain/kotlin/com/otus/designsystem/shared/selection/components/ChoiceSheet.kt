@@ -71,9 +71,7 @@ public fun <T> ChoiceSheet(
             choices.groups.forEach { group ->
                 Column(Modifier.clip(RoundedCornerShape(SheetTokens.rowRadius)).background(OtusColors.bgRegular)) {
                     group.forEachIndexed { index, option ->
-                        ChoiceOption(row(option), option == choices.selected, first = index == 0) {
-                            onSelect(option)
-                        }
+                        ChoiceOption(row(option), option == choices.selected, first = index == 0) { onSelect(option) }
                     }
                 }
             }

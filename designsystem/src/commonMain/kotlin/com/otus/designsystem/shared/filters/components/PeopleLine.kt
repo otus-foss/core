@@ -28,8 +28,8 @@ import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
  * One line of the People card in a filter panel, such as From: the `text3` [label] in its column,
- * a [RemovablePersonChip] for each of [people], wrapping as needed, and the `text3` [placeholder], such as
- * "Add people…", in the rest of the line. A tap anywhere on the line except a chip's ✕ calls
+ * a [RemovablePersonChip] for each of [people], wrapping as needed, and the `text3`
+ * [placeholder], such as "Add people…", in the rest of the line. A tap anywhere on the line except a chip's ✕ calls
  * [onOpen]; a chip's ✕ calls [onRemove] with its index. Screen readers hear the line as one
  * button, such as "From: Grace Hopper, ChatGPT. Add people…", and each ✕ on its own.
  */

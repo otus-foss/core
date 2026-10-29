@@ -35,7 +35,7 @@ internal class JmapDownloads(
                     header(HttpHeaders.Authorization, auth.header())
                     header(HttpHeaders.Accept, mediaType)
                 }.execute { response ->
-                    RawResponse(response.status.value, null, "").failure()?.let { throw it }
+                    RawResponse(response.status.value, null, "").requireSuccess()
                     val bytes = response.limitedBytes(maxBytes)
                     JmapBlob(bytes, response.headers[HttpHeaders.ContentType]?.substringBefore(';') ?: mediaType)
                 }

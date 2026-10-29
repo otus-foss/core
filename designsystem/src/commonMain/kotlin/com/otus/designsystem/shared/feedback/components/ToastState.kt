@@ -42,7 +42,8 @@ public class ToastState {
     /** Shows [message] in front of the others, or replaces the toast of its group. */
     public fun show(message: ToastMessage) {
         val merged = message.group?.let(::shown)
-        val entry = merged?.also { entries.remove(it) } ?: ToastEntry(nextId++, message)
+        if (merged != null) entries.remove(merged)
+        val entry = merged ?: ToastEntry(nextId++, message)
         entry.message = message
         entry.elapsedMillis = 0L
         entries += entry

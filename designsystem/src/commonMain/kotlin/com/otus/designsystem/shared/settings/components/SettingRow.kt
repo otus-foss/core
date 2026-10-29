@@ -167,21 +167,20 @@ private fun SettingRowLayout(
 ) {
     val compact = density == RowDensity.Compact
     var first by remember { mutableStateOf(false) }
+    val separation =
+        if (compact) {
+            Modifier.heightIn(min = PanelTokens.compactRowHeight)
+        } else {
+            Modifier
+                .onPlaced { first = it.positionInParent().y < 1f }
+                .topHairline(OtusColors.bgLight, PageTokens.textInset) { !first }
+        }
+    val verticalPadding = if (compact) SettingTokens.compactRowPadding else SettingTokens.rowPadding
     Row(
         modifier
             .fillMaxWidth()
-            .then(
-                if (compact) {
-                    Modifier.heightIn(min = PanelTokens.compactRowHeight)
-                } else {
-                    Modifier
-                        .onPlaced { first = it.positionInParent().y < 1f }
-                        .topHairline(OtusColors.bgLight, PageTokens.textInset) { !first }
-                },
-            ).padding(
-                horizontal = PageTokens.textInset,
-                vertical = if (compact) SettingTokens.compactRowPadding else SettingTokens.rowPadding,
-            ),
+            .then(separation)
+            .padding(horizontal = PageTokens.textInset, vertical = verticalPadding),
         horizontalArrangement = Arrangement.spacedBy(SettingTokens.rowGap),
         verticalAlignment = Alignment.CenterVertically,
     ) {

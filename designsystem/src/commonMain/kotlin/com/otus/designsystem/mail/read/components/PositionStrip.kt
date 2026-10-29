@@ -146,32 +146,8 @@ private fun PositionText(
 ) {
     Layout(
         listOf(
-            {
-                Text(
-                    title,
-                    style = panelTextStyle(),
-                    fontSize = ReadTokens.titleSize,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            },
-            {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(ReadTokens.dotsGap),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    PageDots(position.count, position.current)
-                    Text(
-                        position.detail,
-                        style = panelTextStyle(),
-                        color = OtusColors.text3,
-                        fontSize = ReadTokens.detailSize,
-                        maxLines = 1,
-                        softWrap = false,
-                    )
-                }
-            },
+            { StripTitle(title) },
+            { DotsLine(position) },
             {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(ReadTokens.glyphGap),
@@ -195,5 +171,36 @@ private fun PositionText(
             line.placeRelative(0, top + heading.height)
             slot.placeRelative(width - slot.width, (height - slot.height) / 2)
         }
+    }
+}
+
+@Composable
+private fun StripTitle(title: String) {
+    Text(
+        title,
+        style = panelTextStyle(),
+        fontSize = ReadTokens.titleSize,
+        fontWeight = FontWeight.SemiBold,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+    )
+}
+
+/** [PageDots] for the page, then its detail, which never wraps. */
+@Composable
+private fun DotsLine(position: StripPosition) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(ReadTokens.dotsGap),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        PageDots(position.count, position.current)
+        Text(
+            position.detail,
+            style = panelTextStyle(),
+            color = OtusColors.text3,
+            fontSize = ReadTokens.detailSize,
+            maxLines = 1,
+            softWrap = false,
+        )
     }
 }

@@ -50,18 +50,21 @@ public fun PreviewCard(
 ) {
     val interactions = remember { MutableInteractionSource() }
     val shape = RoundedCornerShape(SheetTokens.rowRadius)
+    val asOneItem =
+        if (onClick == null) {
+            Modifier.semantics(mergeDescendants = true) {}
+        } else {
+            Modifier
+                .clickable(interactions, indication = null, role = Role.Button, onClick = onClick)
+                .controlPressFeedback(interactions, shape)
+        }
     Column(
         modifier
             .fillMaxWidth()
             .clip(shape)
             .background(OtusColors.bgRegular)
-            .then(
-                onClick?.let {
-                    Modifier
-                        .clickable(interactions, indication = null, role = Role.Button, onClick = it)
-                        .controlPressFeedback(interactions, shape)
-                } ?: Modifier.semantics(mergeDescendants = true) {},
-            ).padding(SheetTokens.gap),
+            .then(asOneItem)
+            .padding(SheetTokens.gap),
         verticalArrangement = Arrangement.spacedBy(SheetTokens.gap),
     ) {
         title?.let { PreviewHeader(it, description, chevron = onClick != null) }

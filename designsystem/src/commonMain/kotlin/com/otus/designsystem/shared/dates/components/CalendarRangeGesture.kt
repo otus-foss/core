@@ -11,7 +11,9 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.pointer.AwaitPointerEventScope
 import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.PointerId
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
@@ -39,54 +41,62 @@ internal fun Modifier.calendarRangeGesture(
             val scope = this
             awaitEachGesture {
                 val down = awaitFirstDown(requireUnconsumed = false)
-                val anchor = targets.dateAt(down.position, rtl)
-                if (anchor != null) {
-                    val previous = currentRange
-                    val held = awaitLongPressOrCancellation(down.id)
-                    if (held != null) {
-                        var position = held.position
+                val anchor = targets.dateAt(down.position, rtl) ?: return@awaitEachGesture
+                val previous = currentRange
+                val held = awaitLongPressOrCancellation(down.id) ?: return@awaitEachGesture
+                var position = held.position
 
-                        fun update() {
-                            val date = targets.dateAt(position, rtl) ?: return
-                            updateRange(minOf(anchor, date).toString(), maxOf(anchor, date).toString())
-                        }
-                        held.consume()
-                        update()
-                        val scrolling =
-                            scope.launch {
-                                var lastFrame = withFrameNanos { it }
-                                while (isActive) {
-                                    val frame = withFrameNanos { it }
-                                    val elapsed = (frame - lastFrame) / CalendarTokens.NANOS_PER_SECOND
-                                    lastFrame = frame
-                                    val direction = edgeScroll(position, size.height.toFloat(), edge)
-                                    if (direction != 0f) state.scrollBy(direction * speed * elapsed)
-                                    update()
-                                }
-                            }
-                        var completed = false
-                        try {
-                            while (true) {
-                                val event = awaitPointerEvent(PointerEventPass.Initial)
-                                val change = event.changes.firstOrNull { it.id == held.id }
-                                if (change == null || !change.pressed) {
-                                    completed = change?.isConsumed == false
-                                    change?.consume()
-                                    break
-                                }
-                                change.consume()
-                                position =
-                                    Offset(change.position.x, change.position.y.coerceIn(0f, size.height - 1f))
-                                update()
-                            }
-                        } finally {
-                            scrolling.cancel()
-                            if (!completed) updateRange(previous.first, previous.second)
+                fun update() {
+                    val date = targets.dateAt(position, rtl) ?: return
+                    updateRange(minOf(anchor, date).toString(), maxOf(anchor, date).toString())
+                }
+                held.consume()
+                update()
+                val scrolling =
+                    scope.launch {
+                        var lastFrame = withFrameNanos { it }
+                        while (isActive) {
+                            val frame = withFrameNanos { it }
+                            val elapsed = (frame - lastFrame) / CalendarTokens.NANOS_PER_SECOND
+                            lastFrame = frame
+                            val direction = edgeScroll(position, size.height.toFloat(), edge)
+                            if (direction != 0f) state.scrollBy(direction * speed * elapsed)
+                            update()
                         }
                     }
+                var completed = false
+                try {
+                    completed =
+                        followPointer(held.id) {
+                            position = it
+                            update()
+                        }
+                } finally {
+                    scrolling.cancel()
+                    if (!completed) updateRange(previous.first, previous.second)
                 }
             }
         }
+    }
+}
+
+/**
+ * Consumes [id]'s moves, clamped to this element's height, until it lifts. Returns whether it
+ * lifted normally rather than being cancelled or taken by another handler.
+ */
+private suspend fun AwaitPointerEventScope.followPointer(
+    id: PointerId,
+    onMove: (Offset) -> Unit,
+): Boolean {
+    while (true) {
+        val change = awaitPointerEvent(PointerEventPass.Initial).changes.firstOrNull { it.id == id }
+        if (change == null || !change.pressed) {
+            val completed = change?.isConsumed == false
+            change?.consume()
+            return completed
+        }
+        change.consume()
+        onMove(Offset(change.position.x, change.position.y.coerceIn(0f, size.height - 1f)))
     }
 }
 

@@ -86,14 +86,9 @@ public fun AccountSetupScreen(
         state.accounts.firstOrNull { it.id == accountId }?.let { AvatarEditors(avatars, it, email) { editing = null } }
     }
     if (adding) {
-        SheetFrame("Connect an account", onDismiss = {
+        AddAccountSheet(state, service) {
             state.cancelConnect()
             adding = false
-        }) {
-            Column(
-                Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(SheetTokens.inset),
-                verticalArrangement = Arrangement.spacedBy(PageTokens.rowGap),
-            ) { AddAccountForm(state, service) }
         }
     }
     state.accounts.firstOrNull { it.id == removing }?.let { account ->
@@ -170,6 +165,20 @@ private fun AvatarEditor(
         onSave = { avatars.save(account, email, it) },
         onDismiss = onDismiss,
     )
+}
+
+@Composable
+private fun AddAccountSheet(
+    state: AccountsState,
+    service: AccountService,
+    onDismiss: () -> Unit,
+) {
+    SheetFrame("Connect an account", onDismiss = onDismiss) {
+        Column(
+            Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(SheetTokens.inset),
+            verticalArrangement = Arrangement.spacedBy(PageTokens.rowGap),
+        ) { AddAccountForm(state, service) }
+    }
 }
 
 @Composable

@@ -27,10 +27,11 @@ import com.otus.designsystem.theme.tokens.editing.SignatureTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
- * A row of [options] in one track, one of them [selected] with a `selectedFill` fill, such as Copy from
- * and Copy to; none while [selected] is -1. Each label stays on one line at [fontSize], in a
- * segment as wide as its share of the labels' length, so a longer label gets more room. [height]
- * is the track's, such as [com.otus.designsystem.theme.tokens.selection.FilterTokens.segmentHeight] in a filter panel.
+ * A row of [options] in one track, one of them [selected] with a `selectedFill` fill, such as
+ * Copy from and Copy to; none while [selected] is -1. Each label stays on one line at [fontSize],
+ * in a segment as wide as its share of the labels' length, so a longer label gets more room.
+ * [height] is the track's, such as
+ * [com.otus.designsystem.theme.tokens.selection.FilterTokens.segmentHeight] in a filter panel.
  */
 @Composable
 public fun SegmentedToggle(

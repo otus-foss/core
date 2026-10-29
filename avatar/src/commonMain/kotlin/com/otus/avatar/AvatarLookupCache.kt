@@ -106,21 +106,9 @@ internal class AvatarLookupCache(
     ): StoredAvatar {
         var result: StoredAvatar? = null
         try {
-            val saved =
-                storageLock.withLock {
-                    if (lock.withLock { generation == lookup.generation }) peekStored(key) else null
-                }
-            if (saved != null && fresh(saved)) return saved.also { result = it }
-            // A failed or empty fetch keeps the stale result rather than dropping a known avatar.
-            val entry = (fetch() ?: saved)?.copy(created = now()) ?: StoredAvatar(null, now())
-            storageLock.withLock {
-                val current =
-                    lock.withLock {
-                        (generation == lookup.generation).also { if (it) remember(key, entry) }
-                    }
-                if (current) store.write(key, entry)
-            }
-            return entry.also { result = it }
+            val entry = storedOrFetched(key, lookup, fetch)
+            result = entry
+            return entry
         } finally {
             withContext(NonCancellable) {
                 lock.withLock { if (pending[key] === lookup) pending.remove(key) }
@@ -129,10 +117,41 @@ internal class AvatarLookupCache(
         }
     }
 
+    private suspend fun storedOrFetched(
+        key: AvatarCacheKey,
+        lookup: Lookup,
+        fetch: suspend () -> StoredAvatar?,
+    ): StoredAvatar {
+        val saved = storageLock.withLock { if (lock.withLock { isCurrent(lookup) }) peekStored(key) else null }
+        if (saved != null && fresh(saved)) return saved
+        // A failed or empty fetch keeps the stale result rather than dropping a known avatar.
+        val entry = (fetch() ?: saved)?.copy(created = now()) ?: StoredAvatar(null, now())
+        storageLock.withLock {
+            if (lock.withLock { rememberIfCurrent(key, entry, lookup) }) store.write(key, entry)
+        }
+        return entry
+    }
+
     /** Storage lock held; metadata lock never covers disk IO or network work. */
-    private suspend fun peekStored(key: AvatarCacheKey): StoredAvatar? =
-        lock.withLock { recent(key) }
-            ?: store.read(key)?.also { lock.withLock { remember(key, it) } }
+    private suspend fun peekStored(key: AvatarCacheKey): StoredAvatar? {
+        lock.withLock { recent(key) }?.let { return it }
+        val stored = store.read(key) ?: return null
+        lock.withLock { remember(key, stored) }
+        return stored
+    }
+
+    /** Whether no clear, put, or expire ran since [lookup] started. */
+    private fun isCurrent(lookup: Lookup): Boolean = generation == lookup.generation
+
+    private fun rememberIfCurrent(
+        key: AvatarCacheKey,
+        entry: StoredAvatar,
+        lookup: Lookup,
+    ): Boolean {
+        if (!isCurrent(lookup)) return false
+        remember(key, entry)
+        return true
+    }
 
     /** The entry for [key], moved to the end so the least recently used one is evicted first. */
     private fun recent(key: AvatarCacheKey): StoredAvatar? = entries.remove(key)?.also { entries[key] = it }

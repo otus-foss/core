@@ -48,25 +48,27 @@ public class AvatarService(
         options: AvatarOptions,
         started: Long,
     ): ResolvedAvatar {
-        val iconOptions = iconOptions(contact.style, options)
-        val domain =
-            if (contact.image == null) {
-                iconDomain(email, iconOptions)?.let { site ->
-                    cache
-                        .load(domainKey(site, iconOptions), started) {
-                            fetches.withPermit { domainImage(site, iconOptions)?.let { StoredAvatar(it, 0) } }
-                        }.image
-                }
-            } else {
-                null
-            }
+        val icon = if (contact.image == null) websiteIcon(email, iconOptions(contact.style, options), started) else null
         val origin =
             when {
                 contact.image != null -> AvatarOrigin.Contact
-                domain != null -> AvatarOrigin.Domain
+                icon != null -> AvatarOrigin.Domain
                 else -> null
             }
-        return ResolvedAvatar(fallback, contact.image ?: domain, origin, contact.style)
+        return ResolvedAvatar(fallback, contact.image ?: icon, origin, contact.style)
+    }
+
+    private suspend fun websiteIcon(
+        email: String,
+        options: AvatarOptions,
+        started: Long,
+    ): AvatarImage? {
+        val site = iconDomain(email, options) ?: return null
+        val stored =
+            cache.load(domainKey(site, options), started) {
+                fetches.withPermit { domainImage(site, options)?.let { StoredAvatar(it, 0) } }
+            }
+        return stored.image
     }
 
     /** Local images only, so refreshed rows keep their avatar before network work. */

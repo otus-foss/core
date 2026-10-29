@@ -93,9 +93,7 @@ public fun ContextPanel(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     PanelChipRail(Modifier.weight(1f), geometry, scroll) { scope.chips() }
-                    if (trailingAction != null) {
-                        scope.item(ActionKey) { trailingAction() }
-                    }
+                    if (trailingAction != null) scope.item(ActionKey, trailingAction)
                 }
             }
         }

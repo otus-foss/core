@@ -25,30 +25,17 @@ internal class ServerSubscription(
 ) {
     /** The record after syncing, or null once the subscription is gone and nothing is wanted. */
     suspend fun synced(record: PushRecord): PushRecord? {
-        val endpoint = record.endpoint
         val id = record.subscriptionId
+        val endpoint = record.endpoint
+        if (endpoint == null) {
+            if (id != null) destroy(id)
+            return null
+        }
         return when {
-            endpoint == null -> {
-                id?.let { destroy(it) }
-                null
-            }
-
-            id == null || record.subscribed != endpoint -> {
-                create(endpoint, replacing = id)
-            }
-
-            record.verificationCode != null || expiresSoon(record) -> {
-                upkeep(record, id, endpoint)
-            }
-
-            // The verification push never arrived, and the server pushes nothing until it does.
-            !record.verified && age(record) > VERIFY_WITHIN -> {
-                create(endpoint, replacing = id)
-            }
-
-            else -> {
-                record
-            }
+            id == null || record.subscribed != endpoint -> create(endpoint, replacing = id)
+            record.verificationCode != null || expiresSoon(record) -> upkeep(record, id, endpoint)
+            verificationLapsed(record) -> create(endpoint, replacing = id)
+            else -> record
         }
     }
 
@@ -86,7 +73,7 @@ internal class ServerSubscription(
         // Without keys the server would POST readable state changes through the push provider,
         // and anyone who learns the URL could send pushes the app cannot tell apart from real ones.
         if (endpoint.keys == null || !NewPushSubscription.allows(endpoint.url)) {
-            replacing?.let { destroy(it) }
+            if (replacing != null) destroy(replacing)
             return PushRecord(endpoint, refused = true)
         }
         val subscription = NewPushSubscription(deviceClientId, endpoint.url, endpoint.keys, expiry(), types)
@@ -140,6 +127,9 @@ internal class ServerSubscription(
         // Renewing replaces a date that cannot be read.
         return expires == null || since == null || clock.now() - since > (expires - since) / 2
     }
+
+    /** The verification push never arrived, and the server pushes nothing until it does. */
+    private fun verificationLapsed(record: PushRecord): Boolean = !record.verified && age(record) > VERIFY_WITHIN
 
     private fun age(record: PushRecord): Duration =
         record.since?.let(Instant::parseOrNull)?.let { clock.now() - it } ?: Duration.INFINITE

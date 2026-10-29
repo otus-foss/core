@@ -33,23 +33,12 @@ internal fun ValidationScope.enumValue(
 ) {
     val problem =
         when {
-            value == null || value in registered -> {
-                null
-            }
-
-            registered.any { it.equals(value, ignoreCase = true) } -> {
-                "\"$value\" differs from a registered value only in case (RFC 9553, section 1.7.1)"
-            }
-
-            ':' in value && !V_EXTENSION.matches(value) -> {
-                "\"$value\" is not a valid vendor-specific value (RFC 9553, section 1.8.2)"
-            }
-
-            else -> {
-                null
-            }
+            value == null || value in registered -> null
+            registered.any { it.equals(value, ignoreCase = true) } -> VALUE_DIFFERS_IN_CASE
+            ':' in value && !V_EXTENSION.matches(value) -> INVALID_VENDOR_VALUE
+            else -> null
         }
-    if (problem != null) report(problem, token)
+    if (problem != null) report("\"$value\" $problem", token)
 }
 
 /** Checks each of [keys], the enumerated keys of the map at member [token], as [enumValue] does. */
@@ -83,26 +72,25 @@ private fun propertyNameProblem(
     declared: Set<String>,
 ): String? =
     when {
-        ':' in name -> {
-            if (V_EXTENSION.matches(name)) null else "Not a vendor-specific property name (RFC 9553, section 1.8.1)"
-        }
-
-        name == RESERVED -> {
-            "The property name \"extra\" is reserved (RFC 9553, section 1.7.3)"
-        }
-
-        (declared + RESERVED).any { it.equals(name, ignoreCase = true) } -> {
-            "Differs from a property name only in case (RFC 9553, section 1.7.1)"
-        }
-
-        !REGISTERED_NAME.matches(name) -> {
-            "Neither a registered nor a vendor-specific property name (RFC 9553, sections 1.7.2 and 1.8.1)"
-        }
-
-        else -> {
-            null
-        }
+        ':' in name -> if (V_EXTENSION.matches(name)) null else INVALID_VENDOR_NAME
+        name == RESERVED -> RESERVED_NAME
+        (declared + RESERVED).any { it.equals(name, ignoreCase = true) } -> NAME_DIFFERS_IN_CASE
+        !REGISTERED_NAME.matches(name) -> UNREGISTERED_NAME
+        else -> null
     }
+
+private const val VALUE_DIFFERS_IN_CASE = "differs from a registered value only in case (RFC 9553, section 1.7.1)"
+
+private const val INVALID_VENDOR_VALUE = "is not a valid vendor-specific value (RFC 9553, section 1.8.2)"
+
+private const val INVALID_VENDOR_NAME = "Not a vendor-specific property name (RFC 9553, section 1.8.1)"
+
+private const val RESERVED_NAME = "The property name \"extra\" is reserved (RFC 9553, section 1.7.3)"
+
+private const val NAME_DIFFERS_IN_CASE = "Differs from a property name only in case (RFC 9553, section 1.7.1)"
+
+private const val UNREGISTERED_NAME =
+    "Neither a registered nor a vendor-specific property name (RFC 9553, sections 1.7.2 and 1.8.1)"
 
 private const val RESERVED = "extra"
 

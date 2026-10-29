@@ -22,14 +22,12 @@ internal fun quoteFold(
     val text = key.className("text")
     val more = key.className("more")
     val less = key.className("less")
+    val header = quoteHeader(QuoteAuthor(quote.name, quote.initials, quote.date, quote.fullDate), key)
     return "<style>${foldStyle(palette, key)}</style><div class=\"$fold\">" +
         "<details class=\"$toggle\"><summary class=\"${key.className("label")}\">" +
         "<span class=\"$more\">Show quoted text</span>" +
         "<span class=\"$less\">Hide quoted text</span></summary></details>" +
-        "<div class=\"$body\">${quoteHeader(
-            QuoteAuthor(quote.name, quote.initials, quote.date, quote.fullDate),
-            key,
-        )}" +
+        "<div class=\"$body\">$header" +
         "<div class=\"$text\">${sealedHtml(quote.html)}${deeperQuotes(quote.deeper, key)}</div></div></div>"
 }
 

@@ -60,13 +60,8 @@ public fun SidebarEntry(
         modifier
             .fillMaxWidth()
             .heightIn(min = PanelTokens.compactRowHeight)
-            .selectable(
-                selected,
-                interactionSource = interactions,
-                indication = null,
-                role = Role.Tab,
-                onClick = onClick,
-            ).clip(shape)
+            .selectable(selected, interactions, indication = null, role = Role.Tab, onClick = onClick)
+            .clip(shape)
             .background(if (selected) OtusColors.selectedFill else Color.Transparent)
             .controlPressFeedback(interactions, shape)
             .padding(horizontal = SidebarTokens.entryPadding),

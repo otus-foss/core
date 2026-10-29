@@ -182,10 +182,8 @@ internal fun SheetScrim(
  */
 private fun Modifier.holdHeight(held: HeldHeight): Modifier =
     layout { measurable, constraints ->
-        val placeable =
-            measurable.measure(
-                constraints.copy(minHeight = held.px.coerceIn(constraints.minHeight, constraints.maxHeight)),
-            )
+        val minHeight = held.px.coerceIn(constraints.minHeight, constraints.maxHeight)
+        val placeable = measurable.measure(constraints.copy(minHeight = minHeight))
         held.px = maxOf(held.px, placeable.height)
         layout(placeable.width, placeable.height) { placeable.place(0, 0) }
     }

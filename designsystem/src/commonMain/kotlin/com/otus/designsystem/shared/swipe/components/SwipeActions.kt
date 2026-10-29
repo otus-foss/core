@@ -77,26 +77,26 @@ public fun SwipeActions(
     val fling =
         remember(state, threshold, motionScale) {
             thresholdFlingBehavior(state, threshold, motionScale) { side ->
-                val action = side.pick(currentStartToEnd, currentEndToStart)?.takeIf { running == null }
-                action?.let {
-                    // Set before the launch, so a second release in the same frame cannot also commit.
-                    running = RunningSwipe(side, it)
-                    scope.launch {
-                        try {
-                            runSwipe(state, side, it, flash, motionScale)
-                        } finally {
-                            running = null
-                        }
+                val action =
+                    side.pick(currentStartToEnd, currentEndToStart)?.takeIf { running == null }
+                        ?: return@thresholdFlingBehavior false
+                // Set before the launch, so a second release in the same frame cannot also commit.
+                running = RunningSwipe(side, action)
+                scope.launch {
+                    try {
+                        runSwipe(state, side, action, flash, motionScale)
+                    } finally {
+                        running = null
                     }
                 }
-                action != null
+                true
             }
         }
     val revealWidths = remember { mutableStateMapOf<SwipeAnchor, Float>() }
-    val actionFor = { anchor: SwipeAnchor? -> anchor.pick(startToEnd, endToStart) }
     val offset = state.requireOffset()
-    val direction = running?.side ?: directionOf(offset)
-    ThresholdHaptic(armed = abs(offset) >= threshold && actionFor(directionOf(offset)) != null)
+    val dragSide = directionOf(offset)
+    val direction = running?.side ?: dragSide
+    ThresholdHaptic(armed = abs(offset) >= threshold && dragSide.pick(startToEnd, endToStart) != null)
     Box(
         modifier
             .onSizeChanged { width = it.width }
@@ -104,9 +104,9 @@ public fun SwipeActions(
             .anchoredDraggable(state, Orientation.Horizontal, flingBehavior = fling)
             .swipeAccessibility(startToEnd, endToStart),
     ) {
-        val revealed = revealWidths[directionOf(offset)] ?: threshold
+        val revealed = revealWidths[dragSide] ?: threshold
         val rowOffset = boundedRevealOffset(offset, revealed)
-        (running?.action ?: actionFor(direction))?.let { action ->
+        (running?.action ?: direction.pick(startToEnd, endToStart))?.let { action ->
             SwipeBackdrop(
                 action,
                 abs(offset),

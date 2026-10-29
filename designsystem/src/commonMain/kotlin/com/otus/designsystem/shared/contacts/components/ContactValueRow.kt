@@ -24,12 +24,11 @@ import com.otus.designsystem.theme.typography.panelTextStyle
 import org.jetbrains.compose.resources.DrawableResource
 
 /**
- * One value of a contact in a raised [RowGroup][com.otus.designsystem.shared.rows.components.RowGroup]: an optional
- * `text2` [icon], the [value] over a
- * `text2` [caption] such as "Primary", then a [label] in a value chip such as "Work" on the
- * right. A [highlighted] row fills with `selectedFill`, such as a contact's primary address among
- * the others, and its chip takes a `text3` outline to stand out on it. [onClick] acts on
- * the value, as writing to an address does.
+ * One value of a contact in a raised [RowGroup][com.otus.designsystem.shared.rows.components.RowGroup]:
+ * an optional `text2` [icon], the [value] over a `text2` [caption] such as "Primary", then a
+ * [label] in a value chip such as "Work" on the right. A [highlighted] row fills with
+ * `selectedFill`, such as a contact's primary address among the others, and its chip takes a
+ * `text3` outline to stand out on it. [onClick] acts on the value, as writing to an address does.
  */
 @Composable
 public fun ContactValueRow(

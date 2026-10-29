@@ -30,10 +30,7 @@ internal fun decodeThemeChoice(value: String): ThemeChoice {
     val parts = value.trim().split(' ')
     val default = ThemeChoice()
     val rest = parts.drop(2)
-    val colors =
-        rest
-            .mapNotNull(::decodeColor)
-            .groupBy({ it.first }, { it.second })
+    val colors = rest.mapNotNull(::decodeColor).groupBy({ it.first }, { it.second })
     val names = rest.mapNotNull(::decodeName).toMap()
     val themes =
         rest.mapNotNull(::decodeTheme).map { (id, base) ->

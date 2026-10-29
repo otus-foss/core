@@ -38,20 +38,20 @@ public fun ClosableSheet(
     SheetSurface(title, onDismiss, onDone = { confirm?.onConfirm?.invoke() }) { close, done, closing ->
         ClosableHeader(title, close)
         content()
-        confirm?.let {
+        if (confirm != null) {
             ActionButton(
-                it.label,
+                confirm.label,
                 done,
                 Modifier.fillMaxWidth().padding(SheetTokens.inset),
                 primary = true,
-                enabled = it.enabled && !closing,
+                enabled = confirm.enabled && !closing,
             ) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(PanelTokens.iconGap * 2),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    it.icon?.let { icon -> Symbol(icon) }
-                    Text(it.label, color = if (it.enabled) OtusColors.text1 else OtusColors.text3)
+                    confirm.icon?.let { Symbol(it) }
+                    Text(confirm.label, color = if (confirm.enabled) OtusColors.text1 else OtusColors.text3)
                 }
             }
         }

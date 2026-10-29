@@ -101,11 +101,7 @@ internal fun thresholdFlingBehavior(
             val end = state.anchors.positionOf(SwipeAnchor.Settled)
             var previous = start
             onRemainingDistanceUpdated(end - start)
-            animate(
-                start,
-                end,
-                animationSpec = Motion.tween(MotionSpeed.Relaxed, scale = motionScale),
-            ) { value, _ ->
+            animate(start, end, animationSpec = Motion.tween(MotionSpeed.Relaxed, scale = motionScale)) { value, _ ->
                 previous += scrollBy(value - previous)
                 onRemainingDistanceUpdated(end - previous)
             }

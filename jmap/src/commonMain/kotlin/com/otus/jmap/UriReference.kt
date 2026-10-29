@@ -9,33 +9,10 @@ internal fun resolveUriReference(
     val target = UriReference.parse(reference.trim())
     val resolved =
         when {
-            target.scheme != null -> {
-                target.copy(path = removeDotSegments(target.path))
-            }
-
-            target.authority != null -> {
-                target.copy(scheme = source.scheme, path = removeDotSegments(target.path))
-            }
-
-            target.path.isEmpty() -> {
-                target.copy(
-                    scheme = source.scheme,
-                    authority = source.authority,
-                    path = source.path,
-                    query = target.query ?: source.query,
-                )
-            }
-
-            else -> {
-                target.copy(
-                    scheme = source.scheme,
-                    authority = source.authority,
-                    path =
-                        removeDotSegments(
-                            if (target.path.startsWith('/')) target.path else source.directory() + target.path,
-                        ),
-                )
-            }
+            target.scheme != null -> target.copy(path = removeDotSegments(target.path))
+            target.authority != null -> target.copy(scheme = source.scheme, path = removeDotSegments(target.path))
+            target.path.isEmpty() -> target.under(source, source.path, target.query ?: source.query)
+            else -> target.under(source, removeDotSegments(source.merge(target.path)), target.query)
         }
     return resolved.render()
 }
@@ -47,7 +24,18 @@ private data class UriReference(
     val query: String?,
     val fragment: String?,
 ) {
-    fun directory(): String = if (authority != null && path.isEmpty()) "/" else path.substringBeforeLast('/', "") + "/"
+    /** This reference with [base]'s scheme and authority (section 5.2.2). */
+    fun under(
+        base: UriReference,
+        path: String,
+        query: String?,
+    ): UriReference = copy(scheme = base.scheme, authority = base.authority, path = path, query = query)
+
+    /** The [reference] path merged onto this base's path (section 5.2.3), before removing dot segments. */
+    fun merge(reference: String): String = if (reference.startsWith('/')) reference else directory() + reference
+
+    private fun directory(): String =
+        if (authority != null && path.isEmpty()) "/" else path.substringBeforeLast('/', "") + "/"
 
     fun render(): String =
         buildString {

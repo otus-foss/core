@@ -27,8 +27,8 @@ import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 
 /**
  * An empty bar slot in a 48 dp target: a dashed circle with a plus, shaped like
- * [AddSwatch][com.otus.designsystem.shared.settings.elements.AddSwatch] so it
- * reads as room for another action rather than as one. [label] names it for screen readers.
+ * [AddSwatch][com.otus.designsystem.shared.settings.elements.AddSwatch] so it reads as room for
+ * another action rather than as one. [label] names it for screen readers.
  */
 @Composable
 public fun BarAddButton(

@@ -31,17 +31,11 @@ public fun FolderPickRow(
         onClick,
         modifier.heightIn(min = PanelTokens.touchTarget),
         leading = { FolderNameGlyph(folder, PanelTokens.iconSize) },
-        trailing =
-            detail?.let {
-                {
-                    Text(
-                        it,
-                        style = panelTextStyle(),
-                        color = OtusColors.text3,
-                        fontSize = ComposeTokens.detailSize,
-                        maxLines = 1,
-                    )
-                }
-            },
+        trailing = detail?.let { { Detail(it) } },
     ) { FolderPath(folder.path) }
+}
+
+@Composable
+private fun Detail(text: String) {
+    Text(text, style = panelTextStyle(), color = OtusColors.text3, fontSize = ComposeTokens.detailSize, maxLines = 1)
 }

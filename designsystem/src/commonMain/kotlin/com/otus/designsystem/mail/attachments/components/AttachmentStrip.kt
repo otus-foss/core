@@ -59,14 +59,7 @@ public fun AttachmentStrip(
             }
         }
         if (unfold.fraction < 1f) {
-            FoldedLine(
-                files,
-                summary,
-                onToggle,
-                Modifier
-                    .align(Alignment.BottomStart)
-                    .foldedForm(unfold),
-            )
+            FoldedLine(files, summary, onToggle, Modifier.align(Alignment.BottomStart).foldedForm(unfold))
         }
     }
 }

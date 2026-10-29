@@ -21,6 +21,7 @@ import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.daysUntil
 import kotlinx.datetime.plus
+import kotlinx.datetime.yearMonth
 
 @Composable
 internal fun CalendarWeek(
@@ -52,12 +53,12 @@ private fun Modifier.monthBackgrounds(
     dates: List<LocalDate>,
 ): Modifier =
     dates.distinctBy { it.month }.fold(this) { modifier, date ->
-        val first = LocalDate(date.year, date.month, 1)
-        val days = first.daysUntil(first.plus(1, DateTimeUnit.MONTH))
+        val month = date.yearMonth
+        val first = month.firstDay
         val week = (first.daysUntil(monday) + first.dayOfWeek.ordinal) / CalendarTokens.DAYS_PER_WEEK
         val color =
             if (date.month.ordinal % 2 == 0) CalendarTokens.monthBackground else CalendarTokens.alternateMonthBackground
-        modifier.calendarMonthBackground(first.dayOfWeek.ordinal, days, week, color)
+        modifier.calendarMonthBackground(first.dayOfWeek.ordinal, month.numberOfDays, week, color)
     }
 
 @Composable

@@ -13,11 +13,8 @@ import androidx.compose.ui.Modifier
 import com.otus.designsystem.shared.controls.elements.ActionButton
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.tokens.selection.CalendarTokens
-import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.daysUntil
-import kotlinx.datetime.plus
+import kotlinx.datetime.YearMonth
 import kotlinx.datetime.todayIn
 import kotlin.time.Clock
 
@@ -43,7 +40,7 @@ public fun BirthdayPicker(
     var day by rememberSaveable { mutableIntStateOf(initial?.day ?: 1) }
     var year by rememberSaveable { mutableStateOf(initial?.year) }
     // Without a year, February keeps its 29th, since the date may fall in a leap year.
-    val days = 1..daysIn(year ?: LEAP_YEAR, month)
+    val days = 1..YearMonth(year ?: LEAP_YEAR, month).numberOfDays
     val shownDay = day.coerceIn(days)
     DatePickerDialog(onDismiss) {
         DatePickerHeading(title, "Leave the year as No year when you don’t know it.", onDismiss)
@@ -69,14 +66,6 @@ public fun BirthdayPicker(
             ActionButton("Done", { onConfirm(YearlyDate(month, shownDay, year)) }, Modifier.weight(1f), primary = true)
         }
     }
-}
-
-private fun daysIn(
-    year: Int,
-    month: Int,
-): Int {
-    val first = LocalDate(year, month, 1)
-    return first.daysUntil(first.plus(1, DateTimeUnit.MONTH))
 }
 
 private const val NO_YEAR = "No year"

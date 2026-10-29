@@ -64,27 +64,24 @@ public fun avatarPropertiesWith(
     vCard: JsonElement?,
     style: AvatarStyle?,
 ): JsonArray =
+    JsonArray(vCard.avatarProperties().filterNot { it.isAvatarStyle() } + listOfNotNull(style?.vCardProperty()))
+
+/** This style as a jCard property: its name, no parameters, its value type, and its value. */
+private fun AvatarStyle.vCardProperty(): JsonArray =
     JsonArray(
-        vCard.avatarProperties().filterNot { it.isAvatarStyle() } +
-            listOfNotNull(
-                style?.let {
-                    JsonArray(
-                        listOf(
-                            JsonPrimitive(AVATAR_STYLE_PROPERTY),
-                            JsonObject(emptyMap()),
-                            JsonPrimitive("text"),
-                            JsonPrimitive(it.encoded()),
-                        ),
-                    )
-                },
-            ),
+        listOf(
+            JsonPrimitive(AVATAR_STYLE_PROPERTY),
+            JsonObject(emptyMap()),
+            JsonPrimitive("text"),
+            JsonPrimitive(encoded()),
+        ),
     )
 
 /** Whether the `vCard` value of a card holds a style. */
 public fun hasAvatarStyle(vCard: JsonElement?): Boolean = vCard.avatarProperties().any { it.isAvatarStyle() }
 
 private fun JsonElement?.avatarProperties(): List<JsonArray> =
-    ((this as? JsonObject)?.get("properties") as? JsonArray).orEmpty().filterIsInstance<JsonArray>()
+    ((this as? JsonObject)?.get(VCARD_PROPERTIES) as? JsonArray).orEmpty().filterIsInstance<JsonArray>()
 
 private fun JsonArray.isAvatarStyle(): Boolean =
     (firstOrNull() as? JsonPrimitive)?.contentOrNull.equals(AVATAR_STYLE_PROPERTY, ignoreCase = true)

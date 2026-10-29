@@ -10,10 +10,10 @@ import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
- * A short date in a pill beside a [Chip][com.otus.designsystem.shared.controls.elements.Chip], such as "Yesterday"
- * next to the sender. The label is in
- * regular `text2` and never shortens, so the chips beside it give way first. Screen readers read
- * [description], such as the full timestamp, as its name.
+ * A short date in a pill beside a [Chip][com.otus.designsystem.shared.controls.elements.Chip],
+ * such as "Yesterday" next to the sender. The label is in regular `text2` and never shortens, so
+ * the chips beside it give way first. Screen readers read [description], such as the full
+ * timestamp, as its name.
  */
 @Composable
 public fun DatePill(
