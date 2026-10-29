@@ -11,7 +11,7 @@ import kotlin.test.assertFailsWith
 class JsContactPatchTest {
     @Test
     fun figure20PatchesInsideArrayMembers() {
-        val name = localize(PATCH_FIGURE_20, "yue").getValue("name").jsonObject
+        val name = localize(CARD_FIGURE_20, "yue").getValue("name").jsonObject
         val components = name.getValue("components").jsonArray.map { it.jsonObject }
         assertEquals(JsonPrimitive("jyut"), name["phoneticSystem"])
         assertEquals(JsonPrimitive("Latn"), name["phoneticScript"])
@@ -24,8 +24,8 @@ class JsContactPatchTest {
 
     @Test
     fun figure39ReplacesATopLevelProperty() {
-        val figure = json(PATCH_FIGURE_39)
-        val localized = localize(PATCH_FIGURE_39, "uk-Cyrl")
+        val figure = json(CARD_FIGURE_39)
+        val localized = localize(CARD_FIGURE_39, "uk-Cyrl")
         val expected = figure.getValue("localizations").jsonObject.getValue("uk-Cyrl")
         assertEquals(expected, localized)
     }
@@ -37,7 +37,7 @@ class JsContactPatchTest {
                 """{"name": {"full": "Gabriel García Márquez"},
                     "titles": {"t1": {"kind": "title", "name": "escritor"}}}""",
             ),
-            localize("{$PATCH_FIGURE_40}", "es"),
+            localize(CARD_FIGURE_40, "es"),
         )
     }
 
@@ -179,73 +179,3 @@ class JsContactPatchTest {
 private const val SURNAME = """{"kind": "surname", "value": "Doe"}"""
 
 private const val COMPONENTS = """{"name": {"components": [{"kind": "given", "value": "J."}, $SURNAME]}}"""
-
-// RFC 9553, figure 20.
-private const val PATCH_FIGURE_20 = """
-{
-  "@type": "Card",
-  "language": "zh-Hant",
-  "name": {
-    "components": [
-      { "kind": "surname", "value": "孫" },
-      { "kind": "given", "value": "中山" },
-      { "kind": "given2", "value": "文" },
-      { "kind": "given2", "value": "逸仙" }
-    ]
-  },
-  "localizations": {
-    "yue": {
-      "name/phoneticSystem": "jyut",
-      "name/phoneticScript": "Latn",
-      "name/components/0/phonetic": "syun1",
-      "name/components/1/phonetic": "zung1saan1",
-      "name/components/2/phonetic": "man4",
-      "name/components/3/phonetic": "jat6sin1"
-    }
-  }
-}
-"""
-
-// RFC 9553, figure 39.
-private const val PATCH_FIGURE_39 = """
-{
-  "name": {
-    "components": [
-      { "kind": "title", "value": "Mr." },
-      { "kind": "given", "value": "Ivan" },
-      { "kind": "given2", "value": "Petrovich" },
-      { "kind": "surname", "value": "Vasiliev" }
-    ]
-  },
-  "localizations": {
-    "uk-Cyrl": {
-      "name": {
-        "components": [
-          { "kind": "title", "value": "г-н" },
-          { "kind": "given", "value": "Иван" },
-          { "kind": "given2", "value": "Петрович" },
-          { "kind": "surname", "value": "Васильев" }
-        ]
-      }
-    }
-  }
-}
-"""
-
-// RFC 9553, figure 40, a fragment of members.
-private const val PATCH_FIGURE_40 = """
-"name": {
-  "full": "Gabriel García Márquez"
-},
-"titles": {
-  "t1": {
-    "kind": "title",
-    "name": "novelist"
-  }
-},
-"localizations": {
-  "es": {
-    "titles/t1/name": "escritor"
-  }
-}
-"""
