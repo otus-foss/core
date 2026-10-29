@@ -31,10 +31,10 @@ class ReorderMathTest {
     fun theRowsBetweenStepAsideByTheDraggedRowAndItsGap() {
         assertEquals(
             listOf(0f, -50f, -50f),
-            heights.indices.map { reorderShift(it, from = 0, target = 2, 40, spacing) },
+            shifts(from = 0, target = 2, height = 40),
         )
-        assertEquals(listOf(50f, 50f, 0f), heights.indices.map { reorderShift(it, from = 2, target = 0, 40, spacing) })
-        assertEquals(listOf(0f, 0f, 0f), heights.indices.map { reorderShift(it, from = 1, target = 1, 80, spacing) })
+        assertEquals(listOf(50f, 50f, 0f), shifts(from = 2, target = 0, height = 40))
+        assertEquals(listOf(0f, 0f, 0f), shifts(from = 1, target = 1, height = 80))
     }
 
     @Test
@@ -43,4 +43,10 @@ class ReorderMathTest {
         assertEquals(50f, clampDrag(heights, from = 1, offset = 500f, spacing = spacing))
         assertEquals(12f, clampDrag(heights, from = 1, offset = 12f, spacing = spacing))
     }
+
+    private fun shifts(
+        from: Int,
+        target: Int,
+        height: Int,
+    ): List<Float> = heights.indices.map { reorderShift(it, from, target, height, spacing) }
 }
