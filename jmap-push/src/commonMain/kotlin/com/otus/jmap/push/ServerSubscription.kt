@@ -49,8 +49,8 @@ internal class ServerSubscription(
         val expires = if (expiresSoon(record)) expiry() else null
         val patch =
             buildJsonObject {
-                code?.let { put("verificationCode", JsonPrimitive(it)) }
-                expires?.let { put("expires", JsonPrimitive(it)) }
+                if (code != null) put("verificationCode", JsonPrimitive(code))
+                if (expires != null) put("expires", JsonPrimitive(expires))
             }
         val result = connection.call(PushSubscriptionSetMethod(update = mapOf(id to patch)))
         return if (id in result.notUpdated) {
@@ -101,12 +101,9 @@ internal class ServerSubscription(
         replacing: String?,
     ): SetResult? =
         try {
-            val stale =
-                connection
-                    .call(PushSubscriptionGetMethod())
-                    .list
-                    .filter { it.deviceClientId == deviceClientId }
-                    .map { it.id } + listOfNotNull(replacing)
+            val subscriptions = connection.call(PushSubscriptionGetMethod()).list
+            val deviceIds = subscriptions.filter { it.deviceClientId == deviceClientId }.map { it.id }
+            val stale = deviceIds + listOfNotNull(replacing)
             beforeCreate()
             connection.call(
                 PushSubscriptionSetMethod(create = mapOf(CREATION to subscription), destroy = stale.distinct()),
@@ -131,8 +128,10 @@ internal class ServerSubscription(
     /** The verification push never arrived, and the server pushes nothing until it does. */
     private fun verificationLapsed(record: PushRecord): Boolean = !record.verified && age(record) > VERIFY_WITHIN
 
-    private fun age(record: PushRecord): Duration =
-        record.since?.let(Instant::parseOrNull)?.let { clock.now() - it } ?: Duration.INFINITE
+    private fun age(record: PushRecord): Duration {
+        val since = record.since?.let(Instant::parseOrNull) ?: return Duration.INFINITE
+        return clock.now() - since
+    }
 
     private fun now(): String = utcDate(clock.now())
 

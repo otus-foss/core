@@ -66,10 +66,11 @@ public class PushSubscriptions(
         verification: PushMessage.Verification,
     ): Unit =
         change(loginId) { record ->
-            record
-                .takeIf { it.subscriptionId == verification.pushSubscriptionId }
-                ?.copy(verificationCode = verification.verificationCode)
-                ?: record
+            if (record.subscriptionId == verification.pushSubscriptionId) {
+                record.copy(verificationCode = verification.verificationCode)
+            } else {
+                record
+            }
         }
 
     /**

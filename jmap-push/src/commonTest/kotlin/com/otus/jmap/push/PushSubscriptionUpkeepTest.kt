@@ -42,26 +42,13 @@ class PushSubscriptionUpkeepTest {
     fun aRefusedVerificationCodeStartsANewSubscription() =
         runTest {
             val store = Store()
-            subscriptions(subscribingServer(), store).run {
-                setEndpoint("ada", endpoint)
-                sync()
-                receive("ada", PushMessage.Verification("ps1", "wrong"))
-            }
+            createdSubscription(store).receive("ada", PushMessage.Verification("ps1", "wrong"))
             val server =
                 Server {
                     when {
-                        "verificationCode" in it -> {
-                            """{"methodResponses": [["PushSubscription/set",
-                               {"notUpdated": {"ps1": {"type": "invalidProperties"}}}, "c0"]]}"""
-                        }
-
-                        "PushSubscription/get" in it -> {
-                            NO_SUBSCRIPTIONS
-                        }
-
-                        else -> {
-                            created().replace("ps1", "ps2")
-                        }
+                        "verificationCode" in it -> INVALID_VERIFICATION
+                        "PushSubscription/get" in it -> NO_SUBSCRIPTIONS
+                        else -> created().replace("ps1", "ps2")
                     }
                 }
             subscriptions(server, store).run {
@@ -75,22 +62,13 @@ class PushSubscriptionUpkeepTest {
     fun aSubscriptionThatIsNeverVerifiedIsCreatedAgain() =
         runTest {
             val store = Store()
-            val created = subscribingServer()
-            subscriptions(created, store).run {
-                setEndpoint("ada", endpoint)
-                sync()
-            }
+            val firstServer = subscribingServer()
+            createdSubscription(store, firstServer)
             val soon = Server { error("unexpected call: $it") }
             subscriptions(soon, store, at = now + 30.minutes).sync()
             val retry =
                 Server {
-                    if ("PushSubscription/get" in
-                        it
-                    ) {
-                        NO_SUBSCRIPTIONS
-                    } else {
-                        created().replace("ps1", "ps2")
-                    }
+                    if ("PushSubscription/get" in it) NO_SUBSCRIPTIONS else created().replace("ps1", "ps2")
                 }
             subscriptions(retry, store, at = now + 2.hours).sync()
             val create = retry.sent.last()
@@ -113,11 +91,8 @@ class PushSubscriptionUpkeepTest {
     fun switchingToAPlainHttpEndpointDeletesTheOldSubscription() =
         runTest {
             val store = Store()
-            subscriptions(subscribingServer(), store).run {
-                setEndpoint("ada", endpoint)
-                sync()
-            }
-            val server = Server { """{"methodResponses": [["PushSubscription/set", {"destroyed": ["ps1"]}, "c0"]]}""" }
+            createdSubscription(store)
+            val server = Server { DESTROYED }
             subscriptions(server, store).run {
                 setEndpoint("ada", endpoint.copy(url = "http://ntfy.lan/upA"))
                 sync()
@@ -130,13 +105,14 @@ class PushSubscriptionUpkeepTest {
     fun forgettingALoginDeletesItsSubscriptionAndRecord() =
         runTest {
             val store = Store()
-            subscriptions(subscribingServer(), store).run {
-                setEndpoint("ada", endpoint)
-                sync()
-            }
-            val server = Server { """{"methodResponses": [["PushSubscription/set", {"destroyed": ["ps1"]}, "c0"]]}""" }
+            createdSubscription(store)
+            val server = Server { DESTROYED }
             subscriptions(server, store).forget("ada")
             assertTrue("\"destroy\":[\"ps1\"]" in server.sent.single(), server.sent.single())
             assertTrue(store.records.isEmpty())
         }
 }
+
+private const val INVALID_VERIFICATION =
+    """{"methodResponses": [["PushSubscription/set",
+       {"notUpdated": {"ps1": {"type": "invalidProperties"}}}, "c0"]]}"""
