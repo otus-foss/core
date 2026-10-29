@@ -81,7 +81,7 @@ private fun ActionOption(
         item.label,
         item.detail,
         Modifier
-            .then(if (item.current) Modifier.currentChoice() else Modifier)
+            .currentChoice(item.current)
             .clickable(role = Role.Button) {
                 onDone()
                 item.onClick()
@@ -100,10 +100,12 @@ private fun ToggleOption(item: OptionsItem.Toggle) {
 }
 
 /** The current choice: a `selectedFill` fill, rounded inside the menu, read as selected. */
-private fun Modifier.currentChoice(): Modifier =
-    clip(RoundedCornerShape(MenuTokens.radius - MenuTokens.inset))
+private fun Modifier.currentChoice(current: Boolean): Modifier {
+    if (!current) return this
+    return clip(RoundedCornerShape(MenuTokens.radius - MenuTokens.inset))
         .background(OtusColors.selectedFill)
         .semantics { selected = true }
+}
 
 /** The line between groups of options, inset like their rows. */
 @Composable
@@ -136,8 +138,8 @@ private fun OptionsRow(
         Symbol(icon)
         Column(Modifier.weight(1f)) {
             Text(label, style = panelTextStyle())
-            detail?.let {
-                Text(it, style = panelTextStyle(), color = OtusColors.text3, fontSize = MenuTokens.detailSize)
+            if (detail != null) {
+                Text(detail, style = panelTextStyle(), color = OtusColors.text3, fontSize = MenuTokens.detailSize)
             }
         }
         trailing()

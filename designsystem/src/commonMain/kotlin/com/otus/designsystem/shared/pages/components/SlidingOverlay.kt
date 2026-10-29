@@ -42,26 +42,26 @@ public fun <T : Any> SlidingOverlay(
     val sliding = { transition.currentState != transition.targetState }
     val (baseMotion, overlayMotion) =
         remember(parent, host, sign) {
-            lateinit var overlay: PageMotion
-            val base =
+            lateinit var overlayPage: PageMotion
+            val basePage =
                 PageMotion(
                     parent,
                     host,
                     sign,
                     fraction = { -progress.value },
                     leaving = { transition.targetState },
-                    partner = { overlay.takeIf { sliding() } },
+                    partner = { overlayPage.takeIf { sliding() } },
                 )
-            overlay =
+            overlayPage =
                 PageMotion(
                     parent,
                     host,
                     sign,
                     fraction = { 1f - progress.value },
                     leaving = { !transition.targetState },
-                    partner = { base.takeIf { sliding() } },
+                    partner = { basePage.takeIf { sliding() } },
                 )
-            base to overlay
+            basePage to overlayPage
         }
     Box(modifier.hostingChrome(parent, host)) {
         // The page being returned to draws on top, as [SlidingPages] draws the arriving page.
