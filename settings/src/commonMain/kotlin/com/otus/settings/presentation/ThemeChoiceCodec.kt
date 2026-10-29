@@ -17,10 +17,11 @@ internal fun ThemeChoice.encode(): String =
     buildList {
         add(base.name.lowercase())
         add(accent.toHex())
-        customId?.let { add("$SELECTED$it") }
+        if (customId != null) add("$SELECTED$customId")
         customThemes.forEach { theme ->
             add("${theme.id}:${theme.base.name.lowercase()}")
-            theme.name?.let { add("${theme.id}:$NAME${it.escaped()}") }
+            val name = theme.name
+            if (name != null) add("${theme.id}:$NAME${name.escaped()}")
             theme.colors.forEach { (color, value) -> add("${theme.id}:${color.name.lowercase()}=${value.toHex()}") }
         }
     }.joinToString(" ")
@@ -40,13 +41,17 @@ internal fun decodeThemeChoice(value: String): ThemeChoice {
         base = entryNamed<ThemeBase>(parts.first()) ?: default.base,
         accent = parts.getOrNull(1)?.let(::parseHexColor) ?: default.accent,
         customThemes = themes,
-        customId =
-            rest
-                .firstOrNull { it.startsWith(SELECTED) }
-                ?.removePrefix(SELECTED)
-                ?.toIntOrNull()
-                ?.takeIf { id -> themes.any { it.id == id } },
+        customId = selectedThemeId(rest, themes),
     )
+}
+
+private fun selectedThemeId(
+    parts: List<String>,
+    themes: List<CustomTheme>,
+): Int? {
+    val selected = parts.firstOrNull { it.startsWith(SELECTED) }
+    val id = selected?.removePrefix(SELECTED)?.toIntOrNull()
+    return id?.takeIf { themes.any { theme -> theme.id == it } }
 }
 
 /** Reads a `1:ink` part: a custom theme and the theme it was made from. */
@@ -68,12 +73,8 @@ private fun decodeColor(part: String): Pair<Int, Pair<ThemeColor, Color>>? {
 /** Reads a `1:name=Night%20ink` part: the name the user gave a custom theme. */
 private fun decodeName(part: String): Pair<Int, String>? {
     val id = part.substringBefore(':').toIntOrNull()
-    val name =
-        part
-            .substringAfter(':', "")
-            .takeIf { it.startsWith(NAME) }
-            ?.removePrefix(NAME)
-            ?.unescaped()
+    val value = part.substringAfter(':', "")
+    val name = if (value.startsWith(NAME)) value.removePrefix(NAME).unescaped() else null
     return if (id == null || name.isNullOrBlank()) null else id to name
 }
 
