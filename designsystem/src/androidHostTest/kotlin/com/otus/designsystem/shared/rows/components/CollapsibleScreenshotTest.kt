@@ -89,7 +89,7 @@ class CollapsibleScreenshotTest {
                 Box(Modifier.weight(1f)) {
                     DetailRow(folder.name, emptyList(), {}, depth = folder.depth) { Symbol(Res.drawable.symbol_folder) }
                 }
-                expanded?.let { SidebarExpandButton(folder.name, it, onExpandedChange) }
+                if (expanded != null) SidebarExpandButton(folder.name, expanded, onExpandedChange)
             }
         }
     }
