@@ -39,11 +39,11 @@ private data class UriReference(
 
     fun render(): String =
         buildString {
-            scheme?.let { append(it).append(':') }
-            authority?.let { append("//").append(it) }
+            if (scheme != null) append(scheme).append(':')
+            if (authority != null) append("//").append(authority)
             append(path)
-            query?.let { append('?').append(it) }
-            fragment?.let { append('#').append(it) }
+            if (query != null) append('?').append(query)
+            if (fragment != null) append('#').append(fragment)
         }
 
     companion object {

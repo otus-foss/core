@@ -35,11 +35,9 @@ public object UtcDateSerializer : KSerializer<Instant> {
     override fun deserialize(decoder: Decoder): Instant {
         val text = decoder.decodeString()
         // RFC 3339 writes a year as four digits, so a signed year such as "-0000" is not a date.
-        return text
-            .takeIf { UNSIGNED_YEAR.containsMatchIn(it) }
-            ?.let { Instant.parseOrNull(it.withinInstantPrecision()) }
-            ?.takeIf { it.toUtcDate() != null }
-            ?: throw SerializationException("not a UTCDate: $text")
+        val unsignedYear = UNSIGNED_YEAR.containsMatchIn(text)
+        val instant = if (unsignedYear) Instant.parseOrNull(text.withinInstantPrecision()) else null
+        return instant?.takeIf { it.toUtcDate() != null } ?: throw SerializationException("not a UTCDate: $text")
     }
 }
 

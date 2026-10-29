@@ -65,7 +65,11 @@ public class JmapReference internal constructor(
 public class JmapRequestBuilder internal constructor() {
     internal val calls: MutableList<JmapCall<*>> = mutableListOf()
 
-    public fun <T> call(method: JmapMethod<T>): JmapCall<T> = JmapCall(method, "c${calls.size}").also { calls += it }
+    public fun <T> call(method: JmapMethod<T>): JmapCall<T> {
+        val call = JmapCall(method, "c${calls.size}")
+        calls += call
+        return call
+    }
 }
 
 /** Which objects a `/get` returns. */
