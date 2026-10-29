@@ -45,9 +45,9 @@ public fun ScopeSheet(
                     .selectableGroup(),
             ) {
                 content()
-                footnote?.let {
+                if (footnote != null) {
                     Text(
-                        it,
+                        footnote,
                         Modifier.padding(horizontal = SidebarTokens.entryPadding, vertical = SheetTokens.gap),
                         color = OtusColors.text2,
                         fontSize = SheetTokens.detailSize,

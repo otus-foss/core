@@ -118,9 +118,9 @@ public fun DropdownRow(
         leading?.invoke()
         Column(Modifier.weight(1f)) {
             Text(title, style = panelTextStyle(), maxLines = 1, overflow = TextOverflow.Ellipsis)
-            subtitle?.let {
+            if (subtitle != null) {
                 Text(
-                    it,
+                    subtitle,
                     style = panelTextStyle(),
                     color = OtusColors.text3,
                     fontSize = ComposeTokens.detailSize,
@@ -129,9 +129,9 @@ public fun DropdownRow(
                 )
             }
         }
-        detail?.let {
+        if (detail != null) {
             Text(
-                it,
+                detail,
                 Modifier.widthIn(max = MenuTokens.detailMaxWidth),
                 style = panelTextStyle(),
                 color = OtusColors.text3,

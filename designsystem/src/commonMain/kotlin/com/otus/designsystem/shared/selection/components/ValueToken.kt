@@ -74,17 +74,17 @@ internal fun RowScope.ValueLabel(
     enabled: Boolean = true,
     fill: Boolean = false,
 ) {
-    keyword?.let {
+    if (keyword != null) {
         Text(
-            it,
+            keyword,
             color = if (enabled) OtusColors.text2 else OtusColors.text3,
             fontSize = SettingTokens.descriptionSize,
             fontWeight = FontWeight.SemiBold,
             maxLines = 1,
         )
     }
-    avatar?.let { SmallAvatar(it) }
-    icon?.let { LeadingSymbol(it, SummaryTokens.avatarSize, enabled) }
+    if (avatar != null) SmallAvatar(avatar)
+    if (icon != null) LeadingSymbol(icon, SummaryTokens.avatarSize, enabled)
     Text(
         value,
         Modifier.weight(1f, fill = fill),
