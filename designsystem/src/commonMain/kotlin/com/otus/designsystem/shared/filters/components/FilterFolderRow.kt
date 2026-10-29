@@ -65,17 +65,7 @@ public fun FilterFolderRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FilterTokens.chipIconGap),
     ) {
-        Box(Modifier.size(PanelTokens.touchTarget), contentAlignment = Alignment.Center) {
-            expanded?.let { open ->
-                Box(
-                    Modifier
-                        .size(PanelTokens.touchTarget)
-                        .clearAndSetSemantics {}
-                        .clickable { onExpandedChange(!open) },
-                    contentAlignment = Alignment.Center,
-                ) { ExpandChevron(open) }
-            }
-        }
+        FolderExpandButton(expanded, onExpandedChange)
         glyph()
         Text(
             ChipLabel(folder.name, folder.path).annotated(),
@@ -131,3 +121,21 @@ private fun Modifier.folderSemantics(
             }
         }
     }
+
+@Composable
+private fun FolderExpandButton(
+    expanded: Boolean?,
+    onExpandedChange: (Boolean) -> Unit,
+) {
+    Box(Modifier.size(PanelTokens.touchTarget), contentAlignment = Alignment.Center) {
+        if (expanded != null) {
+            Box(
+                Modifier
+                    .size(PanelTokens.touchTarget)
+                    .clearAndSetSemantics {}
+                    .clickable { onExpandedChange(!expanded) },
+                contentAlignment = Alignment.Center,
+            ) { ExpandChevron(expanded) }
+        }
+    }
+}
