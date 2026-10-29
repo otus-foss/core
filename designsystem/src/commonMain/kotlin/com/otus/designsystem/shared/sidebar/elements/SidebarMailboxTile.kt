@@ -65,7 +65,7 @@ public fun SidebarMailboxTile(
             Symbol(icon)
             // A zero-size anchor on the icon's corner centers the badge there without resizing the icon.
             Box(Modifier.align(Alignment.TopEnd).size(0.dp).wrapContentSize(unbounded = true)) {
-                count?.let { SidebarBadge(it, surface = fill) }
+                if (count != null) SidebarBadge(count, surface = fill)
             }
         }
         Text(

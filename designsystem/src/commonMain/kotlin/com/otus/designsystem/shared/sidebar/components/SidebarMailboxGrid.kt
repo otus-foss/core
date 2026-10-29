@@ -34,10 +34,18 @@ public fun <T> SidebarMailboxGrid(
         verticalArrangement = Arrangement.spacedBy(SidebarTokens.tileGap),
     ) {
         items.chunked(SidebarTokens.TILE_COLUMNS).forEach { row ->
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(SidebarTokens.tileGap)) {
-                row.forEach { item -> Box(Modifier.weight(1f)) { tile(item) } }
-                repeat(SidebarTokens.TILE_COLUMNS - row.size) { Spacer(Modifier.weight(1f)) }
-            }
+            MailboxTileRow(row, tile)
         }
+    }
+}
+
+@Composable
+private fun <T> MailboxTileRow(
+    items: List<T>,
+    tile: @Composable (T) -> Unit,
+) {
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(SidebarTokens.tileGap)) {
+        items.forEach { item -> Box(Modifier.weight(1f)) { tile(item) } }
+        repeat(SidebarTokens.TILE_COLUMNS - items.size) { Spacer(Modifier.weight(1f)) }
     }
 }

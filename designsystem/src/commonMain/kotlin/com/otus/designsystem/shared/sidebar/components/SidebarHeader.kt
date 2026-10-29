@@ -115,6 +115,6 @@ internal fun RowScope.ScopeTitle(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
-        subtitle?.let { SidebarDetail(it) }
+        if (subtitle != null) SidebarDetail(subtitle)
     }
 }

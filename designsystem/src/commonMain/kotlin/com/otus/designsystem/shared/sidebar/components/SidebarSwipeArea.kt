@@ -102,9 +102,10 @@ private class SidebarOpenZone {
     var panel: LayoutCoordinates? = null
 
     fun contains(y: Float): Boolean {
-        val host = host?.takeIf { it.isAttached }
-        val panel = panel?.takeIf { it.isAttached }
-        return host != null && panel != null && y <= host.localBoundingBoxOf(panel, clipBounds = false).bottom
+        val hostCoordinates = host?.takeIf { it.isAttached }
+        val panelCoordinates = panel?.takeIf { it.isAttached }
+        if (hostCoordinates == null || panelCoordinates == null) return false
+        return y <= hostCoordinates.localBoundingBoxOf(panelCoordinates, clipBounds = false).bottom
     }
 }
 

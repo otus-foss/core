@@ -77,7 +77,7 @@ private fun FooterVersion(
     Row(
         Modifier
             .heightIn(min = PanelTokens.touchTarget)
-            .then(onUpdate?.let { Modifier.updateButton(version, it) } ?: Modifier)
+            .updateButton(version, onUpdate)
             .padding(horizontal = SidebarTokens.entryPadding),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(SidebarTokens.inset),
@@ -91,8 +91,9 @@ private fun FooterVersion(
 @Composable
 private fun Modifier.updateButton(
     version: String,
-    onUpdate: () -> Unit,
+    onUpdate: (() -> Unit)?,
 ): Modifier {
+    if (onUpdate == null) return this
     val interactions = remember { MutableInteractionSource() }
     val shape = RoundedCornerShape(SidebarTokens.entryRadius)
     return semantics { contentDescription = "Update available, $version installed" }
@@ -111,7 +112,7 @@ private fun UpdateBadge(progress: Float?) {
     Box(
         Modifier
             .size(SidebarTokens.updateBadge)
-            .then(progress?.let { Modifier.progressRing(it, ring) } ?: Modifier)
+            .progressRing(progress, ring)
             .background(OtusColors.bgRegular, CircleShape),
         contentAlignment = Alignment.Center,
     ) {
@@ -123,10 +124,11 @@ private fun UpdateBadge(progress: Float?) {
 
 /** A [color] ring that fills clockwise from the top as [progress] goes from 0 to 1. */
 private fun Modifier.progressRing(
-    progress: Float,
+    progress: Float?,
     color: Color,
-): Modifier =
-    semantics { progressBarRangeInfo = ProgressBarRangeInfo(progress, 0f..1f) }
+): Modifier {
+    if (progress == null) return this
+    return semantics { progressBarRangeInfo = ProgressBarRangeInfo(progress, 0f..1f) }
         .drawWithContent {
             drawContent()
             val width = SidebarTokens.updateRing.toPx()
@@ -140,3 +142,4 @@ private fun Modifier.progressRing(
                 style = Stroke(width, cap = StrokeCap.Round),
             )
         }
+}

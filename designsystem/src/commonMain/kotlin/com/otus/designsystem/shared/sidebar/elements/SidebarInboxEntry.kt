@@ -68,6 +68,8 @@ public fun SidebarInboxEntry(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
-        count?.let { if (inset) SidebarBadge(it, surface = fill) else SidebarCount(it) }
+        if (count != null) {
+            if (inset) SidebarBadge(count, surface = fill) else SidebarCount(count)
+        }
     }
 }
