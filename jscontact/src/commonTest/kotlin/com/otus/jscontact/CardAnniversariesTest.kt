@@ -103,12 +103,10 @@ class CardAnniversariesTest {
     private fun dateOf(
         encoded: JsonObject,
         id: String,
-    ): JsonObject =
-        encoded
-            .getValue(id)
-            .jsonObject
-            .getValue("date")
-            .jsonObject
+    ): JsonObject {
+        val entry = encoded.getValue(id).jsonObject
+        return entry.getValue("date").jsonObject
+    }
 }
 
 // RFC 9553, Figure 41.

@@ -32,22 +32,18 @@ internal fun Anniversary.toDateProperty(): VCardProperty? {
 private fun String.toAnniversaryDate(omittedYear: Long?): AnniversaryDate? =
     toTimestamp() ?: toPartialDate()?.let { date -> date.copy(year = date.year.takeUnless { it == omittedYear }) }
 
-private fun String.toTimestamp(): Timestamp? =
-    TIMESTAMP
-        .matchEntire(this)
-        ?.groupValues
-        ?.drop(1)
-        ?.chunked(DATE_PARTS)
-        ?.let { (date, time) -> Instant.parseOrNull("${date.joinToString("-")}T${time.joinToString(":")}Z") }
-        ?.let { Timestamp(it) }
+private fun String.toTimestamp(): Timestamp? {
+    val match = TIMESTAMP.matchEntire(this) ?: return null
+    val (date, time) = match.groupValues.drop(1).chunked(DATE_PARTS)
+    val instant = Instant.parseOrNull("${date.joinToString("-")}T${time.joinToString(":")}Z")
+    return instant?.let { Timestamp(it) }
+}
 
 private fun String.toPartialDate(): PartialDate? {
     val date = substringBefore('T')
     return DATE_FORMS.firstNotNullOfOrNull { form ->
-        form.pattern
-            .matchEntire(date)
-            ?.destructured
-            ?.let(form.read)
+        val match = form.pattern.matchEntire(date)
+        match?.destructured?.let(form.read)
     }
 }
 
@@ -58,12 +54,10 @@ private fun AnniversaryDate.toVCardDate(): String? =
         is PartialDate -> toVCardPartialDate()
     }
 
-private fun Timestamp.toVCardTimestamp(): String =
-    utc
-        .toString()
-        .substringBefore('.')
-        .removeSuffix("Z")
-        .filterNot { it == '-' || it == ':' } + "Z"
+private fun Timestamp.toVCardTimestamp(): String {
+    val seconds = utc.toString().substringBefore('.').removeSuffix("Z")
+    return seconds.filterNot { it == '-' || it == ':' } + "Z"
+}
 
 private fun PartialDate.toVCardPartialDate(): String? {
     val yearText = year?.toString()?.padStart(YEAR_DIGITS, '0')

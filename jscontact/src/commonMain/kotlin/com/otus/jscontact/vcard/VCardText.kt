@@ -12,10 +12,7 @@ internal const val CRLF = "\r\n"
  */
 internal fun String.vCardLines(): List<String> {
     val physical =
-        removePrefix(BYTE_ORDER_MARK)
-            .replace(LINE_BREAK, "\n")
-            .replace(FOLD, "")
-            .split('\n')
+        removePrefix(BYTE_ORDER_MARK).replace(LINE_BREAK, "\n").replace(FOLD, "").split('\n')
     return buildList {
         for (line in physical) {
             val previous = lastOrNull()
@@ -130,10 +127,7 @@ internal fun String.decodeCarets(): String =
 
 /** This parameter value with carets, line breaks, and quotes escaped as RFC 6868 describes. */
 internal fun String.encodeCarets(): String =
-    replace("^", "^^")
-        .replace("\r\n", "\n")
-        .replace("\n", "^n")
-        .replace("\"", "^'")
+    replace("^", "^^").replace("\r\n", "\n").replace("\n", "^n").replace("\"", "^'")
 
 private const val BYTE_ORDER_MARK = "\uFEFF"
 private const val LINE_OCTETS = 75

@@ -34,12 +34,8 @@ class CardAddressTest {
         )
         val address = encoded.getValue("k23").jsonObject
         assertEquals(JsonPrimitive("Address"), address["@type"])
-        val component =
-            address
-                .getValue("components")
-                .jsonArray
-                .first()
-                .jsonObject
+        val components = address.getValue("components").jsonArray
+        val component = components.first().jsonObject
         assertEquals(JsonPrimitive("AddressComponent"), component["@type"])
     }
 
@@ -93,13 +89,8 @@ class CardAddressTest {
         val address = RoundTrip.assertRoundTrip(Address.serializer(), JsContactJson.parseToJsonElement(json))
         assertEquals(PhoneticSystem("example.com:hepburn"), address.phoneticSystem)
         assertEquals(false, address.isOrdered)
-        assertEquals(
-            setOf("example.com:verified"),
-            address.components
-                ?.first()
-                ?.extra
-                ?.keys,
-        )
+        val firstComponent = address.components?.first()
+        assertEquals(setOf("example.com:verified"), firstComponent?.extra?.keys)
         assertEquals(AddressComponentKind("example.com:ward"), address.components?.last()?.kind)
         assertEquals(setOf("futureProperty"), address.extra.keys)
     }

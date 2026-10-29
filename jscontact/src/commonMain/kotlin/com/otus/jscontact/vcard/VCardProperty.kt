@@ -56,17 +56,18 @@ internal fun String.toVCardProperty(): VCardProperty? = indexOfUnquoted(':').tak
 private fun String.propertyAt(colon: Int): VCardProperty {
     val head = substring(0, colon).splitUnquoted(';')
     val qualifiedName = head.first().trim().uppercase()
+    val parameters =
+        head
+            .drop(1)
+            .filter { it.isNotBlank() }
+            .map { it.toParameter() }
+            .groupBy({ it.first }, { it.second })
+            .mapValues { (_, values) -> values.flatten() }
     val property =
         VCardProperty(
             name = qualifiedName.substringAfterLast('.'),
             value = substring(colon + 1),
-            parameters =
-                head
-                    .drop(1)
-                    .filter { it.isNotBlank() }
-                    .map { it.toParameter() }
-                    .groupBy({ it.first }, { it.second })
-                    .mapValues { (_, values) -> values.flatten() },
+            parameters = parameters,
             group = qualifiedName.substringBeforeLast('.', "").ifEmpty { null },
         )
     return if (property.isEncoded(QUOTED_PRINTABLE)) {
