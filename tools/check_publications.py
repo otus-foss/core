@@ -24,46 +24,50 @@ def violations(repository: Path, modules: list[str], version: str) -> list[str]:
             if pom_path.is_file() and pom_path.stat().st_size:
                 errors.extend(pom_violations(pom_path, version))
             metadata_path = directory / f"{basename}.module"
-            if not metadata_path.is_file():
-                continue
-            try:
-                metadata = json.loads(metadata_path.read_text())
-                variants = metadata["variants"]
-                component = metadata["component"]
-                if (component["group"], component["module"], component["version"]) != (
-                    "com.otus",
-                    module,
-                    version,
+            if metadata_path.is_file():
+                errors.extend(metadata_violations(metadata_path, module, suffix, version))
+    return errors
+
+
+def metadata_violations(path: Path, module: str, suffix: str, version: str) -> list[str]:
+    """Check Gradle module metadata against its coordinates, platform variants, and files."""
+    errors = []
+    try:
+        metadata = json.loads(path.read_text())
+        variants = metadata["variants"]
+        component = metadata["component"]
+        if (component["group"], component["module"], component["version"]) != (
+            "com.otus",
+            module,
+            version,
+        ):
+            errors.append(f"Wrong publication coordinates: {path}")
+        if not suffix:
+            references = {
+                (target["group"], target["module"], target["version"])
+                for variant in variants
+                if (target := variant.get("available-at"))
+            }
+            expected = {("com.otus", module + target, version) for target in TARGETS if target}
+            if references != expected:
+                errors.append(f"Incomplete platform references: {path}")
+        if any(
+            spec.get("requires") != version or spec.get("strictly", version) != version
+            for spec in otus_module_dependencies(variants)
+        ):
+            errors.append(f"Dependency on another com.otus version: {path}")
+        for variant in variants:
+            for item in variant.get("files", []):
+                artifact = path.parent / item["url"]
+                if not artifact.is_file():
+                    errors.append(f"Missing metadata artifact: {artifact}")
+                elif (
+                    artifact.stat().st_size != item["size"]
+                    or hashlib.sha256(artifact.read_bytes()).hexdigest() != item["sha256"]
                 ):
-                    errors.append(f"Wrong publication coordinates: {metadata_path}")
-                if not suffix:
-                    references = {
-                        (target["group"], target["module"], target["version"])
-                        for variant in variants
-                        if (target := variant.get("available-at"))
-                    }
-                    expected = {
-                        ("com.otus", module + target, version) for target in TARGETS if target
-                    }
-                    if references != expected:
-                        errors.append(f"Incomplete platform references: {metadata_path}")
-                if any(
-                    spec.get("requires") != version or spec.get("strictly", version) != version
-                    for spec in otus_module_dependencies(variants)
-                ):
-                    errors.append(f"Dependency on another com.otus version: {metadata_path}")
-                for variant in variants:
-                    for item in variant.get("files", []):
-                        path = directory / item["url"]
-                        if not path.is_file():
-                            errors.append(f"Missing metadata artifact: {path}")
-                        elif (
-                            path.stat().st_size != item["size"]
-                            or hashlib.sha256(path.read_bytes()).hexdigest() != item["sha256"]
-                        ):
-                            errors.append(f"Artifact does not match metadata: {path}")
-            except (ValueError, KeyError, TypeError):
-                errors.append(f"Invalid publication metadata: {metadata_path}")
+                    errors.append(f"Artifact does not match metadata: {artifact}")
+    except (ValueError, KeyError, TypeError):
+        errors.append(f"Invalid publication metadata: {path}")
     return errors
 
 

@@ -35,10 +35,9 @@ import com.otus.avatar.ContactAvatar as SavedAvatar
 /**
  * Edits the avatar of [label], such as one of the user's addresses, all of an account's, or a
  * contact: a big preview, the kinds of avatar, and the choices of the kind picked. A website icon
- * comes from [domain]. Save
- * runs [onSave] with the new avatar; it keeps a saved photo that did not change. Reset, shown once
- * the user has set an avatar, runs [onSave] with null to go back to the generated one. [pickPhoto]
- * is null when the platform cannot pick photos, which hides Your photo.
+ * comes from [domain]. Save runs [onSave] with the new avatar; it keeps a saved photo that did not
+ * change. Reset, shown once the user has set an avatar, runs [onSave] with null to go back to the
+ * generated one. [pickPhoto] is null when the platform cannot pick photos, which hides Your photo.
  */
 @Composable
 public fun AvatarSheet(
@@ -58,8 +57,7 @@ public fun AvatarSheet(
     val pick = {
         scope.launch {
             pickPhoto?.invoke()?.let {
-                draft =
-                    draft.copy(kind = AvatarKind.Photo, source = PhotoSource.Upload, photo = it)
+                draft = draft.copy(kind = AvatarKind.Photo, source = PhotoSource.Upload, photo = it)
             }
         }
     }

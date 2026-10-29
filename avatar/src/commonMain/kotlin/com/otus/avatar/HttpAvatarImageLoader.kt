@@ -48,14 +48,7 @@ public class HttpAvatarImageLoader(
             requests++
             val result = http.prepareGet(target).execute { response -> readResponse(response, target, page) }
             val location = result.location ?: return result
-            target =
-                URLBuilder()
-                    .takeFrom(target)
-                    .apply {
-                        parameters.clear()
-                        fragment = ""
-                        takeFrom(location)
-                    }.build()
+            target = target.resolving(location).build()
         }
         return null
     }
@@ -131,6 +124,16 @@ public class HttpAvatarImageLoader(
         val REDIRECTS = setOf(301, 302, 303, 307, 308)
     }
 }
+
+/** [reference] resolved against this URL, as a link on its page: without this URL's query or fragment. */
+internal fun Url.resolving(reference: String): URLBuilder =
+    URLBuilder()
+        .takeFrom(this)
+        .apply {
+            parameters.clear()
+            fragment = ""
+            takeFrom(reference)
+        }
 
 internal class AvatarWebsitePage(
     val url: String,

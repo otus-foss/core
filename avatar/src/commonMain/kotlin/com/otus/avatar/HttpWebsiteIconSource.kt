@@ -1,8 +1,6 @@
 package com.otus.avatar
 
-import io.ktor.http.URLBuilder
 import io.ktor.http.Url
-import io.ktor.http.takeFrom
 
 /** Prefer large raster icons advertised by the website over small legacy favicons. */
 public class HttpWebsiteIconSource(
@@ -36,17 +34,7 @@ internal fun websiteIconUrls(page: AvatarWebsitePage): List<String> {
             if (attrs["type"]?.contains("svg", ignoreCase = true) == true) return@mapNotNull null
             val href = attrs["href"]?.replace("&amp;", "&") ?: return@mapNotNull null
             if (href.isBlank()) return@mapNotNull null
-            val url =
-                runCatching {
-                    URLBuilder()
-                        .takeFrom(Url(page.url))
-                        .apply {
-                            parameters.clear()
-                            fragment = ""
-                            takeFrom(href)
-                        }.buildString()
-                }.getOrNull()
-                    ?: return@mapNotNull null
+            val url = runCatching { Url(page.url).resolving(href).buildString() }.getOrNull() ?: return@mapNotNull null
             if (Url(url).encodedPath.endsWith(".svg", ignoreCase = true)) return@mapNotNull null
             WebsiteIcon(url, iconSize(attrs["sizes"].orEmpty(), touch))
         }.sortedByDescending { it.size }

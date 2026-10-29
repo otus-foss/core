@@ -21,11 +21,8 @@ import com.otus.jscontact.Media
 import com.otus.jscontact.MediaKind
 import com.otus.jscontact.Name
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonObject
 import kotlin.io.encoding.Base64
 import com.otus.jmap.contacts.AddressBookType as BookType
@@ -111,9 +108,7 @@ public class JmapOwnAvatars(
 
     /** The login's connection and the account that holds its contacts. */
     private suspend fun contactsAccount(accountKey: String): Pair<JmapConnection, String> {
-        val login =
-            withContext(Dispatchers.IO) { logins.logins().firstOrNull { it.id == accountKey } }
-                ?: throw OwnAvatarException(OwnAvatarFailure.Failed)
+        val login = logins.savedLogin(accountKey) ?: throw OwnAvatarException(OwnAvatarFailure.Failed)
         val connection = connections.connection(login)
         val account =
             connection.session().accountFor(JmapCapability.CONTACTS)
@@ -189,12 +184,7 @@ private fun Card.patch(
                 if (vCard is JsonObject) {
                     set(properties, VCARD_PROPERTY, PROPERTIES)
                 } else {
-                    set(
-                        JsonObject(
-                            mapOf(PROPERTIES to properties),
-                        ),
-                        VCARD_PROPERTY,
-                    )
+                    set(JsonObject(mapOf(PROPERTIES to properties)), VCARD_PROPERTY)
                 }
             }
         }
@@ -207,17 +197,17 @@ private fun newCard(
     book: String,
     avatar: ContactAvatar,
     photo: Media?,
-) = Card(
-    kind = CardKind.Individual,
-    name = name.trim().takeIf { it.isNotEmpty() }?.let { Name(full = it) },
-    emails = mapOf(EMAIL_KEY to EmailAddress(email)),
-    media = photo?.let { mapOf(AVATAR_PHOTO_KEY to it) },
-    addressBookIds = mapOf(book to true),
-    extra =
-        (avatar as? ContactAvatar.Styled)
-            ?.let { mapOf(VCARD_PROPERTY to JsonObject(mapOf(PROPERTIES to avatarPropertiesWith(null, it.style)))) }
-            .orEmpty(),
-).toCreation()
+): JsonObject {
+    val card =
+        Card(
+            kind = CardKind.Individual,
+            name = name.trim().takeIf { it.isNotEmpty() }?.let { Name(full = it) },
+            emails = mapOf(EMAIL_KEY to EmailAddress(email)),
+            media = photo?.let { mapOf(AVATAR_PHOTO_KEY to it) },
+            addressBookIds = mapOf(book to true),
+        )
+    return card.withAvatarStyle((avatar as? ContactAvatar.Styled)?.style).toCreation()
+}
 
 private fun ContactAvatar.Photo.toMedia() =
     Media(MediaKind.Photo, uri = "data:$mediaType;base64,${Base64.encode(image.bytes)}", mediaType = mediaType)

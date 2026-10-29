@@ -41,18 +41,16 @@ public class FileAvatarStore(
                         null
                     }
 
-                    kind == 0 && bytes.isEmpty() -> {
+                    kind == MISS_RECORD && bytes.isEmpty() -> {
                         StoredAvatar(null, created)
                     }
 
-                    kind == 1 && bytes.isNotEmpty() -> {
+                    kind == IMAGE_RECORD && bytes.isNotEmpty() -> {
                         StoredAvatar(AvatarImage(bytes), created)
                     }
 
                     kind == STYLE_RECORD -> {
-                        decodedAvatarStyle(
-                            bytes.decodeToString(),
-                        )?.let { StoredAvatar(null, created, it) }
+                        decodedAvatarStyle(bytes.decodeToString())?.let { StoredAvatar(null, created, it) }
                     }
 
                     else -> {
@@ -77,9 +75,9 @@ public class FileAvatarStore(
                     sink.writeLong(entry.created)
                     sink.writeByte(
                         when {
-                            bytes == null -> 0
+                            bytes == null -> MISS_RECORD
                             entry.image == null -> STYLE_RECORD
-                            else -> 1
+                            else -> IMAGE_RECORD
                         }.toByte(),
                     )
                     if (bytes != null) sink.write(bytes)
@@ -149,6 +147,8 @@ public class FileAvatarStore(
 
     private companion object {
         const val HEADER_BYTES = 9L
+        const val MISS_RECORD = 0
+        const val IMAGE_RECORD = 1
         const val STYLE_RECORD = 2
         const val DEFAULT_MAX_BYTES = 32L * 1024 * 1024
     }

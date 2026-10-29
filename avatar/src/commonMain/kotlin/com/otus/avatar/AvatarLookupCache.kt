@@ -32,11 +32,7 @@ internal class AvatarLookupCache(
             var owner = false
             val lookup =
                 lock.withLock {
-                    entries
-                        .remove(key)
-                        ?.also { entries[key] = it }
-                        ?.takeIf(::fresh)
-                        ?.let { return it }
+                    recent(key)?.takeIf(::fresh)?.let { return it }
                     if (started != generation) {
                         owner = true
                         Lookup(started)
@@ -135,8 +131,11 @@ internal class AvatarLookupCache(
 
     /** Storage lock held; metadata lock never covers disk IO or network work. */
     private suspend fun peekStored(key: AvatarCacheKey): StoredAvatar? =
-        lock.withLock { entries.remove(key)?.also { entries[key] = it } }
+        lock.withLock { recent(key) }
             ?: store.read(key)?.also { lock.withLock { remember(key, it) } }
+
+    /** The entry for [key], moved to the end so the least recently used one is evicted first. */
+    private fun recent(key: AvatarCacheKey): StoredAvatar? = entries.remove(key)?.also { entries[key] = it }
 
     private fun fresh(entry: StoredAvatar): Boolean {
         val age = now() - entry.created

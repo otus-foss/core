@@ -57,11 +57,7 @@ public class JmapAccountRepository(
         return try {
             val auth = JmapAuth.Basic(draft.username, draft.password)
             val session = client.session(draft.sessionUrl, auth, draft.trustedOrigins)
-            if (verifyService(
-                    session,
-                    auth,
-                )
-            ) {
+            if (verifyService(session, auth)) {
                 save(draft, session)
             } else {
                 ConnectOutcome.Failed(ConnectFailure.MissingService)
@@ -122,8 +118,7 @@ public class JmapAccountRepository(
                     // Reconnecting the same user on the same server replaces its login instead of adding one.
                     val existing =
                         logins.logins().firstOrNull {
-                            it.username == draft.username &&
-                                it.sessionUrl == draft.sessionUrl
+                            it.username == draft.username && it.sessionUrl == draft.sessionUrl
                         }
                     JmapLogin(
                         id = existing?.id ?: "${draft.username} ${draft.sessionUrl}",
@@ -158,9 +153,7 @@ private fun JmapLogin.toConnected() =
         id,
         name,
         username,
-        runCatching {
-            Url(sessionUrl).host
-        }.getOrDefault(sessionUrl),
+        runCatching { Url(sessionUrl).host }.getOrDefault(sessionUrl),
     )
 
 /**

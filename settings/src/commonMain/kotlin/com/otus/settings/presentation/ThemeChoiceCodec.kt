@@ -40,7 +40,7 @@ internal fun decodeThemeChoice(value: String): ThemeChoice {
             CustomTheme(id, base, colors[id].orEmpty().toMap(), names[id])
         }
     return ThemeChoice(
-        base = themeNamed(parts.first()) ?: default.base,
+        base = entryNamed<ThemeBase>(parts.first()) ?: default.base,
         accent = parts.getOrNull(1)?.let(::parseHexColor) ?: default.accent,
         customThemes = themes,
         customId =
@@ -55,7 +55,7 @@ internal fun decodeThemeChoice(value: String): ThemeChoice {
 /** Reads a `1:ink` part: a custom theme and the theme it was made from. */
 private fun decodeTheme(part: String): Pair<Int, ThemeBase>? {
     val id = part.substringBefore(':').toIntOrNull()
-    val base = themeNamed(part.substringAfter(':', ""))
+    val base = entryNamed<ThemeBase>(part.substringAfter(':', ""))
     return if (id == null || base == null) null else id to base
 }
 
@@ -63,7 +63,7 @@ private fun decodeTheme(part: String): Pair<Int, ThemeBase>? {
 private fun decodeColor(part: String): Pair<Int, Pair<ThemeColor, Color>>? {
     val id = part.substringBefore(':').toIntOrNull()
     val name = part.substringAfter(':', "").substringBefore('=')
-    val color = ThemeColor.entries.firstOrNull { it.name.equals(name, ignoreCase = true) }
+    val color = entryNamed<ThemeColor>(name)
     val value = parseHexColor(part.substringAfter('=', ""))
     return if (id == null || color == null || value == null) null else id to (color to value)
 }
@@ -86,11 +86,6 @@ private fun String.escaped(): String = replace("%", "%25").replace(" ", "%20")
 private fun String.unescaped(): String = escapes.replace(this) { if (it.value == "%20") " " else "%" }
 
 private val escapes = Regex("%2[05]")
-
-private fun themeNamed(name: String): ThemeBase? =
-    ThemeBase.entries.firstOrNull {
-        it.name.equals(name, ignoreCase = true)
-    }
 
 private const val SELECTED = "custom="
 private const val NAME = "name="
