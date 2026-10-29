@@ -88,7 +88,7 @@ private fun linePieces(
     count: List<Placeable>,
 ): List<Pair<Placeable, Int>> =
     buildList {
-        start?.let { add(it to gap) }
+        if (start != null) add(start to gap)
         names.forEachIndexed { index, name ->
             add(name to 0)
             if (index < names.lastIndex) add(dot(index) to 0)
@@ -116,9 +116,10 @@ private fun MeasureScope.placeInLine(
     val height = pieces.maxOfOrNull { it.first.height } ?: 0
     val width = pieces.sumOf { it.first.width + it.second }
     return layout(width.coerceIn(constraints.minWidth, constraints.maxWidth), height) {
-        pieces.fold(0) { x, (piece, after) ->
+        var x = 0
+        for ((piece, after) in pieces) {
             piece.placeRelative(x, (height - piece.height) / 2)
-            x + piece.width + after
+            x += piece.width + after
         }
     }
 }

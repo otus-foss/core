@@ -60,7 +60,7 @@ public fun RichTextBody(
     SideEffect { blocks.filterIsInstance<RichBlock.Text>().forEach { it.state.config.linkColor = linkColor } }
     val only = blocks.singleOrNull() as? RichBlock.Text
     if (only != null) {
-        TextBlock(text, only, 0, placeholder, modifier)
+        TextBlock(text, only, index = 0, placeholder, modifier)
         return
     }
     Column(modifier.fillMaxWidth()) {
