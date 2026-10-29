@@ -41,13 +41,13 @@ private fun JmapSession.canSubmitFrom(accountId: String): Boolean =
 private suspend fun identityEmails(
     connection: JmapConnection,
     accountId: String,
-): List<String> =
-    connection
-        .call(GetMethod(Identity, accountId, properties = listOf("email")))
-        .list
+): List<String> {
+    val identities = connection.call(GetMethod(Identity, accountId, properties = listOf("email"))).list
+    return identities
         .mapNotNull { (it["email"] as? JsonPrimitive)?.takeIf { value -> value.isString }?.content }
         .map { it.trim() }
         .filter { it.isNotEmpty() }
         .distinctBy { it.lowercase() }
+}
 
 private val Identity = JmapType("Identity", JmapCapability.SUBMISSION, JsonObject.serializer())

@@ -112,7 +112,9 @@ private fun ColorChoices(
             val tint = preset.tint ?: return@forEach
             ColorSwatch(tint, preset.label, preset.name == color, { onPick(preset.name) })
         }
-        customColor?.let { ColorSwatch(it, "Custom color $color", selected = true, onClick = { custom = true }) }
+        if (customColor != null) {
+            ColorSwatch(customColor, "Custom color $color", selected = true, onClick = { custom = true })
+        }
         AddSwatch("Custom color", { custom = true })
     }
     if (custom) {

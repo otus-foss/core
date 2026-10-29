@@ -78,7 +78,7 @@ internal data class AvatarDraft(
         initials: String,
     ): ChipAvatar {
         val icon = shown?.takeIf { it.origin == AvatarOrigin.Domain }?.image
-        return if (icon == null) styledChip(initials, color) else ChipAvatar(initials, 0, icon.bytes)
+        return if (icon == null) styledChip(initials, color) else ChipAvatar(initials, colorIndex = 0, icon.bytes)
     }
 
     private fun styled(mark: AvatarMark) = ContactAvatar.Styled(AvatarStyle(color, mark))
