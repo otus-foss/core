@@ -52,14 +52,7 @@ public fun SummaryCard(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             people.take(SummaryTokens.PEOPLE_LIMIT).forEach { person ->
-                Row(
-                    Modifier.weight(1f, fill = false),
-                    horizontalArrangement = Arrangement.spacedBy(SummaryTokens.avatarGap),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    SmallAvatar(person.avatar)
-                    SummaryText(person.name, Modifier.weight(1f, fill = false))
-                }
+                SummaryPerson(person, Modifier.weight(1f, fill = false))
             }
             val hidden = people.size - SummaryTokens.PEOPLE_LIMIT
             if (hidden > 0) SummaryText("+$hidden", Modifier)
@@ -105,4 +98,19 @@ private fun SummaryText(
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
     )
+}
+
+@Composable
+private fun SummaryPerson(
+    person: NamedAvatar,
+    modifier: Modifier,
+) {
+    Row(
+        modifier,
+        horizontalArrangement = Arrangement.spacedBy(SummaryTokens.avatarGap),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        SmallAvatar(person.avatar)
+        SummaryText(person.name, Modifier.weight(1f, fill = false))
+    }
 }

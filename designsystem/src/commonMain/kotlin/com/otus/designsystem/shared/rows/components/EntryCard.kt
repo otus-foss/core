@@ -18,6 +18,8 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.lerp
@@ -58,7 +60,7 @@ public fun EntryCard(
         modifier
             .fillMaxWidth()
             .entryCard(selection, dimmed)
-            .semantics { selection?.let { this.selected = it.selected } }
+            .semantics { if (selection != null) selected = selection.selected }
             .combinedClickable(role = Role.Button, onLongClick = taps.onLongClick, onClick = taps.onClick)
             // The fade's layer includes the padding, so an avatar's badge can overhang without being cut.
             .alpha(if (dimmed) OtusAlpha.DIMMED else 1f)
@@ -109,6 +111,12 @@ private fun Modifier.entryCard(
         translate(top = -up) {
             drawOutline(shape.createOutline(Size(size.width, size.height + up), layoutDirection, this), fill)
         }
-    }.then(if (outlined) Modifier.border(EntryTokens.outline, outline, shape) else Modifier)
+    }.entryOutline(outlined, outline, shape)
         .clip(shape)
 }
+
+private fun Modifier.entryOutline(
+    outlined: Boolean,
+    color: Color,
+    shape: Shape,
+): Modifier = if (outlined) border(EntryTokens.outline, color, shape) else this
