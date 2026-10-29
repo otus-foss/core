@@ -7,6 +7,9 @@ import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
+import com.otus.designsystem.resources.Res
+import com.otus.designsystem.resources.symbol_folder
+import com.otus.designsystem.resources.symbol_folder_fill
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import org.jetbrains.compose.resources.DrawableResource
 
@@ -20,13 +23,20 @@ import org.jetbrains.compose.resources.DrawableResource
  */
 public val LocalIconTint: ProvidableCompositionLocal<Color?> = compositionLocalOf { null }
 
-/** A row's leading [Symbol], in [LocalIconTint] while the row is [enabled]. */
+/**
+ * A row's leading [Symbol], in [LocalIconTint] while the row is [enabled]. A tinted plain folder
+ * is filled, because a thin outline is too faint to read the color from.
+ */
 @Composable
 internal fun LeadingSymbol(
     resource: DrawableResource,
     size: Dp = PanelTokens.iconSize,
     enabled: Boolean = true,
 ) {
-    val tint = LocalIconTint.current.takeIf { enabled } ?: LocalContentColor.current
-    CompositionLocalProvider(LocalContentColor provides tint) { Symbol(resource, size = size) }
+    val tint = LocalIconTint.current.takeIf { enabled }
+    val filled = tint != null && resource == Res.drawable.symbol_folder
+    val shown = if (filled) Res.drawable.symbol_folder_fill else resource
+    CompositionLocalProvider(LocalContentColor provides (tint ?: LocalContentColor.current)) {
+        Symbol(shown, size = size)
+    }
 }
