@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import com.otus.designsystem.shared.overlays.components.ConfirmDialog
 import com.otus.designsystem.shared.overlays.components.InputDialog
 import com.otus.designsystem.shared.overlays.components.MenuAction
+import com.otus.designsystem.theme.colors.CustomTheme
 import com.otus.designsystem.theme.colors.ThemeChoice
 import com.otus.settings.presentation.ThemeOption
 import com.otus.settings.presentation.copyName
@@ -23,9 +24,9 @@ internal fun themeActions(
 ): List<MenuAction> {
     val custom = option.custom
     return buildList {
-        custom?.let { add(MenuAction("Rename") { onDialog(ThemeDialog.Rename(it)) }) }
+        if (custom != null) add(MenuAction("Rename") { onDialog(ThemeDialog.Rename(custom)) })
         add(MenuAction("Duplicate") { onChange(option.choice.withCopy(choice.copyName(option))) })
-        custom?.let { add(MenuAction("Delete") { onDialog(ThemeDialog.Delete(it)) }) }
+        if (custom != null) add(MenuAction("Delete") { onDialog(ThemeDialog.Delete(custom)) })
     }
 }
 
@@ -38,26 +39,41 @@ internal fun ThemeDialogs(
     onDialog: (ThemeDialog?) -> Unit,
 ) {
     when (dialog) {
-        is ThemeDialog.Rename -> {
-            InputDialog(
-                "Rename theme",
-                "Name",
-                "Rename",
-                onConfirm = { onChange(choice.withName(dialog.theme.id, it)) },
-                onDismiss = { onDialog(null) },
-                initial = dialog.theme.title,
-                problem = { choice.nameProblem(it, dialog.theme) },
-            )
-        }
-
-        is ThemeDialog.Delete -> {
-            ConfirmDialog(
-                "Delete ${dialog.theme.title}?",
-                "Its colors are deleted. If it is in use, the app switches to ${dialog.theme.base.title}.",
-                "Delete",
-                onConfirm = { onChange(choice.withoutCustomTheme(dialog.theme.id)) },
-                onDismiss = { onDialog(null) },
-            )
-        }
+        is ThemeDialog.Rename -> RenameThemeDialog(dialog.theme, choice, onChange) { onDialog(null) }
+        is ThemeDialog.Delete -> DeleteThemeDialog(dialog.theme, choice, onChange) { onDialog(null) }
     }
+}
+
+@Composable
+private fun RenameThemeDialog(
+    theme: CustomTheme,
+    choice: ThemeChoice,
+    onChange: (ThemeChoice) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    InputDialog(
+        title = "Rename theme",
+        label = "Name",
+        confirmLabel = "Rename",
+        onConfirm = { onChange(choice.withName(theme.id, it)) },
+        onDismiss = onDismiss,
+        initial = theme.title,
+        problem = { choice.nameProblem(it, theme) },
+    )
+}
+
+@Composable
+private fun DeleteThemeDialog(
+    theme: CustomTheme,
+    choice: ThemeChoice,
+    onChange: (ThemeChoice) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    ConfirmDialog(
+        title = "Delete ${theme.title}?",
+        message = "Its colors are deleted. If it is in use, the app switches to ${theme.base.title}.",
+        confirmLabel = "Delete",
+        onConfirm = { onChange(choice.withoutCustomTheme(theme.id)) },
+        onDismiss = onDismiss,
+    )
 }
