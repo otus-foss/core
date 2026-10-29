@@ -55,4 +55,9 @@ class ThemeSettingsStateTest {
             ),
         )
     }
+
+    @Test
+    fun aSavedEarlierOtusBlueBecomesTodaysPreset() {
+        assertEquals(ThemeChoice(), decodeThemeChoice("otus #4D6F92"))
+    }
 }

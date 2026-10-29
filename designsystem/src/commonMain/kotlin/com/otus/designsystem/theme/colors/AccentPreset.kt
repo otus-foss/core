@@ -6,7 +6,7 @@ import androidx.compose.ui.graphics.Color
 public enum class AccentPreset(
     public val color: Color,
 ) {
-    OtusBlue(Color(0xFF4D6F92)),
+    OtusBlue(Color(0xFF5A7EA4)),
     Sky(Color(0xFF1D9BF0)),
     Blue(Color(0xFF2383E2)),
     Violet(Color(0xFF7C5CC4)),
@@ -27,5 +27,10 @@ public enum class AccentPreset(
                 val blue = preset.color.blue - color.blue
                 red * red + green * green + blue * blue
             }
+
+        /** The accent a saved [color] stands for today, so an earlier Otus blue stays the preset. */
+        public fun current(color: Color): Color = if (color == EARLIER_OTUS_BLUE) OtusBlue.color else color
+
+        private val EARLIER_OTUS_BLUE = Color(0xFF4D6F92)
     }
 }

@@ -16,16 +16,16 @@ All values are opaque sRGB hex colors.
 
 | Token | Hex |
 | --- | --- |
-| `accent-light` | `#618BB6` |
-| `accent-regular` | `#4D6F92` |
-| `accent-dark` | `#39526B` |
-| `bg-light` | `#3F4041` |
-| `bg-regular` | `#202021` |
-| `bg-dark` | `#151515` |
+| `accent-light` | `#7099C4` |
+| `accent-regular` | `#5A7EA4` |
+| `accent-dark` | `#435F7C` |
+| `bg-light` | `#252628` |
+| `bg-regular` | `#161617` |
+| `bg-dark` | `#111112` |
 | `text-1` | `#EBECED` |
 | `text-2` | `#C2C2C2` |
 | `text-3` | `#8A8A8A` |
-| `stroke-bg-dark` | `#27292C` |
+| `stroke-bg-dark` | `#1C1D1F` |
 
 ## Implementation guidance
 
@@ -33,7 +33,7 @@ Define the palette centrally as named Compose theme tokens. Use semantic compone
 
 Exact component assignments, interaction states, and foreground/background pairings still need design verification. In particular, do not assume every text/accent pairing has sufficient contrast merely because both colors are supplied.
 
-Both apps now use this palette in a dark-only Compose theme. Default text is text-1 (#EBECED) at full opacity; background and default surfaces use bg-regular (#202021). Secondary text colors are opt-in. System appearance does not select a different theme.
+Both apps now use this palette in a dark-only Compose theme. Default text is text-1 (#EBECED) at full opacity; background and default surfaces use bg-regular (#161617). Secondary text colors are opt-in. System appearance does not select a different theme.
 
 ## Context panel decisions
 
