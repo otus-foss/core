@@ -110,8 +110,8 @@ private fun FormattingRow(
             Modifier.weight(1f).scrollFade(scroll).horizontalScroll(scroll),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            leading?.let {
-                it()
+            if (leading != null) {
+                leading()
                 LeadingDivider()
             }
             TextFormat.entries.forEach { format ->

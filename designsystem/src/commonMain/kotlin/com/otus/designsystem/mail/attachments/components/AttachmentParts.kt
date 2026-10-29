@@ -76,7 +76,7 @@ internal fun FileTile(
     ) {
         val thumbnail = file.thumbnail
         if (thumbnail != null) {
-            Image(thumbnail, null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
+            Image(thumbnail, contentDescription = null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
         } else {
             CompositionLocalProvider(LocalContentColor provides OtusColors.text2) {
                 Symbol(file.kind.icon, size = iconSize)

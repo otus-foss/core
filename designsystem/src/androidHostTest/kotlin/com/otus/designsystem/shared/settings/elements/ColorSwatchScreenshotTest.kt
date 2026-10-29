@@ -28,9 +28,9 @@ class ColorSwatchScreenshotTest {
 
     @Test
     fun selected() =
-        compose.screenshot(
-            "color_swatch_selected",
-        ) { ColorSwatch(OtusColors.accentRegular, "Blue", selected = true, {}) }
+        compose.screenshot("color_swatch_selected") {
+            ColorSwatch(OtusColors.accentRegular, "Blue", selected = true, {})
+        }
 
     @Test
     fun add() = compose.screenshot("color_swatch_add") { AddSwatch("Custom color", {}) }

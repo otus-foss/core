@@ -122,7 +122,8 @@ private class LinkClient(
         url: String?,
     ) {
         // The page lays out after the load ends, so its width is known one frame later.
-        (view as? FittingWebView)?.let { fitting -> fitting.post { fitting.fitWidth() } }
+        val fitting = view as? FittingWebView ?: return
+        fitting.post { fitting.fitWidth() }
     }
 }
 

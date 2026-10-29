@@ -49,7 +49,7 @@ public fun AttachmentStrip(
             Modifier
                 .unfolding(unfold, ReadTokens.attachmentHeight)
                 .unfoldedForm(unfold)
-                .then(if (folded) Modifier.clearAndSetSemantics {} else Modifier),
+                .hideFoldedAttachments(folded),
         ) {
             AttachmentHeader(summary, onToggle, actions.onSaveAll)
             Column(Modifier.heightIn(max = ReadTokens.openStripMaxHeight).verticalScroll(rememberScrollState())) {
@@ -106,3 +106,5 @@ private fun AttachmentHeader(
         StripChevron(up = false)
     }
 }
+
+private fun Modifier.hideFoldedAttachments(folded: Boolean): Modifier = if (folded) clearAndSetSemantics {} else this
