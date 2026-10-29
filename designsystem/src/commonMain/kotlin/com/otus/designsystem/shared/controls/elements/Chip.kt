@@ -48,10 +48,10 @@ public fun Chip(
 ) {
     ChipFrame(onClick, modifier, selected, enabled, OtusColors.bgDark) {
         leading?.invoke()
-        label?.let { ChipText(it) }
-        detail?.let {
+        if (label != null) ChipText(label)
+        if (detail != null) {
             ChipDivider(selected)
-            ChipText(it)
+            ChipText(detail)
         }
     }
 }
@@ -77,13 +77,7 @@ internal fun ChipFrame(
     Box(
         modifier
             .sizeIn(minWidth = PanelTokens.touchTarget, minHeight = PanelTokens.touchTarget)
-            .then(
-                if (selected == null) {
-                    Modifier.clickable(interactions, null, enabled, role = Role.Button, onClick = onClick)
-                } else {
-                    Modifier.toggleable(selected, interactions, null, enabled, Role.Checkbox) { onClick() }
-                },
-            ),
+            .chipAction(interactions, selected, enabled, onClick),
         contentAlignment = Alignment.Center,
     ) {
         Surface(
@@ -190,3 +184,15 @@ private object LastAtEnd : Arrangement.Horizontal {
         }
     }
 }
+
+private fun Modifier.chipAction(
+    interactions: MutableInteractionSource,
+    selected: Boolean?,
+    enabled: Boolean,
+    onClick: () -> Unit,
+): Modifier =
+    if (selected == null) {
+        clickable(interactions, indication = null, enabled = enabled, role = Role.Button, onClick = onClick)
+    } else {
+        toggleable(selected, interactions, indication = null, enabled = enabled, role = Role.Checkbox) { onClick() }
+    }
