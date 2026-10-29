@@ -10,9 +10,10 @@ import com.otus.jscontact.AddressComponent
  */
 internal fun ValidationScope.checkAddress(address: Address) {
     propertyNames(address.extra, Address.serializer())
-    ensure(
+    val details =
         listOfNotNull(address.components, address.coordinates, address.countryCode, address.full, address.timeZone)
-            .isNotEmpty(),
+    ensure(
+        details.isNotEmpty(),
         "An Address needs components, coordinates, countryCode, full, or timeZone ($ADDRESS_SECTION)",
     )
     components(address.componentRules())

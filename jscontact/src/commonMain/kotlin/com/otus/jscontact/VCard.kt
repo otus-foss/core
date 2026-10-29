@@ -80,20 +80,14 @@ private fun String.vCardEntries(): List<VCardEntry> =
         var open: MutableList<VCardProperty>? = null
         for (property in vCardLines().mapNotNull { it.toVCardProperty() }) {
             val current = open
-            when {
-                property.marks(BEGIN) -> {
-                    if (current != null) add(VCardEntry(current, isClosed = false))
-                    open = mutableListOf()
-                }
-
-                property.marks(END) -> {
-                    if (current != null) add(VCardEntry(current, isClosed = true))
-                    open = null
-                }
-
-                else -> {
-                    current?.add(property)
-                }
+            if (property.marks(BEGIN)) {
+                if (current != null) add(VCardEntry(current, isClosed = false))
+                open = mutableListOf()
+            } else if (property.marks(END)) {
+                if (current != null) add(VCardEntry(current, isClosed = true))
+                open = null
+            } else {
+                current?.add(property)
             }
         }
         val unclosed = open
