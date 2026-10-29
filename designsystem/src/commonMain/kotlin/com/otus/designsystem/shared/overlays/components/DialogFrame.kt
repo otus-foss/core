@@ -53,29 +53,7 @@ public fun DialogFrame(
         CompositionLocalProvider(LocalDensity provides density) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 SheetScrim(title, visible = 1f, onClick = onDismiss)
-                Surface(
-                    Modifier
-                        .safeDrawingPadding()
-                        .imePadding()
-                        .padding(SheetTokens.gap)
-                        .widthIn(max = PageTokens.dialogMaxWidth)
-                        .fillMaxWidth()
-                        .semantics { paneTitle = title },
-                    shape = RoundedCornerShape(SheetTokens.radius),
-                    color = OtusColors.bgDark,
-                    contentColor = OtusColors.text1,
-                    border = BorderStroke(PanelTokens.borderWidth, OtusColors.strokeBgDark),
-                ) {
-                    ProvideTextStyle(panelTextStyle()) {
-                        Column(
-                            Modifier.padding(SheetTokens.inset),
-                            verticalArrangement = Arrangement.spacedBy(SheetTokens.gap),
-                        ) {
-                            DialogHeading(title, onDismiss.takeIf { closeButton })
-                            content()
-                        }
-                    }
-                }
+                DialogSurface(title, onDismiss.takeIf { closeButton }, content)
             }
         }
     }
@@ -88,6 +66,39 @@ private fun DialogHeading(
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(title, Modifier.weight(1f).semantics { heading() }, fontSize = SheetTokens.titleSize)
-        onClose?.let { IconButton("Close", it, look = IconButtonLook.Plain) { Symbol(Res.drawable.symbol_close) } }
+        if (onClose != null) {
+            IconButton("Close", onClose, look = IconButtonLook.Plain) { Symbol(Res.drawable.symbol_close) }
+        }
+    }
+}
+
+@Composable
+private fun DialogSurface(
+    title: String,
+    onClose: (() -> Unit)?,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    Surface(
+        Modifier
+            .safeDrawingPadding()
+            .imePadding()
+            .padding(SheetTokens.gap)
+            .widthIn(max = PageTokens.dialogMaxWidth)
+            .fillMaxWidth()
+            .semantics { paneTitle = title },
+        shape = RoundedCornerShape(SheetTokens.radius),
+        color = OtusColors.bgDark,
+        contentColor = OtusColors.text1,
+        border = BorderStroke(PanelTokens.borderWidth, OtusColors.strokeBgDark),
+    ) {
+        ProvideTextStyle(panelTextStyle()) {
+            Column(
+                Modifier.padding(SheetTokens.inset),
+                verticalArrangement = Arrangement.spacedBy(SheetTokens.gap),
+            ) {
+                DialogHeading(title, onClose)
+                content()
+            }
+        }
     }
 }

@@ -74,12 +74,13 @@ internal fun InputBox(
         keyboardOptions = KeyboardOptions(autoCorrectEnabled = false, keyboardType = look.kind.keyboardType),
         decorationBox = { field ->
             Row(Modifier.inputFrame(onRemove != null), verticalAlignment = Alignment.CenterVertically) {
-                look.icon?.let { InputIcon(it) }
+                val icon = look.icon
+                if (icon != null) InputIcon(icon)
                 Box(Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
                     if (value.isEmpty()) Text(look.placeholder, style = style, color = OtusColors.text3, maxLines = 1)
                     field()
                 }
-                onRemove?.let { RemoveFieldButton("Remove $description", it) }
+                if (onRemove != null) RemoveFieldButton("Remove $description", onRemove)
             }
         },
     )

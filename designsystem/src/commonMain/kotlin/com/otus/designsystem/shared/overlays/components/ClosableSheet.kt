@@ -38,23 +38,7 @@ public fun ClosableSheet(
     SheetSurface(title, onDismiss, onDone = { confirm?.onConfirm?.invoke() }) { close, done, closing ->
         ClosableHeader(title, close)
         content()
-        if (confirm != null) {
-            ActionButton(
-                confirm.label,
-                done,
-                Modifier.fillMaxWidth().padding(SheetTokens.inset),
-                primary = true,
-                enabled = confirm.enabled && !closing,
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(PanelTokens.iconGap * 2),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    confirm.icon?.let { Symbol(it) }
-                    Text(confirm.label, color = if (confirm.enabled) OtusColors.text1 else OtusColors.text3)
-                }
-            }
-        }
+        if (confirm != null) ConfirmButton(confirm, done, closing)
     }
 }
 
@@ -80,6 +64,30 @@ private fun ClosableHeader(
                 fontWeight = FontWeight.SemiBold,
             )
             IconButton("Close", onClose, look = IconButtonLook.Plain) { Symbol(Res.drawable.symbol_close) }
+        }
+    }
+}
+
+@Composable
+private fun ConfirmButton(
+    confirm: SheetConfirm,
+    done: () -> Unit,
+    closing: Boolean,
+) {
+    ActionButton(
+        confirm.label,
+        done,
+        Modifier.fillMaxWidth().padding(SheetTokens.inset),
+        primary = true,
+        enabled = confirm.enabled && !closing,
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(PanelTokens.iconGap * 2),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            val icon = confirm.icon
+            if (icon != null) Symbol(icon)
+            Text(confirm.label, color = if (confirm.enabled) OtusColors.text1 else OtusColors.text3)
         }
     }
 }
