@@ -77,7 +77,7 @@ class ReadBodyScreenshotTest {
         compose.screenshot("quote_fold") {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 QuoteFold(QuotedLevel(DemoPeople.mira, "10 Oct", QUOTE, onPerson = {}), expanded = false, onToggle = {})
-                QuoteFold(QuotedLevel(null, "10 Oct", QUOTE), expanded = true, onToggle = {})
+                QuoteFold(QuotedLevel(person = null, "10 Oct", QUOTE), expanded = true, onToggle = {})
             }
         }
 
@@ -138,7 +138,7 @@ class ReadBodyScreenshotTest {
                         opens = true,
                         detail = "Usually Invoices",
                     ),
-                    OptionsItem.Toggle("Mute conversation", Res.drawable.symbol_notifications_off, true) {},
+                    OptionsItem.Toggle("Mute conversation", Res.drawable.symbol_notifications_off, checked = true) {},
                 ),
                 onDone = {},
             )

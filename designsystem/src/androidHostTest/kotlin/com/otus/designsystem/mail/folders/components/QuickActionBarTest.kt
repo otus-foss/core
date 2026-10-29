@@ -43,7 +43,8 @@ class QuickActionBarTest {
                 onClick = { clicks++ },
                 onLongClick = { at = it },
             )
-            at?.let { point ->
+            val point = at
+            if (point != null) {
                 val actions =
                     listOf(
                         MenuAction("Rename", Res.drawable.symbol_edit) { chosen += "Rename" },

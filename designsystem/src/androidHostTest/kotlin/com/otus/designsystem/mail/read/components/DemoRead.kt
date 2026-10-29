@@ -20,6 +20,6 @@ internal object DemoRead {
     val invoices = FolderName(listOf("Finance", "Invoices"), FolderColor.Yellow, system = false)
     val freelancing = FolderName(listOf("Freelancing"), FolderColor.Pink, system = false)
     val clients = FolderName(listOf("Clients"), FolderColor.Blue, system = false)
-    val archive = FolderName(listOf("Archive"), null, system = true, icon = Res.drawable.symbol_archive)
+    val archive = FolderName(listOf("Archive"), color = null, system = true, icon = Res.drawable.symbol_archive)
     val taxes = FolderName(listOf("Taxes"), FolderColor.Green, system = false)
 }
