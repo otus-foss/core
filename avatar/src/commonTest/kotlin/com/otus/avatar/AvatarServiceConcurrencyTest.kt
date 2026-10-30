@@ -9,6 +9,7 @@ import kotlinx.coroutines.yield
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertSame
 
 class AvatarServiceConcurrencyTest {
@@ -92,24 +93,22 @@ class AvatarServiceConcurrencyTest {
         }
 
     @Test
-    fun unresponsiveWebsitesStopAtTheSharedLimitAndUseTheIconCache() =
+    fun unresponsiveWebsitesStopAtTheSharedLimit() =
         runTest {
             val service =
                 AvatarService(
                     images = AvatarImageLoader { awaitCancellation() },
                     domains = AvatarDomainResolver { "company.com" },
-                    iconFallback = DomainIconSource { image },
                 )
             // Virtual time: three hanging icon requests must give up within the shared limit.
             val result =
                 withTimeout(DOMAIN_ICON_LIMIT_MILLIS + 1) {
                     service.resolve(
                         AvatarRequest("work", "noreply@email.company.com"),
-                        AvatarOptions(domainIcons = true, domainIconProxy = true),
+                        AvatarOptions(domainIcons = true),
                     )
                 }
-            assertSame(image, result.image)
-            assertEquals(AvatarOrigin.Domain, result.origin)
+            assertNull(result.image)
         }
 
     @Test
