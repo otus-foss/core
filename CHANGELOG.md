@@ -8,6 +8,9 @@
   A 1×1 PNG counts as no image. Add `isPublicAvatarUrl`, the public loader's URL check.
 - Add brand logos: `IconProxy.brandLogoUrl` and `AvatarRequest.brandDomain`, the From domain a
   message passed DMARC for. See [brand logos](docs/avatar.md#brand-logos).
+- Add `RadioChoiceSheet`, a `SheetFrame` of radio rows that saves the picked option on Done, for
+  choices that should not apply while the user is still picking. `below` adds content for the
+  picked option, and `doneEnabled` can hold Done until it is complete.
 - Add `SidebarTileSize` (Small, Wide, Full) and `SidebarTileEditor`, a Control Center style editor
   for the sidebar's mailbox tiles: hold a tile to move it, drag its corner arc to resize it, and tap
   its minus to remove it. `SidebarMailboxGrid` takes `sizeOf`, places tiles in rows in order, and

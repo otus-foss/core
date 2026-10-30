@@ -63,7 +63,7 @@ The element and component lists below describe UI layers, not flat packages.
   `ToggleSwitch`, `ValueButton`, `FilterChip` (with `FilterChipRole` and `ChipLabel`), `FolderGlyph`,
   `FolderPath`, `FolderStack`, `PageDots`, `DatePill`, `DestinationPill`, `PlainAction`, `HtmlQuote`, `FirstFit`, and the
   `controlPressFeedback` modifier.
-- `components`: `ActionBar`, `ActionBarHost`, `BarAction`, `BarContext`, `BarToken`, `ActionDialog`, `ChoiceDialog`, `ChoiceSheet` (with `ChoiceRow`), `ConfirmDialog`, `InputDialog`, `InputSheet`, `ContextPanel`, `DatePickerDialog`,
+- `components`: `ActionBar`, `ActionBarHost`, `BarAction`, `BarContext`, `BarToken`, `ActionDialog`, `ChoiceDialog`, `ChoiceSheet` (with `ChoiceRow`), `RadioChoiceSheet`, `ConfirmDialog`, `InputDialog`, `InputSheet`, `ContextPanel`, `DatePickerDialog`,
   `MonthNavigation`, `MonthYearPicker`, `PageScaffold`, `Subpage`, `PageSection`, `PanelSurface`,
   `PickerSearch`, `PreviewCard`, `PullToRefresh`, `ReorderableColumn`, `ReorderableTree`, `SelectionSheet`, `SheetFrame`, `SettingRow`, `SettingPageRow`,
   `SettingToggleRow`, `SettingsSection`, `InfoTip` (with `InfoText`; also the `info` parameter of `SettingsSection` and `SettingToggleRow`), `SpecificDatePicker`, `Sidebar`, `SidebarHeader`, `SidebarMailboxGrid`, `ScopeSheet`, `ScopeRow` and `ScopeChildRow` (with `ScopeOption`), `PickerChip`, `AccountGroupRow`,
