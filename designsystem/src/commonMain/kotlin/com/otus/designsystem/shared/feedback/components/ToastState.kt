@@ -16,6 +16,8 @@ import com.otus.designsystem.theme.tokens.feedback.ToastTokens
  * "Email deleted" to "3 emails deleted". A [sticky] toast has no timer and stays until its action
  * runs or it is swiped away, such as a failure with Retry. [onClose] runs when the toast leaves
  * without its action, by its timer or a swipe, such as to finish what Undo would have reverted.
+ * [swipeAction] runs instead of [onClose] when the user swipes the toast away, and its label
+ * names the swipe for screen readers, such as Send to send a held message at once.
  * [durationMillis] sets how long it stays in place of the default, such as an Undo window the user
  * chose; screen readers may still lengthen it.
  */
@@ -27,6 +29,7 @@ public data class ToastMessage(
     val sticky: Boolean = false,
     val onClose: (() -> Unit)? = null,
     val durationMillis: Long? = null,
+    val swipeAction: ToastAction? = null,
 )
 
 /** The toasts on screen, newest last. Create it with `remember` and pass it to [ToastHost]. */
@@ -88,9 +91,18 @@ public class ToastState {
     internal fun remove(
         entry: ToastEntry,
         acted: Boolean = false,
+    ) = drop(entry) { if (!acted) entry.message.onClose?.invoke() }
+
+    /** Removes a toast the user swiped away: its swipe action runs, or else its close callback. */
+    internal fun swipe(entry: ToastEntry) =
+        drop(entry) { (entry.message.swipeAction?.onAction ?: entry.message.onClose)?.invoke() }
+
+    private fun drop(
+        entry: ToastEntry,
+        then: () -> Unit,
     ) {
         if (!entries.remove(entry)) return
-        if (!acted) entry.message.onClose?.invoke()
+        then()
         if (entries.size <= 1) expanded = false
     }
 }

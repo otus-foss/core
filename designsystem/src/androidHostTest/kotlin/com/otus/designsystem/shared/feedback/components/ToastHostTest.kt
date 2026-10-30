@@ -107,6 +107,17 @@ class ToastHostTest {
     }
 
     @Test
+    fun screenReadersHearTheSwipeActionsLabelAndCanRunIt() {
+        var sent = false
+        state.show(ToastMessage("Sending…", ToastAction("Undo") {}, swipeAction = ToastAction("Send") { sent = true }))
+        showHost()
+        val actions = compose.onNodeWithText("Sending…").fetchSemanticsNode().config[SemanticsActions.CustomActions]
+        compose.runOnIdle { actions.single { it.label == "Send" }.action() }
+        assertTrue(sent)
+        assertTrue(state.entries.isEmpty())
+    }
+
+    @Test
     fun aPlainToastFadesOutWhenItsTimeIsUp() {
         state.show(ToastMessage("Draft saved"))
         showHost()
