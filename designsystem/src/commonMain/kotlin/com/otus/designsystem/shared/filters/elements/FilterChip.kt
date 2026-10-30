@@ -1,7 +1,6 @@
 package com.otus.designsystem.shared.filters.elements
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -27,6 +25,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
+import com.otus.designsystem.shared.controls.elements.chipAction
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.shared.controls.elements.reportControlVisualBounds
 import com.otus.designsystem.theme.colors.OtusColors
@@ -102,9 +101,9 @@ private fun Modifier.chipChoice(
     onClick: () -> Unit,
 ): Modifier =
     when (role) {
-        FilterChipRole.Checkbox -> toggleable(on, interactions, null, role = Role.Checkbox) { onClick() }
-        FilterChipRole.Radio -> selectable(on, interactions, null, role = Role.RadioButton, onClick = onClick)
-        FilterChipRole.Button -> clickable(interactions, null, role = Role.Button, onClick = onClick)
+        FilterChipRole.Checkbox -> chipAction(interactions, on, enabled = true, onClick)
+        FilterChipRole.Radio -> radioChoice(on, interactions, onClick)
+        FilterChipRole.Button -> chipAction(interactions, selected = null, enabled = true, onClick)
     }
 
 @Composable
@@ -122,7 +121,14 @@ internal fun ChipLabel.annotated(): AnnotatedString {
     val faint = OtusColors.text3
     val label = this
     return buildAnnotatedString {
-        label.prefix?.let { withStyle(SpanStyle(color = faint)) { append("$it / ") } }
+        val prefix = label.prefix
+        if (prefix != null) withStyle(SpanStyle(color = faint)) { append("$prefix / ") }
         append(label.text)
     }
 }
+
+private fun Modifier.radioChoice(
+    selected: Boolean,
+    source: MutableInteractionSource,
+    onClick: () -> Unit,
+): Modifier = selectable(selected, source, indication = null, role = Role.RadioButton, onClick = onClick)

@@ -58,7 +58,7 @@ public fun ScopeRow(
     onExpandedChange: (Boolean) -> Unit = {},
 ) {
     ScopeRowFrame(option, chosen, onClick, onLongClick, modifier, nested = false) {
-        expanded?.let { SidebarExpandButton(option.title, it, onExpandedChange) }
+        if (expanded != null) SidebarExpandButton(option.title, expanded, onExpandedChange)
     }
 }
 
@@ -113,7 +113,7 @@ private fun ScopeRowFrame(
     ) {
         SilentAvatarStack(option.avatars, if (nested) ScopeSheetTokens.childAvatar else ScopeSheetTokens.avatar)
         ScopeText(option, Modifier.weight(1f))
-        option.count?.let { SidebarCount(it) }
+        if (option.count != null) SidebarCount(option.count)
         if (option.pinned) {
             CompositionLocalProvider(LocalContentColor provides OtusColors.text2) { Symbol(Res.drawable.symbol_keep) }
         }
@@ -134,9 +134,9 @@ private fun ScopeText(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
-        option.subtitle?.let {
+        if (option.subtitle != null) {
             Text(
-                it,
+                option.subtitle,
                 style = panelTextStyle(),
                 color = OtusColors.text2,
                 fontSize = SheetTokens.detailSize,

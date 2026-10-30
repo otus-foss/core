@@ -126,8 +126,12 @@ public fun UnfoldingStripCard(
         {
             Box(Modifier.stripCardFrame()) {
                 // Composed while folded, to measure the unfold, but hidden from screen readers.
-                val hidden = if (unfold.fraction == 0f) Modifier.clearAndSetSemantics {} else Modifier
-                Box(Modifier.unfolding(unfold, folded).unfoldedForm(unfold).then(hidden)) { content() }
+                Box(
+                    Modifier
+                        .unfolding(unfold, folded)
+                        .unfoldedForm(unfold)
+                        .hiddenWhenFolded(unfold.fraction == 0f),
+                ) { content() }
                 if (unfold.fraction < 1f) {
                     // The strip underneath is the one screen readers and taps reach.
                     Box(Modifier.align(Alignment.BottomStart).foldedForm(unfold).clearAndSetSemantics {}) {
@@ -192,3 +196,5 @@ internal fun Modifier.unfolding(
         val height = (start + unfold.range * unfold.fraction).roundToInt().coerceAtMost(constraints.maxHeight)
         layout(full.width, height) { full.place(0, height - full.height) }
     }
+
+internal fun Modifier.hiddenWhenFolded(folded: Boolean): Modifier = if (folded) clearAndSetSemantics {} else this

@@ -69,15 +69,11 @@ public fun <T> ChoiceSheet(
             verticalArrangement = Arrangement.spacedBy(ChoiceSheetTokens.groupGap),
         ) {
             choices.groups.forEach { group ->
-                Column(Modifier.clip(RoundedCornerShape(SheetTokens.rowRadius)).background(OtusColors.bgRegular)) {
-                    group.forEachIndexed { index, option ->
-                        ChoiceOption(row(option), option == choices.selected, first = index == 0) { onSelect(option) }
-                    }
-                }
+                ChoiceGroup(group, choices.selected, row, onSelect)
             }
-            footnote?.let {
+            if (footnote != null) {
                 Text(
-                    it,
+                    footnote,
                     Modifier.padding(horizontal = ChoiceSheetTokens.optionPadding),
                     color = OtusColors.text2,
                     fontSize = SheetTokens.detailSize,
@@ -116,15 +112,17 @@ private fun ChoiceOption(
         Modifier
             .fillMaxWidth()
             .heightIn(min = ChoiceSheetTokens.optionMinHeight)
-            .then(if (first) Modifier else Modifier.topHairline(OtusColors.strokeBgDark))
+            .choiceDivider(first)
             .selectable(selected, interactions, indication = null, role = Role.RadioButton, onClick = onClick)
             .controlPressFeedback(interactions, RoundedCornerShape(0))
             .padding(horizontal = ChoiceSheetTokens.optionPadding, vertical = ChoiceSheetTokens.optionGap),
         horizontalArrangement = Arrangement.spacedBy(ChoiceSheetTokens.optionGap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        row.icon?.let { CompositionLocalProvider(LocalIconTint provides row.iconTint) { LeadingSymbol(it) } }
-        row.swatch?.let { FolderColorSwatch(it) }
+        if (row.icon != null) {
+            CompositionLocalProvider(LocalIconTint provides row.iconTint) { LeadingSymbol(row.icon) }
+        }
+        if (row.swatch != null) FolderColorSwatch(row.swatch)
         val lineGap = if (row.keyword != null) SummaryTokens.avatarGap else SettingTokens.textGap
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(lineGap)) {
             if (row.keyword != null) {
@@ -137,9 +135,9 @@ private fun ChoiceOption(
                     lineHeight = SettingTokens.titleLineHeight,
                 )
             }
-            row.detail?.let {
+            if (row.detail != null) {
                 Text(
-                    it,
+                    row.detail,
                     color = OtusColors.text2,
                     fontSize = SettingTokens.descriptionSize,
                     lineHeight = SettingTokens.descriptionLineHeight,
@@ -150,3 +148,19 @@ private fun ChoiceOption(
         Box(Modifier.size(PanelTokens.iconSize)) { if (selected) Symbol(Res.drawable.symbol_check) }
     }
 }
+
+@Composable
+private fun <T> ChoiceGroup(
+    options: List<T>,
+    selected: T,
+    row: (T) -> ChoiceRow,
+    onSelect: (T) -> Unit,
+) {
+    Column(Modifier.clip(RoundedCornerShape(SheetTokens.rowRadius)).background(OtusColors.bgRegular)) {
+        options.forEachIndexed { index, option ->
+            ChoiceOption(row(option), option == selected, first = index == 0) { onSelect(option) }
+        }
+    }
+}
+
+private fun Modifier.choiceDivider(first: Boolean): Modifier = if (first) this else topHairline(OtusColors.strokeBgDark)

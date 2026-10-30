@@ -55,15 +55,7 @@ public fun ThemeSettingsScreen(
     var editing by rememberSaveable { mutableStateOf<ThemeColor?>(null) }
     var dialog by remember { mutableStateOf<ThemeDialog?>(null) }
     Subpage("Theme", onBack) {
-        val shape = RoundedCornerShape(SheetTokens.radius)
-        Box(
-            Modifier
-                .fillMaxWidth()
-                .semantics { contentDescription = "Preview of the app in this theme" }
-                .background(OtusColors.bgRegular, shape)
-                .border(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape)
-                .padding(ThemeTokens.previewPadding),
-        ) { preview() }
+        AppPreview(preview)
         PageSection("Theme") {
             ThemeCards(choice, state::select) { themeActions(it, choice, state::select) { next -> dialog = next } }
         }
@@ -82,7 +74,8 @@ public fun ThemeSettingsScreen(
             { state.select(choice.withBase(ThemeBase.Otus).withAccent(ThemeChoice().accent)) },
         )
     }
-    dialog?.let { ThemeDialogs(it, choice, state::select) { next -> dialog = next } }
+    val currentDialog = dialog
+    if (currentDialog != null) ThemeDialogs(currentDialog, choice, state::select) { dialog = it }
     if (customizing) {
         CustomAccentSheet(
             choice,
@@ -90,13 +83,25 @@ public fun ThemeSettingsScreen(
             onDismiss = { customizing = false },
         )
     }
-    editing?.let { color ->
-        ColorSheet(
-            color.title,
-            choice.palette[color],
-            onPick = { state.select(state.choice.withColor(color, it)) },
-            onDismiss = { editing = null },
-            onReset = { state.select(state.choice.withColor(color, null)) }.takeIf { color in choice.customColors },
-        )
-    }
+    val color = editing ?: return
+    ColorSheet(
+        color.title,
+        choice.palette[color],
+        onPick = { state.select(state.choice.withColor(color, it)) },
+        onDismiss = { editing = null },
+        onReset = { state.select(state.choice.withColor(color, value = null)) }.takeIf { color in choice.customColors },
+    )
+}
+
+@Composable
+private fun AppPreview(preview: @Composable () -> Unit) {
+    val shape = RoundedCornerShape(SheetTokens.radius)
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .semantics { contentDescription = "Preview of the app in this theme" }
+            .background(OtusColors.bgRegular, shape)
+            .border(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape)
+            .padding(ThemeTokens.previewPadding),
+    ) { preview() }
 }

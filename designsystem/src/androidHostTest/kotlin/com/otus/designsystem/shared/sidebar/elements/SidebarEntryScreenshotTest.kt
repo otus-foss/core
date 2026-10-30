@@ -35,13 +35,13 @@ class SidebarEntryScreenshotTest {
     @Test
     fun unselected() =
         compose.screenshot("sidebar_entry_unselected") {
-            SidebarEntry("Receipts", Res.drawable.symbol_folder, false, {}, WIDTH)
+            SidebarEntry("Receipts", Res.drawable.symbol_folder, selected = false, {}, WIDTH)
         }
 
     @Test
     fun selectedWithCount() =
         compose.screenshot("sidebar_entry_selected_count") {
-            SidebarEntry("Inbox", Res.drawable.symbol_inbox, true, {}, WIDTH) { SidebarCount("12") }
+            SidebarEntry("Inbox", Res.drawable.symbol_inbox, selected = true, {}, WIDTH) { SidebarCount("12") }
         }
 
     @Test
@@ -51,24 +51,30 @@ class SidebarEntryScreenshotTest {
                 SidebarEntry(
                     "Projects",
                     Res.drawable.symbol_folder,
-                    false,
+                    selected = false,
                     {},
-                ) { SidebarExpandButton("Projects", true, {}) }
+                ) { SidebarExpandButton("Projects", expanded = true, {}) }
                 SidebarEntry(
                     "Engine",
                     Res.drawable.symbol_folder,
-                    false,
+                    selected = false,
                     {},
                     depth = 1,
-                ) { SidebarExpandButton("Engine", false, {}) }
-                SidebarEntry("Notes", Res.drawable.symbol_folder, true, {}, depth = 1) { SidebarCount("3") }
+                ) { SidebarExpandButton("Engine", expanded = false, {}) }
+                SidebarEntry("Notes", Res.drawable.symbol_folder, selected = true, {}, depth = 1) { SidebarCount("3") }
             }
         }
 
     @Test
     fun longLabel() =
         compose.screenshot("sidebar_entry_long_label") {
-            SidebarEntry("Receipts from the Analytical Engine Society", Res.drawable.symbol_folder, false, {}, WIDTH) {
+            SidebarEntry(
+                "Receipts from the Analytical Engine Society",
+                Res.drawable.symbol_folder,
+                selected = false,
+                {},
+                WIDTH,
+            ) {
                 SidebarCount("1,204")
             }
         }
@@ -94,7 +100,7 @@ class SidebarEntryScreenshotTest {
 
     @Test
     fun expandedButtonIsOn() {
-        compose.setContent { SidebarExpandButton("Projects", true, {}) }
+        compose.setContent { SidebarExpandButton("Projects", expanded = true, {}) }
         compose.onNodeWithContentDescription("Collapse Projects").assertIsOn()
     }
 

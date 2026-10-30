@@ -86,10 +86,9 @@ public fun ColorSheet(
         ) {
             HexRow(color, hex) { text ->
                 hex = text
-                parseHexColor(text)?.let {
-                    color = it
-                    hsl = it.toHsl()
-                }
+                val parsed = parseHexColor(text) ?: return@HexRow
+                color = parsed
+                hsl = parsed.toHsl()
             }
             ColorSlider(hsl.hue, { slide(hsl.copy(hue = it)) }, hueTrack, "Hue", range = 0f..MAX_HUE)
             ColorSlider(

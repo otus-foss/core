@@ -46,8 +46,10 @@ public data class JmapMethodResponse(
 /** Validates the response envelope (RFC 8620, section 3.4) without trusting its shape. */
 internal fun parseResponse(json: JsonObject): JmapResponse {
     val responses = json["methodResponses"] as? JsonArray ?: throw JmapException.NotJmap("missing methodResponses")
-    val results = responses.map(::invocation).groupBy({ it.first }, { it.second })
-    return JmapResponse(results, json.string("sessionState"))
+    return JmapResponse(
+        responses.map(::invocation).groupBy({ it.first }, { it.second }),
+        json.string("sessionState"),
+    )
 }
 
 /** One `[name, arguments, id]` triple (RFC 8620, section 3.2), checked element by element. */

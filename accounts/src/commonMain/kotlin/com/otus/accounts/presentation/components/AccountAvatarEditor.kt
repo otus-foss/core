@@ -72,7 +72,7 @@ private fun ReplaceDialog(
         title = if (choice.replaced.size == 1) "Replace 1 avatar?" else "Replace ${choice.replaced.size} avatars?",
         actions =
             listOf(
-                DialogAction(label, { edit.saveAll(edit.emails - kept, choice.avatar) }, true),
+                DialogAction(label, { edit.saveAll(edit.emails - kept, choice.avatar) }, primary = true),
             ),
         onDismiss = onDismiss,
         message = "These addresses have their own. Untick the ones to keep:",
@@ -82,7 +82,7 @@ private fun ReplaceDialog(
                 val avatar = edit.avatarOf(email)
                 PickRow(
                     email,
-                    null,
+                    subtitle = null,
                     PickMark(email in ticked, multiple = true),
                     { ticked = if (email in ticked) ticked - email else ticked + email },
                     leading = { PersonAvatar(avatar, AvatarTokens.size) },

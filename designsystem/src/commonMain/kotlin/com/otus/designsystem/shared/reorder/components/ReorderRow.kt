@@ -77,9 +77,9 @@ private fun moveAction(
     label: String,
     move: (() -> Unit)?,
 ): CustomAccessibilityAction? =
-    move?.let { run ->
+    move?.let { action ->
         CustomAccessibilityAction(label) {
-            run()
+            action()
             true
         }
     }

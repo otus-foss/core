@@ -18,10 +18,11 @@ internal fun ThemeChoice.encode(): String =
     buildList {
         add(base.name.lowercase())
         add(accent.toHex())
-        customId?.let { add("$SELECTED$it") }
+        if (customId != null) add("$SELECTED$customId")
         customThemes.forEach { theme ->
             add("${theme.id}:${theme.base.name.lowercase()}")
-            theme.name?.let { add("${theme.id}:$NAME${it.escaped()}") }
+            val name = theme.name
+            if (name != null) add("${theme.id}:$NAME${name.escaped()}")
             theme.colors.forEach { (color, value) -> add("${theme.id}:${color.name.lowercase()}=${value.toHex()}") }
         }
     }.joinToString(" ")
@@ -41,14 +42,19 @@ internal fun decodeThemeChoice(value: String): ThemeChoice {
         base = entryNamed<ThemeBase>(parts.first()) ?: default.base,
         accent = parts.getOrNull(1)?.let(::parseHexColor)?.let(AccentPreset::current) ?: default.accent,
         customThemes = themes,
-        customId =
-            rest
-                .firstOrNull { it.startsWith(SELECTED) }
-                ?.removePrefix(SELECTED)
-                ?.toIntOrNull()
-                ?.takeIf { id -> themes.any { it.id == id } },
+        customId = selectedThemeId(rest, themes),
     )
 }
+
+private fun selectedThemeId(
+    parts: List<String>,
+    themes: List<CustomTheme>,
+): Int? =
+    parts
+        .firstOrNull { it.startsWith(SELECTED) }
+        ?.removePrefix(SELECTED)
+        ?.toIntOrNull()
+        ?.takeIf { id -> themes.any { it.id == id } }
 
 /** Reads a `1:ink` part: a custom theme and the theme it was made from. */
 private fun decodeTheme(part: String): Pair<Int, ThemeBase>? {

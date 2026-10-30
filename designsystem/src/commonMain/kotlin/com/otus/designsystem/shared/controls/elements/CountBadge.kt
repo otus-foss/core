@@ -16,8 +16,7 @@ import com.otus.designsystem.theme.typography.panelTextStyle
 /**
  * A count in a circle filled like an [Avatar][com.otus.designsystem.shared.people.elements.Avatar],
  * such as the unread mail beside a pill's label. A longer count, such as "99+", stretches the
- * circle into a pill. The label beside it names what it
- * counts, so it stays decorative.
+ * circle into a pill. The label beside it names what it counts, so it stays decorative.
  */
 @Composable
 public fun CountBadge(

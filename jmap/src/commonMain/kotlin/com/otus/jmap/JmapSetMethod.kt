@@ -29,7 +29,7 @@ public class SetMethod(
     override fun arguments(): JsonObject =
         buildJsonObject {
             put("accountId", JsonPrimitive(accountId))
-            ifInState?.let { put("ifInState", JsonPrimitive(it)) }
+            if (ifInState != null) put("ifInState", JsonPrimitive(ifInState))
             if (create.isNotEmpty()) put("create", JsonObject(create))
             if (update.isNotEmpty()) put("update", JsonObject(update))
             if (destroy.isNotEmpty()) put("destroy", strings(destroy))

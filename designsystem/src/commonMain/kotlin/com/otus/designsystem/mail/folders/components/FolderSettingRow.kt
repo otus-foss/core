@@ -146,7 +146,8 @@ private fun FolderRowLayout(
             )
             slots.detail?.invoke()
         }
-        folder.count?.let { SidebarCount(it) }
+        val count = folder.count
+        if (count != null) SidebarCount(count)
         TrailingIcons(
             first = {
                 CompositionLocalProvider(LocalContentColor provides OtusColors.text2) {
@@ -172,9 +173,9 @@ public fun FolderRuleSummary(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         RuleChip(line, Modifier.weight(1f, fill = false), RowDensity.Compact)
-        more?.let {
+        if (more != null) {
             Text(
-                it,
+                more,
                 color = OtusColors.text3,
                 fontSize = RuleChipTokens.labelSize,
                 lineHeight = RuleChipTokens.labelLineHeight,

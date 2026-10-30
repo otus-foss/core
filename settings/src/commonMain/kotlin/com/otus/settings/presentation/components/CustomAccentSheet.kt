@@ -76,23 +76,28 @@ private fun ThemePreview(
             horizontalArrangement = Arrangement.spacedBy(PanelTokens.chipGap),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Box(
-                Modifier
-                    .height(ThemeTokens.customPillHeight)
-                    .background(palette.accentDark, CircleShape)
-                    .border(PanelTokens.borderWidth, palette.accentLight, CircleShape)
-                    .padding(horizontal = ThemeTokens.customPillPadding),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    "Inbox",
-                    color = palette.text1,
-                    fontSize = ThemeTokens.roleCaptionSize,
-                    fontWeight = FontWeight.SemiBold,
-                )
-            }
+            PreviewPill(palette)
             Text("Done", color = palette.accentLight, fontWeight = FontWeight.SemiBold)
         }
+    }
+}
+
+@Composable
+private fun PreviewPill(palette: OtusPalette) {
+    Box(
+        Modifier
+            .height(ThemeTokens.customPillHeight)
+            .background(palette.accentDark, CircleShape)
+            .border(PanelTokens.borderWidth, palette.accentLight, CircleShape)
+            .padding(horizontal = ThemeTokens.customPillPadding),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            "Inbox",
+            color = palette.text1,
+            fontSize = ThemeTokens.roleCaptionSize,
+            fontWeight = FontWeight.SemiBold,
+        )
     }
 }
 

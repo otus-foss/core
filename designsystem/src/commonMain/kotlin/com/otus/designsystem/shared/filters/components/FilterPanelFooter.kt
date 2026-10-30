@@ -69,7 +69,7 @@ private fun FooterButton(
     Surface(
         modifier
             .height(FilterTokens.footerButtonHeight)
-            .clickable(interactions, null, enabled, role = Role.Button, onClick = onClick)
+            .clickable(interactions, indication = null, enabled = enabled, role = Role.Button, onClick = onClick)
             .controlPressFeedback(interactions),
         shape = CircleShape,
         color = if (primary) OtusColors.accentDark else OtusColors.bgRegular,

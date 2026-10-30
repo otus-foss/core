@@ -77,7 +77,7 @@ public fun Toast(
             maxLines = ToastTokens.MAX_LINES,
             overflow = TextOverflow.Ellipsis,
         )
-        action?.let { ToastButton(it, remaining, if (lifted) OtusColors.bgLight else OtusColors.bgRegular) }
+        if (action != null) ToastButton(action, remaining, if (lifted) OtusColors.bgLight else OtusColors.bgRegular)
     }
 }
 

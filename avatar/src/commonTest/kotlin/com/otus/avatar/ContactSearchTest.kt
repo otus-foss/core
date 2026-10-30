@@ -144,14 +144,15 @@ private class SearchFixture(
                             respond(SEARCH_SESSION)
                         } else {
                             beforePage()
-                            val body = (request.body as TextContent).text
-                            val calls =
+                            val arguments =
                                 JmapJson
-                                    .parseToJsonElement(body)
+                                    .parseToJsonElement((request.body as TextContent).text)
                                     .jsonObject
                                     .getValue("methodCalls")
                                     .jsonArray
-                            val arguments = calls.first().jsonArray[1].jsonObject
+                                    .first()
+                                    .jsonArray[1]
+                                    .jsonObject
                             filters += arguments.getValue("filter")
                             val position =
                                 arguments

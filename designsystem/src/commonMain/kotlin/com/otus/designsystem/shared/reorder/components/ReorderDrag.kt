@@ -49,15 +49,15 @@ internal class ReorderDrag(
     }
 
     fun moveBy(delta: Float) {
-        val from = from
-        if (from >= 0) offset = clampDrag(rowHeights, from, offset + delta, spacing, overhang)
+        val sourceIndex = from
+        if (sourceIndex >= 0) offset = clampDrag(rowHeights, sourceIndex, offset + delta, spacing, overhang)
     }
 
     fun drop() {
-        val from = from
-        val offset = offset
+        val sourceIndex = from
+        val distance = offset
         cancel()
-        if (from >= 0) onDrop(from, offset)
+        if (sourceIndex >= 0) onDrop(sourceIndex, distance)
     }
 
     fun cancel() {

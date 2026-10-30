@@ -108,7 +108,8 @@ public class OwnAvatarsState(
                     onChange()
                     confirm(key, avatars.avatar(account.id, email, account.name), save)
                 } catch (failure: OwnAvatarException) {
-                    if (newest[key] === save) saved[key]?.let { show(key, it) }
+                    val previous = if (newest[key] === save) saved[key] else null
+                    if (previous != null) show(key, previous)
                     error = failure.reason.message()
                 }
             }

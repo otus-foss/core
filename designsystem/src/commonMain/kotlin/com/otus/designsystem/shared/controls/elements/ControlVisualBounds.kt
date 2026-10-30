@@ -10,7 +10,5 @@ import androidx.compose.ui.layout.onGloballyPositioned
 internal val LocalControlVisualBounds = staticCompositionLocalOf<((LayoutCoordinates) -> Unit)?> { null }
 
 @Composable
-internal fun Modifier.reportControlVisualBounds(): Modifier {
-    val report = LocalControlVisualBounds.current ?: return this
-    return onGloballyPositioned(report)
-}
+internal fun Modifier.reportControlVisualBounds(): Modifier =
+    LocalControlVisualBounds.current?.let { onGloballyPositioned(it) } ?: this

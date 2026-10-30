@@ -149,7 +149,8 @@ private fun MenuRow(
         horizontalArrangement = Arrangement.spacedBy(MenuTokens.iconGap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        action.icon?.let { Symbol(it) }
+        val icon = action.icon
+        if (icon != null) Symbol(icon)
         Text(action.label, style = panelTextStyle())
     }
 }

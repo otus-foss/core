@@ -1,7 +1,7 @@
 package com.otus.jmap
 
-import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.buildJsonObject
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -34,7 +34,7 @@ class JmapSessionLimitsTest {
             capabilityObjects =
                 mapOf(
                     JmapCapability.CORE to
-                        JsonObject(listOfNotNull(maxObjectsInGet?.let { "maxObjectsInGet" to it }).toMap()),
+                        buildJsonObject { if (maxObjectsInGet != null) put("maxObjectsInGet", maxObjectsInGet) },
                 ),
         )
 }

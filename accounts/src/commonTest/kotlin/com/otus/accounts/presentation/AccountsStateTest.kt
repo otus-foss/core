@@ -163,8 +163,13 @@ private class AccountStateRepository : AccountRepository {
 
     override suspend fun connect(draft: JmapAccountDraft): ConnectOutcome {
         // Like JmapAccountRepository, a started save finishes even when the caller is cancelled.
-        pendingSave?.let { save ->
-            return withContext(NonCancellable) { save.await().also { saved = saved + newAccount } }
+        val save = pendingSave
+        if (save != null) {
+            return withContext(NonCancellable) {
+                val outcome = save.await()
+                saved = saved + newAccount
+                outcome
+            }
         }
         return pendingConnection?.await() ?: ConnectOutcome.Connected(account)
     }

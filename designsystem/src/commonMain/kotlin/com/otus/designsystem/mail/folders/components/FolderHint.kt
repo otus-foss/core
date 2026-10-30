@@ -88,12 +88,12 @@ private fun linePieces(
     count: List<Placeable>,
 ): List<Pair<Placeable, Int>> =
     buildList {
-        start?.let { add(it to gap) }
+        if (start != null) add(start to gap)
         names.forEachIndexed { index, name ->
             add(name to 0)
             if (index < names.lastIndex) add(dot(index) to 0)
         }
-        count.forEach { add(it to 0) }
+        addAll(count.map { it to 0 })
     }
 
 /** How many whole names of [widths] fit after the prefix's [startWidth], with the count of the rest; at least one. */

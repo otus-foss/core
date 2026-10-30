@@ -74,7 +74,8 @@ private fun PeopleToken(people: BarToken.People) {
     val overlap = if (people.second == null) ActionBarTokens.tokenOverlap else ActionBarTokens.pairOverlap
     Row(horizontalArrangement = Arrangement.spacedBy(-overlap)) {
         TokenAvatar(people.first)
-        people.second?.let { RingedAvatar(it) } ?: NumberCircle("+${people.count - 1}", ring = true)
+        val second = people.second
+        if (second != null) RingedAvatar(second) else NumberCircle("+${people.count - 1}", ring = true)
     }
 }
 

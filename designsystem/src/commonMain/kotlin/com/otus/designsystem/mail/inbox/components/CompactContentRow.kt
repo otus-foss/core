@@ -65,7 +65,8 @@ public fun CompactContentRow(
 @Composable
 private fun FirstLine(text: CompactRowText) {
     CountedLine(text.first, firstLineStyle(), text.countIn(CountPlacement.AfterFirst)) {
-        text.countIn(CountPlacement.BeforeTrailing)?.let { CountPill(it) }
+        val count = text.countIn(CountPlacement.BeforeTrailing)
+        if (count != null) CountPill(count)
         Text(
             text.trailing,
             color = OtusColors.text2,
@@ -100,7 +101,7 @@ private fun CountedLine(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             RowLineText(line, style, Modifier.weight(1f, fill = false))
-            count?.let { CountPill(it) }
+            if (count != null) CountPill(count)
         }
         end()
     }

@@ -120,7 +120,7 @@ private fun PanelHeader(
         // Top-aligned, so content that wraps to more lines grows down and Back stays on the first.
         verticalAlignment = Alignment.Top,
     ) {
-        navigation?.let { Box(Modifier.padding(top = inset)) { it() } }
+        if (navigation != null) Box(Modifier.padding(top = inset)) { navigation() }
         Box(
             Modifier
                 .weight(1f)

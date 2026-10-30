@@ -57,28 +57,7 @@ public fun MonthNavigation(
                 onChooseMonth,
                 Modifier.weight(1f).semantics { text = AnnotatedString(spoken) },
                 primary = true,
-                labelContent = {
-                    Row(
-                        Modifier.fillMaxWidth().clearAndSetSemantics {},
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(SheetTokens.gap),
-                    ) {
-                        AnimatedText(
-                            label.month,
-                            label.chronologicalOrder,
-                            Modifier.weight(CalendarTokens.MONTH_COLUMN_WEIGHT),
-                            style = panelTextStyle(),
-                            textAlign = TextAlign.Center,
-                        )
-                        AnimatedText(
-                            label.year,
-                            label.chronologicalOrder,
-                            Modifier.weight(1f),
-                            style = panelTextStyle(),
-                            textAlign = TextAlign.Center,
-                        )
-                    }
-                },
+                labelContent = { MonthLabel(label) },
             )
             IconButton("Next month", onNext, enabled = nextEnabled, look = IconButtonLook.Plain) {
                 Box(Modifier.rotate(CalendarTokens.HALF_TURN)) {
@@ -86,5 +65,29 @@ public fun MonthNavigation(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun MonthLabel(label: MonthNavigationLabel) {
+    Row(
+        Modifier.fillMaxWidth().clearAndSetSemantics {},
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(SheetTokens.gap),
+    ) {
+        AnimatedText(
+            label.month,
+            label.chronologicalOrder,
+            Modifier.weight(CalendarTokens.MONTH_COLUMN_WEIGHT),
+            style = panelTextStyle(),
+            textAlign = TextAlign.Center,
+        )
+        AnimatedText(
+            label.year,
+            label.chronologicalOrder,
+            Modifier.weight(1f),
+            style = panelTextStyle(),
+            textAlign = TextAlign.Center,
+        )
     }
 }

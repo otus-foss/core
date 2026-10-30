@@ -48,15 +48,7 @@ public fun RefreshIndicator(
     ) {
         Crossfade(refreshing, animationSpec = motionTween(MotionSpeed.Quick)) { spinning ->
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                if (spinning) {
-                    CircularProgressIndicator(
-                        Modifier.size((RefreshTokens.arcRadius + RefreshTokens.strokeWidth) * 2),
-                        color = OtusColors.text1,
-                        strokeWidth = RefreshTokens.strokeWidth,
-                    )
-                } else {
-                    PullArc(progress)
-                }
+                if (spinning) RefreshSpinner() else PullArc(progress)
             }
         }
     }
@@ -123,4 +115,13 @@ private fun DrawScope.drawArrow(
         ),
     )
     rotate(arc.endAngle) { drawPath(arrow, OtusColors.text1, alpha) }
+}
+
+@Composable
+private fun RefreshSpinner() {
+    CircularProgressIndicator(
+        Modifier.size((RefreshTokens.arcRadius + RefreshTokens.strokeWidth) * 2),
+        color = OtusColors.text1,
+        strokeWidth = RefreshTokens.strokeWidth,
+    )
 }

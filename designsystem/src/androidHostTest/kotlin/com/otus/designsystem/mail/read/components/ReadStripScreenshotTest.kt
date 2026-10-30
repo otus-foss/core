@@ -56,7 +56,7 @@ class ReadStripScreenshotTest {
                     PositionPage(NamedAvatar("Latest", DemoPeople.grace), "1/6 · 12 Oct"),
                     PositionPage(NamedAvatar("Margaret Knuth", DemoPeople.margaret), "2/6 · 11 Oct"),
                 )
-            SlidingPositionStrip(6, 0, { 0.4f }, { pages[it.coerceAtMost(1)] }, {}) { FolderSlot() }
+            SlidingPositionStrip(count = 6, current = 0, { 0.4f }, { pages[it.coerceAtMost(1)] }, {}) { FolderSlot() }
         }
 
     @Test

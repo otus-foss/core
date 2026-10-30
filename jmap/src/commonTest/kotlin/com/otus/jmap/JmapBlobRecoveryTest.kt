@@ -1,7 +1,9 @@
 package com.otus.jmap
 
 import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.MockRequestHandleScope
 import io.ktor.client.engine.mock.respond
+import io.ktor.client.request.HttpResponseData
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
@@ -20,40 +22,14 @@ class JmapBlobRecoveryTest {
     fun uploadAndDownloadRediscoverAfterEndpointFailuresWithoutAutomaticReplay() =
         runTest {
             for (upload in listOf(false, true)) {
-                var sessions = 0
-                var transfers = 0
-                val client =
-                    JmapClient(
-                        MockEngine { request ->
-                            when (request.url.encodedPath) {
-                                "/session" -> {
-                                    sessions++
-                                    json(blobSession(if (sessions == 1) "old" else "new"))
-                                }
-
-                                else -> {
-                                    transfers++
-                                    if (request.url.encodedPath.startsWith("/old/")) {
-                                        respond("", HttpStatusCode.NotFound)
-                                    } else if (upload) {
-                                        json("""{"accountId":"d1","blobId":"photo","type":"image/png","size":1}""")
-                                    } else {
-                                        respond(
-                                            byteArrayOf(1),
-                                            headers = headersOf(HttpHeaders.ContentType, "image/png"),
-                                        )
-                                    }
-                                }
-                            }
-                        },
-                    )
-                val connection = JmapConnection(client, "https://example.org/session", ADA)
+                val server = BlobRecoveryServer(upload)
+                val connection = JmapConnection(JmapClient(server.engine), "https://example.org/session", ADA)
                 assertFailsWith<JmapException.NotJmap> { transfer(connection, upload) }
-                assertEquals(1, transfers)
-                assertEquals(1, sessions)
+                assertEquals(1, server.transfers)
+                assertEquals(1, server.sessions)
                 transfer(connection, upload)
-                assertEquals(2, sessions)
-                assertEquals(2, transfers)
+                assertEquals(2, server.sessions)
+                assertEquals(2, server.transfers)
             }
         }
 
@@ -98,7 +74,7 @@ class JmapBlobRecoveryTest {
                     },
                 )
             val connection = JmapConnection(client, "https://example.org/session", ADA)
-            val download = async { assertFailsWith<JmapException.NotJmap> { transfer(connection, false) } }
+            val download = async { assertFailsWith<JmapException.NotJmap> { transfer(connection, upload = false) } }
             started.await()
             connection.invalidate()
             val replacement = connection.session()
@@ -114,12 +90,37 @@ class JmapBlobRecoveryTest {
         if (upload) {
             connection.upload("d1", byteArrayOf(1), "image/png")
         } else {
-            assertContentEquals(byteArrayOf(1), connection.download("d1", "photo", "image/png", 100).bytes)
+            assertContentEquals(byteArrayOf(1), connection.download("d1", "photo", "image/png", maxBytes = 100).bytes)
         }
     }
+}
 
-    private fun blobSession(endpoint: String): String =
-        session().dropLast(1) +
-            """, "downloadUrl":"/$endpoint/{accountId}/{blobId}/{name}?type={type}",
+private fun blobSession(endpoint: String): String =
+    session().dropLast(1) +
+        """, "downloadUrl":"/$endpoint/{accountId}/{blobId}/{name}?type={type}",
         "uploadUrl":"/$endpoint/{accountId}"}"""
+
+private class BlobRecoveryServer(
+    private val upload: Boolean,
+) {
+    var sessions = 0
+    var transfers = 0
+    val engine =
+        MockEngine { request ->
+            if (request.url.encodedPath == "/session") sessionResponse() else transferResponse(request.url.encodedPath)
+        }
+
+    private fun MockRequestHandleScope.sessionResponse(): HttpResponseData {
+        sessions++
+        return json(blobSession(if (sessions == 1) "old" else "new"))
+    }
+
+    private fun MockRequestHandleScope.transferResponse(path: String): HttpResponseData {
+        transfers++
+        return when {
+            path.startsWith("/old/") -> respond("", HttpStatusCode.NotFound)
+            upload -> json("""{"accountId":"d1","blobId":"photo","type":"image/png","size":1}""")
+            else -> respond(byteArrayOf(1), headers = headersOf(HttpHeaders.ContentType, "image/png"))
+        }
+    }
 }

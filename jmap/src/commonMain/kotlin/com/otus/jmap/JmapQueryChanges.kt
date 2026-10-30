@@ -29,10 +29,10 @@ public class QueryChangesMethod(
     override fun arguments(): JsonObject =
         buildJsonObject {
             put("accountId", JsonPrimitive(accountId))
-            filter?.let { put("filter", it) }
+            if (filter != null) put("filter", filter)
             if (sort.isNotEmpty()) put("sort", sortJson(sort))
             put("sinceQueryState", JsonPrimitive(sinceQueryState))
-            maxChanges?.let { put("maxChanges", JsonPrimitive(it)) }
+            if (maxChanges != null) put("maxChanges", JsonPrimitive(maxChanges))
             extra.forEach { (key, value) -> put(key, value) }
         }
 

@@ -32,7 +32,7 @@ public class GetMethod<T>(
                 is JmapIds.Of -> put("ids", strings(ids.ids))
                 is JmapIds.Result -> put("#ids", ids.reference.toJson())
             }
-            properties?.let { put("properties", strings(it)) }
+            if (properties != null) put("properties", strings(properties))
             extra.forEach { (key, value) -> put(key, value) }
         }
 
@@ -84,9 +84,9 @@ public class QueryMethod(
     override fun arguments(): JsonObject =
         buildJsonObject {
             put("accountId", JsonPrimitive(accountId))
-            filter?.let { put("filter", it) }
+            if (filter != null) put("filter", filter)
             if (sort.isNotEmpty()) put("sort", sortJson(sort))
-            limit?.let { put("limit", JsonPrimitive(it)) }
+            if (limit != null) put("limit", JsonPrimitive(limit))
             extra.forEach { (key, value) -> put(key, value) }
         }
 
@@ -121,7 +121,8 @@ internal fun sortJson(sort: List<JmapSort>): JsonArray =
             buildJsonObject {
                 put("property", JsonPrimitive(comparator.property))
                 put("isAscending", JsonPrimitive(comparator.isAscending))
-                comparator.collation?.let { put("collation", JsonPrimitive(it)) }
+                val collation = comparator.collation
+                if (collation != null) put("collation", JsonPrimitive(collation))
             }
         },
     )
@@ -140,7 +141,7 @@ public class ChangesMethod(
         buildJsonObject {
             put("accountId", JsonPrimitive(accountId))
             put("sinceState", JsonPrimitive(sinceState))
-            maxChanges?.let { put("maxChanges", JsonPrimitive(it)) }
+            if (maxChanges != null) put("maxChanges", JsonPrimitive(maxChanges))
         }
 
     override fun decode(arguments: JsonObject): ChangesResult =

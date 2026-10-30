@@ -82,7 +82,7 @@ class CompactContentRowScreenshotTest {
                     marks = listOf(RowMark.ReadLater),
                     folders =
                         listOf(
-                            RowFolderIcon(FolderGlyphKind.Inbox, null),
+                            RowFolderIcon(FolderGlyphKind.Inbox, color = null),
                             RowFolderIcon(FolderGlyphKind.Folder, FolderColor.Purple),
                         ),
                     moreFolders = 2,

@@ -71,9 +71,14 @@ public actual fun decodeImage(
 
 @OptIn(ExperimentalForeignApi::class)
 private fun imageSource(bytes: ByteArray): CGImageSourceRef? {
-    if (bytes.isEmpty()) return null
-    val data = bytes.usePinned { CFDataCreate(null, it.addressOf(0).reinterpret(), bytes.size.convert()) }
-    return data?.let { CGImageSourceCreateWithData(it, null).also { _ -> CFRelease(it) } }
+    val data =
+        bytes
+            .takeIf { it.isNotEmpty() }
+            ?.usePinned { CFDataCreate(null, it.addressOf(0).reinterpret(), bytes.size.convert()) }
+            ?: return null
+    val source = CGImageSourceCreateWithData(data, null)
+    CFRelease(data)
+    return source
 }
 
 @OptIn(ExperimentalForeignApi::class)

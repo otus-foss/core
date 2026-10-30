@@ -51,7 +51,7 @@ class NameFiguresTest {
 
     @Test
     fun localizationFigureAddsPhoneticsToTheName() {
-        val card = JsContactJson.parseToJsonElement(FIGURE_20).jsonObject
+        val card = JsContactJson.parseToJsonElement(CARD_FIGURE_20).jsonObject
         val base = RoundTrip.assertRoundTrip(Name.serializer(), card.getValue("name"))
         assertEquals(listOf("孫", "中山", "文", "逸仙"), base.components.orEmpty().map { it.value })
         assertNull(base.phoneticSystem)
@@ -142,30 +142,5 @@ private const val FIGURE_19 = """
     "given": "Robert"
   },
   "isOrdered": true
-}
-"""
-
-private const val FIGURE_20 = """
-{
-  "@type": "Card",
-  "language": "zh-Hant",
-  "name": {
-    "components": [
-      { "kind": "surname", "value": "孫" },
-      { "kind": "given", "value": "中山" },
-      { "kind": "given2", "value": "文" },
-      { "kind": "given2", "value": "逸仙" }
-    ]
-  },
-  "localizations": {
-    "yue": {
-      "name/phoneticSystem": "jyut",
-      "name/phoneticScript": "Latn",
-      "name/components/0/phonetic": "syun1",
-      "name/components/1/phonetic": "zung1saan1",
-      "name/components/2/phonetic": "man4",
-      "name/components/3/phonetic": "jat6sin1"
-    }
-  }
 }
 """

@@ -39,7 +39,7 @@ public fun ActionDialog(
             Modifier.verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(PageTokens.rowGap),
         ) {
-            message?.let { Text(it, color = OtusColors.text2) }
+            if (message != null) Text(message, color = OtusColors.text2)
             content?.invoke()
             actions.forEach { action ->
                 ActionButton(

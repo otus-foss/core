@@ -67,7 +67,7 @@ public fun PreviewCard(
             .padding(SheetTokens.gap),
         verticalArrangement = Arrangement.spacedBy(SheetTokens.gap),
     ) {
-        title?.let { PreviewHeader(it, description, chevron = onClick != null) }
+        if (title != null) PreviewHeader(title, description, chevron = onClick != null)
         PageSketch(marker)
         Box(if (onClick != null) Modifier.clearAndSetSemantics {} else Modifier) { preview() }
     }
@@ -82,9 +82,9 @@ private fun PreviewHeader(
     Row(verticalAlignment = Alignment.CenterVertically) {
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(SettingTokens.textGap)) {
             Text(title, fontSize = SettingTokens.titleSize, lineHeight = SettingTokens.titleLineHeight)
-            description?.let {
+            if (description != null) {
                 Text(
-                    it,
+                    description,
                     color = OtusColors.text2,
                     fontSize = SettingTokens.descriptionSize,
                     lineHeight = SettingTokens.descriptionLineHeight,
@@ -108,7 +108,8 @@ private fun PageSketch(marker: SketchMarker) {
         horizontalArrangement = Arrangement.spacedBy(PreviewTokens.sketchPadding),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        marker.color?.let { Box(Modifier.size(PreviewTokens.dotSize).background(it, CircleShape)) }
+        val markerColor = marker.color
+        if (markerColor != null) Box(Modifier.size(PreviewTokens.dotSize).background(markerColor, CircleShape))
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(PreviewTokens.lineGap)) {
             SketchLine(PreviewTokens.FIRST_LINE)
             SketchLine(PreviewTokens.SECOND_LINE)

@@ -18,19 +18,13 @@ class JmapConnectionTest {
 
     private val engine =
         MockEngine { request ->
-            when (request.url.encodedPath) {
-                "/jmap/session" -> {
-                    sessionFetches++
-                    json(session(state = serverState))
-                }
-
-                else -> {
-                    if (rejectApi) {
-                        respond("", HttpStatusCode.Unauthorized)
-                    } else {
-                        json("""{"methodResponses": [], "sessionState": "$serverState"}""")
-                    }
-                }
+            if (request.url.encodedPath == "/jmap/session") {
+                sessionFetches++
+                json(session(state = serverState))
+            } else if (rejectApi) {
+                respond("", HttpStatusCode.Unauthorized)
+            } else {
+                json("""{"methodResponses": [], "sessionState": "$serverState"}""")
             }
         }
     private val connection = JmapConnection(JmapClient(engine), "https://mail.example.org/jmap/session", ADA)

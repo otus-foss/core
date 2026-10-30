@@ -44,9 +44,9 @@ public fun AvatarStack(
                 PersonAvatar(avatar, size, Modifier.border(PanelTokens.borderWidth, ring, CircleShape))
             }
         }
-        label?.let {
+        if (label != null) {
             Text(
-                it,
+                label,
                 style = panelTextStyle(),
                 color = OtusColors.text2,
                 fontSize = PanelTokens.countSize,

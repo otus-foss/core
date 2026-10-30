@@ -71,6 +71,8 @@ class ContactsServer(
 
     /** The `methodCalls` of the last request. */
     fun methodCalls(): JsonArray = parseObject(bodies.last()).getValue("methodCalls").jsonArray
+
+    fun singleCall(): JsonArray = methodCalls().single().jsonArray
 }
 
 /** A response envelope around [methodResponses], such as an RFC figure. */

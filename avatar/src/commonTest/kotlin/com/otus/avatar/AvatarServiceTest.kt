@@ -20,12 +20,7 @@ class AvatarServiceTest {
         runTest {
             val service =
                 AvatarService(
-                    photoSource {
-                        _,
-                        _,
-                        ->
-                        image
-                    },
+                    photoSource { _, _ -> image },
                     AvatarImageLoader { error("No domain request") },
                 )
             val result = service.resolve(request, AvatarOptions(domainIcons = true))
@@ -133,10 +128,7 @@ class AvatarServiceTest {
             var calls = 0
             val service =
                 AvatarService(
-                    photoSource {
-                        _,
-                        _,
-                        ->
+                    photoSource { _, _ ->
                         calls++
                         entered.complete(Unit)
                         release.await()
@@ -159,10 +151,7 @@ class AvatarServiceTest {
             var calls = 0
             val service =
                 AvatarService(
-                    photoSource {
-                        _,
-                        _,
-                        ->
+                    photoSource { _, _ ->
                         calls++
                         entered.complete(Unit)
                         release.await()

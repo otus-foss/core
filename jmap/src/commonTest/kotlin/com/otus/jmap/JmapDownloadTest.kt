@@ -21,7 +21,7 @@ class JmapDownloadTest {
             "https://mail.example.org/jmap/",
             "Ada",
             setOf(JmapCapability.CORE),
-            mapOf("contacts" to JmapAccount("Ada", true, false, emptySet())),
+            mapOf("contacts" to JmapAccount("Ada", isPersonal = true, isReadOnly = false, emptySet())),
             emptyMap(),
             "s",
             setOf("https://mail.example.org:443"),

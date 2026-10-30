@@ -26,21 +26,31 @@ class SelectionRowScreenshotTest {
     val compose = createComposeRule()
 
     @Test
-    fun unchecked() = compose.screenshot("selection_row_unchecked") { SelectionRow("Receipts", false, {}, WIDTH) }
+    fun unchecked() =
+        compose.screenshot("selection_row_unchecked") {
+            SelectionRow("Receipts", selected = false, {}, WIDTH)
+        }
 
     @Test
-    fun checked() = compose.screenshot("selection_row_checked") { SelectionRow("Receipts", true, {}, WIDTH) }
+    fun checked() = compose.screenshot("selection_row_checked") { SelectionRow("Receipts", selected = true, {}, WIDTH) }
 
     @Test
     fun singleChoice() =
         compose.screenshot("selection_row_single_choice") {
-            SelectionRow("Receipts", true, {}, WIDTH, singleChoice = true)
+            SelectionRow("Receipts", selected = true, {}, WIDTH, singleChoice = true)
         }
 
     @Test
     fun subtitleAndAvatar() =
         compose.screenshot("selection_row_subtitle_avatar") {
-            SelectionRow("Ada Lovelace", false, {}, WIDTH, subtitle = "ada@example.com", leading = { Avatar("AL") })
+            SelectionRow(
+                "Ada Lovelace",
+                selected = false,
+                {},
+                WIDTH,
+                subtitle = "ada@example.com",
+                leading = { Avatar("AL") },
+            )
         }
 
     @Test
@@ -48,7 +58,7 @@ class SelectionRowScreenshotTest {
         compose.screenshot("selection_row_icon") {
             SelectionRow(
                 "Receipts",
-                false,
+                selected = false,
                 {},
                 WIDTH,
                 singleChoice = true,
@@ -59,13 +69,13 @@ class SelectionRowScreenshotTest {
     @Test
     fun longTitle() =
         compose.screenshot("selection_row_long_title") {
-            SelectionRow("Receipts from the Analytical Engine Society, 2026 and earlier", true, {
-            }, WIDTH, subtitle = "1,204 messages")
+            val title = "Receipts from the Analytical Engine Society, 2026 and earlier"
+            SelectionRow(title, selected = true, {}, WIDTH, subtitle = "1,204 messages")
         }
 
     @Test
     fun checkboxStateFollowsSelected() {
-        compose.setContent { SelectionRow("Receipts", true, {}) }
+        compose.setContent { SelectionRow("Receipts", selected = true, {}) }
         compose.onNodeWithText("Receipts", useUnmergedTree = false).assertIsOn()
     }
 

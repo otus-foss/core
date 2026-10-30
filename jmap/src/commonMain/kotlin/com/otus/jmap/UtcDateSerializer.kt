@@ -53,10 +53,9 @@ private fun Instant.toUtcDate(): String? {
 }
 
 /** RFC 3339 text that [Instant.parseOrNull] can read: no leap second and at most nine fraction digits. */
-private fun String.withinInstantPrecision(): String {
-    val withoutLeapSecond = LEAP_SECOND.replace(this) { it.groupValues[1] + "59.999999999" }
-    return LONG_FRACTION.replace(withoutLeapSecond) { it.groupValues[1] }
-}
+private fun String.withinInstantPrecision(): String =
+    replace(LEAP_SECOND) { it.groupValues[1] + "59.999999999" }
+        .replace(LONG_FRACTION) { it.groupValues[1] }
 
 private val UNSIGNED_YEAR = Regex("""^\d{4}-""")
 

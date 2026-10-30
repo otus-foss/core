@@ -90,21 +90,21 @@ public class ContextPanelScope internal constructor(
             label = "Panel pill group",
         ) { state ->
             // The pill layer's fade, also used by any cutout that must appear or leave under the surface.
-            val visibility =
+            val fade =
                 transition.animateFloat(
                     transitionSpec = { Motion.tween(scale = motionScale) },
                     label = "Panel pill visibility",
                 ) { if (it == EnterExitState.Visible) 1f else 0f }
             val scope =
-                remember(geometry, state, visibility) {
+                remember(geometry, state, fade) {
                     ContextPanelScope(
                         geometry,
                         state,
-                        PillVisibility({ visibility.value }, { transition.targetState == EnterExitState.Visible }),
+                        PillVisibility({ fade.value }, { transition.targetState == EnterExitState.Visible }),
                     )
                 }
             Row(
-                Modifier.graphicsLayer { alpha = visibility.value },
+                Modifier.graphicsLayer { alpha = fade.value },
                 horizontalArrangement = Arrangement.spacedBy(PanelTokens.chipGap),
             ) { scope.content(state) }
         }

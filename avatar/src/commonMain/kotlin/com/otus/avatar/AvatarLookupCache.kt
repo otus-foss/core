@@ -32,7 +32,8 @@ internal class AvatarLookupCache(
             var owner = false
             val lookup =
                 lock.withLock {
-                    recent(key)?.takeIf { it.isFresh(now(), lifetime) }?.let { return it }
+                    val cached = recent(key)
+                    if (cached != null && cached.isFresh(now(), lifetime)) return cached
                     if (started != generation) {
                         owner = true
                         Lookup(started)
@@ -119,9 +120,9 @@ internal class AvatarLookupCache(
             storageLock.withLock {
                 val current =
                     lock.withLock {
-                        val current = generation == lookup.generation
-                        if (current) remember(key, entry)
-                        current
+                        val unchanged = generation == lookup.generation
+                        if (unchanged) remember(key, entry)
+                        unchanged
                     }
                 if (current) store.write(key, entry)
             }
@@ -137,14 +138,19 @@ internal class AvatarLookupCache(
 
     /** Storage lock held; metadata lock never covers disk IO or network work. */
     private suspend fun peekStored(key: AvatarCacheKey): StoredAvatar? {
-        lock.withLock { recent(key) }?.let { return it }
+        val cached = lock.withLock { recent(key) }
+        if (cached != null) return cached
         val stored = store.read(key)
         if (stored != null) lock.withLock { remember(key, stored) }
         return stored
     }
 
     /** The entry for [key], moved to the end so the least recently used one is evicted first. */
-    private fun recent(key: AvatarCacheKey): StoredAvatar? = entries.remove(key)?.also { entries[key] = it }
+    private fun recent(key: AvatarCacheKey): StoredAvatar? {
+        val entry = entries.remove(key) ?: return null
+        entries[key] = entry
+        return entry
+    }
 
     private fun remember(
         key: AvatarCacheKey,

@@ -23,8 +23,11 @@ internal suspend fun identityAddresses(
     return try {
         val connection = connections.connection(login)
         val session = connection.session()
-        val accountId = session.accountFor(service.capability)?.takeIf { session.canSubmitFrom(it) }
-        if (accountId == null) emptyList() else identityEmails(connection, accountId)
+        session
+            .accountFor(service.capability)
+            ?.takeIf { session.canSubmitFrom(it) }
+            ?.let { identityEmails(connection, it) }
+            .orEmpty()
     } catch (expected: JmapException) {
         // Optional address discovery must not hide a saved account when its server is unavailable.
         emptyList()

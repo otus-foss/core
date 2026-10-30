@@ -113,7 +113,7 @@ internal fun QuoteHeader(
                 fontSize = ReadTokens.quoteTextSize,
                 maxLines = 1,
             )
-            toggle?.let { DateToggle(full, it) }
+            if (toggle != null) DateToggle(full, toggle)
         }
     }
 }

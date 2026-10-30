@@ -41,7 +41,7 @@ class ThemeSettingsScreenTest {
     fun doneAppliesTheColorAndClosesTheSheet() {
         openPageColor()
         compose.onNode(hasSetTextAction()).performTextReplacement("#101828")
-        compose.onNode(hasText("Done") and hasClickAction()).performClick()
+        clickButton("Done")
         compose.onNodeWithContentDescription("Hue").assertDoesNotExist()
         assertEquals(Color(0xFF101828), state.choice.customColors[ThemeColor.Page])
         compose.onNodeWithText("Made from Otus").assertExists()
@@ -61,9 +61,9 @@ class ThemeSettingsScreenTest {
     fun deletingTheCustomThemeGoesBackToTheThemeItWasMadeFrom() {
         state.select(ThemeChoice(ThemeBase.Ink).withColor(ThemeColor.Page, Color(0xFF101828)))
         showScreen()
-        compose.onNodeWithContentDescription("Actions for Custom").performScrollTo().performClick()
+        openCustomActions()
         compose.onNodeWithText("Delete").performClick()
-        compose.onNode(hasText("Delete") and hasClickAction()).performClick()
+        clickButton("Delete")
         assertEquals(ThemeChoice(ThemeBase.Ink), state.choice)
     }
 
@@ -71,10 +71,10 @@ class ThemeSettingsScreenTest {
     fun renamingACustomThemeShowsItsNewName() {
         state.select(ThemeChoice().withColor(ThemeColor.Page, Color(0xFF101828)))
         showScreen()
-        compose.onNodeWithContentDescription("Actions for Custom").performScrollTo().performClick()
+        openCustomActions()
         compose.onNodeWithText("Rename").performClick()
         compose.onNode(hasSetTextAction()).performTextReplacement("Night")
-        compose.onNode(hasText("Rename") and hasClickAction()).performClick()
+        clickButton("Rename")
         assertEquals("Night", state.choice.customTheme?.name)
         compose.onNodeWithText("Night").assertExists()
     }
@@ -92,7 +92,7 @@ class ThemeSettingsScreenTest {
     fun doneClosesTheCustomAccentSheet() {
         showScreen()
         compose.onNodeWithContentDescription("Custom color").performScrollTo().performClick()
-        compose.onNode(hasText("Done") and hasClickAction()).performClick()
+        clickButton("Done")
         compose.onNodeWithContentDescription("Hue").assertDoesNotExist()
     }
 
@@ -114,5 +114,13 @@ class ThemeSettingsScreenTest {
                 OtusTheme(state.palette) { ThemeSettingsScreen(state, onBack = {}) {} }
             }
         }
+    }
+
+    private fun clickButton(label: String) {
+        compose.onNode(hasText(label) and hasClickAction()).performClick()
+    }
+
+    private fun openCustomActions() {
+        compose.onNodeWithContentDescription("Actions for Custom").performScrollTo().performClick()
     }
 }

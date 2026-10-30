@@ -37,11 +37,11 @@ internal fun VCardProperty.toAddress(): Address? {
  */
 internal fun Address.toAdrProperty(): VCardProperty {
     val parts = components.orEmpty()
-    val value =
+    return VCardProperty(
+        ADR,
         ADR_KINDS.indices.joinToString(";") { slot ->
             parts.filter { it.kind.adrSlot() == slot }.slotValues(slot).joinToString(",") { it.escapeText() }
-        }
-    val parameters =
+        },
         vCardParameters(
             contexts.typesIn(CONTEXT_TYPES),
             pref,
@@ -49,8 +49,8 @@ internal fun Address.toAdrProperty(): VCardProperty {
             GEO to coordinates,
             TZ to timeZone,
             CC to countryCode,
-        )
-    return VCardProperty(ADR, value, parameters)
+        ),
+    )
 }
 
 private fun AddressComponentKind.adrSlot(): Int? =

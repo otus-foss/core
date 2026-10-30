@@ -84,10 +84,10 @@ internal fun PrimaryShell(
         CompositionLocalProvider(
             LocalContentColor provides if (primary.enabled) OtusColors.text1 else OtusColors.text3,
         ) {
-            shown?.let {
+            if (shown != null) {
                 ContextContent(
-                    it.title,
-                    it.context,
+                    shown.title,
+                    shown.context,
                     if (primary.enabled) OtusColors.text2 else OtusColors.text3,
                     Modifier
                         .align(Alignment.CenterStart)
@@ -107,7 +107,7 @@ internal fun PrimaryShell(
             PrimaryLabel(front.face, Modifier.align(Alignment.CenterStart)) { 1f - progress() / fadeStart }
         }
         menu.Menu(primary, end = true)
-        context?.takeIf { it.choices.isNotEmpty() }?.let { ContextChoices(it, Modifier.matchParentSize()) }
+        if (context != null && context.choices.isNotEmpty()) ContextChoices(context, Modifier.matchParentSize())
     }
 }
 
@@ -127,7 +127,7 @@ private fun ContextChoices(
         Box(
             Modifier
                 .matchParentSize()
-                .clickable(interactions, null, role = Role.Button, onClick = menu.click(context.choices))
+                .clickable(interactions, indication = null, role = Role.Button, onClick = menu.click(context.choices))
                 .semantics { contentDescription = context.description }
                 .controlPressFeedback(interactions, shape),
         )

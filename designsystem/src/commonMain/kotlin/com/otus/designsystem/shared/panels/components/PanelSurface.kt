@@ -19,7 +19,8 @@ internal fun Modifier.panelSurface(
     drawWithCache {
         val border = Stroke(PanelTokens.borderWidth.toPx())
         onDrawBehind {
-            geometry.frame(overlap(), PanelTokens.cutoutGap.toPx(), border.width)?.let { drawPanelFrame(it, border) }
+            val frame = geometry.frame(overlap(), PanelTokens.cutoutGap.toPx(), border.width) ?: return@onDrawBehind
+            drawPanelFrame(frame, border)
         }
     }
 

@@ -108,8 +108,10 @@ private fun inlineContactImage(uri: String): AvatarImage? {
         header.endsWith(";base64") &&
             header.removePrefix("data:").removeSuffix(";base64") in CONTACT_RASTER_TYPES
     return if (supported) {
-        val bytes = Base64.decode(uri.substringAfter(',', ""))
-        bytes.takeIf { it.isNotEmpty() && it.size <= MAX_AVATAR_BYTES }?.let(::AvatarImage)
+        Base64
+            .decode(uri.substringAfter(',', ""))
+            .takeIf { it.isNotEmpty() && it.size <= MAX_AVATAR_BYTES }
+            ?.let(::AvatarImage)
     } else {
         null
     }

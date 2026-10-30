@@ -27,7 +27,7 @@ class OwnAvatarsStateTest {
     fun quickSavesRunOneAtATimeAndKeepTheNewest() =
         runTest {
             val server = GatedAvatars()
-            val state = OwnAvatarsState(server, null, this)
+            val state = OwnAvatarsState(server, photos = null, this)
             state.save(account, "ada@example.org", first)
             state.save(account, "ada@example.org", second)
             advanceUntilIdle()
@@ -45,7 +45,7 @@ class OwnAvatarsStateTest {
     fun aFailedSaveGoesBackToTheLastSavedAvatar() =
         runTest {
             val server = GatedAvatars()
-            val state = OwnAvatarsState(server, null, this)
+            val state = OwnAvatarsState(server, photos = null, this)
             state.save(account, "ada@example.org", first)
             state.save(account, "ada@example.org", second)
             advanceUntilIdle()
@@ -84,7 +84,9 @@ private class GatedAvatars : OwnAvatars {
         running++
         mostAtOnce = maxOf(mostAtOnce, running)
         try {
-            CompletableDeferred<Unit>().also { waiting += it }.await()
+            val gate = CompletableDeferred<Unit>()
+            waiting += gate
+            gate.await()
             if (failing) throw OwnAvatarException(OwnAvatarFailure.Failed)
             stored = avatar
         } finally {

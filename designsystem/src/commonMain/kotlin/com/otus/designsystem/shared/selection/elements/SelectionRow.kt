@@ -89,8 +89,8 @@ private fun SelectionLabel(
 ) {
     Column(modifier) {
         Text(title, style = panelTextStyle())
-        subtitle?.let {
-            Text(it, style = panelTextStyle(), fontSize = SheetTokens.detailSize, color = OtusColors.text2)
+        if (subtitle != null) {
+            Text(subtitle, style = panelTextStyle(), fontSize = SheetTokens.detailSize, color = OtusColors.text2)
         }
     }
 }

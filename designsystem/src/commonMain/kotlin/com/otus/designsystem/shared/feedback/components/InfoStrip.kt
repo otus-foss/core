@@ -47,27 +47,36 @@ public fun InfoStrip(
             CompositionLocalProvider(LocalContentColor provides OtusColors.text2) {
                 Symbol(icon, size = ReadTokens.infoIconSize)
             }
-            Column(Modifier.weight(1f)) {
-                Text(
-                    title,
-                    style = panelTextStyle(),
-                    fontSize = ReadTokens.titleSize,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                subtitle?.let {
-                    Text(
-                        it,
-                        style = panelTextStyle(),
-                        color = OtusColors.text3,
-                        fontSize = ReadTokens.detailSize,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
-            }
-            action?.let { StripButton(it.label, it.icon, ReadTokens.stripButtonHeight, it.onClick) }
+            StripText(title, subtitle, Modifier.weight(1f))
+            if (action != null) StripButton(action.label, action.icon, ReadTokens.stripButtonHeight, action.onClick)
+        }
+    }
+}
+
+@Composable
+private fun StripText(
+    title: String,
+    subtitle: String?,
+    modifier: Modifier,
+) {
+    Column(modifier) {
+        Text(
+            title,
+            style = panelTextStyle(),
+            fontSize = ReadTokens.titleSize,
+            fontWeight = FontWeight.SemiBold,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+        if (subtitle != null) {
+            Text(
+                subtitle,
+                style = panelTextStyle(),
+                color = OtusColors.text3,
+                fontSize = ReadTokens.detailSize,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
         }
     }
 }

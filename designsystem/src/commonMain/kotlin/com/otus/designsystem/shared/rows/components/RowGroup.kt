@@ -19,6 +19,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.semantics.Role
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_chevron_right
@@ -46,7 +47,7 @@ public fun RowGroup(
             .fillMaxWidth()
             .clip(shape)
             .background(if (raised) OtusColors.bgDark else OtusColors.bgRegular)
-            .then(if (raised) Modifier.border(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape) else Modifier),
+            .raisedOutline(raised, shape),
     ) {
         rows.forEachIndexed { index, row ->
             if (index > 0) Box(Modifier.fillMaxWidth().height(PanelTokens.borderWidth).background(line))
@@ -79,7 +80,7 @@ public fun GroupRow(
     ) {
         Symbol(icon)
         Text(label, Modifier.weight(1f), style = panelTextStyle())
-        value?.let { Text(it, style = panelTextStyle(), color = OtusColors.text2) }
+        if (value != null) Text(value, style = panelTextStyle(), color = OtusColors.text2)
         if (opens) {
             CompositionLocalProvider(LocalContentColor provides OtusColors.text2) {
                 Symbol(Res.drawable.symbol_chevron_right, mirrorInRtl = true)
@@ -87,3 +88,8 @@ public fun GroupRow(
         }
     }
 }
+
+private fun Modifier.raisedOutline(
+    raised: Boolean,
+    shape: Shape,
+): Modifier = if (raised) border(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape) else this

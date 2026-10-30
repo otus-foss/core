@@ -78,6 +78,6 @@ public fun SidebarFolderEntry(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
-        folder.count?.let { SidebarCount(it) }
+        if (folder.count != null) SidebarCount(folder.count)
     }
 }

@@ -16,8 +16,7 @@ class AppIconResourcesTest {
 
     @Test
     fun everyPresetAndMonochromeHasALauncherIcon() {
-        val names = AccentPreset.entries.map { it.iconName } + "monochrome"
-        names.forEach { name ->
+        (AccentPreset.entries.map { it.iconName } + "monochrome").forEach { name ->
             val id = context.resources.getIdentifier("otus_mail_icon_$name", "mipmap", context.packageName)
             assertNotEquals(0, id, "tools/brand_drawables.py has no icon for $name")
         }
