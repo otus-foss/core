@@ -69,6 +69,11 @@ compiling for iOS. Read [the suite product goals](docs/suite/product-goals.md) a
   `this`, chain side effects through `let` or `also`, or change a public API only for style.
   Public APIs follow the same idea: callers should configure a component through
   `Modifier` chains, named arguments, and value types rather than mutable setup objects.
+- Keep a call chain as one expression, with one call per line, instead of splitting it into
+  temporary `val`s that are each read once. Use a builder or chainable API wherever the library
+  offers one and it fits, such as `SharedPreferences.Editor`, Ktor request builders, and
+  `buildJsonObject`. Name an intermediate value only when the code reads it more than once or the
+  name says something the chain cannot.
 
 Do not add blanket suppressions, formatter-off markers, lint baselines, skipped checks, or
 failure-tolerant CI to make a change pass. A rule change needs an explicit rationale in
