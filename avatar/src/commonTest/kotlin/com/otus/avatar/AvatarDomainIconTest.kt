@@ -12,7 +12,8 @@ import kotlin.test.assertSame
 class AvatarDomainIconTest {
     private val request = AvatarRequest("work", "noreply@email.openai.com", "OpenAI")
     private val image = AvatarImage(byteArrayOf(1, 2, 3))
-    private val options = AvatarOptions(domainIcons = true, domainIconProxy = true)
+    private val options = AvatarOptions(domainIcons = true)
+    private val proxied = options.copy(iconProxy = IconProxy("https://icons.example.net/{domain}.ico"))
     private val domains = PublicSuffixDomainResolver { "com\nme\nio\ngithub.io" }
 
     @Test
@@ -33,11 +34,6 @@ class AvatarDomainIconTest {
                                 resolvedHosts += it
                                 yield()
                                 throw failure
-                            },
-                        iconFallback =
-                            DomainIconSource {
-                                fetched += it
-                                image
                             },
                     )
                 val expected = ResolvedAvatar(generatedAvatar(request.name, request.email))
@@ -65,10 +61,9 @@ class AvatarDomainIconTest {
         }
 
     @Test
-    fun subdomainSenderFetchesOnlyTheRegistrableDomainAndItsIconCache() =
+    fun subdomainSenderFetchesOnlyTheRegistrableDomain() =
         runTest {
             val urls = mutableListOf<String>()
-            val cachedDomains = mutableListOf<String>()
             val service =
                 AvatarService(
                     images =
@@ -77,11 +72,6 @@ class AvatarDomainIconTest {
                             null
                         },
                     domains = domains,
-                    iconFallback =
-                        DomainIconSource {
-                            cachedDomains += it
-                            image
-                        },
                 )
             val result = service.resolve(request, options)
             assertEquals(
@@ -92,9 +82,7 @@ class AvatarDomainIconTest {
                 ),
                 urls,
             )
-            assertEquals(listOf("openai.com"), cachedDomains)
-            assertSame(image, result.image)
-            assertEquals(AvatarOrigin.Domain, result.origin)
+            assertNull(result.image)
         }
 
     @Test
@@ -127,27 +115,37 @@ class AvatarDomainIconTest {
         }
 
     @Test
-    fun failedRootRequestsUseTheIconCache() =
+    fun theProxyIsAskedInsteadOfTheWebsite() =
         runTest {
             val urls = mutableListOf<String>()
-            val cachedDomains = mutableListOf<String>()
             val service =
                 AvatarService(
                     images =
                         AvatarImageLoader {
                             urls += it
-                            error("Website unreachable")
-                        },
-                    domains = domains,
-                    iconFallback =
-                        DomainIconSource {
-                            cachedDomains += it
                             image
                         },
+                    domains = domains,
                 )
-            assertSame(image, service.resolve(request, options).image)
-            assertEquals(3, urls.size)
-            assertEquals(listOf("openai.com"), cachedDomains)
+            assertSame(image, service.resolve(request, proxied).image)
+            assertEquals(listOf("https://icons.example.net/openai.com.ico"), urls)
+        }
+
+    @Test
+    fun aProxyMissNeverFallsBackToTheWebsite() =
+        runTest {
+            val urls = mutableListOf<String>()
+            val service =
+                AvatarService(
+                    images =
+                        AvatarImageLoader {
+                            urls += it
+                            null
+                        },
+                    domains = domains,
+                )
+            assertNull(service.resolve(request, proxied).image)
+            assertEquals(listOf("https://icons.example.net/openai.com.ico"), urls)
         }
 
     @Test
@@ -162,7 +160,6 @@ class AvatarDomainIconTest {
                             if (it.endsWith("favicon.ico")) image else null
                         },
                     domains = domains,
-                    iconFallback = DomainIconSource { error("Direct website icon is available") },
                 )
             val result = service.resolve(request.copy(email = "ada@proton.me"), options)
             assertSame(image, result.image)
@@ -171,22 +168,41 @@ class AvatarDomainIconTest {
         }
 
     @Test
-    fun iconCacheRequiresBothDomainIconsAndItsSeparateOption() =
+    fun aWebsiteStyledContactWithAnUnusableProxyAsksNothing() =
+        runTest {
+            val urls = mutableListOf<String>()
+            val website = ContactAvatar.Styled(AvatarStyle("blue", AvatarMark.Website))
+            val service =
+                AvatarService(
+                    contacts = ContactAvatarSource { _, _ -> website },
+                    images =
+                        AvatarImageLoader {
+                            urls += it
+                            image
+                        },
+                    domains = domains,
+                )
+            val unusable = AvatarOptions(iconProxy = IconProxy(iconUrl = null))
+            assertNull(service.resolve(request, unusable).image)
+            assertEquals(emptyList(), urls)
+        }
+
+    @Test
+    fun theProxyIsAskedOnlyWithDomainIcons() =
         runTest {
             var calls = 0
             val service =
                 AvatarService(
-                    domains = domains,
-                    iconFallback =
-                        DomainIconSource {
+                    images =
+                        AvatarImageLoader {
                             calls++
                             image
                         },
+                    domains = domains,
                 )
-            assertNull(service.resolve(request, options.copy(domainIconProxy = false)).image)
-            assertNull(service.resolve(request, options.copy(domainIcons = false)).image)
+            assertNull(service.resolve(request, proxied.copy(domainIcons = false)).image)
             assertEquals(0, calls)
-            assertSame(image, service.resolve(request, options).image)
+            assertSame(image, service.resolve(request, proxied).image)
             assertEquals(1, calls)
         }
 
@@ -202,13 +218,8 @@ class AvatarDomainIconTest {
                             calls++
                             it
                         },
-                    iconFallback =
-                        DomainIconSource {
-                            calls++
-                            image
-                        },
                 )
-            val result = service.resolve(request, options)
+            val result = service.resolve(request, proxied)
             assertSame(image, result.image)
             assertEquals(AvatarOrigin.Contact, result.origin)
             assertEquals(0, calls)
@@ -226,11 +237,6 @@ class AvatarDomainIconTest {
                             image
                         },
                     domains = domains,
-                    iconFallback =
-                        DomainIconSource {
-                            calls++
-                            image
-                        },
                 )
             assertNull(service.resolve(request.copy(email = "ada@github.io"), options).image)
             val unrelated =
@@ -241,11 +247,6 @@ class AvatarDomainIconTest {
                             image
                         },
                     domains = AvatarDomainResolver { "other.com" },
-                    iconFallback =
-                        DomainIconSource {
-                            calls++
-                            image
-                        },
                 )
             assertNull(unrelated.resolve(request, options).image)
             assertEquals(0, calls)

@@ -90,4 +90,20 @@ class PublicAvatarHostTest {
             .forEach { assertNull(avatarIconDomain(it), it) }
         assertEquals("company.com", avatarIconDomain("ada@Company.COM"))
     }
+
+    @Test
+    fun publicUrlsUseHttpsOnTheDefaultPortAtAPublicHostWithoutCredentials() {
+        assertTrue(isPublicAvatarUrl("https://mail.example.net/api/favicon?domain=shop.com"))
+        assertTrue(isPublicAvatarUrl("https://mail.example.net:443/"))
+        listOf(
+            "http://mail.example.net/",
+            "https://mail.example.net:8443/",
+            "https://ada@mail.example.net/",
+            "https://ada:secret@mail.example.net/",
+            "https://nas.lan/",
+            "https://192.168.1.2/",
+            "https://localhost/",
+            "not a url",
+        ).forEach { assertFalse(isPublicAvatarUrl(it), it) }
+    }
 }

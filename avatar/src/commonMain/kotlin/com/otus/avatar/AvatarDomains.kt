@@ -1,5 +1,8 @@
 package com.otus.avatar
 
+import io.ktor.http.URLProtocol
+import io.ktor.http.Url
+
 internal fun isAvatarEmail(email: String): Boolean =
     email.count { it == '@' } == 1 && email.substringBefore('@').isNotBlank() &&
         email.substringAfter('@').isNotBlank() && email.none { it.isWhitespace() || it.isISOControl() }
@@ -9,6 +12,14 @@ public fun avatarIconDomain(email: String): String? {
     if (!isAvatarEmail(email)) return null
     return email.substringAfter('@').takeIf(::isPublicAvatarHost)?.lowercase()
 }
+
+/** Whether the public loader may request [url], so callers can check an address before saving it. */
+public fun isPublicAvatarUrl(url: String): Boolean = runCatching { Url(url) }.getOrNull()?.isPublicImageUrl() == true
+
+/** Only the default HTTPS port, so a public name whose DNS answer is private cannot probe other ports. */
+internal fun Url.isPublicImageUrl(): Boolean =
+    protocol == URLProtocol.HTTPS && port == URLProtocol.HTTPS.defaultPort && user.isNullOrEmpty() &&
+        password.isNullOrEmpty() && isPublicAvatarHost(host)
 
 /**
  * The only host check before every public avatar request, including redirects and advertised icon links,
