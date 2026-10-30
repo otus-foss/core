@@ -63,7 +63,7 @@ internal class ReorderRow(
                         haptics.performHapticFeedback(HapticFeedbackType.LongPress)
                         drag.start(key)
                     },
-                    onDrag = drag::moveBy,
+                    onDrag = { drag.moveBy(it.y) },
                     onEnd = drag::drop,
                     onCancel = drag::cancel,
                 )

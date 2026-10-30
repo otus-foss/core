@@ -122,7 +122,7 @@ private fun HexRow(
                 .background(color, CircleShape)
                 .border(PanelTokens.borderWidth, OtusColors.bgLight, CircleShape),
         )
-        InputField("Hex", hex, onHexChange, Modifier.weight(1f), placeholder = "#4D6F92")
+        InputField("Hex", hex, onHexChange, Modifier.weight(1f), placeholder = "#5A7EA4")
     }
 }
 

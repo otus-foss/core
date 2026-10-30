@@ -35,7 +35,7 @@ class HtmlViewTest {
     @Test
     fun aPlainDocumentTakesThePickedThemesColors() {
         val dark = renderHtml("<p>Hi</p>", loadRemote = false)
-        assertContains(dark, ":root{color-scheme:dark}body{color:#ebeced}a{color:#618bb6}")
+        assertContains(dark, ":root{color-scheme:dark}body{color:#ebeced}a{color:#7099c4}")
         val light = OtusPalette.Otus.copy(text1 = Color(0xFF151515), isLight = true)
         assertContains(
             renderHtml("<p>Hi</p>", loadRemote = false, palette = light),
@@ -133,7 +133,7 @@ class HtmlViewTest {
         )
         assertContains(body, "<div class=\"otus-k1-text\"><p>Earlier <a href=\"otus-images:show?k=k1\"")
         assertContains(body, "Show quoted text")
-        assertContains(body, "border-left:2px solid #3f4041")
+        assertContains(body, "border-left:2px solid #252628")
         assertFalse("<script" in page)
     }
 

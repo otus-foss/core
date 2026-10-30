@@ -58,4 +58,21 @@ class DateFormatterTest {
         assertFailsWith<IllegalArgumentException> { formatter.formatIsoDate("31/12/2020") }
         assertFailsWith<IllegalArgumentException> { formatter.formatIsoDate("2023-02-29") }
     }
+
+    @Test
+    fun dayMonthKeepsEachFormatsOrderWithoutTheYear() {
+        val date = LocalDate(2026, 3, 9)
+        val cases =
+            mapOf(
+                DateFormatPreference.DayMonthYearDots to "09.03",
+                DateFormatPreference.DayMonthYearSlashes to "09/03",
+                DateFormatPreference.MonthDayYearDots to "03.09",
+                DateFormatPreference.MonthDayYearSlashes to "03/09",
+                DateFormatPreference.YearMonthDayDashes to "03-09",
+                DateFormatPreference.YearMonthDaySlashes to "03/09",
+            )
+        cases.forEach { (preference, expected) ->
+            assertEquals(expected, DateFormatter(preference, "en-US").formatDayMonth(date))
+        }
+    }
 }

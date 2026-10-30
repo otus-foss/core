@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+- Add `SidebarTileSize` (Small, Wide, Full) and `SidebarTileEditor`, a Control Center style editor
+  for the sidebar's mailbox tiles: hold a tile to move it, drag its corner arc to resize it, and tap
+  its minus to remove it. `SidebarMailboxGrid` takes `sizeOf`, places tiles in rows in order, and
+  no longer adds a gap above itself. `SidebarMailboxTile` takes `size`, and every size is equally tall.
+- Breaking: `SidebarInboxEntry` loses `inset` and always spans the full width; put the Inbox in a
+  `SidebarMailboxGrid` as a `SidebarMailboxTile` instead.
+- A leading row icon that is a plain folder and has a `LocalIconTint` is now filled, as in the
+  sidebar's folder tree, so pinned folder tiles and setting rows show folder colors the same way.
+
+- Add `DateFormatter.formatDayMonth`, the saved date format without the year, such as 04.10 for
+  DD.MM.YYYY. The device format uses the locale's own day and month order.
 - Group JSContact's internal vCard conversion and validation code into `vcard` and `validation`
   packages. Public APIs, including `Card`, `VCard`, and `isEmailAddress`, keep their packages and behavior.
 - Breaking: rename the `push` module and `com.otus:push` artifact to `jmap-push` and

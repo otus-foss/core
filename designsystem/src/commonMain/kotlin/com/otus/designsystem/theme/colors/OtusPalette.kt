@@ -36,16 +36,16 @@ public data class OtusPalette(
     public companion object {
         public val Otus: OtusPalette =
             OtusPalette(
-                accentLight = Color(0xFF618BB6),
-                accentRegular = Color(0xFF4D6F92),
-                accentDark = Color(0xFF39526B),
-                bgLight = Color(0xFF3F4041),
-                bgRegular = Color(0xFF202021),
-                bgDark = Color(0xFF151515),
+                accentLight = Color(0xFF7099C4),
+                accentRegular = Color(0xFF5A7EA4),
+                accentDark = Color(0xFF435F7C),
+                bgLight = Color(0xFF252628),
+                bgRegular = Color(0xFF161617),
+                bgDark = Color(0xFF111112),
                 text1 = Color(0xFFEBECED),
                 text2 = Color(0xFFC2C2C2),
                 text3 = Color(0xFF8A8A8A),
-                strokeBgDark = Color(0xFF27292C),
+                strokeBgDark = Color(0xFF1C1D1F),
             )
     }
 }
