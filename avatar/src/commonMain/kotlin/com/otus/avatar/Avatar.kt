@@ -1,17 +1,41 @@
 package com.otus.avatar
 
-/** Account keys are app-private login IDs, never display names or credentials. */
+/**
+ * Account keys are app-private login IDs, never display names or credentials. [brandDomain] is the
+ * From domain the message passed DMARC for, as the user's server recorded it. Only then may a
+ * brand logo show, since the logo says who owns the domain, not that this message came from it.
+ */
 public data class AvatarRequest(
     val accountKey: String,
     val email: String,
     val name: String = "",
+    val brandDomain: String? = null,
 )
 
+/** [iconProxy] is asked instead of the sender's website, so the website never sees the device. */
 public data class AvatarOptions(
     val externalContactImages: Boolean = false,
     val domainIcons: Boolean = false,
-    val domainIconProxy: Boolean = false,
+    val iconProxy: IconProxy? = null,
 )
+
+/**
+ * A service that fetches website icons for the device, such as DuckDuckGo's icon cache or a
+ * Bulwark webmail server. Each URL names the website domain as `{domain}`. [brandLogoUrl] answers
+ * the domain's BIMI logo as a raster image. Either may answer a 1×1 image for a domain without one.
+ * A null [iconUrl], for a service the user chose but cannot reach, loads no icons, and the website
+ * is still never asked.
+ */
+public data class IconProxy(
+    val iconUrl: String?,
+    val brandLogoUrl: String? = null,
+)
+
+/** [template] with `{domain}` replaced by [domain], a checked public hostname. */
+internal fun proxyUrl(
+    template: String,
+    domain: String,
+): String = template.replace("{domain}", domain)
 
 public data class GeneratedAvatar(
     val initials: String,

@@ -9,7 +9,6 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsChannel
 import io.ktor.http.HttpHeaders
 import io.ktor.http.URLBuilder
-import io.ktor.http.URLProtocol
 import io.ktor.http.Url
 import io.ktor.http.contentLength
 import io.ktor.http.takeFrom
@@ -90,11 +89,6 @@ public class HttpAvatarImageLoader(
         val bytes = response.bodyAsChannel().readBuffer(MAX_AVATAR_BYTES + 1).readByteArray()
         return bytes.takeIf { it.isNotEmpty() && it.size <= MAX_AVATAR_BYTES }?.let(::AvatarImage)
     }
-
-    /** Only the default HTTPS port, so a public name whose DNS answer is private cannot probe other ports. */
-    private fun Url.isPublicImageUrl(): Boolean =
-        protocol == URLProtocol.HTTPS && port == URLProtocol.HTTPS.defaultPort && user.isNullOrEmpty() &&
-            password.isNullOrEmpty() && isPublicAvatarHost(host)
 
     private class ImageResponse(
         val image: AvatarImage? = null,

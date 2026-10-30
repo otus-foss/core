@@ -8,24 +8,26 @@ It moved here from otus-mail in version 0.2.0.
 ## Implemented API
 
 `AvatarService` (`com.otus.avatar`) is common Kotlin, independent of mail, calendar, Compose, and platform
-image types. It resolves an `AvatarRequest(accountKey, email, name)` in this order:
+image types. It resolves an `AvatarRequest(accountKey, email, name, brandDomain)` in this order:
 
 1. A contact card's avatar through the injected `ContactAvatarSource`: an `AvatarStyle` the user
    built in Otus, or else a photo or logo. A style comes back in `ResolvedAvatar.style`.
-2. A website-domain icon through `AvatarImageLoader`, when `AvatarOptions.domainIcons` is enabled.
-   An injected `DomainIconSource` can supply a cached favicon when `domainIconProxy` is also enabled.
-3. Generated initials, with an email-derived index for the app's named theme colors.
+2. A brand logo from `AvatarOptions.iconProxy.brandLogoUrl`, when the request's `brandDomain` is
+   on the sender's website domain. See [brand logos](#brand-logos).
+3. A website-domain icon through `AvatarImageLoader`, when `AvatarOptions.domainIcons` is enabled:
+   from `iconProxy.iconUrl` when the options name an icon proxy, else from the website itself.
+4. Generated initials, with an email-derived index for the app's named theme colors.
 
 Every result includes the generated fallback. Image decoding failures also display this fallback.
 Email matching trims whitespace and ignores case in the whole address, because real mail servers
 treat `John@` and `john@` as one mailbox. Dots and plus tags are preserved. Names do not determine contact identity. Changing a display name
 changes initials without changing the address's color.
 
-`AvatarOptions.externalContactImages`, `domainIcons`, and `domainIconProxy` default to false. Embedded contact
+`AvatarOptions.externalContactImages` and `domainIcons` default to false, and `iconProxy` to null. Embedded contact
 images and authenticated JMAP blobs still work. Public image requests use a separate HTTP client
 that has no account credentials. Mail enables all three options for inbox senders, so contacts with
 external photos and senders without a contact photo can display images automatically. Callers of
-the reusable service can keep remote requests disabled. No appearance-setting switch exists yet.
+the reusable service can keep remote requests disabled.
 
 ```kotlin
 val images = HttpAvatarImageLoader()
@@ -71,12 +73,33 @@ such as `github.io`, wildcards, and exceptions are respected. Bare public suffix
 internal hosts, and malformed hostnames retain initials. Shared mail providers such as `proton.me`
 are eligible for a website logo; this identifies the provider, not the individual sender.
 
-When direct website images fail, Mail's injected fallback requests
-`https://icons.duckduckgo.com/ip3/{domain}.ico`. This public favicon cache receives only the website
+## Icon proxies
+
+`AvatarOptions.iconProxy` names an `IconProxy`: a service that fetches icons for the device, so the
+sender's website never sees it. Its `iconUrl` and optional `brandLogoUrl` are HTTPS URL templates
+with `{domain}` in place of the registrable website domain, such as
+`https://icons.duckduckgo.com/ip3/{domain}.ico`. While a proxy is set, the service asks only the
+proxy. A miss leaves initials and never falls back to the website. The proxy receives the website
 domain, never a complete email address, saved login ID, password, or account authorization header.
-The service has no baked-in cache provider: callers inject `DomainIconSource`, and must enable
-`domainIconProxy` as well as `domainIcons`. Contacts always take priority. No message-body images or
-email-hash avatar services are used. This fallback also covers websites that block direct requests.
+Its requests go through the same public loader as website icons; `isPublicAvatarUrl` lets an app
+check an address against the loader's rules before saving it. An `IconProxy` with a null `iconUrl`
+stands for a service the user chose but cannot reach: it loads no icons, and the website is still
+never asked, even for a contact styled with `AvatarMark.Website`. Icon cache keys include the proxy
+URL, so changing proxies looks again.
+
+Icon services such as Bulwark answer a 1×1 PNG for a domain without an icon. The service treats any
+PNG one pixel wide or tall as no image. Contacts always take priority. No message-body images or
+email-hash avatar services are used.
+
+### Brand logos
+
+A brand logo (BIMI) says who owns a domain, not that a given message came from it. The caller
+therefore sets `AvatarRequest.brandDomain` only for a message that passed DMARC for its From domain,
+as the user's server recorded it. The service asks `brandLogoUrl` only when `brandDomain` resolves to
+the same registrable domain as the sender's address, and asks for that registrable domain, never the
+exact host. Logos are cached apart from icons per domain and proxy, and a request without a
+`brandDomain` never reads them, so a spoofed message from the same address shows the icon. A missing
+logo falls back to the icon.
 
 Fetching a website icon tells that website the device's IP address and when the inbox showed the
 sender. A sender who gave each recipient a unique subdomain, such as `u-12345.example.com`, could
@@ -138,7 +161,7 @@ in each platform's HTTP engine, which the module does not have yet.
 
 Each app creates one `AvatarService` per process and passes its own login IDs as `accountKey`.
 The app chooses which remote requests to allow through `AvatarOptions`, supplies the Public Suffix
-List bytes, and injects any `DomainIconSource`. `JmapContactAvatarSource` uses the app's
+List bytes, and names any `IconProxy`. `JmapContactAvatarSource` uses the app's
 `JmapConnections` and `LoginStore`, so contact lookups never cross apps. Calendar still carries an
 older copy of this code until it adopts the module.
 
