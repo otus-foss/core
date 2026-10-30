@@ -20,7 +20,11 @@ public class JmapConnections(
     /** Throws [JmapException.CredentialsUnavailable] when the saved secret is missing or unreadable. */
     public suspend fun connection(login: JmapLogin): JmapConnection =
         lock.withLock {
-            open[login.id] ?: create(login).also { open[login.id] = it }
+            val current = open[login.id]
+            if (current != null) return@withLock current
+            val connection = create(login)
+            open[login.id] = connection
+            connection
         }
 
     public suspend fun forget(loginId: String) {

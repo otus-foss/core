@@ -104,7 +104,7 @@ public fun ResizableImage(
             .zIndex(if (selected) 1f else 0f)
             .onGloballyPositioned {
                 if (!dragging.value) topHidden = it.boundsInWindow().top > it.positionInWindow().y + 1f
-            }.then(if (dragging.value) Modifier.sizeGuides(sizing, labelsBelow = topHidden) else Modifier),
+            }.sizeGuides(sizing, dragging = dragging.value, labelsBelow = topHidden),
     ) {
         Image(
             image.painter,
@@ -113,12 +113,11 @@ public fun ResizableImage(
                 Modifier
                     .size(sizing.width, height)
                     .clickable(onClickLabel = "Select", onClick = onSelect)
-                    .then(
-                        if (selected) Modifier.border(SignatureTokens.selectionOutline, OtusColors.text2) else Modifier,
-                    ),
+                    .selectionOutline(selected),
             contentScale = ContentScale.Fit,
         )
-        image.status?.let { ImageStatus(it, Modifier.align(Alignment.TopStart)) }
+        val status = image.status
+        if (status != null) ImageStatus(status, Modifier.align(Alignment.TopStart))
         if (selected) ResizeHandle(sizing, dragging, Modifier.align(Alignment.BottomEnd))
         if (dragging.value) SizeLabel(sizing, height, below = topHidden, Modifier.align(Alignment.BottomEnd))
     }
@@ -222,8 +221,10 @@ private fun SizeLabel(
 @Composable
 private fun Modifier.sizeGuides(
     sizing: ImageSizing,
+    dragging: Boolean,
     labelsBelow: Boolean,
 ): Modifier {
+    if (!dragging) return this
     val measurer = rememberTextMeasurer()
     val style = panelTextStyle().merge(TextStyle(fontSize = ComposeTokens.detailSize))
     return drawBehind {
@@ -257,3 +258,6 @@ internal fun snapped(
     width: Dp,
     presets: List<ImagePreset>,
 ): Dp = presets.firstOrNull { abs((it.width - width).value) <= SignatureTokens.snapDistance.value }?.width ?: width
+
+private fun Modifier.selectionOutline(selected: Boolean): Modifier =
+    if (selected) border(SignatureTokens.selectionOutline, OtusColors.text2) else this

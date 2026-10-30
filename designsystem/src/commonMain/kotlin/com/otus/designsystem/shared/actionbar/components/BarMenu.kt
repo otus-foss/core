@@ -82,8 +82,9 @@ internal fun Modifier.primaryButton(
     shape: Shape,
 ): Modifier {
     val interactions = remember { MutableInteractionSource() }
+    val onClick = menu.click(primary)
     return semantics { contentDescription = listOfNotNull(primary.label, context?.description).joinToString(", ") }
-        .clickable(interactions, null, enabled = primary.enabled, role = Role.Button, onClick = menu.click(primary))
+        .clickable(interactions, indication = null, enabled = primary.enabled, role = Role.Button, onClick = onClick)
         .controlPressFeedback(interactions, shape)
 }
 

@@ -56,16 +56,20 @@ public fun AvatarSheet(
     val scope = rememberCoroutineScope()
     val pick = {
         scope.launch {
-            pickPhoto?.invoke()?.let {
-                draft = draft.copy(kind = AvatarKind.Photo, source = PhotoSource.Upload, photo = it)
-            }
+            val photo = pickPhoto?.invoke() ?: return@launch
+            draft = draft.copy(kind = AvatarKind.Photo, source = PhotoSource.Upload, photo = photo)
         }
     }
     SheetFrame(
         "Avatar",
         onDismiss = onDismiss,
         onDone = {
-            if (resetting) onSave(null) else draft.avatar?.let(onSave)
+            val avatar = draft.avatar
+            if (resetting) {
+                onSave(null)
+            } else if (avatar != null) {
+                onSave(avatar)
+            }
             onDismiss()
         },
         doneEnabled = draft.ready,

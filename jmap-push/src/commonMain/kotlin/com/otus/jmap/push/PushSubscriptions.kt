@@ -123,11 +123,9 @@ public class PushSubscriptions(
         record: PushRecord,
     ): PushRecord? =
         try {
-            val server =
-                ServerSubscription(connections.connection(login), deviceClientId, types, clock) {
-                    pauseOrSkip(beforeCreate, login.id)
-                }
-            server.synced(record)
+            ServerSubscription(connections.connection(login), deviceClientId, types, clock) {
+                pauseOrSkip(beforeCreate, login.id)
+            }.synced(record)
         } catch (_: JmapException) {
             record
         } catch (_: PauseFailed) {

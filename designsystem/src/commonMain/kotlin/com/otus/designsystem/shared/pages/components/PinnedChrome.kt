@@ -75,19 +75,20 @@ internal class PinnedChromeNode(
     override fun onAttach() {
         layer = requireGraphicsContext().createGraphicsLayer()
         motion = currentValueOf(LocalPageMotion)
-        motion?.let {
-            it.register(kind)
-            it.host.chrome += this
-        }
+        val page = motion ?: return
+        page.register(kind)
+        page.host.chrome += this
     }
 
     override fun onDetach() {
-        motion?.let {
-            it.unregister(kind)
-            it.host.chrome -= this
+        val page = motion
+        if (page != null) {
+            page.unregister(kind)
+            page.host.chrome -= this
         }
         motion = null
-        layer?.let { requireGraphicsContext().releaseGraphicsLayer(it) }
+        val graphics = layer
+        if (graphics != null) requireGraphicsContext().releaseGraphicsLayer(graphics)
         layer = null
     }
 
@@ -110,18 +111,18 @@ internal class PinnedChromeNode(
 
     /** While pinned, records the chrome for the host to draw instead of drawing it inside the page. */
     override fun ContentDrawScope.draw() {
-        val layer = layer
-        if (pinned && layer != null) layer.record { this@draw.drawContent() } else drawContent()
+        val graphics = layer
+        if (pinned && graphics != null) graphics.record { this@draw.drawContent() } else drawContent()
     }
 
     fun DrawScope.drawPinned(host: LayoutCoordinates) {
-        val layer = layer
-        val motion = motion
-        if (layer == null || motion == null || !pinned) return
-        layer.alpha = motion.pinnedAlpha(kind)
+        val graphics = layer
+        val page = motion
+        if (graphics == null || page == null || !pinned) return
+        graphics.alpha = page.pinnedAlpha(kind)
         // This node sits outside the layer that undoes the slide, so its position still slides.
         val at = host.localPositionOf(requireLayoutCoordinates(), Offset.Zero)
-        translate(at.x + motion.pinnedShift(kind), at.y) { drawLayer(layer) }
+        translate(at.x + page.pinnedShift(kind), at.y) { drawLayer(graphics) }
     }
 }
 

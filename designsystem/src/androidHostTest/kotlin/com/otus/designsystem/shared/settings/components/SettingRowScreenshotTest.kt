@@ -37,7 +37,7 @@ class SettingRowScreenshotTest {
                     Symbol(Res.drawable.symbol_chevron_right)
                 }
                 SettingRow("Accent", {}) { ValueButton("Blue", swatch = OtusColors.accentRegular) }
-                SettingRow("work@example.com", null, description = "Signed in with JMAP") {
+                SettingRow("work@example.com", onClick = null, description = "Signed in with JMAP") {
                     RowButton("Remove", {})
                 }
             }

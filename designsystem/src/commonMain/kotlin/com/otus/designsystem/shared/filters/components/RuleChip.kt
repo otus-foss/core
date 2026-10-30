@@ -104,7 +104,7 @@ public fun RuleChipGroup(
                 compact = false,
                 Modifier
                     .fillMaxWidth()
-                    .then(if (index > 0) Modifier.topHairline(OtusColors.bgLight) else Modifier)
+                    .ruleDivider(index)
                     .height(RuleChipTokens.height)
                     .padding(horizontal = RuleChipTokens.padding),
             )
@@ -134,7 +134,8 @@ private fun RuleLineRow(
             overflow = TextOverflow.Ellipsis,
         )
         if (compact) {
-            line.avatar?.let { PersonAvatar(it, RuleChipTokens.compactAvatar) }
+            val avatar = line.avatar
+            if (avatar != null) PersonAvatar(avatar, RuleChipTokens.compactAvatar)
         } else {
             RuleSlot(line)
         }
@@ -212,3 +213,5 @@ private fun Modifier.ruleTarget(
     return clickable(interactions, indication = null, role = Role.Button, onClick = onClick)
         .controlPressFeedback(interactions, shape)
 }
+
+private fun Modifier.ruleDivider(index: Int): Modifier = if (index > 0) topHairline(OtusColors.bgLight) else this

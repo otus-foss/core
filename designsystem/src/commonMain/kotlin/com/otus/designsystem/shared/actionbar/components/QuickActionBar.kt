@@ -47,7 +47,10 @@ public fun QuickActionBar(
                         action.onClick()
                     },
                     look = IconButtonLook.Plain,
-                ) { action.icon?.let { Symbol(it) } }
+                ) {
+                    val icon = action.icon
+                    if (icon != null) Symbol(icon)
+                }
             }
         }
     }

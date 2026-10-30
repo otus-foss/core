@@ -23,19 +23,14 @@ class JmapPushTest {
                        {"created": {"p": {"id": "ps1", "expires": "2026-10-20T00:00:00Z"}}}, "c0"]]}"""
                 }
             val client = JmapClient(engine)
-            val method =
-                PushSubscriptionSetMethod(
-                    create =
-                        mapOf(
-                            "p" to
-                                NewPushSubscription(
-                                    deviceClientId = "otus-mail-1",
-                                    url = "https://push.example.net/up/abc",
-                                    keys = PushKeys("BPk", "c2Vj"),
-                                    types = listOf("Email", "Mailbox"),
-                                ),
-                        ),
+            val subscription =
+                NewPushSubscription(
+                    deviceClientId = "otus-mail-1",
+                    url = "https://push.example.net/up/abc",
+                    keys = PushKeys("BPk", "c2Vj"),
+                    types = listOf("Email", "Mailbox"),
                 )
+            val method = PushSubscriptionSetMethod(create = mapOf("p" to subscription))
             val result = client.request(client.session(wellKnown, ADA), ADA) { call(method) }
             assertEquals("ps1", result.createdId("p"))
             assertEquals("", result.newState)
@@ -79,10 +74,8 @@ class JmapPushTest {
             val (engine, _) = server { """{"methodResponses": [["Mailbox/set", {"destroyed": ["b"]}, "c0"]]}""" }
             val client = JmapClient(engine)
             assertFailsWith<JmapException.NotJmap> {
-                client.request(
-                    client.session(wellKnown, ADA),
-                    ADA,
-                ) { call(SetMethod(MAILBOX, "d1", destroy = listOf("b"))) }
+                val session = client.session(wellKnown, ADA)
+                client.request(session, ADA) { call(SetMethod(MAILBOX, "d1", destroy = listOf("b"))) }
             }
         }
 
@@ -110,10 +103,7 @@ class JmapPushTest {
     @Test
     fun refusesPlainHttpPushUrls() {
         assertFailsWith<IllegalArgumentException> {
-            NewPushSubscription(
-                "otus-mail-1",
-                "http://push.example.net/up/abc",
-            )
+            NewPushSubscription("otus-mail-1", "http://push.example.net/up/abc")
         }
     }
 

@@ -42,10 +42,7 @@ class PushSubscriptionsTest {
         runTest {
             val store = Store()
             val first = subscribingServer()
-            subscriptions(first, store).run {
-                setEndpoint("ada", endpoint)
-                sync()
-            }
+            createdSubscription(store, first)
             val second =
                 Server {
                     if ("PushSubscription/get" in it) {
@@ -81,11 +78,8 @@ class PushSubscriptionsTest {
     fun clearingTheEndpointDeletesTheSubscription() =
         runTest {
             val store = Store()
-            subscriptions(subscribingServer(), store).run {
-                setEndpoint("ada", endpoint)
-                sync()
-            }
-            val server = Server { """{"methodResponses": [["PushSubscription/set", {"destroyed": ["ps1"]}, "c0"]]}""" }
+            createdSubscription(store)
+            val server = Server { DESTROYED }
             subscriptions(server, store).run {
                 clearEndpoint("ada")
                 sync()

@@ -110,10 +110,16 @@ public fun Modifier.letterIndexHandle(
             do {
                 val change = awaitPointerEvent().changes.firstOrNull { it.id == down.id } ?: break
                 if ((change.position - down.position).getDistance() > viewConfiguration.touchSlop) dragging = true
-                if (dragging) coordinates.value?.let { state.hover(it.localToWindow(change.position)) }
+                if (dragging) {
+                    val layout = coordinates.value
+                    if (layout != null) state.hover(layout.localToWindow(change.position))
+                }
                 change.consume()
             } while (change.pressed)
-            if (dragging) state.active?.let(state::pick) ?: state.close()
+            if (dragging) {
+                val active = state.active
+                if (active != null) state.pick(active) else state.close()
+            }
         }
     }
 }

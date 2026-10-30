@@ -161,10 +161,10 @@ class JmapOwnAvatarsTest {
  * get by its id returns.
  */
 private class SelfCardServer(
-    card: String?,
-    books: String = "$OWN_BOOK,$SHARED_BOOK",
+    private val card: String?,
+    private val books: String = "$OWN_BOOK,$SHARED_BOOK",
     /** A fixed answer to every set; by default each set is answered with exactly what it asked. */
-    setResult: String? = null,
+    private val setResult: String? = null,
 ) {
     val sets = mutableListOf<JsonObject>()
     private var made: String? = null
@@ -174,49 +174,46 @@ private class SelfCardServer(
             addHandler { request ->
                 val json = headersOf(HttpHeaders.ContentType, "application/json")
                 if (request.url.encodedPath == "/jmap/session") return@addHandler respond(SESSION, headers = json)
-                val body = (request.body as TextContent).text
-                val calls =
+                val responses =
                     Json
-                        .parseToJsonElement(body)
+                        .parseToJsonElement((request.body as TextContent).text)
                         .jsonObject
                         .getValue("methodCalls")
                         .jsonArray
-                val responses =
-                    calls.joinToString(",") { call ->
-                        val (name, arguments, id) = call.jsonArray
-                        val result =
-                            when (val method = (name as JsonPrimitive).content) {
-                                "AddressBook/get" -> {
-                                    """{"list":[$books]}"""
-                                }
-
-                                "ContactCard/query" -> {
-                                    """{"ids":[${if (card == null) "" else "\"c\""}]}"""
-                                }
-
-                                "ContactCard/get" -> {
-                                    val byId = arguments.jsonObject["ids"] is JsonArray
-                                    """{"list":[${(if (byId) made else card).orEmpty()}]}"""
-                                }
-
-                                "ContactCard/set" -> {
-                                    sets += arguments.jsonObject
-                                    if ("create" in arguments.jsonObject) made = MADE_CARD
-                                    setResult ?: accepted(arguments.jsonObject)
-                                }
-
-                                else -> {
-                                    error("Unexpected $method")
-                                }
-                            }
-                        """[$name,$result,$id]"""
-                    }
+                        .joinToString(",") { call ->
+                            val (name, arguments, id) = call.jsonArray
+                            val result = result((name as JsonPrimitive).content, arguments.jsonObject)
+                            """[$name,$result,$id]"""
+                        }
                 respond("""{"methodResponses":[$responses]}""", headers = json)
             }
         }
     private val logins = adaLogins()
     val avatars =
         JmapOwnAvatars(JmapConnections(JmapClient(engine), logins), logins, AvatarService()) { AvatarOptions() }
+
+    private fun result(
+        method: String,
+        arguments: JsonObject,
+    ): String =
+        when (method) {
+            "AddressBook/get" -> """{"list":[$books]}"""
+            "ContactCard/query" -> """{"ids":[${if (card == null) "" else "\"c\""}]}"""
+            "ContactCard/get" -> getResult(arguments)
+            "ContactCard/set" -> setResult(arguments)
+            else -> error("Unexpected $method")
+        }
+
+    private fun getResult(arguments: JsonObject): String {
+        val byId = arguments["ids"] is JsonArray
+        return """{"list":[${(if (byId) made else card).orEmpty()}]}"""
+    }
+
+    private fun setResult(arguments: JsonObject): String {
+        sets += arguments
+        if ("create" in arguments) made = MADE_CARD
+        return setResult ?: accepted(arguments)
+    }
 
     fun set(): JsonObject = sets.single()
 

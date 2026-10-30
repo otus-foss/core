@@ -48,7 +48,7 @@ class ReorderDragTest {
         val drag = measuredDrag()
         drag.start("first")
         drag.moveBy(100f)
-        drag.layout(keys.drop(1), 10f, ::drop)
+        drag.layout(keys.drop(1), spacing = 10f, ::drop)
         drag.drop()
         assertNull(drag.key)
         assertEquals(setOf<Any>("second", "third"), drag.heights.keys)
@@ -61,7 +61,7 @@ class ReorderDragTest {
         drag.start("first")
         drag.moveBy(30f)
         val latest = mutableListOf<Pair<Int, Float>>()
-        drag.layout(keys, 10f) { from, offset -> latest.add(from to offset) }
+        drag.layout(keys, spacing = 10f) { from, offset -> latest.add(from to offset) }
         drag.drop()
         assertEquals(emptyList(), drops)
         assertEquals(listOf(0 to 30f), latest)
@@ -70,7 +70,7 @@ class ReorderDragTest {
     @Test
     fun anUnmeasuredColumnDoesNotStartADrag() {
         val drag = ReorderDrag()
-        drag.layout(keys, 10f, ::drop)
+        drag.layout(keys, spacing = 10f, ::drop)
         drag.start("first")
         drag.moveBy(100f)
         drag.drop()
@@ -80,7 +80,7 @@ class ReorderDragTest {
 
     private fun measuredDrag(overhang: Float = 0f): ReorderDrag =
         ReorderDrag(overhang).apply {
-            layout(keys, 10f, ::drop)
+            layout(keys, spacing = 10f, ::drop)
             heights.putAll(keys.zip(listOf(40, 80, 40)))
         }
 

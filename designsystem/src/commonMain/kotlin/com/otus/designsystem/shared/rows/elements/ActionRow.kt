@@ -50,11 +50,11 @@ public fun ActionRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(SheetTokens.gap),
     ) {
-        icon?.let { LeadingSymbol(it) }
+        if (icon != null) LeadingSymbol(icon)
         Column(Modifier.weight(1f)) {
             Text(title, style = panelTextStyle())
-            summary?.let {
-                Text(it, style = panelTextStyle(), fontSize = SheetTokens.detailSize, color = OtusColors.text2)
+            if (summary != null) {
+                Text(summary, style = panelTextStyle(), fontSize = SheetTokens.detailSize, color = OtusColors.text2)
             }
         }
         Symbol(trailing, mirrorInRtl = mirrorTrailingInRtl)

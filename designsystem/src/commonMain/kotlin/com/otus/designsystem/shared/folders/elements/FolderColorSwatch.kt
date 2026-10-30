@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import com.otus.designsystem.theme.colors.FolderColor
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
@@ -25,12 +26,9 @@ public fun FolderColorSwatch(
     Box(
         modifier
             .size(ThemeTokens.folderSwatch)
-            .then(
-                if (tint == null) {
-                    Modifier.border(PanelTokens.borderWidth, OtusColors.text2, CircleShape)
-                } else {
-                    Modifier.background(tint, CircleShape)
-                },
-            ),
+            .folderSwatchFill(tint),
     )
 }
+
+private fun Modifier.folderSwatchFill(tint: Color?): Modifier =
+    if (tint == null) border(PanelTokens.borderWidth, OtusColors.text2, CircleShape) else background(tint, CircleShape)

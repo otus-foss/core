@@ -188,7 +188,7 @@ private fun ToastItem(
                     scaleX = shown
                     scaleY = shown
                     alpha = peeking * presence.value
-                }.then(if (reachable) Modifier.liveToast { state.remove(entry) } else Modifier.clearAndSetSemantics {})
+                }.liveToast(reachable) { state.remove(entry) }
                 .clickable(
                     remember { MutableInteractionSource() },
                     indication = null,
@@ -216,21 +216,34 @@ private fun ToastContent(
         }
     Box {
         Toast(entry.message.text, action, entry.remaining, lifted = lifted)
-        if (!reachable) Box(Modifier.matchParentSize().clickable(null, indication = null) { state.expanded = true })
+        if (!reachable) {
+            Box(
+                Modifier.matchParentSize().clickable(interactionSource = null, indication = null) {
+                    state.expanded = true
+                },
+            )
+        }
     }
 }
 
 /** Announces the toast to screen readers when it appears or changes, and offers the swipe as an action. */
-private fun Modifier.liveToast(onDismiss: () -> Unit): Modifier =
-    semantics {
-        liveRegion = LiveRegionMode.Polite
-        customActions =
-            listOf(
-                CustomAccessibilityAction("Dismiss") {
-                    onDismiss()
-                    true
-                },
-            )
+private fun Modifier.liveToast(
+    reachable: Boolean,
+    onDismiss: () -> Unit,
+): Modifier =
+    if (reachable) {
+        semantics {
+            liveRegion = LiveRegionMode.Polite
+            customActions =
+                listOf(
+                    CustomAccessibilityAction("Dismiss") {
+                        onDismiss()
+                        true
+                    },
+                )
+        }
+    } else {
+        clearAndSetSemantics {}
     }
 
 /**

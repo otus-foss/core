@@ -129,30 +129,15 @@ class JmapAccountRepositoryTest {
         runTest {
             val engine =
                 MockEngine { request ->
-                    when (request.url.host) {
-                        "mail.example.org" -> {
-                            respond(
-                                "",
-                                HttpStatusCode.TemporaryRedirect,
-                                headersOf(HttpHeaders.Location, "https://login.example.net/s"),
-                            )
-                        }
-
-                        else -> {
-                            if (request.url.encodedPath == "/s") {
-                                respond(
-                                    STALWART_SESSION,
-                                    HttpStatusCode.OK,
-                                    headersOf(HttpHeaders.ContentType, "application/json"),
-                                )
-                            } else {
-                                respond(
-                                    mailboxes,
-                                    HttpStatusCode.OK,
-                                    headersOf(HttpHeaders.ContentType, "application/json"),
-                                )
-                            }
-                        }
+                    if (request.url.host == "mail.example.org") {
+                        respond(
+                            "",
+                            HttpStatusCode.TemporaryRedirect,
+                            headersOf(HttpHeaders.Location, "https://login.example.net/s"),
+                        )
+                    } else {
+                        val body = if (request.url.encodedPath == "/s") STALWART_SESSION else mailboxes
+                        respond(body, HttpStatusCode.OK, headersOf(HttpHeaders.ContentType, "application/json"))
                     }
                 }
             val confirm = assertIs<ConnectOutcome.ConfirmHost>(repository(engine).connect(draft))

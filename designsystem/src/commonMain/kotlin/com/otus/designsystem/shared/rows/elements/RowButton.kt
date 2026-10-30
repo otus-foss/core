@@ -36,7 +36,7 @@ public fun RowButton(
     Box(
         modifier
             .heightIn(min = PanelTokens.touchTarget)
-            .semantics { accessibilityLabel?.let { contentDescription = it } }
+            .semantics { if (accessibilityLabel != null) contentDescription = accessibilityLabel }
             .clickable(interactions, indication = null, role = Role.Button, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {

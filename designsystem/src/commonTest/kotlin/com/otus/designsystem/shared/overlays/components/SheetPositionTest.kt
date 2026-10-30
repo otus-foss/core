@@ -69,10 +69,10 @@ class SheetPositionTest {
             launch(clock) { position.show(MotionCurve.Enter) }.join()
             var closes = 0
             position.dragBy(40f)
-            launch(clock) { position.release(0f, 600f) { closes++ } }.join()
+            launch(clock) { position.release(velocity = 0f, flingVelocity = 600f) { closes++ } }.join()
             assertEquals(0f, position.hidden)
             assertEquals(0, closes)
-            launch(clock) { position.release(601f, 600f) { closes++ } }.join()
+            launch(clock) { position.release(velocity = 601f, flingVelocity = 600f) { closes++ } }.join()
             assertEquals(1, closes)
         }
 

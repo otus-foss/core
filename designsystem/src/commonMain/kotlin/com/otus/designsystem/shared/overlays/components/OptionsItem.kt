@@ -35,7 +35,7 @@ public sealed interface OptionsItem {
             icon: DrawableResource,
             checked: Boolean,
             onCheckedChange: (Boolean) -> Unit,
-        ) : this(label, icon, checked, null, onCheckedChange)
+        ) : this(label, icon, checked, detail = null, onCheckedChange)
     }
 
     /** A small `text3` heading over the items after it, such as the sender's name. */

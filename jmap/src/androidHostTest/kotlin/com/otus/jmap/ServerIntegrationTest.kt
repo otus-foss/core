@@ -20,40 +20,26 @@ class ServerIntegrationTest {
     private val user = System.getenv("OTUS_JMAP_TEST_USER").orEmpty()
     private val password = System.getenv("OTUS_JMAP_TEST_PASSWORD").orEmpty()
     private val client =
-        JmapClient(
-            policy =
-                JmapPolicy(
-                    allowInsecureHttp =
-                        System.getenv("OTUS_JMAP_TEST_INSECURE") == "1",
-                ),
-        )
+        JmapClient(policy = JmapPolicy(allowInsecureHttp = System.getenv("OTUS_JMAP_TEST_INSECURE") == "1"))
 
     @Test
     fun discoversTheSessionAndQueriesMailboxes() =
         runTest {
-            assumeNotNull(url)
-            val serverUrl = requireNotNull(url)
-            val connection = JmapConnection(client, serverUrl, JmapAuth.Basic(user, password))
+            val connection = connection()
             val session = connection.session()
             assertTrue(session.apiUrl.startsWith("http"), "apiUrl is absolute: ${session.apiUrl}")
             val account =
                 requireNotNull(session.accountFor(JmapCapability.MAIL)) { "Integration server must offer mail" }
             val mailboxes = connection.call(GetMethod(MAILBOX, account, properties = listOf("id", "role")))
-            assertEquals(
-                mailboxes.list.size,
-                mailboxes.list
-                    .map { it.id }
-                    .distinct()
-                    .size,
-            )
+            val ids = mailboxes.list.map { it.id }
+            assertEquals(ids.size, ids.distinct().size)
         }
 
     /** Leaves nothing behind: the mailbox is deleted again and an unused blob expires on the server. */
     @Test
     fun createsAndDeletesAMailboxAndUploadsABlob() =
         runTest {
-            assumeNotNull(url)
-            val connection = JmapConnection(client, requireNotNull(url), JmapAuth.Basic(user, password))
+            val connection = connection()
             val session = connection.session()
             val account =
                 requireNotNull(session.accountFor(JmapCapability.MAIL)) { "Integration server must offer mail" }
@@ -73,10 +59,12 @@ class ServerIntegrationTest {
             assumeNotNull(url)
             val serverUrl = requireNotNull(url)
             assertFailsWith<JmapException.Unauthorized> {
-                client.session(
-                    serverUrl,
-                    JmapAuth.Basic(user, "$password-wrong"),
-                )
+                client.session(serverUrl, JmapAuth.Basic(user, "$password-wrong"))
             }
         }
+
+    private fun connection(): JmapConnection {
+        assumeNotNull(url)
+        return JmapConnection(client, requireNotNull(url), JmapAuth.Basic(user, password))
+    }
 }

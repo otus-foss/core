@@ -24,9 +24,10 @@ internal class CalendarWeeks(
         firstMonday.plus(index.coerceIn(0, count - 1) * CalendarTokens.DAYS_PER_WEEK, DateTimeUnit.DAY)
 
     // A mixed week adopts the month it enters, matching jumps to the week containing the first.
-    fun visibleMonth(index: Int): LocalDate {
-        val monday = startOfWeek(index)
-        val endOfWeek = monday.plus(CalendarTokens.DAYS_PER_WEEK - 1, DateTimeUnit.DAY).coerceIn(first, last)
-        return endOfWeek.yearMonth.firstDay
-    }
+    fun visibleMonth(index: Int): LocalDate =
+        startOfWeek(index)
+            .plus(CalendarTokens.DAYS_PER_WEEK - 1, DateTimeUnit.DAY)
+            .coerceIn(first, last)
+            .yearMonth
+            .firstDay
 }

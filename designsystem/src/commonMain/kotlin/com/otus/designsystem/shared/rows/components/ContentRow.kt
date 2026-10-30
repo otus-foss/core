@@ -48,7 +48,7 @@ public fun ContentRow(
             .selectionTint(selection)
             .semantics {
                 stateDescription = stateLabel
-                selection?.let { this.selected = it.selected }
+                if (selection != null) selected = selection.selected
             }.combinedClickable(role = Role.Button, onLongClick = onLongClick, onClick = onClick)
             .padding(InboxTokens.rowPadding),
         horizontalArrangement = Arrangement.spacedBy(InboxTokens.itemGap),

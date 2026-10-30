@@ -56,7 +56,7 @@ public fun AccountGroupRow(
     ) {
         SilentAvatarStack(listOf(avatar), ScopeSheetTokens.childAvatar)
         Text(title, Modifier.weight(1f), style = panelTextStyle(), maxLines = 1, overflow = TextOverflow.Ellipsis)
-        detail?.let { Text(it, style = panelTextStyle(), color = OtusColors.text3, maxLines = 1) }
+        if (detail != null) Text(detail, style = panelTextStyle(), color = OtusColors.text3, maxLines = 1)
         // The same two columns as a FolderSettingRow's settings icon and drag handle.
         TrailingIcons(first = action, last = { ExpandChevron(expanded) })
     }

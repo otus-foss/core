@@ -64,7 +64,10 @@ internal fun ValidationScope.propertyNames(
     extra
         .keys
         .filterNot { it in declared }
-        .forEach { name -> propertyNameProblem(name, declared)?.let { report(it, name) } }
+        .forEach { name ->
+            val problem = propertyNameProblem(name, declared)
+            if (problem != null) report(problem, name)
+        }
 }
 
 private fun propertyNameProblem(

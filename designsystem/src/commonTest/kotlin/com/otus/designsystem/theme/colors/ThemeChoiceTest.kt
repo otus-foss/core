@@ -51,10 +51,8 @@ class ThemeChoiceTest {
     fun deletingAnotherCustomThemeKeepsTheSelection() {
         val two =
             ThemeChoice()
-                .withColor(
-                    ThemeColor.Page,
-                    Color.Black,
-                ).withBase(ThemeBase.Ink)
+                .withColor(ThemeColor.Page, Color.Black)
+                .withBase(ThemeBase.Ink)
                 .withColor(ThemeColor.Text, Color.White)
         val kept = two.withoutCustomTheme(1)
         assertEquals(2, kept.customId)
@@ -68,8 +66,8 @@ class ThemeChoiceTest {
         assertEquals(
             null,
             custom
-                .withName(1, "Night")
-                .withName(1, " ")
+                .withName(id = 1, name = "Night")
+                .withName(id = 1, name = " ")
                 .customTheme
                 ?.name,
         )

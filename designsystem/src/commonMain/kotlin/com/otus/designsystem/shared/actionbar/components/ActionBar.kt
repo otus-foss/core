@@ -150,7 +150,7 @@ private fun SecondaryGroup(
                     menu.Menu(it)
                 }
             }
-            onAdd?.let { BarAddButton("Add action", it) }
+            if (onAdd != null) BarAddButton("Add action", onAdd)
         }
     }
 }
@@ -173,7 +173,7 @@ public fun ActionBarHost(
         val bottom = if (bar == null) 0 else barHeight
         val density = LocalDensity.current
         content(PaddingValues(bottom = with(density) { bottom.toDp() }))
-        bar?.let {
+        if (bar != null) {
             // Measured from the window's bottom, since padding around the host, such as for the
             // system bars, keeps the bar's own size from saying how high it reaches.
             var reach by remember { mutableIntStateOf(0) }
@@ -188,7 +188,7 @@ public fun ActionBarHost(
                         // open message, has empty bounds at the top and would claim the whole height.
                         reach = (it.findRootCoordinates().size.height - it.positionInRoot().y).roundToInt()
                     }.actionBarInset(),
-            ) { CompositionLocalProvider(LocalHostedBar provides true) { it() } }
+            ) { CompositionLocalProvider(LocalHostedBar provides true) { bar() } }
         }
     }
 }

@@ -42,7 +42,7 @@ internal fun ThemeChoice.nameProblem(
 internal fun ThemeChoice.copyName(option: ThemeOption): String =
     generateSequence(1) { it + 1 }
         .map { if (it == 1) "${option.title} copy" else "${option.title} copy $it" }
-        .first { !isTaken(it, null) }
+        .first { !isTaken(it, except = null) }
 
 /** Whether a theme other than [except] already has [name]. */
 private fun ThemeChoice.isTaken(

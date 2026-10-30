@@ -27,10 +27,10 @@ public data class ShareNotificationFilter(
     public fun toFilter(): JmapFilter =
         JmapFilter.Condition(
             buildJsonObject {
-                after?.let { put("after", JmapJson.encodeToJsonElement(UtcDateSerializer, it)) }
-                before?.let { put("before", JmapJson.encodeToJsonElement(UtcDateSerializer, it)) }
-                objectType?.let { put("objectType", JsonPrimitive(it)) }
-                objectAccountId?.let { put("objectAccountId", JsonPrimitive(it)) }
+                if (after != null) put("after", JmapJson.encodeToJsonElement(UtcDateSerializer, after))
+                if (before != null) put("before", JmapJson.encodeToJsonElement(UtcDateSerializer, before))
+                if (objectType != null) put("objectType", JsonPrimitive(objectType))
+                if (objectAccountId != null) put("objectAccountId", JsonPrimitive(objectAccountId))
             },
         )
 }

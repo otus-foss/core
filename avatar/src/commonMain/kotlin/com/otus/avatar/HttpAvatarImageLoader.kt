@@ -74,20 +74,25 @@ public class HttpAvatarImageLoader(
     private suspend fun readPage(
         response: HttpResponse,
         target: Url,
-    ): AvatarWebsitePage {
-        val html =
-            response
-                .bodyAsChannel()
-                .readBuffer(MAX_HTML_BYTES)
-                .readByteArray()
-                .decodeToString()
-        return AvatarWebsitePage(target.toString(), html)
-    }
+    ): AvatarWebsitePage =
+        AvatarWebsitePage(
+            target.toString(),
+            html =
+                response
+                    .bodyAsChannel()
+                    .readBuffer(MAX_HTML_BYTES)
+                    .readByteArray()
+                    .decodeToString(),
+        )
 
     private suspend fun readImage(response: HttpResponse): AvatarImage? {
         if ((response.contentLength() ?: 0) > MAX_AVATAR_BYTES) return null
-        val bytes = response.bodyAsChannel().readBuffer(MAX_AVATAR_BYTES + 1).readByteArray()
-        return bytes.takeIf { it.isNotEmpty() && it.size <= MAX_AVATAR_BYTES }?.let(::AvatarImage)
+        return response
+            .bodyAsChannel()
+            .readBuffer(MAX_AVATAR_BYTES + 1)
+            .readByteArray()
+            .takeIf { it.isNotEmpty() && it.size <= MAX_AVATAR_BYTES }
+            ?.let(::AvatarImage)
     }
 
     private class ImageResponse(

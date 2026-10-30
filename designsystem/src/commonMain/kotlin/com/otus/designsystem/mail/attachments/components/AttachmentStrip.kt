@@ -14,13 +14,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.clearAndSetSemantics
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_download
 import com.otus.designsystem.shared.controls.components.StripChevron
 import com.otus.designsystem.shared.controls.elements.PlainAction
 import com.otus.designsystem.shared.rows.components.Unfold
 import com.otus.designsystem.shared.rows.components.foldedForm
+import com.otus.designsystem.shared.rows.components.hiddenWhenFolded
 import com.otus.designsystem.shared.rows.components.stripCardFrame
 import com.otus.designsystem.shared.rows.components.unfoldedForm
 import com.otus.designsystem.shared.rows.components.unfolding
@@ -49,7 +49,7 @@ public fun AttachmentStrip(
             Modifier
                 .unfolding(unfold, ReadTokens.attachmentHeight)
                 .unfoldedForm(unfold)
-                .then(if (folded) Modifier.clearAndSetSemantics {} else Modifier),
+                .hiddenWhenFolded(folded),
         ) {
             AttachmentHeader(summary, onToggle, actions.onSaveAll)
             Column(Modifier.heightIn(max = ReadTokens.openStripMaxHeight).verticalScroll(rememberScrollState())) {

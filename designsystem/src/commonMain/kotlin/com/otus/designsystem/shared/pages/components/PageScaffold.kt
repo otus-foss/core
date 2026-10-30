@@ -74,7 +74,7 @@ public fun PageScaffold(
                 verticalArrangement = Arrangement.spacedBy(PageTokens.rowGap),
                 content = content,
             )
-            footer?.let { Column(verticalArrangement = Arrangement.spacedBy(PageTokens.rowGap), content = it) }
+            if (footer != null) Column(verticalArrangement = Arrangement.spacedBy(PageTokens.rowGap), content = footer)
         }
     }
 }

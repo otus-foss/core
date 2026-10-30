@@ -64,9 +64,9 @@ internal fun PickRowText(
     subtitleLines: Int = 1,
 ) {
     Text(title, style = panelTextStyle(), maxLines = 1, overflow = TextOverflow.Ellipsis)
-    subtitle?.let {
+    if (subtitle != null) {
         Text(
-            it,
+            subtitle,
             style = panelTextStyle(),
             color = OtusColors.text2,
             fontSize = ComposeTokens.detailSize,

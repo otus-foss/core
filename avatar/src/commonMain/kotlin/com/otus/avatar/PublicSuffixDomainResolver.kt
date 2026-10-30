@@ -12,13 +12,18 @@ public class PublicSuffixDomainResolver(
     private val lock = Mutex()
     private var rules: PublicSuffixRules? = null
 
-    override suspend fun resolve(host: String): String? {
-        val parsed =
-            lock.withLock {
-                rules ?: withContext(Dispatchers.Default) { PublicSuffixRules(loadRules()) }.also { rules = it }
-            }
-        return parsed.registrableDomain(host)
-    }
+    override suspend fun resolve(host: String): String? =
+        lock
+            .withLock {
+                val cached = rules
+                if (cached != null) {
+                    cached
+                } else {
+                    val loaded = withContext(Dispatchers.Default) { PublicSuffixRules(loadRules()) }
+                    rules = loaded
+                    loaded
+                }
+            }.registrableDomain(host)
 }
 
 /** PSL longest-rule matching, including private suffixes, wildcards, and exception rules. */

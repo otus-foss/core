@@ -29,12 +29,12 @@ class IconPillScreenshotTest {
     @Test
     fun unselected() =
         compose.screenshot("icon_pill_unselected") {
-            IconPill("Flagged", Res.drawable.symbol_flag, false, {})
+            IconPill("Flagged", Res.drawable.symbol_flag, selected = false, {})
         }
 
     @Test
     fun selected() =
-        compose.screenshot("icon_pill_selected") { IconPill("Flagged", Res.drawable.symbol_flag, true, {}) }
+        compose.screenshot("icon_pill_selected") { IconPill("Flagged", Res.drawable.symbol_flag, selected = true, {}) }
 
     @Test
     fun togglesSelection() {

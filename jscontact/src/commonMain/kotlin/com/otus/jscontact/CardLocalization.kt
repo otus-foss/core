@@ -13,7 +13,7 @@ internal fun Card.localizedTo(language: String): Card {
     val tag =
         tags.keys.firstOrNull { it == language }
             ?: tags.keys.firstOrNull { it.equals(language, ignoreCase = true) }
-    return if (tag == null) this else localizedWith(tag, tags.getValue(tag))
+    return tag?.let { localizedWith(it, tags.getValue(it)) } ?: this
 }
 
 /**
@@ -33,8 +33,9 @@ internal fun Card.localizedWith(
         "The \"$tag\" localization removes a mandatory property (RFC 9553, sections 1.4.3 and 2.1)"
     }
     val copy = JsContactJson.encodeToJsonElement(Card.serializer(), this).jsonObject - LOCALIZATIONS
-    val patched = JsContactPatch.apply(JsonObject(copy), patch)
-    return JsContactJson.decodeFromJsonElement(Card.serializer(), patched).copy(language = tag)
+    return JsContactJson
+        .decodeFromJsonElement(Card.serializer(), JsContactPatch.apply(JsonObject(copy), patch))
+        .copy(language = tag)
 }
 
 private const val LOCALIZATIONS = "localizations"

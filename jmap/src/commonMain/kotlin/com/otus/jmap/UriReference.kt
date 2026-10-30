@@ -7,14 +7,12 @@ internal fun resolveUriReference(
 ): String {
     val source = UriReference.parse(base)
     val target = UriReference.parse(reference.trim())
-    val resolved =
-        when {
-            target.scheme != null -> target.copy(path = removeDotSegments(target.path))
-            target.authority != null -> target.copy(scheme = source.scheme, path = removeDotSegments(target.path))
-            target.path.isEmpty() -> target.under(source, source.path, target.query ?: source.query)
-            else -> target.under(source, removeDotSegments(source.merge(target.path)), target.query)
-        }
-    return resolved.render()
+    return when {
+        target.scheme != null -> target.copy(path = removeDotSegments(target.path))
+        target.authority != null -> target.copy(scheme = source.scheme, path = removeDotSegments(target.path))
+        target.path.isEmpty() -> target.under(source, source.path, target.query ?: source.query)
+        else -> target.under(source, removeDotSegments(source.merge(target.path)), target.query)
+    }.render()
 }
 
 private data class UriReference(
@@ -39,11 +37,11 @@ private data class UriReference(
 
     fun render(): String =
         buildString {
-            scheme?.let { append(it).append(':') }
-            authority?.let { append("//").append(it) }
+            if (scheme != null) append(scheme).append(':')
+            if (authority != null) append("//").append(authority)
             append(path)
-            query?.let { append('?').append(it) }
-            fragment?.let { append('#').append(it) }
+            if (query != null) append('?').append(query)
+            if (fragment != null) append('#').append(fragment)
         }
 
     companion object {

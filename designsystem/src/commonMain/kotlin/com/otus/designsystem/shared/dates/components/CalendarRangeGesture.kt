@@ -18,6 +18,8 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import com.otus.designsystem.theme.tokens.selection.CalendarTokens
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -52,18 +54,8 @@ internal fun Modifier.calendarRangeGesture(
                 }
                 held.consume()
                 update()
-                val scrolling =
-                    scope.launch {
-                        var lastFrame = withFrameNanos { it }
-                        while (isActive) {
-                            val frame = withFrameNanos { it }
-                            val elapsed = (frame - lastFrame) / CalendarTokens.NANOS_PER_SECOND
-                            lastFrame = frame
-                            val direction = edgeScroll(position, size.height.toFloat(), edge)
-                            if (direction != 0f) state.scrollBy(direction * speed * elapsed)
-                            update()
-                        }
-                    }
+                val direction = { edgeScroll(position, size.height.toFloat(), edge) }
+                val scrolling = scope.scrollWhileHeld(state, speed, direction, ::update)
                 var completed = false
                 try {
                     completed =
@@ -109,4 +101,22 @@ private fun edgeScroll(
         position.y < edge -> -((edge - position.y) / edge).coerceIn(0f, 1f)
         position.y > height - edge -> ((position.y - height + edge) / edge).coerceIn(0f, 1f)
         else -> 0f
+    }
+
+private fun CoroutineScope.scrollWhileHeld(
+    state: LazyListState,
+    speed: Float,
+    direction: () -> Float,
+    update: () -> Unit,
+): Job =
+    launch {
+        var lastFrame = withFrameNanos { it }
+        while (isActive) {
+            val frame = withFrameNanos { it }
+            val elapsed = (frame - lastFrame) / CalendarTokens.NANOS_PER_SECOND
+            lastFrame = frame
+            val scrollDirection = direction()
+            if (scrollDirection != 0f) state.scrollBy(scrollDirection * speed * elapsed)
+            update()
+        }
     }

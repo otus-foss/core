@@ -9,28 +9,13 @@ import kotlin.test.assertTrue
 class FolderColorTest {
     @Test
     fun everyColorStandsOutOnEveryThemeAndAccent() {
-        val palettes =
-            ThemeBase.entries.flatMap { base ->
+        ThemeBase.entries
+            .flatMap { base ->
                 AccentPreset.entries.map { accent ->
-                    "${base.name} with ${accent.name}" to
-                        ThemeChoice(base, accent.color).palette
+                    "${base.name} with ${accent.name}" to ThemeChoice(base, accent.color).palette
                 }
-            }
-        val cases =
-            palettes.flatMap { (theme, palette) ->
-                (FolderColor.entries - FolderColor.Default).flatMap { color ->
-                    val tint = assertNotNull(color.tintIn(palette), "${color.name} has a tint")
-                    listOf(
-                        "bgDark" to palette.bgDark,
-                        "bgRegular" to palette.bgRegular,
-                        "accentDark" to palette.accentDark,
-                        "selectedFill" to palette.selectedFill,
-                    ).map { (surface, background) ->
-                        "${color.name} on $surface of $theme" to contrast(tint, background)
-                    }
-                }
-            }
-        cases.forEach { (case, ratio) -> assertTrue(ratio >= MIN_CONTRAST, "$case: $ratio") }
+            }.flatMap { (theme, palette) -> contrastCases(theme, palette) }
+            .forEach { (case, ratio) -> assertTrue(ratio >= MIN_CONTRAST, "$case: $ratio") }
     }
 
     @Test
@@ -63,3 +48,19 @@ class FolderColorTest {
         const val MIN_CONTRAST = 3f
     }
 }
+
+private fun contrastCases(
+    theme: String,
+    palette: OtusPalette,
+): List<Pair<String, Float>> =
+    (FolderColor.entries - FolderColor.Default).flatMap { color ->
+        val tint = assertNotNull(color.tintIn(palette), "${color.name} has a tint")
+        listOf(
+            "bgDark" to palette.bgDark,
+            "bgRegular" to palette.bgRegular,
+            "accentDark" to palette.accentDark,
+            "selectedFill" to palette.selectedFill,
+        ).map { (surface, background) ->
+            "${color.name} on $surface of $theme" to contrast(tint, background)
+        }
+    }

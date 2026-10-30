@@ -12,12 +12,12 @@ import java.io.File
  * window itself.
  */
 internal fun AndroidComposeTestRule<*, out ComponentActivity>.captureWindow(name: String) {
-    val out = File("build/reports/toasts").apply { mkdirs() }
+    val directory = File("build/reports/toasts").apply { mkdirs() }
     runOnUiThread {
         val view = activity.window.decorView
         val bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
         view.draw(Canvas(bitmap))
-        File(out, "$name.png").outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, LOSSLESS, it) }
+        File(directory, "$name.png").outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, LOSSLESS, it) }
     }
 }
 

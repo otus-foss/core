@@ -42,7 +42,7 @@ public fun SettingsSection(
             horizontalArrangement = Arrangement.spacedBy(SettingTokens.sectionLeadingGap),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            avatar?.let { PersonAvatar(it, SettingTokens.sectionAvatar) }
+            if (avatar != null) PersonAvatar(avatar, SettingTokens.sectionAvatar)
             Text(
                 title,
                 fontSize = SettingTokens.sectionTitleSize,
@@ -50,7 +50,9 @@ public fun SettingsSection(
                 fontWeight = FontWeight.SemiBold,
             )
             // The button's touch target reaches past the title's line rather than making the header taller.
-            info?.let { InfoTip(it, Modifier.offset(x = -InfoTipOverhang).overlapHeight(PanelTokens.iconSize)) }
+            if (info != null) {
+                InfoTip(info, Modifier.offset(x = -InfoTipOverhang).overlapHeight(PanelTokens.iconSize))
+            }
         }
         content()
     }

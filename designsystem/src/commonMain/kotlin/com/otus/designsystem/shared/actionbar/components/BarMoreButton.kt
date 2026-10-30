@@ -40,7 +40,7 @@ internal fun BarMoreButton(
         modifier
             .size(ActionBarTokens.height)
             .semantics { contentDescription = more.label }
-            .clickable(interactions, null, role = Role.Button, onClick = menu.click(more))
+            .clickable(interactions, indication = null, role = Role.Button, onClick = menu.click(more))
             .controlPressFeedback(interactions, CircleShape)
             .darkSurface(CircleShape),
         contentAlignment = Alignment.Center,

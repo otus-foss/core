@@ -17,7 +17,13 @@ public class JmapConnection(
     private var cached: JmapSession? = null
 
     public suspend fun session(): JmapSession =
-        lock.withLock { cached ?: client.session(sessionUrl, auth, trustedOrigins).also { cached = it } }
+        lock.withLock {
+            val current = cached
+            if (current != null) return@withLock current
+            val fetched = client.session(sessionUrl, auth, trustedOrigins)
+            cached = fetched
+            fetched
+        }
 
     /** One request; returns the result of the call [build] returns. */
     public suspend fun <T> request(build: JmapRequestBuilder.() -> JmapCall<T>): T {

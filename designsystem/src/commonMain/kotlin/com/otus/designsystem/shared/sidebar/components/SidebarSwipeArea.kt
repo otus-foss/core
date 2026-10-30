@@ -92,19 +92,18 @@ private suspend fun PointerInputScope.detectOpenSwipe(
 
 /** Marks the bottom of the area where a swipe opens the sidebar. Has no effect outside [SidebarSwipeArea]. */
 @Composable
-internal fun Modifier.sidebarOpenZone(): Modifier {
-    val zone = LocalSidebarOpenZone.current ?: return this
-    return onGloballyPositioned { zone.panel = it }
-}
+internal fun Modifier.sidebarOpenZone(): Modifier =
+    LocalSidebarOpenZone.current?.let { zone -> onGloballyPositioned { zone.panel = it } } ?: this
 
 private class SidebarOpenZone {
     var host: LayoutCoordinates? = null
     var panel: LayoutCoordinates? = null
 
     fun contains(y: Float): Boolean {
-        val host = host?.takeIf { it.isAttached }
-        val panel = panel?.takeIf { it.isAttached }
-        return host != null && panel != null && y <= host.localBoundingBoxOf(panel, clipBounds = false).bottom
+        val hostCoordinates = host?.takeIf { it.isAttached }
+        val panelCoordinates = panel?.takeIf { it.isAttached }
+        if (hostCoordinates == null || panelCoordinates == null) return false
+        return y <= hostCoordinates.localBoundingBoxOf(panelCoordinates, clipBounds = false).bottom
     }
 }
 

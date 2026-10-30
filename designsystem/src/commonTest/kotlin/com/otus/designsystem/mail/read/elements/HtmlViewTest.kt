@@ -14,19 +14,19 @@ class HtmlViewTest {
     @Test
     fun policyComesBeforeTheDocument() {
         val html = "<img src=\"https://tracker.example/p.gif\">"
-        val sandboxed = sandboxedHtml(html, loadRemote = false, OtusPalette.Otus, key)
+        val sandboxed = renderHtml(html, loadRemote = false)
         assertTrue(sandboxed.startsWith("<meta http-equiv=\"Content-Security-Policy\""))
         assertTrue(sandboxed.endsWith(html))
     }
 
     @Test
     fun blocksRemoteResourcesUntilAllowed() {
-        val blocked = policyOf(sandboxedHtml("", loadRemote = false, OtusPalette.Otus, key))
+        val blocked = policyOf(renderHtml("", loadRemote = false))
         assertEquals(
             "default-src 'none'; img-src data:; style-src 'unsafe-inline'; font-src data:; form-action 'none'",
             blocked,
         )
-        val allowed = policyOf(sandboxedHtml("", loadRemote = true, OtusPalette.Otus, key))
+        val allowed = policyOf(renderHtml("", loadRemote = true))
         assertContains(allowed, "img-src data: http: https:")
         assertContains(allowed, "default-src 'none'")
         assertFalse("script-src" in allowed)
@@ -34,11 +34,11 @@ class HtmlViewTest {
 
     @Test
     fun aPlainDocumentTakesThePickedThemesColors() {
-        val dark = sandboxedHtml("<p>Hi</p>", loadRemote = false, OtusPalette.Otus, key)
+        val dark = renderHtml("<p>Hi</p>", loadRemote = false)
         assertContains(dark, ":root{color-scheme:dark}body{color:#ebeced}a{color:#7099c4}")
         val light = OtusPalette.Otus.copy(text1 = Color(0xFF151515), isLight = true)
         assertContains(
-            sandboxedHtml("<p>Hi</p>", loadRemote = false, light, key),
+            renderHtml("<p>Hi</p>", loadRemote = false, palette = light),
             "color-scheme:light}body{color:#151515}",
         )
     }
@@ -53,7 +53,7 @@ class HtmlViewTest {
         ).forEach {
             assertTrue(hasOwnColors(it), it)
             assertContains(
-                sandboxedHtml(it, loadRemote = false, OtusPalette.Otus, key),
+                renderHtml(it, loadRemote = false),
                 "body{color:#000;background:#fff}",
             )
         }
@@ -63,11 +63,11 @@ class HtmlViewTest {
     @Test
     fun connectionHintsStayInertUntilRemoteContentIsAllowed() {
         val html = "<LINK rel=preconnect href=https://u1.tracker.example><link\trel=\"dns-prefetch\" href=x>"
-        val blocked = sandboxedHtml(html, loadRemote = false, OtusPalette.Otus, key)
+        val blocked = renderHtml(html, loadRemote = false)
         assertContains(blocked, "<meta http-equiv=\"x-dns-prefetch-control\" content=\"off\">")
         assertFalse("<link" in blocked.lowercase())
         assertContains(blocked, "<otus-inert-link rel=preconnect")
-        val allowed = sandboxedHtml(html, loadRemote = true, OtusPalette.Otus, key)
+        val allowed = renderHtml(html, loadRemote = true)
         assertFalse("x-dns-prefetch-control" in allowed)
         assertTrue(allowed.endsWith(html))
     }
@@ -75,7 +75,7 @@ class HtmlViewTest {
     @Test
     fun linkLikeTagsAndTextAreKept() {
         val html = "<linked>a &lt;link b</linked>"
-        assertTrue(sandboxedHtml(html, loadRemote = false, OtusPalette.Otus, key).endsWith(html))
+        assertTrue(renderHtml(html, loadRemote = false).endsWith(html))
     }
 
     @Test
@@ -97,7 +97,7 @@ class HtmlViewTest {
                 "<img style=\"width:200px;height:50px\" src='http://t.example/b.png'>" +
                 "<IMG SRC=//t.example/c.png>" +
                 "<img src=\"cid:logo\"><img src=\"data:image/png;base64,AA\">"
-        val blocked = sandboxedHtml(html, loadRemote = false, OtusPalette.Otus, key, placeholders = true)
+        val blocked = renderHtml(html, loadRemote = false, placeholders = true)
         assertContains(
             blocked,
             "<a href=\"otus-images:show?k=k1\" class=\"otus-k1-blocked\" " +
@@ -115,15 +115,15 @@ class HtmlViewTest {
     @Test
     fun imagesStayWithoutPlaceholdersOrOnceAllowed() {
         val html = "<img src=\"https://t.example/a.png\">"
-        assertTrue(sandboxedHtml(html, loadRemote = false, OtusPalette.Otus, key).endsWith(html))
-        assertTrue(sandboxedHtml(html, loadRemote = true, OtusPalette.Otus, key, placeholders = true).endsWith(html))
+        assertTrue(renderHtml(html, loadRemote = false).endsWith(html))
+        assertTrue(renderHtml(html, loadRemote = true, placeholders = true).endsWith(html))
     }
 
     @Test
     fun aQuoteFoldsAfterTheBodyWithItsEscapedHeader() {
         val quote = HtmlQuote("Ada <Lovelace>", "AL", "10 Oct", "<p>Earlier <img src=\"https://t.example/q.png\"></p>")
         val page =
-            sandboxedHtml("<p>Reply</p>", loadRemote = false, OtusPalette.Otus, key, placeholders = true, quote = quote)
+            renderHtml("<p>Reply</p>", loadRemote = false, placeholders = true, quote = quote)
         val body = page.substringAfter("<p>Reply</p>")
         assertContains(body, "<details class=\"otus-k1-toggle\"><summary class=\"otus-k1-label\">")
         assertContains(
@@ -139,8 +139,8 @@ class HtmlViewTest {
 
     @Test
     fun aQuoteWithoutAnAuthorHasNoPill() {
-        val quote = HtmlQuote("", "", "", "<p>Earlier</p>")
-        val page = sandboxedHtml("<p>Reply</p>", loadRemote = true, OtusPalette.Otus, key, quote = quote)
+        val quote = HtmlQuote(name = "", initials = "", date = "", html = "<p>Earlier</p>")
+        val page = renderHtml("<p>Reply</p>", loadRemote = true, quote = quote)
         assertFalse("<span class=\"otus-k1-pill\">" in page)
         assertContains(page, "<div class=\"otus-k1-body\"><div class=\"otus-k1-text\"><p>Earlier</p>")
     }
@@ -148,7 +148,7 @@ class HtmlViewTest {
     @Test
     fun aQuotedGreaterThanSignDoesNotHideARemoteImage() {
         val html = "<img alt=\"a > b\" src=\"https://tracker.example/p.gif\">"
-        val blocked = sandboxedHtml(html, loadRemote = false, OtusPalette.Otus, key, placeholders = true)
+        val blocked = renderHtml(html, loadRemote = false, placeholders = true)
         assertFalse("tracker.example" in blocked, "The image becomes a placeholder")
     }
 
@@ -156,7 +156,7 @@ class HtmlViewTest {
     fun anOpenNoscriptOrObjectIsClosedBeforeTheFold() {
         val quote = HtmlQuote("Ada", "AL", "10 Oct", "<p>Earlier</p>")
         listOf("noscript", "object").forEach { name ->
-            val sandboxed = sandboxedHtml("<p>Hi<$name>", loadRemote = false, OtusPalette.Otus, key, quote = quote)
+            val sandboxed = renderHtml("<p>Hi<$name>", loadRemote = false, quote = quote)
             assertTrue("<$name></$name>" in sandboxed, "The $name closes before the fold")
         }
     }
@@ -167,7 +167,7 @@ class HtmlViewTest {
             "<img src=\"https://t.example/a.png\" width=\"50%\" height=\"40\">" +
                 "<img src=\"https://t.example/b.png\" height=\"60\">" +
                 "<img src=\"https://t.example/c.png\" width=\"300\">"
-        val blocked = sandboxedHtml(html, loadRemote = false, OtusPalette.Otus, key, placeholders = true)
+        val blocked = renderHtml(html, loadRemote = false, placeholders = true)
         assertContains(blocked, "style=\"width:50%;height:40px\"")
         assertContains(blocked, "style=\"width:100%;height:60px\"")
         assertContains(blocked, "style=\"width:300px;height:120px\"")
@@ -184,16 +184,16 @@ class HtmlViewTest {
         ).forEach {
             assertFalse(isShowImagesLink(it, key), it)
         }
-        val spoofed = sandboxedHtml("<a href=\"otus-images:show\">Show</a>", loadRemote = false, OtusPalette.Otus, key)
+        val spoofed = renderHtml("<a href=\"otus-images:show\">Show</a>", loadRemote = false)
         assertFalse("otus-images:show?k=k1" in spoofed)
         assertTrue(newRenderKey().showImagesUrl != newRenderKey().showImagesUrl)
     }
 
     @Test
     fun aQuoteThatSetsColorsKeepsAWhitePage() {
-        val quote = HtmlQuote("", "", "", "<p style=\"color:#333\">Earlier</p>")
+        val quote = HtmlQuote(name = "", initials = "", date = "", html = "<p style=\"color:#333\">Earlier</p>")
         assertContains(
-            sandboxedHtml("<p>Reply</p>", loadRemote = false, OtusPalette.Otus, key, quote = quote),
+            renderHtml("<p>Reply</p>", loadRemote = false, quote = quote),
             "body{color:#000;background:#fff}",
         )
     }
@@ -208,7 +208,7 @@ class HtmlViewTest {
             "<textarea>Hi" to "<textarea>Hi</textarea>",
             "<p>Hi</p><p title=\"a>b" to "<p>Hi</p>",
         ).forEach { (html, sealed) ->
-            val page = sandboxedHtml(html, loadRemote = false, OtusPalette.Otus, key, quote = quote)
+            val page = renderHtml(html, loadRemote = false, quote = quote)
             val fold = page.indexOf("<style>.otus-k1-quote{")
             assertTrue(fold > 0, html)
             assertTrue(page.substring(0, fold).endsWith(sealed), html)
@@ -217,8 +217,8 @@ class HtmlViewTest {
 
     @Test
     fun anUnclosedElementInTheQuoteKeepsTheFoldWhole() {
-        val quote = HtmlQuote("", "", "", "<a href=\"https://evil.example\"><style>")
-        val page = sandboxedHtml("<p>Reply</p>", loadRemote = false, OtusPalette.Otus, key, quote = quote)
+        val quote = HtmlQuote(name = "", initials = "", date = "", html = "<a href=\"https://evil.example\"><style>")
+        val page = renderHtml("<p>Reply</p>", loadRemote = false, quote = quote)
         assertTrue(page.endsWith("<style></style></a></div></div></div>"))
     }
 
@@ -230,4 +230,12 @@ class HtmlViewTest {
         assertEquals("<a><b>x</b></a>", sealedHtml("<a><b>x</b>"))
         assertEquals("<STYLE>a{}</style>", sealedHtml("<STYLE>a{}"))
     }
+
+    private fun renderHtml(
+        html: String,
+        loadRemote: Boolean,
+        palette: OtusPalette = OtusPalette.Otus,
+        placeholders: Boolean = false,
+        quote: HtmlQuote? = null,
+    ): String = sandboxedHtml(html, loadRemote, palette, key, placeholders, quote)
 }

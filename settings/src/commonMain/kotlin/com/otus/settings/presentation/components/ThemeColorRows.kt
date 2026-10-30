@@ -6,6 +6,7 @@ import com.otus.designsystem.shared.rows.components.Collapsible
 import com.otus.designsystem.shared.settings.components.SettingRow
 import com.otus.designsystem.shared.settings.elements.SwatchStack
 import com.otus.designsystem.shared.settings.elements.ValueButton
+import com.otus.designsystem.theme.colors.OtusPalette
 import com.otus.designsystem.theme.colors.ThemeChoice
 import com.otus.designsystem.theme.colors.ThemeColor
 import com.otus.designsystem.theme.colors.get
@@ -40,11 +41,20 @@ internal fun ThemeColorRows(
     Collapsible(expanded) {
         Column {
             ThemeColor.entries.forEach { color ->
-                SettingRow(color.title, { onEdit(color) }, description = color.description) {
-                    ValueButton(palette[color].toHex(), fill = palette[color])
-                }
+                ThemeColorRow(color, palette) { onEdit(color) }
             }
         }
+    }
+}
+
+@Composable
+private fun ThemeColorRow(
+    color: ThemeColor,
+    palette: OtusPalette,
+    onEdit: () -> Unit,
+) {
+    SettingRow(color.title, onEdit, description = color.description) {
+        ValueButton(palette[color].toHex(), fill = palette[color])
     }
 }
 

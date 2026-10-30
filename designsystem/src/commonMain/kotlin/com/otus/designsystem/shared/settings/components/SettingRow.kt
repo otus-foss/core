@@ -186,21 +186,10 @@ private fun SettingRowLayout(
     ) {
         leading?.invoke()
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(SettingTokens.textGap)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    title.text,
-                    Modifier.weight(1f, fill = false),
-                    fontSize = SettingTokens.titleSize,
-                    lineHeight = SettingTokens.titleLineHeight,
-                    maxLines = if (compact) 1 else Int.MAX_VALUE,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                // The button's touch target reaches into the row's padding rather than making it taller.
-                title.info?.let { InfoTip(it, Modifier.overlapHeight(PanelTokens.iconSize)) }
-            }
-            description?.let {
+            SettingTitle(title, compact)
+            if (description != null) {
                 PersonText(
-                    it,
+                    description,
                     person,
                     color = OtusColors.text2,
                     fontSize = SettingTokens.descriptionSize,
@@ -231,3 +220,22 @@ private class RowTitle(
     val text: String,
     val info: InfoText? = null,
 )
+
+@Composable
+private fun SettingTitle(
+    title: RowTitle,
+    compact: Boolean,
+) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            title.text,
+            Modifier.weight(1f, fill = false),
+            fontSize = SettingTokens.titleSize,
+            lineHeight = SettingTokens.titleLineHeight,
+            maxLines = if (compact) 1 else Int.MAX_VALUE,
+            overflow = TextOverflow.Ellipsis,
+        )
+        // The button's touch target reaches into the row's padding rather than making it taller.
+        if (title.info != null) InfoTip(title.info, Modifier.overlapHeight(PanelTokens.iconSize))
+    }
+}

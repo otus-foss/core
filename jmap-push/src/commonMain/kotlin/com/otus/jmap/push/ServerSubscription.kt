@@ -49,8 +49,8 @@ internal class ServerSubscription(
         val expires = if (expiresSoon(record)) expiry() else null
         val patch =
             buildJsonObject {
-                code?.let { put("verificationCode", JsonPrimitive(it)) }
-                expires?.let { put("expires", JsonPrimitive(it)) }
+                if (code != null) put("verificationCode", JsonPrimitive(code))
+                if (expires != null) put("expires", JsonPrimitive(expires))
             }
         val result = connection.call(PushSubscriptionSetMethod(update = mapOf(id to patch)))
         return if (id in result.notUpdated) {

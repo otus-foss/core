@@ -100,10 +100,11 @@ private fun ContextShell(
             Modifier.fillMaxHeight().animateEnterExit(enter = fadeIn(appear), exit = fadeOut(vanish)),
             contentAlignment = Alignment.CenterStart,
         ) {
-            last.value?.let {
+            val context = last.value
+            if (context != null) {
                 ContextContent(
-                    it.title,
-                    it.context,
+                    context.title,
+                    context.context,
                     if (enabled) OtusColors.text2 else OtusColors.text3,
                     // The shell runs on behind the circle, so its round end sits under it.
                     Modifier.padding(

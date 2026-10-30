@@ -96,10 +96,17 @@ internal suspend fun subscribed(
     store: Store,
     expires: String = "2026-10-21T08:00:00Z",
 ) {
-    subscriptions(subscribingServer(expires), store).run {
-        setEndpoint("ada", endpoint)
-        sync()
-        receive("ada", PushMessage.Verification("ps1", "v1"))
-    }
+    createdSubscription(store, subscribingServer(expires)).receive("ada", PushMessage.Verification("ps1", "v1"))
     subscriptions(Server { UPDATED }, store).sync()
 }
+
+internal suspend fun createdSubscription(
+    store: Store,
+    server: Server = subscribingServer(),
+): PushSubscriptions =
+    subscriptions(server, store).apply {
+        setEndpoint("ada", endpoint)
+        sync()
+    }
+
+internal const val DESTROYED = """{"methodResponses": [["PushSubscription/set", {"destroyed": ["ps1"]}, "c0"]]}"""

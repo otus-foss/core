@@ -26,7 +26,12 @@ import kotlin.test.assertIs
 @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
 class IosLoginStoreTest {
     private val suite = "com.otus.jmap.login.tests"
-    private val defaults = NSUserDefaults(suiteName = suite).also { it.removePersistentDomainForName(suite) }
+    private val defaults = NSUserDefaults(suiteName = suite)
+
+    init {
+        defaults.removePersistentDomainForName(suite)
+    }
+
     private val native = FakeKeychainAccess()
     private val store = IosLoginStore(defaults, "accounts", "tests", native)
     private val login = JmapLogin("a", "https://example.org/session", "ada", "Ada")

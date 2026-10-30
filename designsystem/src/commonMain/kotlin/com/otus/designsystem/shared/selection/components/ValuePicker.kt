@@ -59,7 +59,7 @@ public fun ValuePicker(
         CompositionLocalProvider(LocalContentColor provides if (enabled) OtusColors.text1 else OtusColors.text3) {
             ValueOutline(
                 Modifier
-                    .then(if (fill) Modifier.fillMaxWidth() else Modifier)
+                    .fillPickerWidth(fill)
                     .controlPressFeedback(interactions, RoundedCornerShape(SettingTokens.valueRadius)),
             ) {
                 ValueLabel(value, keyword, avatar, icon, enabled, fill)
@@ -75,3 +75,5 @@ internal fun valuePickerLabel(
     value: String,
     keyword: String?,
 ): String = listOfNotNull(keyword, value).joinToString(" ") + ", change"
+
+private fun Modifier.fillPickerWidth(fill: Boolean): Modifier = if (fill) fillMaxWidth() else this

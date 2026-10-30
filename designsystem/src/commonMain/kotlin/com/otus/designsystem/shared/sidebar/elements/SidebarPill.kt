@@ -28,8 +28,14 @@ public fun SidebarPill(
     ChipFrame(onClick, modifier, selected, enabled = true, fill = OtusColors.bgRegular) {
         Symbol(icon)
         ChipText(label)
-        count?.let {
-            Text(it, style = panelTextStyle(), color = OtusColors.text2, fontSize = PanelTokens.countSize, maxLines = 1)
+        if (count != null) {
+            Text(
+                count,
+                style = panelTextStyle(),
+                color = OtusColors.text2,
+                fontSize = PanelTokens.countSize,
+                maxLines = 1,
+            )
         }
     }
 }

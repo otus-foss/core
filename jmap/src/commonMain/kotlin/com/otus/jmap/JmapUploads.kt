@@ -40,7 +40,7 @@ internal class JmapUploads(
                         header(HttpHeaders.Authorization, auth.header())
                         header(HttpHeaders.Accept, ContentType.Application.Json.toString())
                         setBody(ByteArrayContent(bytes, ContentType.parse(mediaType)))
-                    }.execute { RawResponse(it.status.value, null, it.limitedText(policy.maxResponseBytes)) }
+                    }.execute { RawResponse(it.status.value, location = null, it.limitedText(policy.maxResponseBytes)) }
             } catch (error: IOException) {
                 throw JmapException.Unreachable(error)
             }

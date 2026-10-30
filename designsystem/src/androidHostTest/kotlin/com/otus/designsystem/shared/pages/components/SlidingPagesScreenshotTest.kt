@@ -59,13 +59,7 @@ class SlidingPagesScreenshotTest {
         ActionBarHost(bar = {
             ActionBar(
                 BarAction(
-                    if (depth ==
-                        0
-                    ) {
-                        "Write"
-                    } else {
-                        "Save"
-                    },
+                    if (depth == 0) "Write" else "Save",
                     Res.drawable.symbol_edit,
                 ) {},
             )

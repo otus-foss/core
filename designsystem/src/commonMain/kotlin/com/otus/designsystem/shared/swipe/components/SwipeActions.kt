@@ -106,7 +106,8 @@ public fun SwipeActions(
     ) {
         val revealed = revealWidths[dragSide] ?: threshold
         val rowOffset = boundedRevealOffset(offset, revealed)
-        (running?.action ?: direction.pick(startToEnd, endToStart))?.let { action ->
+        val action = running?.action ?: direction.pick(startToEnd, endToStart)
+        if (action != null) {
             SwipeBackdrop(
                 action,
                 abs(offset),

@@ -26,9 +26,9 @@ public fun InputField(
     Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(PanelTokens.iconGap)) {
         FieldLabel(label)
         InputBox(value, onValueChange, label, InputLook(placeholder, kind))
-        supportingText?.let {
+        if (supportingText != null) {
             Text(
-                it,
+                supportingText,
                 Modifier.padding(horizontal = SheetTokens.gap),
                 style = panelTextStyle(),
                 fontSize = SheetTokens.detailSize,

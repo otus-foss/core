@@ -19,7 +19,6 @@ import com.otus.jscontact.Name
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.jsonArray
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -56,9 +55,9 @@ class ContactCardSyncTest {
                     "sort": [{"property": "name/surname", "isAscending": true}], "sinceQueryState": "q1",
                     "maxChanges": 50, "calculateTotal": true}""",
                 ),
-                server.methodCalls().single().jsonArray[1],
+                server.singleCall()[1],
             )
-            assertEquals(JsonPrimitive("ContactCard/queryChanges"), server.methodCalls().single().jsonArray[0])
+            assertEquals(JsonPrimitive("ContactCard/queryChanges"), server.singleCall()[0])
         }
 
     @Test
@@ -93,7 +92,7 @@ class ContactCardSyncTest {
                     "create": {"k1": {"id": "c7", "addressBookIds": {"$PERSONAL": true}},
                     "k2": {"id": "c8", "addressBookIds": {"$PERSONAL": true}}}}""",
                 ),
-                server.methodCalls().single().jsonArray[1],
+                server.singleCall()[1],
             )
         }
 
@@ -144,7 +143,7 @@ class ContactCardSyncTest {
                     "uid": "urn:uuid:4f5e", "name": {"@type": "Name", "full": "Ada"},
                     "addressBookIds": {"$PERSONAL": true}}}, "update": {"c1": {"addressBookIds/$AUTOSAVED": true}}}""",
                 ),
-                server.methodCalls().single().jsonArray[1],
+                server.singleCall()[1],
             )
         }
 

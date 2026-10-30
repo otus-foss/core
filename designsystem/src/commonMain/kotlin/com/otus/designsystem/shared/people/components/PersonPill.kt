@@ -65,7 +65,7 @@ internal fun PersonPill(
         Box(
             modifier
                 .sizeIn(minWidth = PanelTokens.touchTarget, minHeight = PanelTokens.touchTarget)
-                .clickable(interactions, null, role = Role.Button, onClick = onClick),
+                .clickable(interactions, indication = null, role = Role.Button, onClick = onClick),
             contentAlignment = Alignment.Center,
         ) {
             PersonPillFrame(
@@ -101,7 +101,7 @@ internal fun PersonPillFrame(
             .background(if (small) OtusColors.bgDark else Color.Transparent, CircleShape)
             .border(PanelTokens.borderWidth, OtusColors.bgLight, CircleShape)
             .then(action)
-            .semantics { description?.let { contentDescription = it } }
+            .semantics { if (description != null) contentDescription = description }
             .padding(start = size.start, end = PanelTokens.chipPadding),
         horizontalArrangement = Arrangement.spacedBy(size.gap),
         verticalAlignment = Alignment.CenterVertically,
@@ -115,17 +115,18 @@ internal fun PersonPillFrame(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
-        detail?.let {
+        if (detail != null) {
             ChipDivider(selected = false)
             Text(
-                it.text,
+                detail.text,
                 style = panelTextStyle(),
                 color = OtusColors.text3,
                 fontSize = size.textSize,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
-            it.onToggle?.let { toggle -> DateToggle(it.expanded, toggle) }
+            val toggle = detail.onToggle
+            if (toggle != null) DateToggle(detail.expanded, toggle)
         }
     }
 }

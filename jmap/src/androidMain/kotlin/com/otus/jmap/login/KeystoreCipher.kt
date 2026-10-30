@@ -53,7 +53,13 @@ internal class KeystoreCipher(
     }
 
     /** Synchronized so that two first uses cannot both generate, and replace, the key. */
-    private fun key(): SecretKey = key ?: synchronized(this) { key ?: loadKey().also { key = it } }
+    private fun key(): SecretKey = key ?: synchronized(this) { key ?: loadAndCacheKey() }
+
+    private fun loadAndCacheKey(): SecretKey {
+        val loaded = loadKey()
+        key = loaded
+        return loaded
+    }
 
     private fun encode(bytes: ByteArray) = Base64.encodeToString(bytes, Base64.NO_WRAP)
 
@@ -69,21 +75,28 @@ internal class KeystoreCipher(
 private const val KEYSTORE = "AndroidKeyStore"
 private const val KEY_BITS = 256
 
-private fun keystoreKey(keyAlias: String): SecretKey {
-    val keyStore = KeyStore.getInstance(KEYSTORE).apply { load(null) }
-    return (keyStore.getEntry(keyAlias, null) as? KeyStore.SecretKeyEntry)?.secretKey ?: generateKey(keyAlias)
-}
+private fun keystoreKey(keyAlias: String): SecretKey =
+    KeyStore
+        .getInstance(KEYSTORE)
+        .apply { load(null) }
+        .getEntry(keyAlias, null)
+        .let { it as? KeyStore.SecretKeyEntry }
+        ?.secretKey
+        ?: generateKey(keyAlias)
 
-private fun generateKey(keyAlias: String): SecretKey {
-    val spec =
-        KeyGenParameterSpec
-            .Builder(keyAlias, KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
-            .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
-            .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
-            .setKeySize(KEY_BITS)
-            .build()
-    return KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, KEYSTORE).apply { init(spec) }.generateKey()
-}
+private fun generateKey(keyAlias: String): SecretKey =
+    KeyGenerator
+        .getInstance(KeyProperties.KEY_ALGORITHM_AES, KEYSTORE)
+        .apply {
+            init(
+                KeyGenParameterSpec
+                    .Builder(keyAlias, KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
+                    .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+                    .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+                    .setKeySize(KEY_BITS)
+                    .build(),
+            )
+        }.generateKey()
 
 /** Encryption boundary for platform storage tests. Production uses the Android Keystore. */
 internal interface LoginCipher {

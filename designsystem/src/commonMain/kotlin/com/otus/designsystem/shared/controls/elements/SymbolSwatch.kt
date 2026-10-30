@@ -1,7 +1,6 @@
 package com.otus.designsystem.shared.controls.elements
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -17,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import com.otus.designsystem.shared.settings.elements.swatchSelectionRing
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.people.AvatarTokens
@@ -43,7 +43,7 @@ public fun SymbolSwatch(
             .selectable(selected, interactions, indication = null, role = Role.RadioButton, onClick = onClick)
             .controlPressFeedback(interactions, CircleShape)
             .semantics { contentDescription = label }
-            .then(if (selected) Modifier.border(ThemeTokens.swatchRing, OtusColors.text1, CircleShape) else Modifier)
+            .swatchSelectionRing(selected)
             .padding(ThemeTokens.swatchRingSpace)
             .background(OtusColors.bgRegular, CircleShape),
         contentAlignment = Alignment.Center,

@@ -57,9 +57,7 @@ class JmapDiscoveryTest {
             val engine =
                 MockEngine { request ->
                     requests += request.record()
-                    if (request.url.host ==
-                        "mail.example.org"
-                    ) {
+                    if (request.url.host == "mail.example.org") {
                         redirect("https://login.example.net/session")
                     } else {
                         json(session())
@@ -93,9 +91,7 @@ class JmapDiscoveryTest {
         runTest {
             val any = MockEngine { json(session()) }
             assertFailsWith<JmapException.InsecureUrl> {
-                JmapClient(
-                    any,
-                ).session("http://mail.example.org/jmap/session", ADA)
+                JmapClient(any).session("http://mail.example.org/jmap/session", ADA)
             }
             val downgrade = MockEngine { redirect("http://mail.example.org/jmap/session") }
             assertFailsWith<JmapException.InsecureUrl> { JmapClient(downgrade).session(wellKnown, ADA) }
@@ -108,10 +104,8 @@ class JmapDiscoveryTest {
         runTest {
             val engine = MockEngine { json(session()) }
             val session =
-                JmapClient(
-                    engine,
-                    JmapPolicy(allowInsecureHttp = true),
-                ).session("http://localhost:8080/jmap/session", ADA)
+                JmapClient(engine, JmapPolicy(allowInsecureHttp = true))
+                    .session("http://localhost:8080/jmap/session", ADA)
             assertEquals("http://localhost:8080/jmap/", session.apiUrl)
         }
 
@@ -122,9 +116,7 @@ class JmapDiscoveryTest {
                 status: HttpStatusCode,
                 body: String = "",
             ) = runCatching {
-                JmapClient(
-                    MockEngine { respond(body, status) },
-                ).session(wellKnown, ADA)
+                JmapClient(MockEngine { respond(body, status) }).session(wellKnown, ADA)
             }.exceptionOrNull()
             assertTrue(failure(HttpStatusCode.Unauthorized) is JmapException.Unauthorized)
             assertTrue(failure(HttpStatusCode.Forbidden) is JmapException.Forbidden)

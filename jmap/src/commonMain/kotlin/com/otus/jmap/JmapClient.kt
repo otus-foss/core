@@ -131,10 +131,9 @@ public class JmapClient(
         trusted: Set<String>,
     ): JmapSession {
         val dto = jmapDecoding { JmapJson.decodeFromJsonElement(SessionDto.serializer(), decode(response)) }
-        val api = urls.resolve(url, dto.apiUrl).requireTrusted(trusted)
         return JmapSession(
             sessionUrl = url.toString(),
-            apiUrl = api.toString(),
+            apiUrl = urls.resolve(url, dto.apiUrl).requireTrusted(trusted).toString(),
             username = dto.username,
             capabilities = dto.capabilities.keys,
             accounts =
@@ -167,11 +166,11 @@ public class JmapClient(
                 .prepareRequest {
                     this.method = method
                     url(target)
-                    auth?.let { header(HttpHeaders.Authorization, it.header()) }
+                    if (auth != null) header(HttpHeaders.Authorization, auth.header())
                     header(HttpHeaders.Accept, ContentType.Application.Json.toString())
-                    body?.let {
+                    if (body != null) {
                         contentType(ContentType.Application.Json)
-                        setBody(it)
+                        setBody(body)
                     }
                 }.execute { response ->
                     RawResponse(

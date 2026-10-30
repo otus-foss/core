@@ -78,10 +78,12 @@ public fun ContactEntry(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         ContactText(title, subtitle)
-        end.detail?.let {
-            Text(it, style = panelTextStyle(), color = OtusColors.text2, fontSize = ContactTokens.detailSize)
+        val detail = end.detail
+        if (detail != null) {
+            Text(detail, style = panelTextStyle(), color = OtusColors.text2, fontSize = ContactTokens.detailSize)
         }
-        end.label?.let { LabelPill(it.text, icon = it.icon) }
+        val label = end.label
+        if (label != null) LabelPill(label.text, icon = label.icon)
     }
 }
 

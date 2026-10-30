@@ -45,26 +45,7 @@ class PushVerificationDeliveryTest {
             val store = Store()
             subscribed(store, expires = "2026-10-15T00:00:00Z")
             val events = mutableListOf<String>()
-            val server =
-                Server { body ->
-                    when {
-                        "\"update\"" in body -> {
-                            events += "update"
-                            """{"methodResponses":[["PushSubscription/set",
-                        {"notUpdated":{"ps1":{"type":"notFound"}}},"c0"]]}"""
-                        }
-
-                        "PushSubscription/get" in body -> {
-                            events += "get"
-                            NO_SUBSCRIPTIONS
-                        }
-
-                        else -> {
-                            events += "create"
-                            created()
-                        }
-                    }
-                }
+            val server = Server(events::subscriptionReply)
             subscriptions(
                 server,
                 store,
@@ -96,3 +77,22 @@ class PushVerificationDeliveryTest {
             assertTrue("ps1" !in store.records.getValue(login.id))
         }
 }
+
+private fun MutableList<String>.subscriptionReply(body: String): String {
+    val operation =
+        when {
+            "\"update\"" in body -> "update"
+            "PushSubscription/get" in body -> "get"
+            else -> "create"
+        }
+    add(operation)
+    return when (operation) {
+        "update" -> MISSING_SUBSCRIPTION
+        "get" -> NO_SUBSCRIPTIONS
+        else -> created()
+    }
+}
+
+private const val MISSING_SUBSCRIPTION =
+    """{"methodResponses":[["PushSubscription/set",
+    {"notUpdated":{"ps1":{"type":"notFound"}}},"c0"]]}"""

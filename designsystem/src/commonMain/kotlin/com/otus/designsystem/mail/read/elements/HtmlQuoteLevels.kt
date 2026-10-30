@@ -8,22 +8,19 @@ import com.otus.designsystem.theme.tokens.content.ReadTokens
  * shows them: a Markdown link such as `[Proton Mail](https://proton.me)` by its label, and a bare
  * web address as itself.
  */
-internal fun textHtml(text: String): String {
-    // A plain loop: the text between links is escaped piece by piece, and each piece needs the last end.
-    val html =
-        buildString {
-            var last = 0
-            LINK.findAll(text).forEach { link ->
-                val (label, target, bare) = link.destructured
-                val url = target.ifEmpty { bare }
-                append(escaped(text.substring(last, link.range.first)))
-                append("<a href=\"${escaped(url)}\">${escaped(label.ifEmpty { url })}</a>")
-                last = link.range.last + 1
-            }
-            append(escaped(text.substring(last)))
+internal fun textHtml(text: String): String =
+    buildString {
+        // A plain loop: the text between links is escaped piece by piece, and each piece needs the last end.
+        var last = 0
+        LINK.findAll(text).forEach { link ->
+            val (label, target, bare) = link.destructured
+            val url = target.ifEmpty { bare }
+            append(escaped(text.substring(last, link.range.first)))
+            append("<a href=\"${escaped(url)}\">${escaped(label.ifEmpty { url })}</a>")
+            last = link.range.last + 1
         }
-    return html.replace("\n", "<br>")
-}
+        append(escaped(text.substring(last)))
+    }.replace("\n", "<br>")
 
 /** A Markdown link to a web or mail address, or a bare web address without trailing punctuation. */
 private val LINK =
