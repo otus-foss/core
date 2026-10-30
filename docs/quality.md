@@ -65,7 +65,8 @@ start it again, so open pull requests as drafts and mark them ready once every c
 Start it by hand from GitHub Actions to check again.
 
 The CI `quality` workflow runs only on pull requests that change more than Markdown. The `check`
-job runs `checkAll`, and the `ios` job runs every module's iOS simulator tests on macOS 15 with
+job runs `checkAll` as three parallel jobs: `qualityCheck`, `checkDesignSystem`, and
+`checkLibraries`. The `ios` job runs every module's iOS simulator tests on macOS 15 with
 Xcode 26.3. The repositories cannot require checks on their GitHub plan, so CI reports results
 but cannot block a merge. The `publish` workflow runs on version tags; see [Releasing](releasing.md)
 and [decision 0013](decisions/0013-local-quality-gate.md).

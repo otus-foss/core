@@ -3,16 +3,15 @@ package com.otus.avatar
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
-import kotlinx.coroutines.withTimeoutOrNull
 
 /** Contact photos are account-specific; website icons are shared by every sender at that domain. */
 public class AvatarService(
     private val contacts: ContactAvatarSource = ContactAvatarSource { _, _ -> null },
-    private val images: AvatarImageLoader = AvatarImageLoader { null },
+    images: AvatarImageLoader = AvatarImageLoader { null },
     cacheConfig: AvatarCacheConfig = AvatarCacheConfig(),
-    private val domains: AvatarDomainResolver = AvatarDomainResolver { it },
-    private val iconFallback: DomainIconSource = DomainIconSource { null },
+    domains: AvatarDomainResolver = AvatarDomainResolver { it },
 ) {
+    private val websites = WebsiteIcons(images, domains)
     private val cache =
         AvatarLookupCache(
             cacheConfig.store,
@@ -34,7 +33,7 @@ public class AvatarService(
                 fetches.withPermit { contactOrNull(normalized, options) }
             }
         return if (contact.style.wantsIcon()) {
-            withWebsiteIcon(normalized.email, fallback, contact, options, started)
+            withWebsiteIcon(normalized, fallback, contact, options, started)
         } else {
             ResolvedAvatar(fallback, origin = AvatarOrigin.Contact, style = contact.style)
         }
@@ -42,33 +41,41 @@ public class AvatarService(
 
     /** The contact's photo, or else the website icon when the options or its style ask for one. */
     private suspend fun withWebsiteIcon(
-        email: String,
+        request: AvatarRequest,
         fallback: GeneratedAvatar,
         contact: StoredAvatar,
         options: AvatarOptions,
         started: Long,
     ): ResolvedAvatar {
-        val icon = if (contact.image == null) websiteIcon(email, iconOptions(contact.style, options), started) else null
+        val image = contact.image ?: websiteIcon(request, iconOptions(contact.style, options), started)
         val origin =
             when {
                 contact.image != null -> AvatarOrigin.Contact
-                icon != null -> AvatarOrigin.Domain
+                image != null -> AvatarOrigin.Domain
                 else -> null
             }
-        return ResolvedAvatar(fallback, contact.image ?: icon, origin, contact.style)
+        return ResolvedAvatar(fallback, image, origin, contact.style)
     }
 
+    /** The website's brand logo when [request] may show one, else its icon. */
     private suspend fun websiteIcon(
-        email: String,
+        request: AvatarRequest,
         options: AvatarOptions,
         started: Long,
     ): AvatarImage? {
-        val site = iconDomain(email, options) ?: return null
-        return cache
-            .load(domainKey(site, options), started) {
-                fetches.withPermit { domainImage(site, options)?.let { StoredAvatar(it, 0) } }
-            }.image
+        val site = websites.site(request.email, options) ?: return null
+        val brand =
+            websites.brandKey(request, site, options)?.let { key ->
+                load(key, started) { websites.brandLogo(site, options) }
+            }
+        return brand ?: load(domainKey(site, options), started) { websites.icon(site, options) }
     }
+
+    private suspend fun load(
+        key: AvatarCacheKey,
+        started: Long,
+        image: suspend () -> AvatarImage?,
+    ): AvatarImage? = cache.load(key, started) { fetches.withPermit { image()?.let { StoredAvatar(it, 0) } } }.image
 
     /** Local images only, so refreshed rows keep their avatar before network work. */
     public suspend fun cached(
@@ -80,8 +87,16 @@ public class AvatarService(
         val fallback = generatedAvatar(request.name, normalized.email)
         val style = contact?.style
         val iconOptions = iconOptions(style, options)
-        val site = if (contact?.image == null && style.wantsIcon()) iconDomain(normalized.email, iconOptions) else null
-        val domain = site?.let { cache.peek(domainKey(it, iconOptions)) }
+        val site =
+            if (contact?.image == null &&
+                style.wantsIcon()
+            ) {
+                websites.site(normalized.email, iconOptions)
+            } else {
+                null
+            }
+        val brand = site?.let { websites.brandKey(normalized, it, iconOptions) }?.let { cache.peek(it) }
+        val domain = brand?.takeIf { it.image != null } ?: site?.let { cache.peek(domainKey(it, iconOptions)) }
         // Keep the style when the icon is not cached yet, so a Website avatar draws its color.
         return when {
             !style.wantsIcon() -> ResolvedAvatar(fallback, origin = AvatarOrigin.Contact, style = style)
@@ -126,38 +141,8 @@ public class AvatarService(
             null -> null
         }
 
-    /**
-     * Only the registrable domain, never the exact host: a sender could otherwise give each recipient
-     * a unique subdomain and learn from the icon request when and where the message was shown.
-     */
-    private suspend fun iconDomain(
-        email: String,
-        options: AvatarOptions,
-    ): String? {
-        val host = avatarIconDomain(email)?.takeIf { options.domainIcons } ?: return null
-        return nullOnFailure { domains.resolve(host) }
-            ?.takeIf { isPublicAvatarHost(it) && (host == it || host.endsWith(".$it")) }
-    }
-
-    private suspend fun domainImage(
-        domain: String,
-        options: AvatarOptions,
-    ): AvatarImage? =
-        avatarOrNull {
-            val direct =
-                withTimeoutOrNull(DOMAIN_ICON_TIMEOUT_MILLIS) {
-                    avatarOrNull { images.websiteIcon(domain) }
-                        ?: DOMAIN_ICON_PATHS.firstNotNullOfOrNull { path ->
-                            avatarOrNull { images.load("https://$domain/$path") }
-                        }
-                }
-            direct ?: if (options.domainIconProxy) iconFallback.icon(domain) else null
-        }
-
     private companion object {
         const val MAX_CONCURRENT_FETCHES = 8
-        const val DOMAIN_ICON_TIMEOUT_MILLIS = 8_000L
-        val DOMAIN_ICON_PATHS = listOf("apple-touch-icon.png", "favicon.png", "favicon.ico")
     }
 }
 
@@ -187,11 +172,29 @@ private fun contactKey(
 private fun domainKey(
     domain: String,
     options: AvatarOptions,
-) = AvatarCacheKey(null, "domain:${options.domainIconProxy}:$domain")
+) = AvatarCacheKey(null, "domain:${options.iconProxy?.let { it.iconUrl ?: "none" } ?: "direct"}:$domain")
 
 /** Optional avatar failures never hide mail/events, and cancellation always propagates. */
 internal suspend fun avatarOrNull(load: suspend () -> AvatarImage?): AvatarImage? =
-    nullOnFailure(load)?.takeIf { it.bytes.isNotEmpty() && it.bytes.size <= MAX_AVATAR_BYTES }
+    nullOnFailure(load)?.takeIf { it.bytes.isNotEmpty() && it.bytes.size <= MAX_AVATAR_BYTES && !it.isPixel() }
+
+/** A 1×1 PNG, which icon services such as Bulwark answer for a domain without an icon. */
+private fun AvatarImage.isPixel(): Boolean {
+    if (bytes.size < PNG_IHDR_END || !PNG_SIGNATURE.indices.all { bytes[it] == PNG_SIGNATURE[it] }) return false
+    val width = bigEndianInt(PNG_WIDTH_OFFSET)
+    val height = bigEndianInt(PNG_WIDTH_OFFSET + Int.SIZE_BYTES)
+    return width <= 1 || height <= 1
+}
+
+private fun AvatarImage.bigEndianInt(offset: Int): Int =
+    (0 until Int.SIZE_BYTES).fold(0) { value, index ->
+        (value shl Byte.SIZE_BITS) or (bytes[offset + index].toInt() and BYTE_MASK)
+    }
+
+private val PNG_SIGNATURE = byteArrayOf(0x89.toByte(), 'P'.code.toByte(), 'N'.code.toByte(), 'G'.code.toByte())
+private const val PNG_WIDTH_OFFSET = 16
+private const val PNG_IHDR_END = 24
+private const val BYTE_MASK = 0xFF
 
 internal suspend fun <T> nullOnFailure(load: suspend () -> T?): T? =
     runCatching { load() }.getOrElse {
