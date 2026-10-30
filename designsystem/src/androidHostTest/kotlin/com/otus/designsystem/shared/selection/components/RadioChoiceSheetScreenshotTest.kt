@@ -1,5 +1,6 @@
 package com.otus.designsystem.shared.selection.components
 
+import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -52,5 +53,24 @@ class RadioChoiceSheetScreenshotTest {
         compose.onNodeWithText("Done").performClick()
         compose.waitForIdle()
         assertEquals(listOf("Slate"), saved)
+    }
+
+    private data class Theme(
+        val name: String,
+    )
+
+    @Test
+    fun aPickOfAnyOptionTypeSurvivesRestoringState() {
+        val saved = mutableListOf<Theme>()
+        val themes = listOf(Theme("Ink"), Theme("Slate"))
+        val restoration = StateRestorationTester(compose)
+        restoration.setContent {
+            RadioChoiceSheet("Theme", ChoiceOptions(themes, themes[0]), { ChoiceRow(it.name) }, { saved += it }, {})
+        }
+        compose.onNodeWithText("Slate").performClick()
+        restoration.emulateSavedInstanceStateRestore()
+        compose.onNodeWithText("Done").performClick()
+        compose.waitForIdle()
+        assertEquals(listOf(Theme("Slate")), saved)
     }
 }

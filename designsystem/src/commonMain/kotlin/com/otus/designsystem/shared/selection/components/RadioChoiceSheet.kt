@@ -6,7 +6,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -28,7 +28,9 @@ public fun <T> RadioChoiceSheet(
     doneEnabled: (T) -> Boolean = { true },
     below: @Composable ColumnScope.(T) -> Unit = {},
 ) {
-    var picked by rememberSaveable { mutableStateOf(choices.selected) }
+    // The index survives process death for any option type; the option itself might not be saveable.
+    var pickedIndex by rememberSaveable { mutableIntStateOf(choices.options.indexOf(choices.selected)) }
+    val picked = choices.options.getOrElse(pickedIndex) { choices.selected }
     SheetFrame(
         title,
         onDismiss,
@@ -39,13 +41,13 @@ public fun <T> RadioChoiceSheet(
         doneEnabled = doneEnabled(picked),
     ) {
         Column(Modifier.verticalScroll(rememberScrollState())) {
-            choices.options.forEach { option ->
+            choices.options.forEachIndexed { index, option ->
                 val shown = row(option)
                 PickRow(
                     shown.label,
                     shown.detail.orEmpty(),
-                    PickMark(option == picked, atStart = true),
-                    { picked = option },
+                    PickMark(index == pickedIndex, atStart = true),
+                    { pickedIndex = index },
                     layout = PickRowLayout(subtitleLines = DETAIL_LINES),
                 )
             }
