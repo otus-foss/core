@@ -126,4 +126,24 @@ class ToastStateTest {
         state.remove(state.entries.first())
         assertFalse(state.expanded)
     }
+
+    @Test
+    fun aSwipeRunsTheSwipeActionInsteadOfTheCloseCallback() {
+        val state = ToastState()
+        val ran = mutableListOf<String>()
+        val send = ToastAction("Send") { ran += "send" }
+        state.show(ToastMessage("Sending…", undo, onClose = { ran += "close" }, swipeAction = send))
+        state.swipe(state.entries.single())
+        assertEquals(listOf("send"), ran)
+        assertTrue(state.entries.isEmpty())
+    }
+
+    @Test
+    fun withoutASwipeActionASwipeRunsTheCloseCallback() {
+        val state = ToastState()
+        val ran = mutableListOf<String>()
+        state.show(ToastMessage("Email deleted", undo, onClose = { ran += "close" }))
+        state.swipe(state.entries.single())
+        assertEquals(listOf("close"), ran)
+    }
 }

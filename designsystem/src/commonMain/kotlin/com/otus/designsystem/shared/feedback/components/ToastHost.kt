@@ -173,7 +173,7 @@ private fun ToastItem(
     SwipeToDismiss(
         enabled = reachable,
         onHeld = { entry.held = it },
-        onDismiss = { state.remove(entry) },
+        onDismiss = { state.swipe(entry) },
         modifier =
             Modifier
                 .fillMaxWidth()
@@ -188,7 +188,7 @@ private fun ToastItem(
                     scaleX = shown
                     scaleY = shown
                     alpha = peeking * presence.value
-                }.liveToast(reachable) { state.remove(entry) }
+                }.liveToast(reachable, entry.message.swipeAction?.label ?: "Dismiss") { state.swipe(entry) }
                 .clickable(
                     remember { MutableInteractionSource() },
                     indication = null,
@@ -226,9 +226,10 @@ private fun ToastContent(
     }
 }
 
-/** Announces the toast to screen readers when it appears or changes, and offers the swipe as an action. */
+/** Announces the toast to screen readers when it appears or changes, and offers the swipe as [swipeLabel]. */
 private fun Modifier.liveToast(
     reachable: Boolean,
+    swipeLabel: String,
     onDismiss: () -> Unit,
 ): Modifier =
     if (reachable) {
@@ -236,7 +237,7 @@ private fun Modifier.liveToast(
             liveRegion = LiveRegionMode.Polite
             customActions =
                 listOf(
-                    CustomAccessibilityAction("Dismiss") {
+                    CustomAccessibilityAction(swipeLabel) {
                         onDismiss()
                         true
                     },
