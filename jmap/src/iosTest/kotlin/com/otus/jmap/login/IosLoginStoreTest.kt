@@ -117,10 +117,20 @@ private class FakeKeychainAccess : KeychainAccess {
         attributes: CFDictionaryRef?,
     ): Int {
         calls += "update"
-        val status = if (data == null) errSecItemNotFound else errSecSuccess
-        if (updateStatus != errSecSuccess) return updateStatus
-        if (status == errSecSuccess) capture(attributes)
-        return status
+        return when {
+            updateStatus != errSecSuccess -> {
+                updateStatus
+            }
+
+            data == null -> {
+                errSecItemNotFound
+            }
+
+            else -> {
+                capture(attributes)
+                errSecSuccess
+            }
+        }
     }
 
     override fun add(attributes: CFDictionaryRef?): Int {

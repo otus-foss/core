@@ -24,8 +24,12 @@ class CardNotesTest {
             ),
             notes.getValue("n1"),
         )
-        val note = encoded.getValue("n1").jsonObject
-        val author = note.getValue("author").jsonObject
+        val author =
+            encoded
+                .getValue("n1")
+                .jsonObject
+                .getValue("author")
+                .jsonObject
         assertEquals(JsonPrimitive("Author"), author["@type"])
     }
 

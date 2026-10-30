@@ -114,28 +114,24 @@ public class JmapOwnAvatars(
         email: String,
         writable: Set<String>,
         made: String?,
-    ): Card? {
-        val cards =
-            withCardProperties { properties ->
-                lateinit var get: JmapCall<GetResult<Card>>
-                lateinit var byId: JmapCall<GetResult<Card>>
-                val response =
-                    connection.send {
-                        val query =
-                            call(QueryMethod(CardType, account, ContactCardFilter(email = email).toFilter().toJson()))
-                        get = call(GetMethod(CardType, account, JmapIds.Result(query.resultOf("/ids")), properties))
-                        if (made != null) {
-                            byId = call(GetMethod(CardType, account, JmapIds.Of(listOf(made)), properties))
-                        }
+    ): Card? =
+        withCardProperties { properties ->
+            lateinit var get: JmapCall<GetResult<Card>>
+            lateinit var byId: JmapCall<GetResult<Card>>
+            val response =
+                connection.send {
+                    val query =
+                        call(QueryMethod(CardType, account, ContactCardFilter(email = email).toFilter().toJson()))
+                    get = call(GetMethod(CardType, account, JmapIds.Result(query.resultOf("/ids")), properties))
+                    if (made != null) {
+                        byId = call(GetMethod(CardType, account, JmapIds.Of(listOf(made)), properties))
                     }
-                val found = if (made != null) response[byId].list else emptyList()
-                (response[get].list + found).distinctBy { it.id }
-            }
-        return cards
-            .filter { it.isSelfCard(email, writable) }
+                }
+            val found = if (made != null) response[byId].list else emptyList()
+            (response[get].list + found).distinctBy { it.id }
+        }.filter { it.isSelfCard(email, writable) }
             .sortedWith(compareBy({ !it.isAvatarCard }, { it.id }))
             .firstOrNull()
-    }
 }
 
 /** Whether this card has [email] and sits in one of the [writable] books. */
@@ -197,17 +193,18 @@ private fun newCard(
     books: List<AddressBook>,
     avatar: ContactAvatar,
     photo: Media?,
-): Map<String, JsonObject> {
-    val card =
-        Card(
-            kind = CardKind.Individual,
-            name = name.trim().takeIf { it.isNotEmpty() }?.let { Name(full = it) },
-            emails = mapOf(EMAIL_KEY to EmailAddress(email)),
-            media = photo?.let { mapOf(AVATAR_PHOTO_KEY to it) },
-            addressBookIds = mapOf(books.saveTarget().id to true),
-        )
-    return mapOf(NEW_CARD to card.withAvatarStyle((avatar as? ContactAvatar.Styled)?.style).toCreation())
-}
+): Map<String, JsonObject> =
+    mapOf(
+        NEW_CARD to
+            Card(
+                kind = CardKind.Individual,
+                name = name.trim().takeIf { it.isNotEmpty() }?.let { Name(full = it) },
+                emails = mapOf(EMAIL_KEY to EmailAddress(email)),
+                media = photo?.let { mapOf(AVATAR_PHOTO_KEY to it) },
+                addressBookIds = mapOf(books.saveTarget().id to true),
+            ).withAvatarStyle((avatar as? ContactAvatar.Styled)?.style)
+                .toCreation(),
+    )
 
 private fun ContactAvatar.Photo.toMedia() =
     Media(MediaKind.Photo, uri = "data:$mediaType;base64,${Base64.encode(image.bytes)}", mediaType = mediaType)

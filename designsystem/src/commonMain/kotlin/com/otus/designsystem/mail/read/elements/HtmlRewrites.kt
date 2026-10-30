@@ -20,10 +20,13 @@ internal fun withImagePlaceholders(
     }
 
 /** The `src` of an `<img>` tag in any quotes, or empty without one. */
-private fun imageSource(tag: String): String {
-    val attributes = SRC.find(tag)?.groupValues ?: return ""
-    return attributes.drop(1).firstOrNull { it.isNotEmpty() }.orEmpty()
-}
+private fun imageSource(tag: String): String =
+    SRC
+        .find(tag)
+        ?.groupValues
+        ?.drop(1)
+        ?.firstOrNull { it.isNotEmpty() }
+        .orEmpty()
 
 /** The show images link that stands in for the image [tag]. */
 private fun placeholder(

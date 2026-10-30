@@ -33,12 +33,11 @@ public fun BadgedAvatar(
     Box(modifier) {
         avatar()
         if (badge != null) {
-            val position =
+            Box(
                 Modifier
-                    .align(
-                        Alignment.BottomEnd,
-                    ).offset(-InboxTokens.badgeOffset, -InboxTokens.badgeOffset)
-            Box(position) { badge() }
+                    .align(Alignment.BottomEnd)
+                    .offset(-InboxTokens.badgeOffset, -InboxTokens.badgeOffset),
+            ) { badge() }
         }
     }
 }

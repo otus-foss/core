@@ -55,8 +55,12 @@ class NameFiguresTest {
         val base = RoundTrip.assertRoundTrip(Name.serializer(), card.getValue("name"))
         assertEquals(listOf("孫", "中山", "文", "逸仙"), base.components.orEmpty().map { it.value })
         assertNull(base.phoneticSystem)
-        val localizations = card.getValue("localizations").jsonObject
-        val yue = localizations.getValue("yue").jsonObject
+        val yue =
+            card
+                .getValue("localizations")
+                .jsonObject
+                .getValue("yue")
+                .jsonObject
         val localized =
             JsContactJson.decodeFromJsonElement(Name.serializer(), JsContactPatch.apply(card, yue).getValue("name"))
         assertEquals(PhoneticSystem.Jyut, localized.phoneticSystem)

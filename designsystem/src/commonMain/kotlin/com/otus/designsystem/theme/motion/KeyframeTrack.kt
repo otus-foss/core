@@ -21,11 +21,11 @@ internal class KeyframeTrack(
 ) {
     private val steps = keyframes.toList().zipWithNext()
 
-    fun valueAt(fraction: Float): Float {
-        val (from, to) = steps.firstOrNull { (_, to) -> fraction <= to.at } ?: return steps.last().second.value
-        val progress = curve.easing.progress(fraction, from.at, to.at)
-        return lerp(from.value, to.value, progress)
-    }
+    fun valueAt(fraction: Float): Float =
+        steps
+            .firstOrNull { (_, to) -> fraction <= to.at }
+            ?.let { (from, to) -> lerp(from.value, to.value, curve.easing.progress(fraction, from.at, to.at)) }
+            ?: steps.last().second.value
 }
 
 private fun Easing.progress(

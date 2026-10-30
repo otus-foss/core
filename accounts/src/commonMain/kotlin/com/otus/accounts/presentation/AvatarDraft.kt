@@ -76,10 +76,12 @@ internal data class AvatarDraft(
     private fun websitePreview(
         shown: ResolvedAvatar?,
         initials: String,
-    ): ChipAvatar {
-        val icon = shown?.takeIf { it.origin == AvatarOrigin.Domain }?.image
-        return if (icon == null) styledChip(initials, color) else ChipAvatar(initials, colorIndex = 0, icon.bytes)
-    }
+    ): ChipAvatar =
+        shown
+            ?.takeIf { it.origin == AvatarOrigin.Domain }
+            ?.image
+            ?.let { ChipAvatar(initials, colorIndex = 0, it.bytes) }
+            ?: styledChip(initials, color)
 
     private fun styled(mark: AvatarMark) = ContactAvatar.Styled(AvatarStyle(color, mark))
 

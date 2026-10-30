@@ -98,11 +98,11 @@ private fun <T> rememberTreeMoves(
         fun move(
             index: Int,
             gap: Int,
-        ): (() -> Unit)? {
-            val target = TreeDropTarget.Before(gap)
-            if (gap !in 0..items.size || !canDrop(index, target)) return null
-            return { latestDrop(index, target) }
-        }
+        ): (() -> Unit)? =
+            TreeDropTarget
+                .Before(gap)
+                .takeIf { gap in 0..items.size && canDrop(index, it) }
+                ?.let { target -> { latestDrop(index, target) } }
         items.indices.map { TreeMoves(up = move(it, it - 1), down = move(it, it + 2)) }
     }
 }

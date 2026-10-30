@@ -64,11 +64,10 @@ public class AvatarService(
         started: Long,
     ): AvatarImage? {
         val site = iconDomain(email, options) ?: return null
-        val stored =
-            cache.load(domainKey(site, options), started) {
+        return cache
+            .load(domainKey(site, options), started) {
                 fetches.withPermit { domainImage(site, options)?.let { StoredAvatar(it, 0) } }
-            }
-        return stored.image
+            }.image
     }
 
     /** Local images only, so refreshed rows keep their avatar before network work. */
@@ -136,8 +135,8 @@ public class AvatarService(
         options: AvatarOptions,
     ): String? {
         val host = avatarIconDomain(email)?.takeIf { options.domainIcons } ?: return null
-        val domain = nullOnFailure { domains.resolve(host) }
-        return domain?.takeIf { isPublicAvatarHost(it) && (host == it || host.endsWith(".$it")) }
+        return nullOnFailure { domains.resolve(host) }
+            ?.takeIf { isPublicAvatarHost(it) && (host == it || host.endsWith(".$it")) }
     }
 
     private suspend fun domainImage(

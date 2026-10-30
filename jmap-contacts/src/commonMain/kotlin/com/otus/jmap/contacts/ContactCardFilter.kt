@@ -61,10 +61,10 @@ public data class ContactCardFilter(
     val note: String? = null,
 ) {
     /** The condition as a filter, to send alone or to combine with other filters (RFC 8620, section 5.5). */
-    public fun toFilter(): JmapFilter {
-        val values = conditions().mapNotNull { (key, value) -> value?.let { key to it } }.toMap()
-        return JmapFilter.Condition(JsonObject(values))
-    }
+    public fun toFilter(): JmapFilter =
+        JmapFilter.Condition(
+            JsonObject(conditions().mapNotNull { (key, value) -> value?.let { key to it } }.toMap()),
+        )
 
     // The name keys contain a literal slash: they are flat condition names, not nested objects.
     private fun conditions(): List<Pair<String, JsonElement?>> =

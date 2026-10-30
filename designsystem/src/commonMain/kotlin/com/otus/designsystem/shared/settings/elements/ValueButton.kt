@@ -74,4 +74,4 @@ public fun ValueButton(
 private fun Modifier.valueBackground(
     fill: Color?,
     shape: Shape,
-): Modifier = if (fill == null) this else background(fill, shape)
+): Modifier = fill?.let { background(it, shape) } ?: this

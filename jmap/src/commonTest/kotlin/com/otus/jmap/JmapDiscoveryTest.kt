@@ -42,8 +42,11 @@ class JmapDiscoveryTest {
             assertEquals(500, session.maxObjectsInSet)
             assertEquals(null, session.maxSizeUpload, "A malformed limit reads as unknown")
             assertEquals(emptyMap(), session.capabilityObjects.getValue("urn:example:odd"))
-            val account = session.accounts.getValue("d1")
-            val sieve = account.capabilityObjects.getValue(JmapCapability.SIEVE)
+            val sieve =
+                session.accounts
+                    .getValue("d1")
+                    .capabilityObjects
+                    .getValue(JmapCapability.SIEVE)
             assertTrue("mailboxid" in sieve.getValue("sieveExtensions").toString())
         }
 
@@ -100,8 +103,9 @@ class JmapDiscoveryTest {
     fun httpIsAllowedOnlyByAnExplicitTestPolicy() =
         runTest {
             val engine = MockEngine { json(session()) }
-            val client = JmapClient(engine, JmapPolicy(allowInsecureHttp = true))
-            val session = client.session("http://localhost:8080/jmap/session", ADA)
+            val session =
+                JmapClient(engine, JmapPolicy(allowInsecureHttp = true))
+                    .session("http://localhost:8080/jmap/session", ADA)
             assertEquals("http://localhost:8080/jmap/", session.apiUrl)
         }
 

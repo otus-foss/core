@@ -33,8 +33,7 @@ class JmapUploadTest {
                 mapOf(
                     JmapCapability.CORE to
                         buildJsonObject {
-                            val limit = maxSizeUpload
-                            if (limit != null) put("maxSizeUpload", JsonPrimitive(limit))
+                            if (maxSizeUpload != null) put("maxSizeUpload", JsonPrimitive(maxSizeUpload))
                         },
                 ),
         )

@@ -43,13 +43,12 @@ internal object UtcDateTimeSerializer : KSerializer<Instant> {
 }
 
 /** Parses this RFC 3339 date-time, or returns null when it is not one or its year is not 0000 to 9999. */
-private fun String.toInstantOrNull(): Instant? {
-    if (!UNSIGNED_YEAR.containsMatchIn(this)) return null
-    val normalized =
-        replace(LEAP_SECOND) { it.groupValues[1] + LAST_NANOSECOND }
-            .replace(LONG_FRACTION) { it.groupValues[1] }
-    return Instant.parseOrNull(normalized)?.inRfc3339Years()
-}
+private fun String.toInstantOrNull(): Instant? =
+    takeIf { UNSIGNED_YEAR.containsMatchIn(it) }
+        ?.replace(LEAP_SECOND) { it.groupValues[1] + LAST_NANOSECOND }
+        ?.replace(LONG_FRACTION) { it.groupValues[1] }
+        ?.let { Instant.parseOrNull(it) }
+        ?.inRfc3339Years()
 
 /**
  * This instant, or null when it falls outside the years 0000 to 9999. Encoding and decoding share this check,

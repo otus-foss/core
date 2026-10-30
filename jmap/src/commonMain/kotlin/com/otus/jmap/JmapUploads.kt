@@ -35,16 +35,12 @@ internal class JmapUploads(
         val target = uploadTarget(session, accountId)
         val response =
             try {
-                val request =
-                    http.preparePost(target) {
+                http
+                    .preparePost(target) {
                         header(HttpHeaders.Authorization, auth.header())
                         header(HttpHeaders.Accept, ContentType.Application.Json.toString())
                         setBody(ByteArrayContent(bytes, ContentType.parse(mediaType)))
-                    }
-                request.execute {
-                    val status = it.status.value
-                    RawResponse(status, location = null, it.limitedText(policy.maxResponseBytes))
-                }
+                    }.execute { RawResponse(it.status.value, location = null, it.limitedText(policy.maxResponseBytes)) }
             } catch (error: IOException) {
                 throw JmapException.Unreachable(error)
             }

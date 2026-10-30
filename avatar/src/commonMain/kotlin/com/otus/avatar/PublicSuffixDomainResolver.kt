@@ -12,9 +12,9 @@ public class PublicSuffixDomainResolver(
     private val lock = Mutex()
     private var rules: PublicSuffixRules? = null
 
-    override suspend fun resolve(host: String): String? {
-        val parsed =
-            lock.withLock {
+    override suspend fun resolve(host: String): String? =
+        lock
+            .withLock {
                 val cached = rules
                 if (cached != null) {
                     cached
@@ -23,9 +23,7 @@ public class PublicSuffixDomainResolver(
                     rules = loaded
                     loaded
                 }
-            }
-        return parsed.registrableDomain(host)
-    }
+            }.registrableDomain(host)
 }
 
 /** PSL longest-rule matching, including private suffixes, wildcards, and exception rules. */
@@ -64,8 +62,9 @@ internal class PublicSuffixRules(
 }
 
 /** The rule on a list line: its first word, lowercased. Comment lines start with `//`. */
-private fun ruleOf(line: String): String {
-    val trimmed = line.trim()
-    val word = trimmed.substringBefore(' ').substringBefore('\t')
-    return word.lowercase()
-}
+private fun ruleOf(line: String): String =
+    line
+        .trim()
+        .substringBefore(' ')
+        .substringBefore('\t')
+        .lowercase()

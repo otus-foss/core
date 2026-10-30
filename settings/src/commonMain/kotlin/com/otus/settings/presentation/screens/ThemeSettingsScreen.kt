@@ -84,13 +84,12 @@ public fun ThemeSettingsScreen(
         )
     }
     val color = editing ?: return
-    val resetColor = { state.select(state.choice.withColor(color, value = null)) }
     ColorSheet(
         color.title,
         choice.palette[color],
         onPick = { state.select(state.choice.withColor(color, it)) },
         onDismiss = { editing = null },
-        onReset = resetColor.takeIf { color in choice.customColors },
+        onReset = { state.select(state.choice.withColor(color, value = null)) }.takeIf { color in choice.customColors },
     )
 }
 

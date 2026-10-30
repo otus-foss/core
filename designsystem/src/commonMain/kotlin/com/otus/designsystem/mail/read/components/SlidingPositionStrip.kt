@@ -66,10 +66,7 @@ private fun PageTrack(
     // Mirrored layouts place the next page on the left, as a pager does.
     val direction = if (LocalLayoutDirection.current == LayoutDirection.Rtl) -1 else 1
     val inView by remember(count) {
-        derivedStateOf {
-            val first = floor(position()).toInt()
-            listOf(first, first + 1).filter { it in 0 until count }
-        }
+        derivedStateOf { floor(position()).toInt().let { listOf(it, it + 1) }.filter { it in 0 until count } }
     }
     val gap = with(LocalDensity.current) { ReadTokens.stripStart.roundToPx() }
     BoxWithConstraints(modifier.clipToBounds(), contentAlignment = Alignment.CenterStart) {

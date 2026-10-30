@@ -76,8 +76,11 @@ public fun Modifier.aboveBottomBars(): Modifier {
         motionTween(MotionSpeed.Normal),
         label = "Bottom clearance",
     )
-    val insets = WindowInsets.navigationBars.union(WindowInsets.ime).asPaddingValues()
-    val edge = insets.calculateBottomPadding() + ActionBarTokens.barInset
+    val edge =
+        WindowInsets.navigationBars
+            .union(WindowInsets.ime)
+            .asPaddingValues()
+            .calculateBottomPadding() + ActionBarTokens.barInset
     val bottom = maxOf(bars, edge)
     if (bars == 0.dp) return padding(bottom = bottom)
     // What sinks past the bar's top edge, such as a leaving toast, goes behind the bar.

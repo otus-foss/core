@@ -21,7 +21,9 @@ class ChoiceOptionsTest {
 
     @Test
     fun aDefaultThatIsTheOnlyOptionLeavesNoEmptyGroup() {
-        val options = ChoiceOptions(listOf("Device"), selected = "Device", default = "Device")
-        assertEquals(listOf(listOf("Device")), options.groups)
+        assertEquals(
+            listOf(listOf("Device")),
+            ChoiceOptions(listOf("Device"), selected = "Device", default = "Device").groups,
+        )
     }
 }

@@ -63,8 +63,14 @@ class ThemeChoiceTest {
     fun aCustomThemeCanBeRenamedAndANameCanBeCleared() {
         val custom = ThemeChoice().withColor(ThemeColor.Page, Color.Black)
         assertEquals("Night", custom.withName(1, "  Night ").customTheme?.name)
-        val cleared = custom.withName(id = 1, name = "Night").withName(id = 1, name = " ")
-        assertEquals(null, cleared.customTheme?.name)
+        assertEquals(
+            null,
+            custom
+                .withName(id = 1, name = "Night")
+                .withName(id = 1, name = " ")
+                .customTheme
+                ?.name,
+        )
     }
 
     @Test

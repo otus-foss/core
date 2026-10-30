@@ -54,8 +54,12 @@ class JmapIdentityAddressesTest {
                             listOf(JmapCapability.CORE, JmapCapability.SUBMISSION),
                             request.getValue("using").jsonArray.map { it.jsonPrimitive.content },
                         )
-                        val calls = request.getValue("methodCalls").jsonArray
-                        val call = calls.single().jsonArray
+                        val call =
+                            request
+                                .getValue("methodCalls")
+                                .jsonArray
+                                .single()
+                                .jsonArray
                         assertEquals("Identity/get", call[0].jsonPrimitive.content)
                         val arguments = call[1].jsonObject
                         assertEquals("d333333", arguments.getValue("accountId").jsonPrimitive.content)

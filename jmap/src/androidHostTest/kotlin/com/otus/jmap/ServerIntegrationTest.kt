@@ -19,8 +19,8 @@ class ServerIntegrationTest {
     private val url = System.getenv("OTUS_JMAP_TEST_URL")
     private val user = System.getenv("OTUS_JMAP_TEST_USER").orEmpty()
     private val password = System.getenv("OTUS_JMAP_TEST_PASSWORD").orEmpty()
-    private val policy = JmapPolicy(allowInsecureHttp = System.getenv("OTUS_JMAP_TEST_INSECURE") == "1")
-    private val client = JmapClient(policy = policy)
+    private val client =
+        JmapClient(policy = JmapPolicy(allowInsecureHttp = System.getenv("OTUS_JMAP_TEST_INSECURE") == "1"))
 
     @Test
     fun discoversTheSessionAndQueriesMailboxes() =

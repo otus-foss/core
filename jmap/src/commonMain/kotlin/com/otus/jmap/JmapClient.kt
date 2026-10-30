@@ -131,10 +131,9 @@ public class JmapClient(
         trusted: Set<String>,
     ): JmapSession {
         val dto = jmapDecoding { JmapJson.decodeFromJsonElement(SessionDto.serializer(), decode(response)) }
-        val api = urls.resolve(url, dto.apiUrl).requireTrusted(trusted)
         return JmapSession(
             sessionUrl = url.toString(),
-            apiUrl = api.toString(),
+            apiUrl = urls.resolve(url, dto.apiUrl).requireTrusted(trusted).toString(),
             username = dto.username,
             capabilities = dto.capabilities.keys,
             accounts =
@@ -163,8 +162,8 @@ public class JmapClient(
         body: String?,
     ): RawResponse =
         try {
-            val request =
-                http.prepareRequest {
+            http
+                .prepareRequest {
                     this.method = method
                     url(target)
                     if (auth != null) header(HttpHeaders.Authorization, auth.header())
@@ -173,14 +172,13 @@ public class JmapClient(
                         contentType(ContentType.Application.Json)
                         setBody(body)
                     }
+                }.execute { response ->
+                    RawResponse(
+                        response.status.value,
+                        response.headers[HttpHeaders.Location],
+                        response.limitedText(policy.maxResponseBytes),
+                    )
                 }
-            request.execute { response ->
-                RawResponse(
-                    response.status.value,
-                    response.headers[HttpHeaders.Location],
-                    response.limitedText(policy.maxResponseBytes),
-                )
-            }
         } catch (error: IOException) {
             throw JmapException.Unreachable(error)
         }

@@ -35,9 +35,11 @@ public object UtcDateSerializer : KSerializer<Instant> {
     override fun deserialize(decoder: Decoder): Instant {
         val text = decoder.decodeString()
         // RFC 3339 writes a year as four digits, so a signed year such as "-0000" is not a date.
-        val unsignedYear = UNSIGNED_YEAR.containsMatchIn(text)
-        val instant = if (unsignedYear) Instant.parseOrNull(text.withinInstantPrecision()) else null
-        return instant?.takeIf { it.toUtcDate() != null } ?: throw SerializationException("not a UTCDate: $text")
+        return text
+            .takeIf { UNSIGNED_YEAR.containsMatchIn(it) }
+            ?.let { Instant.parseOrNull(it.withinInstantPrecision()) }
+            ?.takeIf { it.toUtcDate() != null }
+            ?: throw SerializationException("not a UTCDate: $text")
     }
 }
 
@@ -51,10 +53,9 @@ private fun Instant.toUtcDate(): String? {
 }
 
 /** RFC 3339 text that [Instant.parseOrNull] can read: no leap second and at most nine fraction digits. */
-private fun String.withinInstantPrecision(): String {
-    val withoutLeapSecond = LEAP_SECOND.replace(this) { it.groupValues[1] + "59.999999999" }
-    return LONG_FRACTION.replace(withoutLeapSecond) { it.groupValues[1] }
-}
+private fun String.withinInstantPrecision(): String =
+    replace(LEAP_SECOND) { it.groupValues[1] + "59.999999999" }
+        .replace(LONG_FRACTION) { it.groupValues[1] }
 
 private val UNSIGNED_YEAR = Regex("""^\d{4}-""")
 

@@ -100,12 +100,14 @@ private fun ToggleOption(item: OptionsItem.Toggle) {
 }
 
 /** The current choice: a `selectedFill` fill, rounded inside the menu, read as selected. */
-private fun Modifier.currentChoice(current: Boolean): Modifier {
-    if (!current) return this
-    return clip(RoundedCornerShape(MenuTokens.radius - MenuTokens.inset))
-        .background(OtusColors.selectedFill)
-        .semantics { selected = true }
-}
+private fun Modifier.currentChoice(current: Boolean): Modifier =
+    if (current) {
+        clip(RoundedCornerShape(MenuTokens.radius - MenuTokens.inset))
+            .background(OtusColors.selectedFill)
+            .semantics { selected = true }
+    } else {
+        this
+    }
 
 /** The line between groups of options, inset like their rows. */
 @Composable

@@ -127,8 +127,11 @@ private fun VCardProperty.toPhoto(): Media =
     )
 
 private fun VCardProperty.inlineDataUri(): String {
-    val format = types.firstOrNull { it !in INLINE_PHOTO_TYPES }
-    val mediaType = format?.let { if ('/' in it) it else "image/$it" } ?: UNKNOWN_MEDIA_TYPE
+    val mediaType =
+        types
+            .firstOrNull { it !in INLINE_PHOTO_TYPES }
+            ?.let { if ('/' in it) it else "image/$it" }
+            ?: UNKNOWN_MEDIA_TYPE
     return "data:$mediaType;base64,${value.filterNot { it.isWhitespace() }}"
 }
 

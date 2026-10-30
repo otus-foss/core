@@ -49,11 +49,12 @@ internal fun decodeThemeChoice(value: String): ThemeChoice {
 private fun selectedThemeId(
     parts: List<String>,
     themes: List<CustomTheme>,
-): Int? {
-    val selected = parts.firstOrNull { it.startsWith(SELECTED) }
-    val id = selected?.removePrefix(SELECTED)?.toIntOrNull()
-    return id?.takeIf { themes.any { theme -> theme.id == it } }
-}
+): Int? =
+    parts
+        .firstOrNull { it.startsWith(SELECTED) }
+        ?.removePrefix(SELECTED)
+        ?.toIntOrNull()
+        ?.takeIf { id -> themes.any { it.id == id } }
 
 /** Reads a `1:ink` part: a custom theme and the theme it was made from. */
 private fun decodeTheme(part: String): Pair<Int, ThemeBase>? {
@@ -74,8 +75,12 @@ private fun decodeColor(part: String): Pair<Int, Pair<ThemeColor, Color>>? {
 /** Reads a `1:name=Night%20ink` part: the name the user gave a custom theme. */
 private fun decodeName(part: String): Pair<Int, String>? {
     val id = part.substringBefore(':').toIntOrNull()
-    val value = part.substringAfter(':', "")
-    val name = if (value.startsWith(NAME)) value.removePrefix(NAME).unescaped() else null
+    val name =
+        part
+            .substringAfter(':', "")
+            .takeIf { it.startsWith(NAME) }
+            ?.removePrefix(NAME)
+            ?.unescaped()
     return if (id == null || name.isNullOrBlank()) null else id to name
 }
 

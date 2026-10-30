@@ -32,9 +32,13 @@ class JmapOwnAvatarsTest {
             server.avatars.save("ada", "ada@example.org", "Ada", photo)
             val patch = server.update()
             assertEquals(setOf("media"), patch.keys)
-            val media = patch.getValue("media").jsonObject
-            val savedPhoto = media.getValue(AVATAR_PHOTO_KEY).jsonObject
-            assertEquals(JsonPrimitive("data:image/png;base64,AQID"), savedPhoto["uri"])
+            val media =
+                patch
+                    .getValue("media")
+                    .jsonObject
+                    .getValue(AVATAR_PHOTO_KEY)
+                    .jsonObject
+            assertEquals(JsonPrimitive("data:image/png;base64,AQID"), media["uri"])
         }
 
     @Test
@@ -76,8 +80,13 @@ class JmapOwnAvatarsTest {
         runTest {
             val server = SelfCardServer(card = null)
             server.avatars.save("ada", "Ada@Example.org", "Ada", letters)
-            val creations = server.set().getValue("create").jsonObject
-            val created = creations.values.single().jsonObject
+            val created =
+                server
+                    .set()
+                    .getValue("create")
+                    .jsonObject.values
+                    .single()
+                    .jsonObject
             assertEquals("""{"own":true}""", created.getValue("addressBookIds").toString())
             assertTrue("ada@example.org" in created.getValue("emails").toString())
             assertEquals(letters.style, avatarStyleIn(created["vCard"]))
@@ -165,15 +174,17 @@ private class SelfCardServer(
             addHandler { request ->
                 val json = headersOf(HttpHeaders.ContentType, "application/json")
                 if (request.url.encodedPath == "/jmap/session") return@addHandler respond(SESSION, headers = json)
-                val body = (request.body as TextContent).text
-                val requestJson = Json.parseToJsonElement(body).jsonObject
-                val calls = requestJson.getValue("methodCalls").jsonArray
                 val responses =
-                    calls.joinToString(",") { call ->
-                        val (name, arguments, id) = call.jsonArray
-                        val result = result((name as JsonPrimitive).content, arguments.jsonObject)
-                        """[$name,$result,$id]"""
-                    }
+                    Json
+                        .parseToJsonElement((request.body as TextContent).text)
+                        .jsonObject
+                        .getValue("methodCalls")
+                        .jsonArray
+                        .joinToString(",") { call ->
+                            val (name, arguments, id) = call.jsonArray
+                            val result = result((name as JsonPrimitive).content, arguments.jsonObject)
+                            """[$name,$result,$id]"""
+                        }
                 respond("""{"methodResponses":[$responses]}""", headers = json)
             }
         }
@@ -206,10 +217,12 @@ private class SelfCardServer(
 
     fun set(): JsonObject = sets.single()
 
-    fun update(): JsonObject {
-        val updates = set().getValue("update").jsonObject
-        return updates.getValue("c").jsonObject
-    }
+    fun update(): JsonObject =
+        set()
+            .getValue("update")
+            .jsonObject
+            .getValue("c")
+            .jsonObject
 }
 
 private const val ADA_EMAIL = """"emails":{"e":{"address":"ada@example.org"}}"""

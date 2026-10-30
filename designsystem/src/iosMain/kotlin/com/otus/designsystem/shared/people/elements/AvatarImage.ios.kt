@@ -59,8 +59,11 @@ public actual fun decodeImage(
 ): ImageBitmap? {
     val source = imageSource(bytes) ?: return null
     try {
-        val image = if (hasAllowedSize(source)) thumbnail(source, maxSize) else null
-        return if (image == null) null else rasterizeAndRelease(image, maxSize)
+        return if (hasAllowedSize(source)) {
+            thumbnail(source, maxSize)?.let { rasterizeAndRelease(it, maxSize) }
+        } else {
+            null
+        }
     } finally {
         CFRelease(source)
     }
@@ -69,14 +72,10 @@ public actual fun decodeImage(
 @OptIn(ExperimentalForeignApi::class)
 private fun imageSource(bytes: ByteArray): CGImageSourceRef? {
     val data =
-        if (bytes.isEmpty()) {
-            null
-        } else {
-            bytes.usePinned {
-                CFDataCreate(null, it.addressOf(0).reinterpret(), bytes.size.convert())
-            }
-        }
-    if (data == null) return null
+        bytes
+            .takeIf { it.isNotEmpty() }
+            ?.usePinned { CFDataCreate(null, it.addressOf(0).reinterpret(), bytes.size.convert()) }
+            ?: return null
     val source = CGImageSourceCreateWithData(data, null)
     CFRelease(data)
     return source

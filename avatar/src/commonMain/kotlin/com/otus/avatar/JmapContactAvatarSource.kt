@@ -47,10 +47,11 @@ public class JmapContactAvatarSource(
     private suspend fun readableBooks(
         connection: JmapConnection,
         account: String,
-    ): List<AvatarAddressBook> {
-        val books = connection.call(GetMethod(AddressBookType, account)).list
-        return books.filter { it.myRights.mayRead && (it.isSubscribed || it.myRights.mayWrite) }
-    }
+    ): List<AvatarAddressBook> =
+        connection
+            .call(GetMethod(AddressBookType, account))
+            .list
+            .filter { it.myRights.mayRead && (it.isSubscribed || it.myRights.mayWrite) }
 
     private suspend fun loadCard(
         connection: JmapConnection,
@@ -107,8 +108,10 @@ private fun inlineContactImage(uri: String): AvatarImage? {
         header.endsWith(";base64") &&
             header.removePrefix("data:").removeSuffix(";base64") in CONTACT_RASTER_TYPES
     return if (supported) {
-        val bytes = Base64.decode(uri.substringAfter(',', ""))
-        bytes.takeIf { it.isNotEmpty() && it.size <= MAX_AVATAR_BYTES }?.let(::AvatarImage)
+        Base64
+            .decode(uri.substringAfter(',', ""))
+            .takeIf { it.isNotEmpty() && it.size <= MAX_AVATAR_BYTES }
+            ?.let(::AvatarImage)
     } else {
         null
     }

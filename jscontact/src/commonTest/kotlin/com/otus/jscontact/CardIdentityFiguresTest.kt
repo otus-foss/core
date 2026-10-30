@@ -66,8 +66,10 @@ class CardIdentityFiguresTest {
                 RoundTrip.typeOf(Pronouns.serializer(), Pronouns("she/her")),
                 RoundTrip.typeOf(Title.serializer(), Title("Mathematician")),
             )
-        val names = "Relation Name NameComponent Nickname Organization OrgUnit SpeakToAs Pronouns Title"
-        val expected = names.split(" ").map { JsonPrimitive(it) }
+        val expected =
+            "Relation Name NameComponent Nickname Organization OrgUnit SpeakToAs Pronouns Title"
+                .split(" ")
+                .map { JsonPrimitive(it) }
         assertEquals(expected, written)
     }
 

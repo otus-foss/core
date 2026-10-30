@@ -101,9 +101,12 @@ internal class ServerSubscription(
         replacing: String?,
     ): SetResult? =
         try {
-            val subscriptions = connection.call(PushSubscriptionGetMethod()).list
-            val deviceIds = subscriptions.filter { it.deviceClientId == deviceClientId }.map { it.id }
-            val stale = deviceIds + listOfNotNull(replacing)
+            val stale =
+                connection
+                    .call(PushSubscriptionGetMethod())
+                    .list
+                    .filter { it.deviceClientId == deviceClientId }
+                    .map { it.id } + listOfNotNull(replacing)
             beforeCreate()
             connection.call(
                 PushSubscriptionSetMethod(create = mapOf(CREATION to subscription), destroy = stale.distinct()),
@@ -128,10 +131,8 @@ internal class ServerSubscription(
     /** The verification push never arrived, and the server pushes nothing until it does. */
     private fun verificationLapsed(record: PushRecord): Boolean = !record.verified && age(record) > VERIFY_WITHIN
 
-    private fun age(record: PushRecord): Duration {
-        val since = record.since?.let(Instant::parseOrNull) ?: return Duration.INFINITE
-        return clock.now() - since
-    }
+    private fun age(record: PushRecord): Duration =
+        record.since?.let(Instant::parseOrNull)?.let { clock.now() - it } ?: Duration.INFINITE
 
     private fun now(): String = utcDate(clock.now())
 

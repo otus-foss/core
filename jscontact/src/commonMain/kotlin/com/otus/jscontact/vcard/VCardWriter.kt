@@ -49,8 +49,13 @@ private fun Card.vCardProperties(): List<VCardProperty> =
         addAll(addresses.orEmpty().values.map { it.toAdrProperty() })
         addAll(anniversaries.orEmpty().values.mapNotNull { it.toDateProperty() })
         addAll(notes.orEmpty().values.map { VCardProperty(NOTE, it.note.escapeText()) })
-        val memberIds = members.orEmpty().filterValues { it }.keys
-        addAll(memberIds.map { VCardProperty(MEMBER, it) })
+        addAll(
+            members
+                .orEmpty()
+                .filterValues { it }
+                .keys
+                .map { VCardProperty(MEMBER, it) },
+        )
         addAll(photoProperties())
         addAll(linkProperties())
         add(VCardProperty(END, VCARD))
@@ -59,21 +64,21 @@ private fun Card.vCardProperties(): List<VCardProperty> =
 private fun Card.emailProperties(): List<VCardProperty> =
     emails.orEmpty().values.flatMapIndexed { index, email ->
         val parameters = vCardParameters(email.contexts.typesIn(CONTEXT_TYPES), email.pref)
-        val property = VCardProperty(EMAIL, email.address.escapeText(), parameters)
-        property.labelled("email${index + 1}", email.label)
+        VCardProperty(EMAIL, email.address.escapeText(), parameters)
+            .labelled("email${index + 1}", email.label)
     }
 
 private fun Card.phoneProperties(): List<VCardProperty> =
     phones.orEmpty().values.flatMapIndexed { index, phone ->
         val types = phone.features.typesIn(FEATURE_TYPES) + phone.contexts.typesIn(CONTEXT_TYPES)
-        val property = VCardProperty(TEL, phone.number.escapeText(), vCardParameters(types, phone.pref))
-        property.labelled("tel${index + 1}", phone.label)
+        VCardProperty(TEL, phone.number.escapeText(), vCardParameters(types, phone.pref))
+            .labelled("tel${index + 1}", phone.label)
     }
 
 private fun Card.linkProperties(): List<VCardProperty> =
     links.orEmpty().values.flatMapIndexed { index, link ->
-        val parameters = vCardParameters(link.contexts.typesIn(CONTEXT_TYPES), link.pref)
-        VCardProperty(URL, link.uri, parameters).labelled("url${index + 1}", link.label)
+        VCardProperty(URL, link.uri, vCardParameters(link.contexts.typesIn(CONTEXT_TYPES), link.pref))
+            .labelled("url${index + 1}", link.label)
     }
 
 /** Photos with a URI. A photo that only has a JMAP blobId has no value vCard can hold. */

@@ -10,14 +10,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.otus.designsystem.shared.people.components.AvatarStack
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.settings.ThemeTokens
 
 /**
- * [colors] as overlapping circles, like an [AvatarStack]. Each has an outline so a color that matches
- * the page still shows. It only shows the colors; the enclosing row acts and supplies the accessible name.
+ * [colors] as overlapping circles, like an [com.otus.designsystem.shared.people.components.AvatarStack], each
+ * outlined so a color that matches the page still shows. It only shows the colors; the enclosing
+ * row acts and supplies the accessible name.
  */
 @Composable
 public fun SwatchStack(

@@ -39,14 +39,18 @@ public class AndroidLoginStore internal constructor(
                 } catch (error: GeneralSecurityException) {
                     throw LoginStoreException("The secret could not be encrypted.", error)
                 }
-            val logins = readLogins().filterNot { it.id == login.id } + login
-            commit { putString(LOGINS_KEY, LoginCodec.encode(logins)).putString(secretKey(login.id), sealed) }
+            commit {
+                putString(LOGINS_KEY, LoginCodec.encode(readLogins().filterNot { it.id == login.id } + login))
+                    .putString(secretKey(login.id), sealed)
+            }
         }
 
     override fun remove(id: String): Unit =
         synchronized(lock) {
-            val logins = readLogins().filterNot { it.id == id }
-            commit { putString(LOGINS_KEY, LoginCodec.encode(logins)).remove(secretKey(id)) }
+            commit {
+                putString(LOGINS_KEY, LoginCodec.encode(readLogins().filterNot { it.id == id }))
+                    .remove(secretKey(id))
+            }
         }
 
     private fun readLogins(): List<JmapLogin> {

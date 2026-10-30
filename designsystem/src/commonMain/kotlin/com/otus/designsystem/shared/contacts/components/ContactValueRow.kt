@@ -67,4 +67,4 @@ private fun Modifier.highlightedValue(highlighted: Boolean): Modifier =
     if (highlighted) background(OtusColors.selectedFill) else this
 
 private fun Modifier.valueAction(onClick: (() -> Unit)?): Modifier =
-    if (onClick == null) this else clickable(role = Role.Button, onClick = onClick)
+    onClick?.let { clickable(role = Role.Button, onClick = it) } ?: this

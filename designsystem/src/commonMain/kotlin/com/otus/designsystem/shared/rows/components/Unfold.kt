@@ -126,8 +126,12 @@ public fun UnfoldingStripCard(
         {
             Box(Modifier.stripCardFrame()) {
                 // Composed while folded, to measure the unfold, but hidden from screen readers.
-                val openForm = Modifier.unfolding(unfold, folded).unfoldedForm(unfold)
-                Box(openForm.hiddenWhenFolded(unfold.fraction == 0f)) { content() }
+                Box(
+                    Modifier
+                        .unfolding(unfold, folded)
+                        .unfoldedForm(unfold)
+                        .hiddenWhenFolded(unfold.fraction == 0f),
+                ) { content() }
                 if (unfold.fraction < 1f) {
                     // The strip underneath is the one screen readers and taps reach.
                     Box(Modifier.align(Alignment.BottomStart).foldedForm(unfold).clearAndSetSemantics {}) {

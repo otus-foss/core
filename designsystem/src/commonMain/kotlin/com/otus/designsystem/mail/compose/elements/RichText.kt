@@ -152,11 +152,9 @@ internal sealed interface RichBlock {
 /** [html] as text blocks with an image block between each two, always starting and ending in text. */
 internal fun split(html: String): List<RichBlock> {
     val images = imageTag.findAll(html).toList()
-    val texts =
-        (listOf(-1) + images.map { it.range.last })
-            .zip(images.map { it.range.first } + html.length)
-            .map { (end, start) -> RichBlock.Text(html.substring(end + 1, start)) }
-    return texts
+    return (listOf(-1) + images.map { it.range.last })
+        .zip(images.map { it.range.first } + html.length)
+        .map { (end, start) -> RichBlock.Text(html.substring(end + 1, start)) }
         .zip(images.map { RichBlock.Image(it.groupValues[1], it.width(), it.description()) } + null)
         .flatMap { (text, image) -> listOfNotNull(text, image) }
 }

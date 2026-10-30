@@ -93,7 +93,7 @@ private fun linePieces(
             add(name to 0)
             if (index < names.lastIndex) add(dot(index) to 0)
         }
-        count.forEach { add(it to 0) }
+        addAll(count.map { it to 0 })
     }
 
 /** How many whole names of [widths] fit after the prefix's [startWidth], with the count of the rest; at least one. */
@@ -116,10 +116,9 @@ private fun MeasureScope.placeInLine(
     val height = pieces.maxOfOrNull { it.first.height } ?: 0
     val width = pieces.sumOf { it.first.width + it.second }
     return layout(width.coerceIn(constraints.minWidth, constraints.maxWidth), height) {
-        var x = 0
-        for ((piece, after) in pieces) {
+        pieces.fold(0) { x, (piece, after) ->
             piece.placeRelative(x, (height - piece.height) / 2)
-            x += piece.width + after
+            x + piece.width + after
         }
     }
 }

@@ -18,21 +18,23 @@ internal fun treeDropTarget(
     val center = tops[from] + offset + heights[from] * HALF
     val over = heights.indices.firstOrNull { center < tops[it] + heights[it] } ?: heights.lastIndex
     val share = (center - tops[over]) / heights[over]
-    val target =
-        when {
-            over in block -> null
-            share < QUARTER -> TreeDropTarget.Before(over)
-            share > 1 - QUARTER -> TreeDropTarget.Before(over + 1)
-            else -> TreeDropTarget.Into(over)
-        }
-    return target?.takeUnless { it is TreeDropTarget.Before && it.index in block.first..block.last + 1 }
+    return when {
+        over in block -> null
+        share < QUARTER -> TreeDropTarget.Before(over)
+        share > 1 - QUARTER -> TreeDropTarget.Before(over + 1)
+        else -> TreeDropTarget.Into(over)
+    }?.takeUnless { it is TreeDropTarget.Before && it.index in block.first..block.last + 1 }
 }
 
 /** How many rows after [from] are nested inside it: the rows deeper than it, up to the next that is not. */
 internal fun nestedSpan(
     depths: List<Int>,
     from: Int,
-): Int = depths.drop(from + 1).takeWhile { it > depths[from] }.size
+): Int =
+    depths
+        .drop(from + 1)
+        .takeWhile { it > depths[from] }
+        .size
 
 /**
  * How far down the tree the line for [target] sits: at the top of the row below the gap, or at the

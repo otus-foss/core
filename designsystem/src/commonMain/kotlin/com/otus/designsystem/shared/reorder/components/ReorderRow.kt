@@ -76,10 +76,10 @@ internal class ReorderRow(
 private fun moveAction(
     label: String,
     move: (() -> Unit)?,
-): CustomAccessibilityAction? {
-    if (move == null) return null
-    return CustomAccessibilityAction(label) {
-        move()
-        true
+): CustomAccessibilityAction? =
+    move?.let { action ->
+        CustomAccessibilityAction(label) {
+            action()
+            true
+        }
     }
-}

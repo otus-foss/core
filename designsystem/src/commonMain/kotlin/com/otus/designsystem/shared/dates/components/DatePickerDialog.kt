@@ -41,8 +41,11 @@ internal fun DatePickerDialog(
     Dialog(onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         CompositionLocalProvider(LocalDensity provides density) {
             BoxWithConstraints(Modifier.fillMaxSize().safeDrawingPadding(), Alignment.BottomCenter) {
-                val preferredHeight = maxHeight * CalendarTokens.PICKER_HEIGHT_FRACTION
-                val pickerHeight = maxOf(CalendarTokens.pickerMinHeight, preferredHeight).coerceAtMost(maxHeight)
+                val pickerHeight =
+                    maxOf(
+                        CalendarTokens.pickerMinHeight,
+                        maxHeight * CalendarTokens.PICKER_HEIGHT_FRACTION,
+                    ).coerceAtMost(maxHeight)
                 Box(
                     Modifier.matchParentSize().clickable(
                         remember { MutableInteractionSource() },

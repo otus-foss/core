@@ -50,12 +50,9 @@ class CalendarWeeksTest {
 
     @Test
     fun monthJumpsShowTheRequestedHeadingEvenWhenTheFirstIsLateInTheWeek() {
-        for (year in 1970..2026) {
-            for (month in 1..12) {
-                val date = LocalDate(year, month, 1)
-                assertEquals(date, weeks.visibleMonth(weeks.indexOf(date)))
-            }
-        }
+        (1970..2026)
+            .flatMap { year -> (1..12).map { month -> LocalDate(year, month, 1) } }
+            .forEach { date -> assertEquals(date, weeks.visibleMonth(weeks.indexOf(date))) }
     }
 
     @Test

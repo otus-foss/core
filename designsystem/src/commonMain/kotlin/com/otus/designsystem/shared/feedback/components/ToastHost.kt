@@ -230,19 +230,21 @@ private fun ToastContent(
 private fun Modifier.liveToast(
     reachable: Boolean,
     onDismiss: () -> Unit,
-): Modifier {
-    if (!reachable) return clearAndSetSemantics {}
-    return semantics {
-        liveRegion = LiveRegionMode.Polite
-        customActions =
-            listOf(
-                CustomAccessibilityAction("Dismiss") {
-                    onDismiss()
-                    true
-                },
-            )
+): Modifier =
+    if (reachable) {
+        semantics {
+            liveRegion = LiveRegionMode.Polite
+            customActions =
+                listOf(
+                    CustomAccessibilityAction("Dismiss") {
+                        onDismiss()
+                        true
+                    },
+                )
+        }
+    } else {
+        clearAndSetSemantics {}
     }
-}
 
 /**
  * Advances every timer once per frame while a toast is on screen. Screen reader users get the

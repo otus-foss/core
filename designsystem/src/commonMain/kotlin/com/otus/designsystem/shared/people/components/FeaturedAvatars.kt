@@ -69,4 +69,4 @@ private fun Face(
 private const val TOP_ROW = 2
 
 private fun Modifier.avatarAction(onClick: (() -> Unit)?): Modifier =
-    if (onClick == null) this else clickable(role = Role.Button, onClick = onClick)
+    onClick?.let { clickable(role = Role.Button, onClick = it) } ?: this

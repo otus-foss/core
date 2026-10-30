@@ -23,8 +23,11 @@ internal suspend fun identityAddresses(
     return try {
         val connection = connections.connection(login)
         val session = connection.session()
-        val accountId = session.accountFor(service.capability)?.takeIf { session.canSubmitFrom(it) }
-        if (accountId == null) emptyList() else identityEmails(connection, accountId)
+        session
+            .accountFor(service.capability)
+            ?.takeIf { session.canSubmitFrom(it) }
+            ?.let { identityEmails(connection, it) }
+            .orEmpty()
     } catch (expected: JmapException) {
         // Optional address discovery must not hide a saved account when its server is unavailable.
         emptyList()
@@ -41,13 +44,13 @@ private fun JmapSession.canSubmitFrom(accountId: String): Boolean =
 private suspend fun identityEmails(
     connection: JmapConnection,
     accountId: String,
-): List<String> {
-    val identities = connection.call(GetMethod(Identity, accountId, properties = listOf("email"))).list
-    return identities
+): List<String> =
+    connection
+        .call(GetMethod(Identity, accountId, properties = listOf("email")))
+        .list
         .mapNotNull { (it["email"] as? JsonPrimitive)?.takeIf { value -> value.isString }?.content }
         .map { it.trim() }
         .filter { it.isNotEmpty() }
         .distinctBy { it.lowercase() }
-}
 
 private val Identity = JmapType("Identity", JmapCapability.SUBMISSION, JsonObject.serializer())

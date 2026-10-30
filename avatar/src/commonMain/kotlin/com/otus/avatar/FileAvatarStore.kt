@@ -118,11 +118,12 @@ public class FileAvatarStore(
         }
     }
 
-    private fun diskRecord(path: Path): DiskRecord {
-        val size = files.metadataOrNull(path)?.size ?: 0
-        val created = runCatching { files.source(path).buffered().use { it.readLong() } }.getOrDefault(0)
-        return DiskRecord(path, size, created)
-    }
+    private fun diskRecord(path: Path): DiskRecord =
+        DiskRecord(
+            path,
+            size = files.metadataOrNull(path)?.size ?: 0,
+            created = runCatching { files.source(path).buffered().use { it.readLong() } }.getOrDefault(0),
+        )
 
     private suspend fun <T> access(block: () -> T): T? =
         withContext(Dispatchers.IO) {

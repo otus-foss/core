@@ -67,19 +67,21 @@ private fun sandboxedWebView(
 ): WebView =
     FittingWebView(ContextThemeWrapper(context, if (darken) THEME_DARK else THEME_LIGHT)).apply {
         setBackgroundColor(Color.TRANSPARENT)
-        settings.javaScriptEnabled = false
-        settings.allowFileAccess = false
-        settings.allowContentAccess = false
-        settings.blockNetworkLoads = !loadRemote
-        settings.loadWithOverviewMode = true
-        settings.useWideViewPort = true
-        settings.builtInZoomControls = true
-        settings.displayZoomControls = false
-        settings.userAgentString = genericUserAgent(settings.userAgentString)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) settings.safeBrowsingEnabled = false
-        // On Android 13 and later, a page with its own light colors is darkened under a dark theme.
-        // Elsewhere it keeps its white page, which sandboxedHtml gives it.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) settings.isAlgorithmicDarkeningAllowed = darken
+        with(settings) {
+            javaScriptEnabled = false
+            allowFileAccess = false
+            allowContentAccess = false
+            blockNetworkLoads = !loadRemote
+            loadWithOverviewMode = true
+            useWideViewPort = true
+            builtInZoomControls = true
+            displayZoomControls = false
+            userAgentString = genericUserAgent(userAgentString)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) safeBrowsingEnabled = false
+            // On Android 13 and later, a page with its own light colors is darkened under a dark theme.
+            // Elsewhere it keeps its white page, which sandboxedHtml gives it.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) isAlgorithmicDarkeningAllowed = darken
+        }
         webViewClient = links
     }
 

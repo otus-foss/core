@@ -56,13 +56,11 @@ public fun FolderPath(
         val start = shown.sumOf { it.width }
         val leafRoom = if (constraints.hasBoundedWidth) constraints.maxWidth - start else Constraints.Infinity
         val leafPlaceable = leaf.measure(loose.copy(maxWidth = leafRoom))
-        val pieces = shown + leafPlaceable
-        val height = pieces.maxOf { it.height }
+        val height = (shown + leafPlaceable).maxOf { it.height }
         layout((start + leafPlaceable.width).coerceAtLeast(constraints.minWidth), height) {
-            var x = 0
-            for (piece in pieces) {
+            (shown + leafPlaceable).fold(0) { x, piece ->
                 piece.placeRelative(x, 0)
-                x += piece.width
+                x + piece.width
             }
         }
     }

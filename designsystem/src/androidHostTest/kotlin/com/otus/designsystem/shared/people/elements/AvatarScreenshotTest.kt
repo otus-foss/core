@@ -88,8 +88,8 @@ class AvatarScreenshotTest {
                     )
             }
         Canvas(bitmap).drawRect(0f, 0f, size.toFloat(), size.toFloat(), paint)
-        val output = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, output)
-        return output.toByteArray()
+        return ByteArrayOutputStream()
+            .apply { bitmap.compress(Bitmap.CompressFormat.PNG, 100, this) }
+            .toByteArray()
     }
 }

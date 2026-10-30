@@ -61,10 +61,13 @@ internal fun ValidationScope.propertyNames(
     serializer: KSerializer<*>,
 ) {
     val declared = serializer.descriptor.elementNames.toSet() + TYPE_PROPERTY
-    extra.keys.filterNot { it in declared }.forEach { name ->
-        val problem = propertyNameProblem(name, declared)
-        if (problem != null) report(problem, name)
-    }
+    extra
+        .keys
+        .filterNot { it in declared }
+        .forEach { name ->
+            val problem = propertyNameProblem(name, declared)
+            if (problem != null) report(problem, name)
+        }
 }
 
 private fun propertyNameProblem(

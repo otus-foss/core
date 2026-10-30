@@ -126,20 +126,22 @@ private fun UpdateBadge(progress: Float?) {
 private fun Modifier.progressRing(
     progress: Float?,
     color: Color,
-): Modifier {
-    if (progress == null) return this
-    return semantics { progressBarRangeInfo = ProgressBarRangeInfo(progress, 0f..1f) }
-        .drawWithContent {
-            drawContent()
-            val width = SidebarTokens.updateRing.toPx()
-            drawArc(
-                color,
-                startAngle = -90f,
-                sweepAngle = 360f * progress,
-                useCenter = false,
-                topLeft = Offset(width / 2, width / 2),
-                size = Size(size.width - width, size.height - width),
-                style = Stroke(width, cap = StrokeCap.Round),
-            )
-        }
-}
+): Modifier =
+    if (progress == null) {
+        this
+    } else {
+        semantics { progressBarRangeInfo = ProgressBarRangeInfo(progress, 0f..1f) }
+            .drawWithContent {
+                drawContent()
+                val width = SidebarTokens.updateRing.toPx()
+                drawArc(
+                    color,
+                    startAngle = -90f,
+                    sweepAngle = 360f * progress,
+                    useCenter = false,
+                    topLeft = Offset(width / 2, width / 2),
+                    size = Size(size.width - width, size.height - width),
+                    style = Stroke(width, cap = StrokeCap.Round),
+                )
+            }
+    }

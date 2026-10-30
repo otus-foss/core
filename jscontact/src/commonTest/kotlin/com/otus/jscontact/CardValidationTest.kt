@@ -102,12 +102,13 @@ class CardValidationTest {
 
     @Test
     fun aLocalizationMustLeaveValidValues() {
-        val card =
-            CardJson.cardWith(
-                """"emails": {"e": {"address": "a@example.com"}},
-               "localizations": {"en": {"emails/e/pref": 0}}""",
-            )
-        val problem = card.validate().single()
+        val problem =
+            CardJson
+                .cardWith(
+                    """"emails": {"e": {"address": "a@example.com"}},
+                       "localizations": {"en": {"emails/e/pref": 0}}""",
+                ).validate()
+                .single()
         assertEquals("/localizations/en", problem.path)
         assertTrue(problem.message.startsWith("/emails/e/pref: "), problem.message)
     }

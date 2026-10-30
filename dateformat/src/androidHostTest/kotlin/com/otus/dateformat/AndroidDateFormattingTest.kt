@@ -71,8 +71,11 @@ class AndroidDateFormattingTest {
     @Test
     fun corruptedStoredChoiceRecoversToDeviceFormatting() {
         val context = RuntimeEnvironment.getApplication()
-        val preferences = context.getSharedPreferences("otus_date_format", 0)
-        preferences.edit().putString("date_format", "unknown").apply()
+        context
+            .getSharedPreferences("otus_date_format", 0)
+            .edit()
+            .putString("date_format", "unknown")
+            .apply()
         assertEquals(DateFormatPreference.DeviceLocale, AndroidDateFormatPreferenceStore(context).read())
     }
 }

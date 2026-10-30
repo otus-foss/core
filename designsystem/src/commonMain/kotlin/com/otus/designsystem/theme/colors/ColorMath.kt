@@ -52,12 +52,13 @@ internal fun readableOn(fill: Color): Color = listOf(OtusColors.text1, OtusColor
 public fun Color.toHex(): String = "#" + (toArgb() and RGB_MASK).toString(HEX).padStart(HEX_DIGITS, '0').uppercase()
 
 /** Reads `#RRGGBB` or `RRGGBB`; null for anything else. */
-public fun parseHexColor(text: String): Color? {
-    val hex = text.trim().removePrefix("#")
-    val valid = hex.length == HEX_DIGITS && hex.all { it.isDigit() || it.lowercaseChar() in 'a'..'f' }
-    if (!valid) return null
-    return Color(OPAQUE or hex.toLong(HEX))
-}
+public fun parseHexColor(text: String): Color? =
+    text
+        .trim()
+        .removePrefix("#")
+        .takeIf { it.length == HEX_DIGITS && it.all { char -> char.isDigit() || char.lowercaseChar() in 'a'..'f' } }
+        ?.toLong(HEX)
+        ?.let { Color(OPAQUE or it) }
 
 private const val HUE_TURN = 360f
 private const val SECTORS = 6f

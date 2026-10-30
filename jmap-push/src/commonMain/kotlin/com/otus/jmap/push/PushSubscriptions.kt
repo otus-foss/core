@@ -66,11 +66,10 @@ public class PushSubscriptions(
         verification: PushMessage.Verification,
     ): Unit =
         change(loginId) { record ->
-            if (record.subscriptionId == verification.pushSubscriptionId) {
-                record.copy(verificationCode = verification.verificationCode)
-            } else {
-                record
-            }
+            record
+                .takeIf { it.subscriptionId == verification.pushSubscriptionId }
+                ?.copy(verificationCode = verification.verificationCode)
+                ?: record
         }
 
     /**
@@ -124,11 +123,9 @@ public class PushSubscriptions(
         record: PushRecord,
     ): PushRecord? =
         try {
-            val server =
-                ServerSubscription(connections.connection(login), deviceClientId, types, clock) {
-                    pauseOrSkip(beforeCreate, login.id)
-                }
-            server.synced(record)
+            ServerSubscription(connections.connection(login), deviceClientId, types, clock) {
+                pauseOrSkip(beforeCreate, login.id)
+            }.synced(record)
         } catch (_: JmapException) {
             record
         } catch (_: PauseFailed) {

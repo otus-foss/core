@@ -74,9 +74,11 @@ class CardTest {
     @Test
     fun theFiguresTogetherCoverEveryCardPropertyAndRoundTrip() {
         val card = RoundTrip.assertCardRoundTrip(CARD_OF_ALL_FIGURES)
-        val descriptor = Card.serializer().descriptor
-        val properties = descriptor.elementNames.toSet()
-        val rfc9553Properties = properties - setOf("id", "addressBookIds")
+        val rfc9553Properties =
+            Card
+                .serializer()
+                .descriptor.elementNames
+                .toSet() - setOf("id", "addressBookIds")
         assertEquals(rfc9553Properties, CardJson.parse(CARD_OF_ALL_FIGURES).keys - "@type")
         assertEquals(Instant.parse("2022-09-30T14:35:10Z"), card.created)
         assertEquals(CardKind.Group, card.kind)
@@ -95,25 +97,52 @@ class CardTest {
         val card = RoundTrip.assertCardRoundTrip(CARD_WITH_EXTENSIONS)
         assertEquals(setOf("example.com:card", "futureCardProperty"), card.extra.keys)
         assertEquals(setOf("example.com:name"), card.name?.extra?.keys)
-        val component = card.name?.components?.single()
-        assertEquals(setOf("example.com:part"), component?.extra?.keys)
-        val nickname = card.nicknames?.get("n")
-        assertEquals(setOf("futureNickname"), nickname?.extra?.keys)
-        val organization = card.organizations?.get("o")
-        val unit = organization?.units?.single()
-        assertEquals(setOf("example.com:unit"), unit?.extra?.keys)
+        assertEquals(
+            setOf("example.com:part"),
+            card.name
+                ?.components
+                ?.single()
+                ?.extra
+                ?.keys,
+        )
+        assertEquals(
+            setOf("futureNickname"),
+            card.nicknames
+                ?.get("n")
+                ?.extra
+                ?.keys,
+        )
+        assertEquals(
+            setOf("example.com:unit"),
+            card.organizations
+                ?.get("o")
+                ?.units
+                ?.single()
+                ?.extra
+                ?.keys,
+        )
         assertEquals(setOf("example.com:date"), (card.anniversaries?.get("a1")?.date as? PartialDate)?.extra?.keys)
         assertEquals(setOf("example.com:utc"), (card.anniversaries?.get("a2")?.date as? Timestamp)?.extra?.keys)
-        val author = card.notes?.get("n")?.author
-        assertEquals(setOf("example.com:author"), author?.extra?.keys)
+        assertEquals(
+            setOf("example.com:author"),
+            card.notes
+                ?.get("n")
+                ?.author
+                ?.extra
+                ?.keys,
+        )
         assertEquals(emptyList<JsContactProblem>(), card.validate())
     }
 
     @Test
     fun localizationsStayRawPatchObjects() {
         val card = CardJson.decode(CARD_FIGURE_20)
-        val localizations = CardJson.parse(CARD_FIGURE_20).getValue("localizations").jsonObject
-        val patch = localizations.getValue("yue")
+        val patch =
+            CardJson
+                .parse(CARD_FIGURE_20)
+                .getValue("localizations")
+                .jsonObject
+                .getValue("yue")
         assertEquals<JsonElement?>(patch, card.localizations?.get("yue"))
         assertTrue(card.validate().none { it.path.startsWith("/localizations") }, card.validate().toString())
     }
