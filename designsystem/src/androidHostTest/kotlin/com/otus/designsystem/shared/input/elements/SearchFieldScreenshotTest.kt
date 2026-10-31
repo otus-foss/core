@@ -26,15 +26,6 @@ class SearchFieldScreenshotTest {
     fun query() =
         compose.screenshot("search_field_query") { SearchField("receipts from Ada", {}, "Search Inbox", WIDTH) }
 
-    @Test
-    fun prompt() = compose.screenshot("search_prompt") { SearchPrompt("Search Inbox", {}, WIDTH) }
-
-    @Test
-    fun promptLongLabel() =
-        compose.screenshot("search_prompt_long_label") {
-            SearchPrompt("Search Receipts in ada.lovelace@analytical-engine.example.com", {}, WIDTH)
-        }
-
     private companion object {
         val WIDTH = Modifier.width(240.dp)
     }

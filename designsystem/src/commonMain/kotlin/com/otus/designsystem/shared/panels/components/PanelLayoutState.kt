@@ -1,6 +1,7 @@
 package com.otus.designsystem.shared.panels.components
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Rect
@@ -11,8 +12,6 @@ import kotlin.math.abs
 internal class PanelLayoutState {
     private var revision by mutableIntStateOf(0)
     private var panel: LayoutCoordinates? = null
-    private var header: LayoutCoordinates? = null
-    private var rail: LayoutCoordinates? = null
     private var viewport: LayoutCoordinates? = null
     private val items = mutableMapOf<Any, PanelHole>()
 
@@ -22,16 +21,6 @@ internal class PanelLayoutState {
 
     fun trackPanel(coordinates: LayoutCoordinates) {
         panel = coordinates
-        revision++
-    }
-
-    fun trackHeader(coordinates: LayoutCoordinates) {
-        header = coordinates
-        revision++
-    }
-
-    fun trackRail(coordinates: LayoutCoordinates) {
-        rail = coordinates
         revision++
     }
 
@@ -55,22 +44,28 @@ internal class PanelLayoutState {
         revision++
     }
 
+    /** The panel's bottom edge in pixels, where the layout put it at the current collapse. */
+    var edge by mutableFloatStateOf(0f)
+
+    /** How far the pills have faded out as the panel collapses, from 0 to 1; their holes close with them. */
+    var railFade by mutableFloatStateOf(0f)
+
     /** This state read invalidates drawing after placement or scrolling, never composition. */
     fun frame(
-        overlap: Float,
         gap: Float,
         border: Float,
     ): PanelFrame? {
         val anchors = anchors() ?: return null
         val parent = anchors.panel
         val clip = anchors.viewport
-        val bottom = anchors.header.bottom + (anchors.rail.center.y - anchors.header.bottom) * overlap
+        val bottom = edge
+        val open = 1f - railFade
         val holes =
             items.mapNotNull { (id, item) ->
                 val scrolling = id != ActionKey
                 val pill = parent.boundsOf(item.coordinates)?.inflate(gap) ?: return@mapNotNull null
                 val visible = !scrolling || (pill.left < clip.right && pill.right > clip.left)
-                val presence = item.resolve(covered = visible && pill.top < bottom + border)
+                val presence = item.resolve(covered = visible && pill.top < bottom + border) * open
                 if (presence == 0f) null else PanelHoleFrame(pill.scaleAboutCenter(presence), scrolling)
             }
         return PanelFrame(bottom, clip, holes)
@@ -92,19 +87,14 @@ internal class PanelLayoutState {
 
     private fun anchors(): PanelAnchors? {
         revision
-        val parent = panel?.takeIf { it.isAttached }
-        val headerBounds = parent?.boundsOf(header)
-        if (parent == null || headerBounds == null) return null
-        // Without a chip rail, an empty rail at the header's bottom edge ends the panel there.
-        val railBounds = parent.boundsOf(rail) ?: headerBounds.copy(top = headerBounds.bottom)
-        return PanelAnchors(parent, headerBounds, railBounds, parent.boundsOf(viewport) ?: railBounds)
+        val parent = panel?.takeIf { it.isAttached } ?: return null
+        val bounds = Rect(0f, 0f, parent.size.width.toFloat(), edge)
+        return PanelAnchors(parent, parent.boundsOf(viewport) ?: bounds)
     }
 }
 
 private data class PanelAnchors(
     val panel: LayoutCoordinates,
-    val header: Rect,
-    val rail: Rect,
     val viewport: Rect,
 )
 

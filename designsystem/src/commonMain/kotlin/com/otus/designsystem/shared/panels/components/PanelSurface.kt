@@ -9,17 +9,15 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathOperation
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.clipRect
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 
-internal fun Modifier.panelSurface(
-    geometry: PanelLayoutState,
-    overlap: () -> Float,
-): Modifier =
+internal fun Modifier.panelSurface(geometry: PanelLayoutState): Modifier =
     drawWithCache {
         val border = Stroke(PanelTokens.borderWidth.toPx())
         onDrawBehind {
-            val frame = geometry.frame(overlap(), PanelTokens.cutoutGap.toPx(), border.width) ?: return@onDrawBehind
+            val frame = geometry.frame(PanelTokens.pillRing.toPx(), border.width) ?: return@onDrawBehind
             drawPanelFrame(frame, border)
         }
     }
@@ -31,16 +29,31 @@ private fun DrawScope.drawPanelFrame(
     val viewport = Path().apply { addRect(Rect(frame.viewport.left, 0f, frame.viewport.right, size.height)) }
     // Holes are opaque geometry on their pills. Blending them by opacity would show two half-visible
     // contours while pill groups swap.
-    val inset = border.width / 2
-    val outline = Rect(inset, inset, size.width - inset, frame.bottom)
-    val panel = Path().apply { addRoundRect(RoundRect(outline, CornerRadius(PanelTokens.panelRadius.toPx()))) }
     val surface =
-        frame.holes.fold(panel) { shape, hole ->
+        frame.holes.fold(panelShape(frame.bottom - border.width / 2)) { shape, hole ->
             val rect = hole.bounds
             val cutout = Path().apply { addRoundRect(RoundRect(rect, CornerRadius(rect.height / 2))) }
             val clipped = if (hole.scrolling) Path.combine(PathOperation.Intersect, cutout, viewport) else cutout
             Path.combine(PathOperation.Difference, shape, clipped)
         }
     drawPath(surface, OtusColors.bgDark)
-    drawPath(surface, OtusColors.strokeBgDark, style = border)
+    // The panel's top and sides run past the screen edges, so only the bottom edge and the holes show a stroke.
+    clipRect(0f, 0f, size.width, size.height) { drawPath(surface, OtusColors.strokeBgDark, style = border) }
+}
+
+/** Square at the top and sides, which sit past the screen edges, and rounded at the [bottom] corners. */
+private fun DrawScope.panelShape(bottom: Float): Path {
+    val radius = CornerRadius(PanelTokens.bottomRadius.toPx())
+    val outside = PanelTokens.borderWidth.toPx()
+    return Path().apply {
+        addRoundRect(
+            RoundRect(
+                Rect(-outside, -outside, size.width + outside, bottom),
+                topLeft = CornerRadius.Zero,
+                topRight = CornerRadius.Zero,
+                bottomRight = radius,
+                bottomLeft = radius,
+            ),
+        )
+    }
 }
