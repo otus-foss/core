@@ -9,21 +9,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.otus.designsystem.theme.tokens.settings.ThemeTokens
 
-/** [items] in two equal columns; a last item on its own keeps the width of one column. */
+/** [items] in equal [columns]; a short last row keeps each item the width of one column. */
 @Composable
-internal fun <T> PairedGrid(
+internal fun <T> CardGrid(
     items: List<T>,
     modifier: Modifier = Modifier,
+    columns: Int = 2,
     item: @Composable (T, Modifier) -> Unit,
 ) {
     Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(ThemeTokens.cardGap)) {
-        items.chunked(COLUMNS).forEach { row ->
+        items.chunked(columns).forEach { row ->
             Row(horizontalArrangement = Arrangement.spacedBy(ThemeTokens.cardGap)) {
                 row.forEach { item(it, Modifier.weight(1f)) }
-                repeat(COLUMNS - row.size) { Spacer(Modifier.weight(1f)) }
+                repeat(columns - row.size) { Spacer(Modifier.weight(1f)) }
             }
         }
     }
 }
-
-private const val COLUMNS = 2
