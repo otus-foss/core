@@ -9,30 +9,31 @@ import androidx.compose.ui.unit.dp
  * [MenuTokens][com.otus.designsystem.theme.tokens.overlays.MenuTokens] name their corner by one of
  * these steps, so the scale changes here. A part inside another,
  * such as a menu row, takes the outer radius minus its inset instead of a step. Pills, avatars,
- * and circles round to half their height and take no step.
+ * and circles, such as the action bar and the formatting row, round to half their height and take
+ * no step.
  */
 internal object CornerTokens {
     /** The ends of a date range in the calendar. */
-    val tiny: Dp = 6.dp
+    val tiny: Dp = 4.dp
 
     /** Compact rule chips and the bars of a theme sketch. */
-    val small: Dp = 10.dp
+    val small: Dp = 8.dp
 
     /** Chips, value buttons, and tokens, such as recipients, quotes, and dates. */
-    val chip: Dp = 14.dp
+    val chip: Dp = 10.dp
 
-    /** Toolbar buttons, search fields, and theme cards. */
-    val button: Dp = 20.dp
+    /** Search fields and theme cards. */
+    val button: Dp = 15.dp
 
     /** The control panel at the top of a page, and the filter panel that grows out of it. */
-    val panel: Dp = 22.dp
+    val panel: Dp = 16.dp
 
     /** Rows and cards inside pages, menus, and sheets, and sidebar entries. */
-    val row: Dp = 24.dp
+    val row: Dp = 18.dp
 
-    /** The formatting row above the keyboard, and nudge cards. */
-    val large: Dp = 28.dp
+    /** Nudge cards. */
+    val large: Dp = 20.dp
 
-    /** The action bar, menus, dropdowns, and the top corners of sheets and dialogs. */
-    val surface: Dp = 30.dp
+    /** Menus, dropdowns, and the top corners of sheets and dialogs. */
+    val surface: Dp = 22.dp
 }
