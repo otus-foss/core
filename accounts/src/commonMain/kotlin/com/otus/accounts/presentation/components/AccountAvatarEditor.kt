@@ -1,10 +1,14 @@
 package com.otus.accounts.presentation.components
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import com.otus.accounts.presentation.AccountAvatarEdit
 import com.otus.avatar.ContactAvatar
 import com.otus.designsystem.shared.overlays.components.ClosableSheet
@@ -75,15 +79,18 @@ private fun ReplaceSheet(
             onDismiss()
         }),
     ) {
-        choice.replaced.forEach { email ->
-            val avatar = edit.avatarOf(email)
-            PickRow(
-                email,
-                subtitle = null,
-                PickMark(email in ticked, multiple = true),
-                { ticked = if (email in ticked) ticked - email else ticked + email },
-                leading = { PersonAvatar(avatar, AvatarTokens.size) },
-            )
+        // Many addresses scroll, so the confirm button below them stays on the sheet.
+        Column(Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState())) {
+            choice.replaced.forEach { email ->
+                val avatar = edit.avatarOf(email)
+                PickRow(
+                    email,
+                    subtitle = null,
+                    PickMark(email in ticked, multiple = true),
+                    { ticked = if (email in ticked) ticked - email else ticked + email },
+                    leading = { PersonAvatar(avatar, AvatarTokens.size) },
+                )
+            }
         }
     }
 }
