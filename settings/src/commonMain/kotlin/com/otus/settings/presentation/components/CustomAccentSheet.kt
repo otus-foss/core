@@ -45,7 +45,7 @@ internal fun CustomAccentSheet(
             )
             InfoTip(AccentInfo)
         }
-        PairedGrid(choice.options) { option, modifier ->
+        CardGrid(choice.options) { option, modifier ->
             ThemePreview(option.title, option.choice.withAccent(color).palette, modifier)
         }
     }

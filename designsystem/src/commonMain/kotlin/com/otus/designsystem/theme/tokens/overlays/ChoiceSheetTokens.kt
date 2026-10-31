@@ -2,6 +2,7 @@ package com.otus.designsystem.theme.tokens.overlays
 
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.otus.designsystem.theme.tokens.layout.CornerTokens
 
 internal object ChoiceSheetTokens {
     val handleWidth = 36.dp
@@ -12,6 +13,11 @@ internal object ChoiceSheetTokens {
     val optionMinHeight = 56.dp
     val optionPadding = 16.dp
     val optionGap = 12.dp
+
+    /** An `IconChoice`'s padding around its icon and label, and the gap between them. */
+    val iconChoicePadding = 12.dp
+    val iconChoiceGap = 8.dp
+    val iconChoiceRadius = CornerTokens.row
 
     /** Space between the default option's group and the rest. */
     val groupGap = 20.dp
