@@ -1,13 +1,10 @@
 package com.otus.designsystem.shared.overlays.components
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import com.otus.designsystem.shared.controls.elements.ActionButton
+import com.otus.designsystem.shared.controls.components.ButtonPair
+import com.otus.designsystem.shared.controls.components.PairButton
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.layout.PageTokens
 
 /**
  * Asks before a destructive change, such as removing an account or deleting a folder. [message]
@@ -25,24 +22,10 @@ public fun ConfirmDialog(
 ) {
     DialogFrame(title, onDismiss, closeButton = false) {
         Text(message, color = OtusColors.text2)
-        DialogButtons(dismissLabel, onDismiss, confirmLabel) {
+        val confirm = {
             onDismiss()
             onConfirm()
         }
-    }
-}
-
-/** [dismissLabel] and the primary [confirmLabel] side by side, sharing the dialog's width. */
-@Composable
-internal fun DialogButtons(
-    dismissLabel: String,
-    onDismiss: () -> Unit,
-    confirmLabel: String,
-    confirmEnabled: Boolean = true,
-    onConfirm: () -> Unit,
-) {
-    Row(horizontalArrangement = Arrangement.spacedBy(PageTokens.rowGap)) {
-        ActionButton(dismissLabel, onDismiss, Modifier.weight(1f))
-        ActionButton(confirmLabel, onConfirm, Modifier.weight(1f), primary = true, enabled = confirmEnabled)
+        ButtonPair(PairButton(dismissLabel, onDismiss), PairButton(confirmLabel, confirm))
     }
 }

@@ -63,7 +63,7 @@ The element and component lists below describe UI layers, not flat packages.
   `ToggleSwitch`, `ValueButton`, `FilterChip` (with `FilterChipRole` and `ChipLabel`), `FolderGlyph`,
   `FolderPath`, `FolderStack`, `PageDots`, `DatePill`, `DestinationPill`, `PlainAction`, `HtmlQuote`, `FirstFit`, and the
   `controlPressFeedback` modifier.
-- `components`: `ActionBar`, `ActionBarHost`, `BarAction`, `BarContext`, `BarToken`, `ActionDialog`, `ChoiceDialog`, `ChoiceSheet` (with `ChoiceRow`), `RadioChoiceSheet`, `ConfirmDialog`, `InputDialog`, `InputSheet`, `ContextPanel`, `DatePickerDialog`,
+- `components`: `ActionBar`, `ActionBarHost`, `BarAction`, `BarContext`, `BarToken`, `ButtonPair`, `ChoiceDialog`, `ChoiceSheet` (with `ChoiceRow`), `RadioChoiceSheet`, `ConfirmDialog`, `InputSheet`, `ContextPanel`, `DatePickerDialog`,
   `MonthNavigation`, `MonthYearPicker`, `PageScaffold`, `Subpage`, `PageSection`, `PanelSurface`,
   `PickerSearch`, `PreviewCard`, `PullToRefresh`, `ReorderableColumn`, `ReorderableTree`, `SelectionSheet`, `SheetFrame`, `SettingRow`, `SettingPageRow`,
   `SettingToggleRow`, `SettingsSection`, `InfoTip` (with `InfoText`; also the `info` parameter of `SettingsSection` and `SettingToggleRow`), `SpecificDatePicker`, `Sidebar`, `SidebarHeader`, `SidebarMailboxGrid`, `ScopeSheet`, `ScopeRow` and `ScopeChildRow` (with `ScopeOption`), `PickerChip`, `AccountGroupRow`,
@@ -104,8 +104,8 @@ The element and component lists below describe UI layers, not flat packages.
   A disabled picker uses `text3` and ignores taps.
   `IconPill` is an icon-only toggle that sits at the end of a row of `SidebarPill`s. Destructive settings actions ask with `ConfirmDialog` first; its confirming
   button uses the primary style because the palette has no warning color, which is an open design
-  decision. `ChoiceDialog` and `ActionDialog` remain for one-shot picks
-  and menus. Mail's rules pages still use `PageSection`
+  decision. Centered popups are only for warnings and confirmations; tasks, choices, and
+  explanations use sheets. `ChoiceDialog` remains for one-shot picks. Mail's rules pages still use `PageSection`
   and `ActionRow`.
 - `FolderColor` lists the colors a user can give a folder: `Default` and eight named colors.
   Apps store the enum `name` and read it back with `FolderColor.named`, which returns `Default`
@@ -230,7 +230,14 @@ The element and component lists below describe UI layers, not flat packages.
   so rows that use it, such as `FolderSettingRow` and `AccountGroupRow`, line them up.
 - `InputSheet` asks for one line of text, such as a new name, in a `SheetFrame`: the field is
   focused when it opens, the header button confirms, and `problem` disables it while the text
-  can't be used. `InputDialog` asks the same in a popup.
+  can't be used.
+- `ButtonPair` puts a secondary and a primary action in one outlined pill, such as Cancel and
+  Delete in `ConfirmDialog`. The primary pill takes `PanelTokens.PAIR_PRIMARY_SHARE` of the width
+  and widens until its label fits on one line, as long as the secondary label also fits; when both
+  can't, the secondary keeps one line and the primary wraps. Each half is a `PairButton`; either can be disabled, which
+  greys it out, and `primaryBusy` adds a progress ring after the primary label. The track draws
+  under the buttons, so the primary pill's outline stays whole, and a press on the secondary half
+  fills the track behind the pill's curve. A disabled primary `ActionButton` is `bgLight`.
 - `QuickActionBar` is a small pill of icon buttons that opens just above where the user
   long-pressed, centered on the point and kept inside the screen, or below the point when there
   is no room above. It takes the same `MenuAction`s as `ContextMenu`, each with an `icon`; screen
@@ -366,8 +373,8 @@ The element and component lists below describe UI layers, not flat packages.
   it returns to, and leaves room for the panel's ✕. `FilterSection` puts a small `text3` label above wrapping
   `FilterChip`s, which are `bgRegular` capsules while off and `selectedFill` while on, read as a
   checkbox, a radio, or a button. A `ChipLabel`'s prefix, such as a folder's parents, shows in `text3`.
-  `FilterPanelFooter` has a Reset pill whose label dims while there is nothing to reset, while
-  the pill stays opaque over the body, and the primary button, whose label screen readers announce politely when it changes.
+  `FilterPanelFooter` is a `ButtonPair` of Reset, greyed out while there is nothing to reset, and
+  the apply button, whose label screen readers announce politely when it changes.
   The panel always takes all of its room, so a short page keeps the height of a long
   one and leaves space above the footer. Slide between its pages with `SlidingPages`.
   `FilterFolderRow` is one folder of a checkable tree: a chevron for parents, a `FolderGlyph`, the

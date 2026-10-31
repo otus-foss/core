@@ -23,39 +23,6 @@ class DialogScreenshotTest {
     val compose = createComposeRule()
 
     @Test
-    fun actionDialogWithMessage() =
-        compose.screenScreenshot("action_dialog_message") {
-            ActionDialog(
-                "Discard draft?",
-                listOf(DialogAction("Discard", {}, primary = true), DialogAction("Keep editing", {})),
-                onDismiss = {},
-                message = "The draft to Ada Lovelace is deleted and cannot be restored.",
-            )
-        }
-
-    @Test
-    fun actionDialogMenu() =
-        compose.screenScreenshot("action_dialog_menu") {
-            ActionDialog(
-                "Receipts",
-                listOf(DialogAction("Rename", {}), DialogAction("Move", {}), DialogAction("Delete folder", {})),
-                onDismiss = {},
-            )
-        }
-
-    @Test
-    fun inputDialog() =
-        compose.screenScreenshot("input_dialog") {
-            InputDialog("New folder", "Name", "Create", {}, {}, initial = "Travel")
-        }
-
-    @Test
-    fun inputDialogProblem() =
-        compose.screenScreenshot("input_dialog_problem") {
-            InputDialog("Rename folder", "Name", "Rename", {}, {}, problem = { "Enter a name" })
-        }
-
-    @Test
     fun choiceDialog() =
         compose.screenScreenshot("choice_dialog") {
             ChoiceDialog(

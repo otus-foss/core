@@ -1,7 +1,6 @@
 package com.otus.designsystem.shared.dates.components
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -10,8 +9,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.otus.designsystem.shared.controls.components.ButtonPair
+import com.otus.designsystem.shared.controls.components.PairButton
 import com.otus.designsystem.shared.controls.elements.ActionButton
-import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.tokens.selection.CalendarTokens
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.YearMonth
@@ -43,7 +43,7 @@ public fun BirthdayPicker(
     val days = 1..YearMonth(year ?: LEAP_YEAR, month).numberOfDays
     val shownDay = day.coerceIn(days)
     DatePickerDialog(onDismiss) {
-        DatePickerHeading(title, "Leave the year as No year when you don’t know it.", onDismiss)
+        DatePickerHeading(title, null, onDismiss)
         DateWheels(Modifier.weight(1f)) {
             DatePickerColumn("Day", days.map(Int::toString), shownDay - 1, { day = it + 1 }, Modifier.weight(1f))
             DatePickerColumn(
@@ -61,9 +61,11 @@ public fun BirthdayPicker(
                 Modifier.weight(CalendarTokens.YEAR_COLUMN_WEIGHT),
             )
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(SheetTokens.gap)) {
-            if (onRemove != null) ActionButton("Remove", onRemove, Modifier.weight(1f))
-            ActionButton("Done", { onConfirm(YearlyDate(month, shownDay, year)) }, Modifier.weight(1f), primary = true)
+        val done = { onConfirm(YearlyDate(month, shownDay, year)) }
+        if (onRemove == null) {
+            ActionButton("Done", done, Modifier.fillMaxWidth(), primary = true)
+        } else {
+            ButtonPair(PairButton("Remove", onRemove), PairButton("Done", done))
         }
     }
 }
