@@ -6,7 +6,6 @@
   widens for a long label. `ConfirmDialog`, `ChangeLogSheet`, `BirthdayPicker`, and
   `FilterPanelFooter` use it. `FilterPanelFooter` is now 48 dp tall like other buttons.
 - A disabled primary `ActionButton` now has a grey `bgLight` fill and a neutral outline.
-- `InputSheet` takes `placeholder` and `kind`.
 - `EmptyState` takes a nullable `description` and leaves the line out when it is null.
 - Breaking: remove `ActionDialog`, `DialogAction`, and `InputDialog`. Use `ClosableSheet` with a
   `SheetConfirm` for an explanation with one action, and `InputSheet` for a text prompt.
