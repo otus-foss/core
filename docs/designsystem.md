@@ -524,13 +524,12 @@ converts them into drawables. Change the SVG, or an `AccentPreset` color, and ru
   owl and envelope scaled into the 66 dp safe circle, and the full square icon before that. A
   launcher icon cannot follow the theme, so all but Chrome sit on `otus_brand_background`,
   the Otus theme's `bgDark`. A host test checks every preset and style has one.
-- The pride icons paint the owl and envelope in a flag's stripes. `PRIDE_FLAGS` in
-  `tools/brand_drawables.py` lists the flags.
-- `otus_mail_icon_chrome` is the owl as polished metal on a white tile. A vector cannot shade
-  metal, so `tools/chrome_icon.py` renders its foreground as WebP at each density. It needs
-  rsvg-convert, NumPy, SciPy, and Pillow.
-- Both scripts also save each icon's foreground as a Compose drawable, `brand_mail_icon_<name>`.
-  `MailAppIcon` draws one in a rounded square, as the App icon setting's grid shows them.
+- The pride icons paint the owl and envelope in a flag's stripes. `otus_mail_icon_chrome` is the
+  owl as polished metal on a white tile, with its foreground as WebP at each density, because a
+  vector cannot shade metal. `tools/brand_drawables.py` does not make these five; they are
+  committed as they are.
+- `brand_mail_icon_<name>` are Compose copies of the launcher icons' foregrounds. `MailAppIcon`
+  draws one in a rounded square, as the App icon setting's grid shows them.
 
 `AppIconStyle` picks the icon. `Accent` colors the owl `accentRegular`, and the pride icons keep it
 for the launch animation. `Monochrome` and `Chrome` use `text1`. `AccentPreset.closest` picks the
