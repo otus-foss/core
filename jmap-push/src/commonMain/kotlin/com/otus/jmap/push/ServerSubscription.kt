@@ -31,8 +31,9 @@ internal class ServerSubscription(
             if (id != null) destroy(id)
             return null
         }
+        // A server keeps a subscription's types, so other types need a new subscription.
         return when {
-            id == null || record.subscribed != endpoint -> create(endpoint, replacing = id)
+            id == null || record.subscribed != endpoint || record.types != types -> create(endpoint, replacing = id)
             record.verificationCode != null || expiresSoon(record) -> upkeep(record, id, endpoint)
             verificationLapsed(record) -> create(endpoint, replacing = id)
             else -> record
@@ -86,6 +87,7 @@ internal class ServerSubscription(
                 endpoint = endpoint,
                 subscriptionId = id,
                 subscribed = endpoint,
+                types = types,
                 expires = result.created[CREATION]?.stringOf("expires") ?: subscription.expires,
                 since = now(),
             )
