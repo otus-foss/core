@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
@@ -37,6 +36,7 @@ import androidx.compose.ui.window.Dialog
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.LocalMotionScale
 import com.otus.designsystem.theme.motion.MotionCurve
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.overlays.ChoiceSheetTokens
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
@@ -88,7 +88,7 @@ internal fun SheetSurface(
                         .onSizeChanged { position.height = it.height }
                         .offset { IntOffset(0, (position.hidden * position.height).roundToInt()) }
                         .semantics { paneTitle = title },
-                    shape = RoundedCornerShape(topStart = SheetTokens.radius, topEnd = SheetTokens.radius),
+                    shape = SmoothCornerShape(topStart = SheetTokens.radius, topEnd = SheetTokens.radius),
                     color = OtusColors.bgDark,
                     contentColor = OtusColors.text1,
                 ) {

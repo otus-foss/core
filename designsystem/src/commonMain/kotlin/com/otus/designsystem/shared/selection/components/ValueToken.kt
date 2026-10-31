@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -17,6 +16,7 @@ import com.otus.designsystem.shared.controls.elements.LeadingSymbol
 import com.otus.designsystem.shared.people.components.ChipAvatar
 import com.otus.designsystem.shared.people.components.SmallAvatar
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.people.SummaryTokens
 import com.otus.designsystem.theme.tokens.settings.SettingTokens
@@ -47,7 +47,7 @@ internal fun ValueOutline(
 ) {
     Row(
         modifier
-            .valueOutline(RoundedCornerShape(SettingTokens.valueRadius))
+            .valueOutline(SmoothCornerShape(SettingTokens.valueRadius))
             .padding(horizontal = SettingTokens.valuePaddingHorizontal, vertical = SettingTokens.valuePaddingVertical),
         horizontalArrangement = Arrangement.spacedBy(SummaryTokens.avatarGap),
         verticalAlignment = Alignment.CenterVertically,

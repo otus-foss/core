@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -21,6 +20,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.layout.SidebarTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 import org.jetbrains.compose.resources.DrawableResource
@@ -41,7 +41,7 @@ public fun SidebarInboxEntry(
     count: String? = null,
 ) {
     val interactions = remember { MutableInteractionSource() }
-    val shape = RoundedCornerShape(SidebarTokens.entryRadius)
+    val shape = SmoothCornerShape(SidebarTokens.entryRadius)
     val fill = if (selected) OtusColors.selectedFill else OtusColors.bgRegular
     Row(
         modifier

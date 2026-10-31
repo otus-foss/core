@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.key
@@ -23,6 +22,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.round
 import com.otus.designsystem.shared.sidebar.elements.SidebarTileSize
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.layout.CornerTokens
 import com.otus.designsystem.theme.tokens.layout.SidebarTokens
 
@@ -104,5 +104,5 @@ private fun Modifier.editorPanel(): Modifier =
         .wrapContentWidth()
         .widthIn(max = SidebarTokens.width)
         .fillMaxWidth()
-        .background(OtusColors.bgDark, RoundedCornerShape(CornerTokens.panel))
+        .background(OtusColors.bgDark, SmoothCornerShape(CornerTokens.panel))
         .padding(SidebarTokens.entryPadding)

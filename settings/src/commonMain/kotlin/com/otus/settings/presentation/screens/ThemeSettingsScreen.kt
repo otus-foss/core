@@ -5,7 +5,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,6 +23,7 @@ import com.otus.designsystem.theme.colors.ThemeBase
 import com.otus.designsystem.theme.colors.ThemeChoice
 import com.otus.designsystem.theme.colors.ThemeColor
 import com.otus.designsystem.theme.colors.get
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.tokens.settings.ThemeTokens
@@ -95,7 +95,7 @@ public fun ThemeSettingsScreen(
 
 @Composable
 private fun AppPreview(preview: @Composable () -> Unit) {
-    val shape = RoundedCornerShape(SheetTokens.radius)
+    val shape = SmoothCornerShape(SheetTokens.radius)
     Box(
         Modifier
             .fillMaxWidth()
