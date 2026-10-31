@@ -1,6 +1,5 @@
 package com.otus.accounts.presentation.components
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -8,8 +7,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.otus.accounts.presentation.AccountAvatarEdit
 import com.otus.avatar.ContactAvatar
-import com.otus.designsystem.shared.overlays.components.ActionDialog
-import com.otus.designsystem.shared.overlays.components.DialogAction
+import com.otus.designsystem.shared.overlays.components.ClosableSheet
+import com.otus.designsystem.shared.overlays.components.SheetConfirm
 import com.otus.designsystem.shared.people.components.PersonAvatar
 import com.otus.designsystem.shared.selection.components.PickMark
 import com.otus.designsystem.shared.selection.components.PickRow
@@ -45,7 +44,7 @@ internal fun AccountAvatarEditor(
             onDismiss = { if (asking == null) onDismiss() },
         )
     } else {
-        ReplaceDialog(edit, choice, onDismiss)
+        ReplaceSheet(edit, choice, onDismiss)
     }
 }
 
@@ -55,7 +54,7 @@ internal fun AccountAvatarEditor(
  * to every address that had none.
  */
 @Composable
-private fun ReplaceDialog(
+private fun ReplaceSheet(
     edit: AccountAvatarEdit,
     choice: AccountAvatarChoice,
     onDismiss: () -> Unit,
@@ -68,26 +67,23 @@ private fun ReplaceDialog(
             ticked.isEmpty() -> "Keep all"
             else -> "Replace ${ticked.size}"
         }
-    ActionDialog(
-        title = if (choice.replaced.size == 1) "Replace 1 avatar?" else "Replace ${choice.replaced.size} avatars?",
-        actions =
-            listOf(
-                DialogAction(label, { edit.saveAll(edit.emails - kept, choice.avatar) }, primary = true),
-            ),
-        onDismiss = onDismiss,
-        message = "These addresses have their own. Untick the ones to keep:",
+    ClosableSheet(
+        if (choice.replaced.size == 1) "Replace 1 avatar?" else "Replace ${choice.replaced.size} avatars?",
+        onDismiss,
+        SheetConfirm(label, {
+            edit.saveAll(edit.emails - kept, choice.avatar)
+            onDismiss()
+        }),
     ) {
-        Column {
-            choice.replaced.forEach { email ->
-                val avatar = edit.avatarOf(email)
-                PickRow(
-                    email,
-                    subtitle = null,
-                    PickMark(email in ticked, multiple = true),
-                    { ticked = if (email in ticked) ticked - email else ticked + email },
-                    leading = { PersonAvatar(avatar, AvatarTokens.size) },
-                )
-            }
+        choice.replaced.forEach { email ->
+            val avatar = edit.avatarOf(email)
+            PickRow(
+                email,
+                subtitle = null,
+                PickMark(email in ticked, multiple = true),
+                { ticked = if (email in ticked) ticked - email else ticked + email },
+                leading = { PersonAvatar(avatar, AvatarTokens.size) },
+            )
         }
     }
 }

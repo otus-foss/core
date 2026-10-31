@@ -31,8 +31,6 @@ public object FilterTokens {
     public val titleSize: TextUnit = 17.sp
     public val bodyInset: Dp = 12.dp
     public val footerPadding: Dp = 12.dp
-    public val footerButtonHeight: Dp = 56.dp
-    public val footerTextSize: TextUnit = 16.sp
     public val segmentHeight: Dp = 40.dp
     public val searchHeight: Dp = 48.dp
     public val searchRadius: Dp = CornerTokens.button
@@ -80,6 +78,4 @@ public object FilterTokens {
     public val closeSwipe: Dp = 72.dp
     public val badgeSize: Dp = 16.dp
     public val badgeTextSize: TextUnit = 10.sp
-    public val progressSize: Dp = 16.dp
-    public val progressStroke: Dp = 2.dp
 }

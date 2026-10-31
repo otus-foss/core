@@ -3,14 +3,14 @@ package com.otus.designsystem.shared.settings.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.otus.designsystem.shared.controls.elements.ActionButton
+import com.otus.designsystem.shared.controls.components.ButtonPair
+import com.otus.designsystem.shared.controls.components.PairButton
 import com.otus.designsystem.shared.overlays.components.SheetHeader
 import com.otus.designsystem.shared.overlays.components.SheetSurface
 import com.otus.designsystem.shared.rows.elements.SectionCaption
@@ -44,13 +44,11 @@ public fun ChangeLogSheet(
         ) {
             ChangeSections(sections)
         }
-        Row(
-            Modifier.fillMaxWidth().padding(SheetTokens.inset),
-            horizontalArrangement = Arrangement.spacedBy(SheetTokens.gap),
-        ) {
-            ActionButton(secondaryLabel, onSecondary)
-            ActionButton(actionLabel, onAction, Modifier.weight(1f), primary = true)
-        }
+        ButtonPair(
+            PairButton(secondaryLabel, onSecondary),
+            PairButton(actionLabel, onAction),
+            Modifier.padding(SheetTokens.inset),
+        )
     }
 }
 
