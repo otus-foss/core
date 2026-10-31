@@ -104,6 +104,5 @@ private fun PreviewPill(palette: OtusPalette) {
 private val AccentInfo =
     InfoText(
         "Custom color",
-        "You pick one color. Otus makes a fill, an outline and a text shade for each theme, and keeps " +
-            "text readable on every one.",
+        "Otus makes a fill, an outline and a text shade for each theme, and keeps text readable on every one.",
     )

@@ -31,6 +31,13 @@ public object PanelTokens {
     public val compactChipPull: Dp = (touchTarget - chipHeight) / 2
     public val cutoutGap: Dp = 2.dp
     public val borderWidth: Dp = 1.dp
+
+    /** The primary pill's share of a button pair's width; the secondary label gets the rest. */
+    public const val PAIR_PRIMARY_SHARE: Float = 0.62f
+
+    /** A progress ring beside a label, such as while a count is still loading. */
+    public val progressSize: Dp = 16.dp
+    public val progressStroke: Dp = 2.dp
     public val fadeWidth: Dp = 24.dp
     public val textSize: TextUnit = 16.sp
     public val lineHeight: TextUnit = 20.sp

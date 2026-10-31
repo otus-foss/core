@@ -2,7 +2,6 @@ package com.otus.accounts.presentation.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -31,6 +30,8 @@ import com.otus.accounts.presentation.components.AvatarSheet
 import com.otus.accounts.presentation.components.ConnectedAccountRow
 import com.otus.accounts.presentation.confirmHostMessage
 import com.otus.accounts.presentation.message
+import com.otus.designsystem.shared.controls.components.ButtonPair
+import com.otus.designsystem.shared.controls.components.PairButton
 import com.otus.designsystem.shared.controls.elements.ActionButton
 import com.otus.designsystem.shared.feedback.components.InfoText
 import com.otus.designsystem.shared.input.elements.InputField
@@ -199,7 +200,6 @@ private fun AddAccountForm(
             password = ""
         }
     }
-    PageNote("Enter your JMAP server and sign-in details.")
     InputField(
         "Server",
         server,
@@ -249,10 +249,7 @@ private fun ConfirmHostPrompt(
     state: AccountsState,
 ) {
     PageNote(confirmHostMessage(host))
-    Row(horizontalArrangement = Arrangement.spacedBy(PageTokens.rowGap)) {
-        ActionButton("Cancel", state::cancelHost, Modifier.weight(1f))
-        ActionButton("Trust $host", state::trustHost, Modifier.weight(1f), primary = true)
-    }
+    ButtonPair(PairButton("Cancel", state::cancelHost), PairButton("Trust $host", state::trustHost))
 }
 
 private fun statusText(
@@ -277,6 +274,5 @@ private fun serverHint(address: JmapServerAddress): String =
 private val AvatarsInfo =
     InfoText(
         "Address avatars",
-        "Tap an address to give it its own avatar. Otus shows it wherever it marks which address a " +
-            "message was sent to.",
+        "Otus shows it wherever it marks which address a message was sent to.",
     )

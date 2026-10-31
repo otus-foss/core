@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+- Add `ButtonPair`, a secondary and a primary action in one outlined pill whose primary half
+  widens for a long label. `ConfirmDialog`, `ChangeLogSheet`, `BirthdayPicker`, and
+  `FilterPanelFooter` use it. `FilterPanelFooter` is now 48 dp tall like other buttons.
+- A disabled primary `ActionButton` now has a grey `bgLight` fill and a neutral outline.
+- `EmptyState` takes a nullable `description` and leaves the line out when it is null.
+- Breaking: remove `ActionDialog`, `DialogAction`, and `InputDialog`. Use `ClosableSheet` with a
+  `SheetConfirm` for an explanation with one action, and `InputSheet` for a text prompt.
+- Breaking: move `FilterTokens.progressSize` and `progressStroke` to `PanelTokens`, and remove
+  `FilterTokens.footerButtonHeight` and `footerTextSize`.
+- Accounts: the replace-avatars question is a `ClosableSheet` without its explanation line.
+  Settings: Rename theme is an `InputSheet`.
 - Breaking: replace `AvatarOptions.domainIconProxy` and the `AvatarService` `iconFallback` parameter
   with `AvatarOptions.iconProxy`, an `IconProxy` of HTTPS URL templates. While one is set, website
   icons come only from the proxy, never from the sender's website; a null `iconUrl` loads none.
