@@ -63,6 +63,18 @@ class PushSubscriptionsTest {
         }
 
     @Test
+    fun pushingMoreTypesReplacesTheSubscription() =
+        runTest {
+            val store = Store()
+            subscribed(store)
+            val server = subscribingServer()
+            subscriptions(server, store, types = listOf("EmailDelivery", "Email")).sync()
+            val replace = server.sent.last()
+            assertTrue("\"types\":[\"EmailDelivery\",\"Email\"]" in replace, replace)
+            assertTrue("\"destroy\":[\"ps1\"]" in replace, replace)
+        }
+
+    @Test
     fun aServerWithoutPushSubscriptionsIsMarkedRefused() =
         runTest {
             val store = Store()

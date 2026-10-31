@@ -48,6 +48,8 @@ internal data class PushRecord(
     val endpoint: PushEndpoint? = null,
     val subscriptionId: String? = null,
     val subscribed: PushEndpoint? = null,
+    /** The data types the subscription pushes; null for one made before they were recorded. */
+    val types: List<String>? = null,
     /** The UTCDate the server deletes the subscription. */
     val expires: String? = null,
     /** The UTCDate the subscription was created or last renewed. */
