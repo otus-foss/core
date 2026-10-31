@@ -133,111 +133,38 @@ def launch_layers() -> None:
         write(COMPOSE / f"{name}.xml", vector(128, vector_paths(white)))
 
 
-# Fits the owl and envelope in the 66 dp safe circle, centered on the art's middle (63, 64.5).
-ICON_SCALE = 0.535
-ICON_PLACE = {
-    "scaleX": f"{ICON_SCALE}",
-    "scaleY": f"{ICON_SCALE}",
-    "translateX": f"{54 - 63 * ICON_SCALE:.3f}",
-    "translateY": f"{54 - 64.5 * ICON_SCALE:.3f}",
-}
-ICON_SIZE = 126.075
-
-# Pride flags' stripes from top to bottom; a repeated color makes a wider stripe.
-PRIDE_FLAGS = {
-    "rainbow": ["#E40303", "#FF8C00", "#FFED00", "#008026", "#24408E", "#732982"],
-    "trans": ["#5BCEFA", "#F5A9B8", "#FFFFFF", "#F5A9B8", "#5BCEFA"],
-    "bi": ["#D60270", "#D60270", "#9B4F96", "#0038A8", "#0038A8"],
-    "lesbian": ["#D52D00", "#EF7627", "#FF9A56", "#FFFFFF", "#D162A4", "#B55690", "#A30262"],
-}
-# The art's top and bottom edge, envelope outline included, so each stripe shows on the mark.
-MARK_TOP = 8.2
-MARK_BOTTOM = 121.1
-
-
-def compose_icon(icon_name: str) -> str:
-    """otus_mail_icon_sky becomes brand_mail_icon_sky, beside the other brand drawables."""
-    return icon_name.replace("otus_", "brand_", 1)
-
-
-def adaptive_icon(icon_name: str, background: str) -> None:
-    write(
-        ANDROID / f"mipmap-anydpi-v26/{icon_name}.xml",
-        '<?xml version="1.0" encoding="utf-8" ?>\n'
-        '<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">\n'
-        f'  <background android:drawable="{background}" />\n'
-        f'  <foreground android:drawable="@drawable/{icon_name}_foreground" />\n'
-        "</adaptive-icon>\n",
-    )
-
-
 def launcher_icons() -> None:
     """Mail's launcher icon in Monochrome and in each preset accent, on the dark icon background."""
     icon = art("otus-mail-icon.svg")
+    # Fits the owl and envelope in the 66 dp safe circle, centered on the art's middle (63, 64.5).
+    scale = 0.535
+    place = {
+        "scaleX": f"{scale}",
+        "scaleY": f"{scale}",
+        "translateX": f"{54 - 63 * scale:.3f}",
+        "translateY": f"{54 - 64.5 * scale:.3f}",
+    }
     for name, color in {"monochrome": MONOCHROME, **ACCENTS}.items():
         icon_name = f"otus_mail_icon_{name}"
         painted = recolor(icon, color, ICON_BACKGROUND)
         write(
             ANDROID / f"mipmap-anydpi/{icon_name}.xml",
-            vector(ICON_SIZE, vector_paths(painted), 108),
+            vector(126.075, vector_paths(painted), 108),
         )
-        foreground = vector(108, group(ICON_PLACE, painted[1:]))
-        write(ANDROID / f"drawable/{icon_name}_foreground.xml", foreground)
-        # The same foreground as a Compose drawable, for the App icon setting's previews.
-        write(COMPOSE / f"{compose_icon(icon_name)}.xml", foreground)
-        adaptive_icon(icon_name, "@color/otus_brand_background")
-
-
-def stripes(colors: list[str]) -> list[dict[str, str]]:
-    """A flag over the art's mark, its stripes running across.
-
-    Each stripe reaches the bottom and the next one covers it, so no seam shows between them.
-    """
-    height = (MARK_BOTTOM - MARK_TOP) / len(colors)
-    return [
-        {"d": f"M0 {MARK_TOP + i * height:.3f}H{ICON_SIZE}V{MARK_BOTTOM}H0Z", "fill": color}
-        for i, color in enumerate(colors)
-    ]
-
-
-def pride_icons() -> None:
-    """The owl and envelope painted in a pride flag's stripes, on the dark icon background."""
-    square, body, eye1, eye2, shine1, shine2, beak, envelope, flap = recolor(
-        art("otus-mail-icon.svg"), MONOCHROME, ICON_BACKGROUND
-    )
-    outline = {key: value for key, value in envelope.items() if key != "fill"}
-    details = [eye1, eye2, shine1, shine2, beak, outline, flap]
-
-    # One clip per shape: in one clip path, opposite windings cancel where the shapes overlap.
-    def mark(colors: list[str], indent: str) -> list[str]:
-        inner = indent + "  "
-        flag = vector_paths(stripes(colors), inner)
-        clipped = [
-            [
-                f"{indent}<group>",
-                f'{inner}<clip-path android:pathData="{shape["d"]}" />',
-                *flag,
-                f"{indent}</group>",
-            ]
-            for shape in (body, envelope)
-        ]
-        return [*clipped[0], *clipped[1], *vector_paths(details, indent)]
-
-    opening = "".join(f'\n      android:{key}="{value}"' for key, value in ICON_PLACE.items())
-    for name, colors in PRIDE_FLAGS.items():
-        icon_name = f"otus_mail_icon_{name}"
         write(
-            ANDROID / f"mipmap-anydpi/{icon_name}.xml",
-            vector(ICON_SIZE, [*vector_paths([square]), *mark(colors, "  ")], 108),
+            ANDROID / f"drawable/{icon_name}_foreground.xml", vector(108, group(place, painted[1:]))
         )
-        foreground = vector(108, [f"  <group{opening}>", *mark(colors, "    "), "  </group>"])
-        write(ANDROID / f"drawable/{icon_name}_foreground.xml", foreground)
-        write(COMPOSE / f"{compose_icon(icon_name)}.xml", foreground)
-        adaptive_icon(icon_name, "@color/otus_brand_background")
+        write(
+            ANDROID / f"mipmap-anydpi-v26/{icon_name}.xml",
+            '<?xml version="1.0" encoding="utf-8" ?>\n'
+            '<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">\n'
+            '  <background android:drawable="@color/otus_brand_background" />\n'
+            f'  <foreground android:drawable="@drawable/{icon_name}_foreground" />\n'
+            "</adaptive-icon>\n",
+        )
 
 
 if __name__ == "__main__":
     logo_and_owl()
     launch_layers()
     launcher_icons()
-    pride_icons()
