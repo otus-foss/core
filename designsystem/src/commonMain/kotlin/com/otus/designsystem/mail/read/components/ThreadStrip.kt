@@ -1,7 +1,6 @@
 package com.otus.designsystem.mail.read.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,6 +28,7 @@ import com.otus.designsystem.shared.people.components.AvatarStack
 import com.otus.designsystem.shared.people.components.PersonAvatar
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
+import com.otus.designsystem.theme.shapes.strokeBorder
 import com.otus.designsystem.theme.tokens.content.ThreadTokens
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
@@ -54,7 +54,7 @@ public fun ThreadStrip(
             .fillMaxWidth()
             .clip(shape)
             .background(OtusColors.bgDark)
-            .border(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape)
+            .strokeBorder(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape)
             .clickable(onClickLabel = "Show the thread", role = Role.Button, onClick = onOpen),
     ) {
         if (entries.size > ThreadTokens.ROW_LIMIT) {

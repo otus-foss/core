@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.expandVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -44,6 +43,7 @@ import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
+import com.otus.designsystem.theme.shapes.strokeBorder
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.MenuTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
@@ -121,7 +121,7 @@ internal fun MenuPopup(
 /** The raised `bgDark` surface with a `bgLight` outline that every menu sits on. */
 internal fun Modifier.menuSurface(): Modifier {
     val shape = SmoothCornerShape(MenuTokens.radius)
-    return background(OtusColors.bgDark, shape).border(PanelTokens.borderWidth, OtusColors.bgLight, shape)
+    return background(OtusColors.bgDark, shape).strokeBorder(PanelTokens.borderWidth, OtusColors.bgLight, shape)
 }
 
 /** Calls [onPress] with the point of every press on the element, without taking the press from it. */

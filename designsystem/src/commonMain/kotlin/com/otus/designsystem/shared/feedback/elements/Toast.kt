@@ -3,7 +3,6 @@ package com.otus.designsystem.shared.feedback.elements
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -35,6 +34,7 @@ import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
+import com.otus.designsystem.theme.shapes.strokeBorder
 import com.otus.designsystem.theme.tokens.feedback.ToastTokens
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
@@ -66,7 +66,7 @@ public fun Toast(
             .heightIn(min = ToastTokens.height)
             .height(IntrinsicSize.Min)
             .background(fill, shape)
-            .border(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape)
+            .strokeBorder(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape)
             .padding(start = ToastTokens.textInset, end = if (action == null) ToastTokens.textInset else 0.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

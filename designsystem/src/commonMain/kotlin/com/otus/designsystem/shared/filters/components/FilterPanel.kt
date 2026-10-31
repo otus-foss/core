@@ -2,7 +2,6 @@ package com.otus.designsystem.shared.filters.components
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.draggable
@@ -54,6 +53,7 @@ import com.otus.designsystem.theme.motion.MotionCurve
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
+import com.otus.designsystem.theme.shapes.strokeBorder
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.tokens.selection.FilterTokens
@@ -164,7 +164,7 @@ private fun PanelSurface(
                     },
                 ).clip(shape)
                 .background(OtusColors.bgDark)
-                .border(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape)
+                .strokeBorder(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape)
                 // Clipping, fill, and border come first, so they take the growing height.
                 .grownTo(progress, collapsedHeight)
                 // Taps on the panel's own space must not reach the scrim below.

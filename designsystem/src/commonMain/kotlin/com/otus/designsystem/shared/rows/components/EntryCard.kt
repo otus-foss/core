@@ -3,7 +3,6 @@ package com.otus.designsystem.shared.rows.components
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -30,6 +29,7 @@ import com.otus.designsystem.theme.colors.OtusAlpha
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.motionTween
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
+import com.otus.designsystem.theme.shapes.strokeBorder
 import com.otus.designsystem.theme.tokens.rows.EntryTokens
 
 /**
@@ -119,4 +119,4 @@ private fun Modifier.entryOutline(
     outlined: Boolean,
     color: Color,
     shape: Shape,
-): Modifier = if (outlined) border(EntryTokens.outline, color, shape) else this
+): Modifier = if (outlined) strokeBorder(EntryTokens.outline, color, shape) else this

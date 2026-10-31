@@ -9,8 +9,8 @@ import androidx.compose.ui.unit.dp
  * [MenuTokens][com.otus.designsystem.theme.tokens.overlays.MenuTokens] name their corner by one of
  * these steps, so the scale changes here. A part inside another,
  * such as a menu row, takes the outer radius minus its inset instead of a step. Pills, avatars,
- * and circles, such as the action bar and the formatting row, round to half their height and take
- * no step.
+ * and circles, such as the action bar and the formatting row, round to about half their height
+ * and take no step.
  */
 internal object CornerTokens {
     /** How far each corner eases into its edges, as in Figma's corner smoothing; 0.6 matches iOS. */

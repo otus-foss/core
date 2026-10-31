@@ -1,6 +1,5 @@
 package com.otus.designsystem.mail.attachments.components
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -35,6 +34,7 @@ import com.otus.designsystem.shared.overlays.components.ContextMenu
 import com.otus.designsystem.shared.overlays.components.MenuAction
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
+import com.otus.designsystem.theme.shapes.strokeBorder
 import com.otus.designsystem.theme.tokens.editing.ComposeTokens
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
@@ -66,7 +66,7 @@ public fun AttachmentChip(
             .heightIn(min = PanelTokens.touchTarget)
             .widthIn(max = ComposeTokens.attachmentMaxWidth)
             .onSizeChanged { height = it.height }
-            .border(PanelTokens.borderWidth, OtusColors.bgLight, shape)
+            .strokeBorder(PanelTokens.borderWidth, OtusColors.bgLight, shape)
             .then(opensMenu)
             .semantics(mergeDescendants = true) { contentDescription = "$name, $detail" }
             .padding(start = PanelTokens.chipPadding),

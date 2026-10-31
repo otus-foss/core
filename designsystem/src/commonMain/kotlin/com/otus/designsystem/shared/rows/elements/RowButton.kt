@@ -1,6 +1,5 @@
 package com.otus.designsystem.shared.rows.elements
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -17,6 +16,7 @@ import androidx.compose.ui.semantics.semantics
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
+import com.otus.designsystem.theme.shapes.strokeBorder
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.settings.SettingTokens
 
@@ -43,7 +43,7 @@ public fun RowButton(
         Text(
             label,
             Modifier
-                .border(PanelTokens.borderWidth, OtusColors.bgLight, shape)
+                .strokeBorder(PanelTokens.borderWidth, OtusColors.bgLight, shape)
                 .controlPressFeedback(interactions, shape)
                 .padding(
                     horizontal = SettingTokens.valuePaddingHorizontal,

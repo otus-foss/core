@@ -2,7 +2,6 @@ package com.otus.designsystem.shared.rows.components
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,6 +14,7 @@ import com.otus.designsystem.theme.motion.MotionCurve
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
+import com.otus.designsystem.theme.shapes.strokeBorder
 import com.otus.designsystem.theme.tokens.content.ReadTokens
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 
@@ -46,7 +46,7 @@ internal fun Modifier.stripCardFrame(): Modifier {
     return fillMaxWidth()
         .clip(shape)
         .background(OtusColors.bgDark)
-        .border(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape)
+        .strokeBorder(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape)
 }
 
 /** False inside an [UnfoldingStripCard]'s folded form, whose card already frames the strip drawn there. */

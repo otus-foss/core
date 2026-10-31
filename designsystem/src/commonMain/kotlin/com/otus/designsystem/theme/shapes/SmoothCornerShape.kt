@@ -2,8 +2,10 @@ package com.otus.designsystem.theme.shapes
 
 import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.toRect
 import androidx.compose.ui.graphics.Outline
@@ -24,7 +26,7 @@ import kotlin.math.tan
 
 /**
  * A rounded rectangle whose corners ease into its edges the way Figma's corner smoothing draws
- * them, so the curvature never jumps where an edge meets a corner (G2). A corner as large as half
+ * them, so the curvature never jumps where an edge meets a corner (G2). A corner close to half
  * the shorter side has no room to ease and stays a plain arc, so pills keep their round ends.
  */
 public class SmoothCornerShape(
@@ -48,20 +50,48 @@ public class SmoothCornerShape(
         bottomStart: Float,
         layoutDirection: LayoutDirection,
     ): Outline {
-        if (topStart + topEnd + bottomEnd + bottomStart == 0f) return Outline.Rectangle(size.toRect())
         val ltr = layoutDirection == LayoutDirection.Ltr
+        val topLeft = if (ltr) topStart else topEnd
+        val topRight = if (ltr) topEnd else topStart
+        val bottomRight = if (ltr) bottomEnd else bottomStart
+        val bottomLeft = if (ltr) bottomStart else bottomEnd
+        val corners = listOf(topLeft, topRight, bottomRight, bottomLeft)
         val budget = size.minDimension / 2
-        val right = Offset(1f, 0f)
-        val down = Offset(0f, 1f)
-        return Outline.Generic(
-            Path().apply {
-                smoothCorner(Offset(size.width, 0f), right, down, if (ltr) topEnd else topStart, budget)
-                smoothCorner(Offset(size.width, size.height), down, -right, if (ltr) bottomEnd else bottomStart, budget)
-                smoothCorner(Offset(0f, size.height), -right, -down, if (ltr) bottomStart else bottomEnd, budget)
-                smoothCorner(Offset.Zero, -down, right, if (ltr) topStart else topEnd, budget)
-                close()
-            },
-        )
+
+        fun corner(radius: Float) = CornerRadius(radius.coerceAtMost(budget))
+        return when {
+            corners.all { it == 0f } -> {
+                Outline.Rectangle(size.toRect())
+            }
+
+            // With no corner left to ease, a plain rounded rect looks the same and draws exactly
+            // wherever it moves, as pills such as the action bar need.
+            corners.none { it > 0f && budget / it - 1 >= MIN_EASE } -> {
+                Outline.Rounded(
+                    RoundRect(
+                        size.toRect(),
+                        corner(topLeft),
+                        corner(topRight),
+                        corner(bottomRight),
+                        corner(bottomLeft),
+                    ),
+                )
+            }
+
+            else -> {
+                Outline.Generic(
+                    Path().apply {
+                        val right = Offset(1f, 0f)
+                        val down = Offset(0f, 1f)
+                        smoothCorner(Offset(size.width, 0f), right, down, topRight, budget)
+                        smoothCorner(Offset(size.width, size.height), down, -right, bottomRight, budget)
+                        smoothCorner(Offset(0f, size.height), -right, -down, bottomLeft, budget)
+                        smoothCorner(Offset.Zero, -down, right, topLeft, budget)
+                        close()
+                    },
+                )
+            }
+        }
     }
 
     override fun equals(other: Any?): Boolean =
@@ -154,5 +184,8 @@ private fun Path.cubicTo(
     second: Offset,
     end: Offset,
 ) = cubicTo(first.x, first.y, second.x, second.y, end.x, end.y)
+
+/** The least easing worth drawing; a corner with less room is a plain arc. */
+private const val MIN_EASE = 0.1f
 
 private fun radians(degrees: Float): Float = degrees * PI.toFloat() / 180

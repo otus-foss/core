@@ -1,7 +1,6 @@
 package com.otus.settings.presentation.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -24,6 +23,7 @@ import com.otus.designsystem.theme.colors.ThemeChoice
 import com.otus.designsystem.theme.colors.ThemeColor
 import com.otus.designsystem.theme.colors.get
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
+import com.otus.designsystem.theme.shapes.strokeBorder
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.tokens.settings.ThemeTokens
@@ -101,7 +101,7 @@ private fun AppPreview(preview: @Composable () -> Unit) {
             .fillMaxWidth()
             .semantics { contentDescription = "Preview of the app in this theme" }
             .background(OtusColors.bgRegular, shape)
-            .border(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape)
+            .strokeBorder(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape)
             .padding(ThemeTokens.previewPadding),
     ) { preview() }
 }

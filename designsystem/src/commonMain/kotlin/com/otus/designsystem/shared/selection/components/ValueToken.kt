@@ -1,6 +1,5 @@
 package com.otus.designsystem.shared.selection.components
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -17,6 +16,7 @@ import com.otus.designsystem.shared.people.components.ChipAvatar
 import com.otus.designsystem.shared.people.components.SmallAvatar
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
+import com.otus.designsystem.theme.shapes.strokeBorder
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.people.SummaryTokens
 import com.otus.designsystem.theme.tokens.settings.SettingTokens
@@ -59,7 +59,8 @@ internal fun ValueOutline(
  * The `bgLight` stroke around a [ValueToken], [ValuePicker], or
  * [RuleChip][com.otus.designsystem.shared.filters.components.RuleChip].
  */
-internal fun Modifier.valueOutline(shape: Shape): Modifier = border(PanelTokens.borderWidth, OtusColors.bgLight, shape)
+internal fun Modifier.valueOutline(shape: Shape): Modifier =
+    strokeBorder(PanelTokens.borderWidth, OtusColors.bgLight, shape)
 
 /**
  * The keyword, avatar or icon, and value inside a [ValueOutline]. A disabled label dims its
