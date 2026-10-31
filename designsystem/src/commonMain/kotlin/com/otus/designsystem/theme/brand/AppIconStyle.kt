@@ -12,11 +12,26 @@ public enum class AppIconStyle {
 
     /** The owl in the default text color. */
     Monochrome,
+
+    /** The owl as polished metal on a white tile. */
+    Chrome,
+
+    /** The owl in the rainbow pride flag. */
+    Rainbow,
+
+    /** The owl in the transgender pride flag. */
+    Trans,
+
+    /** The owl in the bisexual pride flag. */
+    Bi,
+
+    /** The owl in the lesbian pride flag. */
+    Lesbian,
     ;
 
-    /** The owl's color in the current theme. */
+    /** The owl's color in the current theme; the launch animation draws flags and metal plainly. */
     public val markColor: Color
         @Composable
         @ReadOnlyComposable
-        get() = if (this == Accent) OtusColors.accentRegular else OtusColors.text1
+        get() = if (this == Monochrome || this == Chrome) OtusColors.text1 else OtusColors.accentRegular
 }

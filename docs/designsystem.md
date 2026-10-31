@@ -519,13 +519,22 @@ converts them into drawables. Change the SVG, or an `AccentPreset` color, and ru
 - The launch animation's layers each hold one color, so `MailLaunch` tints them from the theme.
   They share a 128 unit canvas so they line up when stacked.
 - `otus_mail_icon_<name>` are Mail's launcher icons in `androidMain/res`, which merge into the
-  app: `monochrome` and one per `AccentPreset`, such as `otus_mail_icon_otus_blue`. Each is
-  adaptive from Android 8 on, with the owl and envelope scaled into the 66 dp safe circle, and
-  the full square icon before that. A launcher icon cannot follow the theme, so all of them sit on
-  `otus_brand_background`, the Otus theme's `bgDark`. A host test checks every preset has one.
+  app: one per `AccentPreset`, such as `otus_mail_icon_otus_blue`, and one per other
+  `AppIconStyle`, such as `monochrome` or `rainbow`. Each is adaptive from Android 8 on, with the
+  owl and envelope scaled into the 66 dp safe circle, and the full square icon before that. A
+  launcher icon cannot follow the theme, so all but Chrome sit on `otus_brand_background`,
+  the Otus theme's `bgDark`. A host test checks every preset and style has one.
+- The pride icons paint the owl and envelope in a flag's stripes. `PRIDE_FLAGS` in
+  `tools/brand_drawables.py` lists the flags.
+- `otus_mail_icon_chrome` is the owl as polished metal on a white tile. A vector cannot shade
+  metal, so `tools/chrome_icon.py` renders its foreground as WebP at each density. It needs
+  rsvg-convert, NumPy, SciPy, and Pillow.
+- Both scripts also save each icon's foreground as a Compose drawable, `brand_mail_icon_<name>`.
+  `MailAppIcon` draws one in a rounded square, as the App icon setting's grid shows them.
 
-`AppIconStyle` picks how the owl is colored: `Accent` uses `accentRegular` and `Monochrome` uses
-`text1`. `AccentPreset.closest` picks the icon for a custom accent.
+`AppIconStyle` picks the icon. `Accent` colors the owl `accentRegular`, and the pride icons keep it
+for the launch animation. `Monochrome` and `Chrome` use `text1`. `AccentPreset.closest` picks the
+icon for a custom accent.
 
 `MailLaunch` plays the launch animation in the current theme: the owl and envelope in the style's
 color, and the background and dark details in `bgDark`. It starts with the play-once version.

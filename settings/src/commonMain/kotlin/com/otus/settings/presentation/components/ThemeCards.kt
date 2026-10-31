@@ -19,7 +19,7 @@ internal fun ThemeCards(
     onSelect: (ThemeChoice) -> Unit,
     actions: (ThemeOption) -> List<MenuAction>,
 ) {
-    PairedGrid(choice.options, Modifier.selectableGroup()) { option, modifier ->
+    CardGrid(choice.options, Modifier.selectableGroup()) { option, modifier ->
         ThemeCard(
             title = option.title,
             description = option.description,
