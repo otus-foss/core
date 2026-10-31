@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.LocalContentColor
@@ -47,6 +46,7 @@ import com.otus.designsystem.shared.overlays.components.OptionsItem
 import com.otus.designsystem.shared.overlays.components.OptionsMenu
 import com.otus.designsystem.shared.rows.components.TrailingIcons
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.tokens.people.ContactTokens
@@ -118,7 +118,7 @@ private fun FieldFrame(
     endsWithButton: Boolean,
     content: @Composable RowScope.() -> Unit,
 ) {
-    val shape = RoundedCornerShape(SheetTokens.rowRadius)
+    val shape = SmoothCornerShape(SheetTokens.rowRadius)
     Row(
         Modifier
             .fillMaxWidth()

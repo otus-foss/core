@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -41,6 +40,7 @@ import com.otus.designsystem.shared.overlays.components.menuSurface
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.editing.ComposeTokens
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.MenuTokens
@@ -104,7 +104,7 @@ public fun DropdownRow(
     detail: String? = null,
     leading: (@Composable () -> Unit)? = null,
 ) {
-    val shape = RoundedCornerShape(MenuTokens.radius - MenuTokens.inset)
+    val shape = SmoothCornerShape(MenuTokens.radius - MenuTokens.inset)
     Row(
         modifier
             .fillMaxWidth()

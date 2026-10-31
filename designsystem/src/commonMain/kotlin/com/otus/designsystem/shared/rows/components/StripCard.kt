@@ -6,7 +6,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
@@ -15,6 +14,7 @@ import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.MotionCurve
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.content.ReadTokens
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 
@@ -42,7 +42,7 @@ public fun StripCard(
 
 /** A strip card's full width, rounded `bgDark` fill, and `strokeBgDark` border, without the size animation. */
 internal fun Modifier.stripCardFrame(): Modifier {
-    val shape = RoundedCornerShape(ReadTokens.stripRadius)
+    val shape = SmoothCornerShape(ReadTokens.stripRadius)
     return fillMaxWidth()
         .clip(shape)
         .background(OtusColors.bgDark)

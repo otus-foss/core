@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -44,6 +43,7 @@ import com.otus.designsystem.shared.overlays.components.MenuAction
 import com.otus.designsystem.shared.overlays.components.onPressDown
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.colors.OtusPalette
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.settings.ThemeTokens
 
@@ -66,7 +66,7 @@ public fun ThemeCard(
     var press by remember { mutableStateOf(Offset.Zero) }
     var menuAt by remember { mutableStateOf<Offset?>(null) }
     val openMenu = { menuAt = press }.takeIf { actions.isNotEmpty() }
-    val shape = RoundedCornerShape(ThemeTokens.cardRadius)
+    val shape = SmoothCornerShape(ThemeTokens.cardRadius)
     val interactions = remember { MutableInteractionSource() }
     // The menu opens in this box, which has no padding, so a press point maps onto it directly.
     Box(modifier.onPressDown { press = it }) {
@@ -159,7 +159,7 @@ private fun MoreButton(
 /** A page with a bar and two lines of text, the second led by the accent. */
 @Composable
 private fun ThemeSketch(sketch: OtusPalette) {
-    val shape = RoundedCornerShape(ThemeTokens.sketchRadius)
+    val shape = SmoothCornerShape(ThemeTokens.sketchRadius)
     Column(
         Modifier
             .fillMaxWidth()
@@ -169,7 +169,7 @@ private fun ThemeSketch(sketch: OtusPalette) {
             .padding(ThemeTokens.sketchPadding),
         verticalArrangement = Arrangement.spacedBy(ThemeTokens.sketchGap),
     ) {
-        val bar = RoundedCornerShape(ThemeTokens.sketchBarRadius)
+        val bar = SmoothCornerShape(ThemeTokens.sketchBarRadius)
         Box(
             Modifier
                 .fillMaxWidth()

@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -35,6 +34,7 @@ import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.feedback.ToastTokens
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
@@ -60,7 +60,7 @@ public fun Toast(
     )
     // A one-line toast is a pill; a longer text grows it to up to [ToastTokens.MAX_LINES] lines with
     // the same corners, and the action keeps the full height beside it.
-    val shape = RoundedCornerShape(ToastTokens.height / 2)
+    val shape = SmoothCornerShape(ToastTokens.height / 2)
     Row(
         modifier
             .heightIn(min = ToastTokens.height)

@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -19,6 +18,7 @@ import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_more_horiz
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.editing.ComposeTokens
 import com.otus.designsystem.theme.tokens.layout.PageTokens
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
@@ -34,7 +34,7 @@ public fun QuoteChip(
     onExpand: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val shape = RoundedCornerShape(ComposeTokens.quoteRadius)
+    val shape = SmoothCornerShape(ComposeTokens.quoteRadius)
     Row(
         modifier
             .padding(horizontal = PageTokens.textInset)

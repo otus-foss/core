@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -48,6 +47,7 @@ import com.otus.designsystem.theme.motion.LocalMotionScale
 import com.otus.designsystem.theme.motion.MotionCurve
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 import kotlin.math.roundToInt
@@ -67,7 +67,7 @@ internal fun PrimaryShell(
     entry: BarEntry,
     modifier: Modifier = Modifier,
 ) {
-    val shape = RoundedCornerShape(ActionBarTokens.radius)
+    val shape = SmoothCornerShape(ActionBarTokens.radius)
     val menu = rememberBarMenu()
     val shown = entry.shownContext(context, primary.label)
     val animation = rememberCollapse(context != null, entry)
@@ -122,7 +122,7 @@ private fun ContextChoices(
 ) {
     val menu = rememberBarMenu()
     val interactions = remember { MutableInteractionSource() }
-    val shape = RoundedCornerShape(ActionBarTokens.radius)
+    val shape = SmoothCornerShape(ActionBarTokens.radius)
     Box(modifier.padding(end = ActionBarTokens.collapsedActionWidth)) {
         Box(
             Modifier
@@ -183,7 +183,7 @@ private fun rememberCollapse(
 private fun Action(
     primary: BarAction,
     face: Transition<PrimaryFace>,
-    shape: RoundedCornerShape,
+    shape: SmoothCornerShape,
     modifier: Modifier,
 ) {
     Box(modifier) {

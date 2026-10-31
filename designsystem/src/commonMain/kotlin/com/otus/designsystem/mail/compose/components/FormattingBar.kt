@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -48,6 +47,7 @@ import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.shared.panels.components.drawEdgeFade
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.editing.ComposeTokens
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
@@ -71,7 +71,7 @@ public fun FormattingBar(
     leading: (@Composable () -> Unit)? = null,
     trailing: (@Composable () -> Unit)? = null,
 ) {
-    val shape = RoundedCornerShape(ComposeTokens.formatBarRadius)
+    val shape = SmoothCornerShape(ComposeTokens.formatBarRadius)
     val parts = LocalBarParts.current
     Box(
         // Widen before applying BarMorph so it moves the whole row.
@@ -151,7 +151,7 @@ public fun FormatButton(
     enabled: Boolean = true,
 ) {
     val interactions = remember { MutableInteractionSource() }
-    val shape = RoundedCornerShape(ComposeTokens.formatButtonRadius)
+    val shape = SmoothCornerShape(ComposeTokens.formatButtonRadius)
     Box(
         Modifier
             .size(PanelTokens.touchTarget)
