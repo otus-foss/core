@@ -2,7 +2,7 @@ package com.otus.settings.presentation.components
 
 import androidx.compose.runtime.Composable
 import com.otus.designsystem.shared.overlays.components.ConfirmDialog
-import com.otus.designsystem.shared.overlays.components.InputDialog
+import com.otus.designsystem.shared.overlays.components.InputSheet
 import com.otus.designsystem.shared.overlays.components.MenuAction
 import com.otus.designsystem.theme.colors.CustomTheme
 import com.otus.designsystem.theme.colors.ThemeChoice
@@ -13,8 +13,8 @@ import com.otus.settings.presentation.title
 
 /**
  * The menu for one theme card: every theme can be duplicated, and a custom theme can also be
- * renamed or deleted. [onChange] applies a duplicate, and [onDialog] opens the rename or delete
- * popup.
+ * renamed or deleted. [onChange] applies a duplicate, and [onDialog] opens the rename sheet or the
+ * delete popup.
  */
 internal fun themeActions(
     option: ThemeOption,
@@ -39,19 +39,19 @@ internal fun ThemeDialogs(
     onDialog: (ThemeDialog?) -> Unit,
 ) {
     when (dialog) {
-        is ThemeDialog.Rename -> RenameThemeDialog(dialog.theme, choice, onChange) { onDialog(null) }
+        is ThemeDialog.Rename -> RenameThemeSheet(dialog.theme, choice, onChange) { onDialog(null) }
         is ThemeDialog.Delete -> DeleteThemeDialog(dialog.theme, choice, onChange) { onDialog(null) }
     }
 }
 
 @Composable
-private fun RenameThemeDialog(
+private fun RenameThemeSheet(
     theme: CustomTheme,
     choice: ThemeChoice,
     onChange: (ThemeChoice) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    InputDialog(
+    InputSheet(
         title = "Rename theme",
         label = "Name",
         confirmLabel = "Rename",

@@ -161,11 +161,11 @@ internal val MONTH_NAMES =
 @Composable
 internal fun DatePickerHeading(
     title: String,
-    note: String,
+    note: String?,
     onDismiss: () -> Unit,
 ) {
     PickerTitle(title, "Close date chooser", onDismiss)
-    Text(note, color = OtusColors.text2, fontSize = SheetTokens.detailSize)
+    if (note != null) Text(note, color = OtusColors.text2, fontSize = SheetTokens.detailSize)
 }
 
 /** A wheel picker's [title] and its close button, which screen readers hear as [closeLabel]. */

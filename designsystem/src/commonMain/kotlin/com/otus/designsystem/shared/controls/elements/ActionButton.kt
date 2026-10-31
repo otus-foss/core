@@ -36,11 +36,19 @@ public fun ActionButton(
             .clickable(interactions, indication = null, enabled = enabled, role = Role.Button, onClick = onClick)
             .controlPressFeedback(interactions),
         shape = CircleShape,
-        color = if (primary && enabled) OtusColors.accentDark else OtusColors.bgDark,
+        color =
+            when {
+                !primary -> OtusColors.bgDark
+
+                enabled -> OtusColors.accentDark
+
+                // Grey, so a primary button that waits for input still reads as a button.
+                else -> OtusColors.bgLight
+            },
         border =
             BorderStroke(
                 PanelTokens.borderWidth,
-                if (primary) OtusColors.accentRegular else OtusColors.strokeBgDark,
+                if (primary && enabled) OtusColors.accentRegular else OtusColors.strokeBgDark,
             ),
     ) {
         Box(

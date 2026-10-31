@@ -75,7 +75,8 @@ class ThemeSettingsScreenTest {
         compose.onNodeWithText("Rename").performClick()
         compose.onNode(hasSetTextAction()).performTextReplacement("Night")
         clickButton("Rename")
-        assertEquals("Night", state.choice.customTheme?.name)
+        // The sheet slides away before it applies the name.
+        compose.waitUntil { state.choice.customTheme?.name == "Night" }
         compose.onNodeWithText("Night").assertExists()
     }
 

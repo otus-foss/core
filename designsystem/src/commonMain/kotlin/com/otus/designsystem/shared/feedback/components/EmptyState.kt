@@ -22,7 +22,7 @@ import org.jetbrains.compose.resources.DrawableResource
 @Composable
 public fun EmptyState(
     title: String,
-    description: String,
+    description: String?,
     icon: DrawableResource,
     actionLabel: String? = null,
     onAction: () -> Unit = {},
@@ -35,7 +35,7 @@ public fun EmptyState(
         ) {
             Symbol(icon, size = InboxTokens.emptyIconSize)
             Text(title, fontSize = InboxTokens.subjectSize, textAlign = TextAlign.Center)
-            Text(description, color = OtusColors.text2, textAlign = TextAlign.Center)
+            if (description != null) Text(description, color = OtusColors.text2, textAlign = TextAlign.Center)
             if (actionLabel != null) ButtonPill(actionLabel, onAction, fill = OtusColors.bgLight)
         }
     }
