@@ -1,7 +1,6 @@
 package com.otus.designsystem.shared.settings.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -44,6 +43,7 @@ import com.otus.designsystem.shared.overlays.components.onPressDown
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.colors.OtusPalette
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
+import com.otus.designsystem.theme.shapes.strokeBorder
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.settings.ThemeTokens
 
@@ -82,7 +82,7 @@ public fun ThemeCard(
                     onClick = onClick,
                 ).controlPressFeedback(interactions, shape)
                 .background(OtusColors.bgDark, shape)
-                .border(
+                .strokeBorder(
                     if (selected) PanelTokens.borderWidth * 2 else PanelTokens.borderWidth,
                     if (selected) OtusColors.text1 else OtusColors.strokeBgDark,
                     shape,
@@ -165,7 +165,7 @@ private fun ThemeSketch(sketch: OtusPalette) {
             .fillMaxWidth()
             .height(ThemeTokens.sketchHeight)
             .background(sketch.bgRegular, shape)
-            .border(PanelTokens.borderWidth, sketch.strokeBgDark, shape)
+            .strokeBorder(PanelTokens.borderWidth, sketch.strokeBgDark, shape)
             .padding(ThemeTokens.sketchPadding),
         verticalArrangement = Arrangement.spacedBy(ThemeTokens.sketchGap),
     ) {
@@ -175,7 +175,7 @@ private fun ThemeSketch(sketch: OtusPalette) {
                 .fillMaxWidth()
                 .height(ThemeTokens.sketchBarHeight)
                 .background(sketch.bgDark, bar)
-                .border(PanelTokens.borderWidth, sketch.strokeBgDark, bar),
+                .strokeBorder(PanelTokens.borderWidth, sketch.strokeBgDark, bar),
         )
         SketchLine(sketch.bgLight, sketch.text2, ThemeTokens.SKETCH_LONG_LINE)
         SketchLine(sketch.accentLight, sketch.text1, ThemeTokens.SKETCH_SHORT_LINE)

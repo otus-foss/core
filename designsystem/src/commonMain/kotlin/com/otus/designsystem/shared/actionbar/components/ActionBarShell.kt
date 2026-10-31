@@ -8,7 +8,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -48,6 +47,7 @@ import com.otus.designsystem.theme.motion.MotionCurve
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
+import com.otus.designsystem.theme.shapes.strokeBorder
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 import kotlin.math.roundToInt
@@ -80,7 +80,7 @@ internal fun PrimaryShell(
             .primaryButton(primary, context, menu, shape),
     ) {
         // Drawn before the action, so the action's accent border covers it where the two meet.
-        Box(Modifier.matchParentSize().border(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape))
+        Box(Modifier.matchParentSize().strokeBorder(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape))
         CompositionLocalProvider(
             LocalContentColor provides if (primary.enabled) OtusColors.text1 else OtusColors.text3,
         ) {
@@ -194,7 +194,7 @@ private fun Action(
                 .fillMaxWidth()
                 .background(if (primary.enabled) OtusColors.accentDark else OtusColors.bgDark, shape)
                 // A disabled action loses its accent entirely, so it reads as part of the shell.
-                .border(
+                .strokeBorder(
                     PanelTokens.borderWidth,
                     if (primary.enabled) OtusColors.accentRegular else OtusColors.strokeBgDark,
                     shape,

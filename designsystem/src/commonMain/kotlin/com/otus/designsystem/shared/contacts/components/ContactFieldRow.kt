@@ -47,6 +47,7 @@ import com.otus.designsystem.shared.overlays.components.OptionsMenu
 import com.otus.designsystem.shared.rows.components.TrailingIcons
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
+import com.otus.designsystem.theme.shapes.strokeBorder
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.tokens.people.ContactTokens
@@ -124,7 +125,7 @@ private fun FieldFrame(
             .fillMaxWidth()
             .heightIn(min = ContactTokens.fieldHeight)
             .background(if (highlighted) OtusColors.selectedFill else OtusColors.bgDark, shape)
-            .border(
+            .strokeBorder(
                 PanelTokens.borderWidth,
                 if (highlighted) OtusColors.selectedFill else OtusColors.strokeBgDark,
                 shape,

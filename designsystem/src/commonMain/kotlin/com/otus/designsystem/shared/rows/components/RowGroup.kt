@@ -1,7 +1,6 @@
 package com.otus.designsystem.shared.rows.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,6 +24,7 @@ import com.otus.designsystem.resources.symbol_chevron_right
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
+import com.otus.designsystem.theme.shapes.strokeBorder
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
@@ -92,4 +92,4 @@ public fun GroupRow(
 private fun Modifier.raisedOutline(
     raised: Boolean,
     shape: Shape,
-): Modifier = if (raised) border(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape) else this
+): Modifier = if (raised) strokeBorder(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape) else this

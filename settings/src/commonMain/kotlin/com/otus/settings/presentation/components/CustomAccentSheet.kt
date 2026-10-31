@@ -22,6 +22,7 @@ import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.colors.OtusPalette
 import com.otus.designsystem.theme.colors.ThemeChoice
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
+import com.otus.designsystem.theme.shapes.strokeBorder
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.settings.ThemeTokens
 import com.otus.settings.presentation.options
@@ -62,7 +63,7 @@ private fun ThemePreview(
     Column(
         modifier
             .background(palette.bgRegular, shape)
-            .border(PanelTokens.borderWidth, palette.strokeBgDark, shape)
+            .strokeBorder(PanelTokens.borderWidth, palette.strokeBgDark, shape)
             .padding(ThemeTokens.customPreviewPadding),
         verticalArrangement = Arrangement.spacedBy(ThemeTokens.cardGap),
     ) {
