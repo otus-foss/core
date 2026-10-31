@@ -15,10 +15,11 @@ class AppIconResourcesTest {
     private val context = ApplicationProvider.getApplicationContext<Context>()
 
     @Test
-    fun everyPresetAndMonochromeHasALauncherIcon() {
-        (AccentPreset.entries.map { it.iconName } + "monochrome").forEach { name ->
+    fun everyPresetAndStyleHasALauncherIcon() {
+        val styles = AppIconStyle.entries.filter { it != AppIconStyle.Accent }.map { it.name.lowercase() }
+        (AccentPreset.entries.map { it.iconName } + styles).forEach { name ->
             val id = context.resources.getIdentifier("otus_mail_icon_$name", "mipmap", context.packageName)
-            assertNotEquals(0, id, "tools/brand_drawables.py has no icon for $name")
+            assertNotEquals(0, id, "tools/brand_drawables.py or chrome_icon.py has no icon for $name")
         }
     }
 
