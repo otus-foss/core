@@ -81,7 +81,7 @@ internal fun rememberFrontBar(
 internal val LocalHostedBar = staticCompositionLocalOf { false }
 
 /**
- * Draws [content] for the current face. When the face changes, the old content fades and scales
+ * Draws [content] for the current face. When the symbol changes, the old content fades and scales
  * out on the exit curve while the new one fades and scales in on the enter curve, both quick.
  */
 @Composable
@@ -99,6 +99,8 @@ internal fun Transition<PrimaryFace>.Swapping(
             (fadeIn(arrive) + scaleIn(arrive)) togetherWith (fadeOut(leave) + scaleOut(leave)) using null
         },
         contentAlignment = contentAlignment,
+        // A new label on the same symbol, such as a count, is the same action and changes in place.
+        contentKey = { it.symbol },
     ) { content(it) }
 }
 
