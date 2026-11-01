@@ -753,6 +753,30 @@ class MotionTests(unittest.TestCase):
             with self.subTest(body=body):
                 self.assertEqual(check("designsystem", "shared.bars.components", body), [])
 
+    def test_calls_left_on_their_default_spring_are_rejected(self):
+        for body, name in (
+            ("suspend fun go() = scroll.animateScrollToItem(selected)", "animateScrollToItem"),
+            ("suspend fun go() = pager.animateScrollToPage(page)", "animateScrollToPage"),
+            ("suspend fun go() = list.animateScrollBy(100f)", "animateScrollBy"),
+            ('val fill by animateColorAsState(color, label = "Fill")', "animateColorAsState"),
+        ):
+            with self.subTest(body=body):
+                self.assertIn(
+                    f"give {name} an animationSpec from Motion",
+                    check("designsystem", "shared.bars.components", body),
+                )
+
+    def test_calls_given_a_motion_spec_pass(self):
+        for body in (
+            "suspend fun go() = scroll.animateScrollToItem(selected, turn)",
+            "suspend fun go() = pager.animateScrollToPage(page, animationSpec = turn)",
+            "suspend fun go() = list.animateScrollBy(100f, motionTween())",
+            'val fill by animateColorAsState(color, motionTween(), label = "Fill")',
+            "val size by animateDpAsState(\n    target,\n    animationSpec = spec,\n)",
+        ):
+            with self.subTest(body=body):
+                self.assertEqual(check("designsystem", "shared.bars.components", body), [])
+
     def test_theme_motion_defines_curves_and_tweens(self):
         body = "val curve = CubicBezierEasing(0.4f, 0f, 0.2f, 1f)\nfun <T> base() = tween<T>(240)"
         self.assertEqual(check("designsystem", "theme.motion", body), [])
