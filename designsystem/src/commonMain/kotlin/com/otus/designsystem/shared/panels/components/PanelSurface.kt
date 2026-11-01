@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.toPath
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 
 internal fun Modifier.panelSurface(geometry: PanelLayoutState): Modifier =
@@ -49,19 +50,8 @@ private fun DrawScope.drawPanelFrame(
     clipRect(0f, 0f, size.width, size.height) { drawPath(surface, OtusColors.strokeBgDark, style = border) }
 }
 
-/** Square at the top and sides, which sit past the screen edges, and rounded at the [bottom] corners. */
+/** Square at the top and sides, which sit past the screen edges, and smoothly rounded at the [bottom] corners. */
 private fun DrawScope.panelShape(bottom: Float): Path {
-    val radius = CornerRadius(PanelTokens.bottomRadius.toPx())
     val outside = PanelTokens.borderWidth.toPx()
-    return Path().apply {
-        addRoundRect(
-            RoundRect(
-                Rect(-outside, -outside, size.width + outside, bottom),
-                topLeft = CornerRadius.Zero,
-                topRight = CornerRadius.Zero,
-                bottomRight = radius,
-                bottomLeft = radius,
-            ),
-        )
-    }
+    return PanelTokens.bottomShape.toPath(Rect(-outside, -outside, size.width + outside, bottom), layoutDirection, this)
 }

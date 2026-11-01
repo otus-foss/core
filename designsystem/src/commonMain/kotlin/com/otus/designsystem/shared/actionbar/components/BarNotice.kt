@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -21,6 +20,7 @@ import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.shared.panels.elements.darkSurface
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
@@ -42,7 +42,7 @@ public fun BarNotice(
     Row(
         modifier
             .fillMaxWidth()
-            .darkSurface(RoundedCornerShape(ActionBarTokens.radius))
+            .darkSurface(SmoothCornerShape(ActionBarTokens.radius))
             .padding(start = ActionBarTokens.contextInset, end = buttonInset),
         horizontalArrangement = Arrangement.spacedBy(ActionBarTokens.tokenGap),
         verticalAlignment = Alignment.CenterVertically,
@@ -68,7 +68,7 @@ private fun NoticeButton(
 ) {
     val interactions = remember { MutableInteractionSource() }
     // Concentric with the notice: its corners, less the gap around the button.
-    val shape = RoundedCornerShape(ActionBarTokens.radius - buttonInset)
+    val shape = SmoothCornerShape(ActionBarTokens.radius - buttonInset)
     Box(
         Modifier
             .heightIn(min = PanelTokens.touchTarget)

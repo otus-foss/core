@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -27,6 +26,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.selection.CalendarTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
@@ -112,5 +112,5 @@ private fun CalendarDaySelection.rangeShape(): Shape {
     if (!endpoint) return RectangleShape
     val leading = if (connectsPrevious) 0.dp else CalendarTokens.endpointRadius
     val trailing = if (connectsNext) 0.dp else CalendarTokens.endpointRadius
-    return RoundedCornerShape(topStart = leading, bottomStart = leading, topEnd = trailing, bottomEnd = trailing)
+    return SmoothCornerShape(topStart = leading, bottomStart = leading, topEnd = trailing, bottomEnd = trailing)
 }

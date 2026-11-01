@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.LocalContentColor
@@ -22,6 +21,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.panels.elements.darkSurface
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
@@ -33,7 +33,7 @@ import org.jetbrains.compose.resources.DrawableResource
  * already spaces it from the edge.
  */
 internal fun Modifier.inputFrame(endsWithButton: Boolean): Modifier {
-    val shape = RoundedCornerShape(SheetTokens.rowRadius)
+    val shape = SmoothCornerShape(SheetTokens.rowRadius)
     return fillMaxWidth()
         .heightIn(min = PanelTokens.touchTarget)
         .darkSurface(shape)

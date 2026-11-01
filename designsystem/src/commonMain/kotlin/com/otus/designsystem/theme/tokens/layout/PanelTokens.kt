@@ -1,11 +1,12 @@
 package com.otus.designsystem.theme.tokens.layout
 
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 
 public object PanelTokens {
     public val touchTarget: Dp = 48.dp
@@ -38,7 +39,8 @@ public object PanelTokens {
 
     /** The control panel runs edge to edge from the top, so only its bottom corners round. */
     public val bottomRadius: Dp = CornerTokens.surface
-    public val bottomShape: Shape = RoundedCornerShape(bottomStart = bottomRadius, bottomEnd = bottomRadius)
+    public val bottomShape: Shape =
+        SmoothCornerShape(CornerSize(0.dp), CornerSize(0.dp), CornerSize(bottomRadius), CornerSize(bottomRadius))
 
     /**
      * A panel sheet, the panel unfolded for a task: how far its contents slide while they fade in,

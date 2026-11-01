@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -17,6 +16,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.overlays.ChoiceSheetTokens
 import com.otus.designsystem.theme.tokens.settings.SettingTokens
 
@@ -32,7 +32,7 @@ public fun IconChoice(
     modifier: Modifier = Modifier,
     icon: @Composable () -> Unit,
 ) {
-    val shape = RoundedCornerShape(ChoiceSheetTokens.iconChoiceRadius)
+    val shape = SmoothCornerShape(ChoiceSheetTokens.iconChoiceRadius)
     val interactions = remember { MutableInteractionSource() }
     Column(
         modifier
