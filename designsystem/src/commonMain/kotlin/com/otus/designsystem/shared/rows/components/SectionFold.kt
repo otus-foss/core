@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -119,10 +120,12 @@ public fun FoldingSection(
     captionModifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
+    // Derived, so only crossing halfway recomposes the caption, not every frame of a scroll.
+    val showing by remember(fold) { derivedStateOf { fold.progress < HALF } }
     Column {
         SectionCaption(title, captionModifier) {
             IconButton(
-                if (fold.progress < HALF) "Hide $title" else "Show $title",
+                if (showing) "Hide $title" else "Show $title",
                 fold::toggle,
                 look = IconButtonLook.Bare,
             ) {

@@ -13,6 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
@@ -120,22 +121,37 @@ public class PanelExpansion internal constructor(
         val from = height
         rising = stops[index] >= from
         // The target is read on every frame, so a stop that moves meanwhile, such as with the
-        // keyboard, is followed rather than overshot.
+        // keyboard, is followed rather than overshot, and the panel only ever moves toward it.
         moving = true
         running =
             scope.launch {
-                animate(0f, 1f, animationSpec = spec) { fraction, _ -> height = lerp(from, stops[index], fraction) }
+                animate(0f, 1f, animationSpec = spec) { fraction, _ ->
+                    val target = stops[index]
+                    val next = lerp(from, target, fraction)
+                    height =
+                        if (rising) {
+                            next.coerceIn(minOf(height, target), target)
+                        } else {
+                            next.coerceIn(target, maxOf(height, target))
+                        }
+                }
                 if (index == 0) direct = false
                 skipping = direct
                 moving = false
             }
     }
 
-    /** A drag that ended right on a stop: nothing left to animate. */
+    /** A drag that ended right on a stop: nothing left to animate, but the panel is at that stop. */
     private fun settled() {
         dragging = false
+        if (abs(stops[stop] - height) >= TIE) stop = stops.indexOfFirst { abs(it - height) < TIE }.coerceAtLeast(0)
+        if (height == 0f) direct = false
+        skipping = direct
         if (running?.isActive != true) moving = false
     }
+
+    /** Ends a drag: settles from between stops, or stays on the stop it ended on. */
+    private fun endDrag(velocity: Float) = if (height !in stops) release(velocity) else settled()
 
     /** Back to the panel as it always is. */
     public fun collapse(): Unit = expandTo(0)
@@ -191,11 +207,19 @@ public class PanelExpansion internal constructor(
                 return Offset(0f, height - before)
             }
 
+            // A drag the panel follows ends with the panel, so content inside does not fling on
+            // before it settles.
+            override suspend fun onPreFling(available: Velocity): Velocity {
+                val held = dragging
+                if (held) endDrag(available.y)
+                return if (held) available else Velocity.Zero
+            }
+
             override suspend fun onPostFling(
                 consumed: Velocity,
                 available: Velocity,
             ): Velocity {
-                if (height !in stops) release(available.y) else settled()
+                if (dragging) endDrag(available.y)
                 return Velocity.Zero
             }
         }
@@ -209,7 +233,10 @@ public class PanelExpansion internal constructor(
         val before = this.stops.getOrNull(stop)
         val changed = content != this.content
         this.content = content
-        this.stops = listOf(0f) + stops.filter { it > 0f }.sorted()
+        // As many stops as asked for, also when one has no room, such as on a short window, so a stop
+        // index stays valid.
+        this.stops = listOf(0f) + stops.map { it.coerceAtLeast(TIE) }.sorted()
+        if (stop > this.stops.lastIndex) stop = this.stops.lastIndex
         this.motionScale = motionScale
         this.flingSpeed = flingSpeed
         val held = this.stops.getOrNull(stop) ?: 0f
@@ -243,8 +270,11 @@ public fun rememberPanelExpansion(
     val expansion = remember(scope) { PanelExpansion(scope) }
     val density = LocalDensity.current
     val motionScale = LocalMotionScale.current
-    with(density) {
-        expansion.configure(stops.map { it.toPx() }, motionScale, QuickViewTokens.flingSpeed.toPx(), content)
+    // Unobserved, so the panel's height changing on every frame does not recompose the caller.
+    Snapshot.withoutReadObservation {
+        with(density) {
+            expansion.configure(stops.map { it.toPx() }, motionScale, QuickViewTokens.flingSpeed.toPx(), content)
+        }
     }
     return expansion
 }

@@ -93,7 +93,12 @@ public fun ScrollingFaces(
     val scroll = rememberScrollState()
     val slot = with(LocalDensity.current) { QuickViewTokens.faceSlot.toPx() }
     // Faces wholly or partly past the right edge.
-    val left by remember(scroll, slot) { derivedStateOf { ceil((scroll.maxValue - scroll.value) / slot).toInt() } }
+    // Until the row is first measured, its scroll has no end yet and counts nothing.
+    val left by remember(scroll, slot) {
+        derivedStateOf {
+            if (scroll.maxValue == Int.MAX_VALUE) 0 else ceil((scroll.maxValue - scroll.value) / slot).toInt()
+        }
+    }
     Box(modifier.fillMaxWidth()) {
         Row(Modifier.fillMaxWidth().scrollFade(scroll).horizontalScroll(scroll, overscrollEffect = null)) {
             faces.forEach { face -> Face(face, Modifier.width(QuickViewTokens.faceSlot)) }

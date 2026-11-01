@@ -6,11 +6,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.LayoutDirection
 import com.otus.designsystem.theme.motion.LocalMotionScale
 
 /**
@@ -33,11 +36,16 @@ public fun RollingWords(
             key(index) {
                 val number = word.number()
                 if (number != null) {
-                    if (number.sign.isNotEmpty()) RollingCell(number.sign, direction, style)
-                    // Digits line up from the end, so 12 to 15 rolls only the 5; empty places hold no width.
-                    val places = number.digits.padStart(DIGIT_PLACES, ' ')
-                    places.forEachIndexed { place, digit ->
-                        key(places.length - place) { RollingCell(digit.toString().trim(), direction, style) }
+                    // A number reads left to right in every language, so its digits keep their order.
+                    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                        Row {
+                            if (number.sign.isNotEmpty()) RollingCell(number.sign, direction, style)
+                            // Digits line up from the end, so 12 to 15 rolls only the 5; empty places hold no width.
+                            val places = number.digits.padStart(DIGIT_PLACES, ' ')
+                            places.forEachIndexed { place, digit ->
+                                key(places.length - place) { RollingCell(digit.toString().trim(), direction, style) }
+                            }
+                        }
                     }
                 } else {
                     RollingCell(word, direction, style)
