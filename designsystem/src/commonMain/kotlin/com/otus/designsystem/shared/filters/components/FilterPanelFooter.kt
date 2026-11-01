@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.otus.designsystem.shared.controls.components.ButtonPair
+import com.otus.designsystem.shared.controls.components.PairButton
 import com.otus.designsystem.shared.controls.components.PrimaryLabel
 import com.otus.designsystem.shared.controls.elements.ActionButton
 import com.otus.designsystem.shared.overlays.components.SheetHeaderAction
@@ -23,43 +25,37 @@ public fun FilterPanelFooter(
     modifier: Modifier = Modifier,
     applyEnabled: Boolean = true,
     counting: Boolean = false,
-): Unit =
-    ShowButton(applyLabel, onApply, modifier.fillMaxWidth().padding(FilterTokens.footerPadding), applyEnabled, counting)
+) {
+    ActionButton(
+        applyLabel,
+        onApply,
+        modifier.fillMaxWidth().padding(FilterTokens.footerPadding),
+        primary = true,
+        enabled = applyEnabled,
+        labelContent = { PrimaryLabel(applyLabel, applyEnabled, counting) },
+    )
+}
 
 /**
- * The same button in place of a page's action bar, as tall as the bar, while filters fill the
- * page's grown control panel.
+ * Reset beside the Show button, in place of a page's action bar and as tall as it, while filters
+ * fill the page's grown control panel. Reset greys out while [resetEnabled] is false.
  */
 @Composable
 public fun FilterShowBar(
     applyLabel: String,
     onApply: () -> Unit,
+    onReset: () -> Unit,
     applyEnabled: Boolean = true,
+    resetEnabled: Boolean = true,
     counting: Boolean = false,
-): Unit =
-    ShowButton(
-        applyLabel,
-        onApply,
-        Modifier.fillMaxWidth().heightIn(min = ActionBarTokens.height),
-        applyEnabled,
-        counting,
+) {
+    ButtonPair(
+        PairButton("Reset", onReset, resetEnabled),
+        PairButton(applyLabel, onApply, applyEnabled),
+        Modifier.heightIn(min = ActionBarTokens.height),
+        primaryBusy = counting,
     )
-
-@Composable
-private fun ShowButton(
-    applyLabel: String,
-    onApply: () -> Unit,
-    modifier: Modifier,
-    applyEnabled: Boolean,
-    counting: Boolean,
-) = ActionButton(
-    applyLabel,
-    onApply,
-    modifier,
-    primary = true,
-    enabled = applyEnabled,
-    labelContent = { PrimaryLabel(applyLabel, applyEnabled, counting) },
-)
+}
 
 /** Reset at the end of a [FilterPanel]'s header, greyed out while [enabled] is false. */
 @Composable
