@@ -745,6 +745,10 @@
   process is deleted on the store's first write. Use one store per directory.
 - `VCard.parse` joins the soft line breaks of a quoted-printable value in linear time; a long
   value of many short continuation lines took seconds before.
+- `VCard.write` no longer lets a line break split a content line: it percent-encodes control
+  characters in MEMBER, PHOTO, and URL values, escapes a lone CR in text and parameter values,
+  and leaves out a `kind` that is not a vCard token, such as `example.com:baz`, which then reads
+  back as an individual.
 
 ## 0.7.0 - 2026-10-11
 

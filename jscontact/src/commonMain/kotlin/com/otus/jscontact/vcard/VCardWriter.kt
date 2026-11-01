@@ -31,14 +31,16 @@ internal fun Card.toVCard(): String = vCardProperties().joinToString("") { it.to
 
 /**
  * The properties [VCard.write] writes, in the order RFC 6350 lists them. Text values are escaped. URIs, such
- * as MEMBER, PHOTO, and URL values, are written as they are, because vCard 4.0 does not escape URIs.
+ * as MEMBER, PHOTO, and URL values, are not escaped, because vCard 4.0 does not escape URIs, but their control
+ * characters are percent-encoded so that a line break cannot start a new content line (RFC 6350, section 3.2).
+ * A KIND that is not a vCard token is left out.
  */
 private fun Card.vCardProperties(): List<VCardProperty> =
     buildList {
         add(VCardProperty(BEGIN, VCARD))
         add(VCardProperty(VERSION, WRITTEN_VERSION))
         if (uid != null) add(VCardProperty(UID, uid.escapeText()))
-        if (kind != null) add(VCardProperty(KIND, kind.value))
+        if (kind != null && KIND_TOKEN.matches(kind.value)) add(VCardProperty(KIND, kind.value))
         add(fullNameProperty())
         addAll(listOfNotNull(name?.toNProperty()))
         addAll(nicknames.orEmpty().values.map { VCardProperty(NICKNAME, it.name.escapeText()) })
@@ -54,7 +56,7 @@ private fun Card.vCardProperties(): List<VCardProperty> =
                 .orEmpty()
                 .filterValues { it }
                 .keys
-                .map { VCardProperty(MEMBER, it) },
+                .map { VCardProperty(MEMBER, it.uriValue()) },
         )
         addAll(photoProperties())
         addAll(linkProperties())
@@ -77,7 +79,7 @@ private fun Card.phoneProperties(): List<VCardProperty> =
 
 private fun Card.linkProperties(): List<VCardProperty> =
     links.orEmpty().values.flatMapIndexed { index, link ->
-        VCardProperty(URL, link.uri, vCardParameters(link.contexts.typesIn(CONTEXT_TYPES), link.pref))
+        VCardProperty(URL, link.uri.uriValue(), vCardParameters(link.contexts.typesIn(CONTEXT_TYPES), link.pref))
             .labelled("url${index + 1}", link.label)
     }
 
@@ -89,7 +91,7 @@ private fun Card.photoProperties(): List<VCardProperty> =
         .filter { it.kind == MediaKind.Photo && it.uri.isNotEmpty() }
         .map { photo ->
             val types = photo.contexts.typesIn(CONTEXT_TYPES)
-            VCardProperty(PHOTO, photo.uri, vCardParameters(types, photo.pref, MEDIATYPE to photo.mediaType))
+            VCardProperty(PHOTO, photo.uri.uriValue(), vCardParameters(types, photo.pref, MEDIATYPE to photo.mediaType))
         }
 
 private fun Organization.toOrgProperty(): VCardProperty =
@@ -108,3 +110,22 @@ private fun VCardProperty.labelled(
     } else {
         listOf(copy(group = group), VCardProperty(AB_LABEL, label.escapeText(), group = group))
     }
+
+/** This URI with its control characters, such as CR and LF, percent-encoded, as a URI cannot hold them raw. */
+private fun String.uriValue(): String =
+    replace(CONTROL_CHARACTER) {
+        "%" +
+            it.value
+                .single()
+                .code
+                .toString(HEX)
+                .uppercase()
+                .padStart(2, '0')
+    }
+
+/** An iana-token or x-name, the forms a KIND value takes besides the registered names (RFC 6350, section 6.1.4). */
+private val KIND_TOKEN = Regex("[A-Za-z0-9-]+")
+
+private val CONTROL_CHARACTER = Regex("[\\u0000-\\u001F\\u007F]")
+
+private const val HEX = 16

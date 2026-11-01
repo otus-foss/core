@@ -80,6 +80,10 @@ Limits:
 - A photo that has only a JMAP `blobId` is not written. Dates in free text, such as
   `BDAY;VALUE=text:circa 1800`, are skipped, and a date with a time reads as a date unless it is
   in UTC.
+- A line break can never start a new content line (RFC 6350, section 3.2). Text escapes a CR as a
+  line break. A MEMBER, PHOTO, or URL value percent-encodes its control characters, such as CR and LF
+  as `%0D` and `%0A`, so it reads back with them encoded. A `kind` that is not a vCard token, such as
+  the vendor kind `example.com:baz`, is not written and reads back as an individual.
 
 ### jmap-contacts
 

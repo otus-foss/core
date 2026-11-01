@@ -71,6 +71,42 @@ class VCardWriteTest {
         assertEquals(listOf(card), VCard.parse(written).cards)
     }
 
+    @Test
+    fun lineBreaksInUrisKindsAndTextCannotStartAnotherContentLine() {
+        val card =
+            Card(
+                kind = CardKind("group\r\nFN:Injected"),
+                name = Name(full = "Eve\rMallory"),
+                members = mapOf("urn:uuid:1\nFN:Member" to true),
+                media = mapOf("m1" to Media(kind = MediaKind.Photo, uri = "https://a.example/p.png\r\nNOTE:Photo")),
+                links = mapOf("l1" to Link("https://a.example/\nEND:VCARD\nBEGIN:VCARD\nFN:X")),
+            )
+
+        val written = VCard.write(listOf(card))
+        val read = VCard.parse(written)
+
+        assertTrue(written.replace("\r\n", "").none { it == '\r' || it == '\n' }, "Every line break ends a line")
+        assertEquals(emptyList(), read.failures)
+        val single = read.cards.single()
+        assertEquals(CardKind.Individual, single.kind)
+        assertEquals("Eve\nMallory", single.name?.full)
+        assertEquals(mapOf("urn:uuid:1%0AFN:Member" to true), single.members)
+        assertEquals(
+            "https://a.example/p.png%0D%0ANOTE:Photo",
+            single.media
+                ?.values
+                ?.single()
+                ?.uri,
+        )
+        assertEquals(
+            "https://a.example/%0AEND:VCARD%0ABEGIN:VCARD%0AFN:X",
+            single.links
+                ?.values
+                ?.single()
+                ?.uri,
+        )
+    }
+
     private companion object {
         val WORK = mapOf(ContactContext.Work to true)
 
