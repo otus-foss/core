@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- JMAP: `JmapClient.session` also checks the origins of the session's `downloadUrl` and `uploadUrl`
+  and throws `RedirectedElsewhere` for one the user has not approved, as it does for `apiUrl`, so
+  apps ask at sign-in instead of every upload and download failing. Breaking: a saved login whose
+  blob host was never approved now fails discovery with `RedirectedElsewhere`; approve the host,
+  such as by adding the account again, to migrate.
+- JMAP: add `JmapException.BlobNotFound`, which a download now throws for HTTP 404 instead of
+  `NotJmap`. `JmapConnection` keeps its cached session after `BlobNotFound` and
+  `RedirectedElsewhere`. Breaking: an exhaustive `when` over `JmapException` needs a branch for it,
+  and code that caught `NotJmap` for a missing blob catches `BlobNotFound` instead.
 - Add `ButtonPair`, a secondary and a primary action in one outlined pill whose primary half
   widens for a long label. `ConfirmDialog`, `ChangeLogSheet`, `BirthdayPicker`, and
   `FilterPanelFooter` use it. `FilterPanelFooter` is now 48 dp tall like other buttons.

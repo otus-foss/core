@@ -62,6 +62,14 @@ public sealed class JmapException(
         public val type: String?,
     ) : JmapException("The request failed with HTTP $status${type?.let { " ($it)" }.orEmpty()}.")
 
+    /**
+     * HTTP 404 from a blob download: the server has no blob [blobId] in that account, or no longer
+     * has it. The session is still valid.
+     */
+    public class BlobNotFound(
+        public val blobId: String,
+    ) : JmapException("The server has no blob $blobId.")
+
     /** A method-level error (RFC 8620, section 3.6.2), such as `stateMismatch` or `forbidden`. */
     public class MethodError(
         public val type: String,

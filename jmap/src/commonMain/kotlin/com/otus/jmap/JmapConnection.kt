@@ -6,6 +6,7 @@ import kotlinx.coroutines.sync.withLock
 /**
  * One signed-in server. Caches the session, refetches it when a response reports a new session
  * state (RFC 8620, section 3.4), and drops it after a failure so the next request starts fresh.
+ * A missing blob or an unapproved origin keeps the session, because a new one would not help.
  */
 public class JmapConnection(
     private val client: JmapClient,
@@ -67,7 +68,7 @@ public class JmapConnection(
             block(session)
         } catch (error: JmapException) {
             // Never replay a failed mutation; refresh discovery on the caller's next attempt.
-            invalidate(session)
+            if (error.mayMeanStaleSession()) invalidate(session)
             throw error
         }
     }
@@ -80,3 +81,10 @@ public class JmapConnection(
         lock.withLock { cached = null }
     }
 }
+
+/**
+ * Whether a fresh session could change this outcome. A missing blob does not, and an origin the user
+ * has not approved stays unapproved, so neither costs another session request.
+ */
+private fun JmapException.mayMeanStaleSession(): Boolean =
+    this !is JmapException.BlobNotFound && this !is JmapException.RedirectedElsewhere

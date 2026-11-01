@@ -30,6 +30,20 @@ internal class JmapUrls(
         expanded: String,
     ): Url = resolve(parse(session.sessionUrl), expanded).requireTrusted(session.trustedOrigins)
 
+    /**
+     * Where a session [template] sends requests, with each variable filled by a placeholder, or null
+     * when the result is not a URL the policy allows.
+     */
+    fun templateTarget(
+        base: Url,
+        template: String,
+    ): Url? =
+        try {
+            resolve(base, TEMPLATE_VARIABLE.replace(template, TEMPLATE_PLACEHOLDER))
+        } catch (expected: JmapException.InsecureUrl) {
+            null
+        }
+
     private fun build(
         text: String,
         block: URLBuilder.() -> Unit,
@@ -107,9 +121,7 @@ internal fun expandUriTemplate(
     template: String,
     values: Map<String, String>,
 ): String {
-    val expanded =
-        // Android's ICU regex engine rejects an unescaped "}", which the JVM accepts.
-        Regex("\\{([^{}]+)\\}").replace(template) { match -> templateValue(values, match.groupValues[1]) }
+    val expanded = TEMPLATE_VARIABLE.replace(template) { match -> templateValue(values, match.groupValues[1]) }
     if ('{' in expanded || '}' in expanded) throw JmapException.NotJmap("invalid URI template")
     return expanded
 }
@@ -128,3 +140,9 @@ private fun templateValue(
 internal fun String.isDotSegment(): Boolean = this in DOT_SEGMENTS
 
 private val DOT_SEGMENTS = setOf(".", "..")
+
+// Android's ICU regex engine rejects an unescaped "}", which the JVM accepts.
+private val TEMPLATE_VARIABLE = Regex("\\{([^{}]+)\\}")
+
+/** Fills every template variable when only the template's origin matters. */
+private const val TEMPLATE_PLACEHOLDER = "x"

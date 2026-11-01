@@ -43,7 +43,7 @@ public class JmapClient(
     /**
      * Authenticated, bounded blob download (RFC 8620, section 6.2). No redirect receives credentials.
      * [name] fills the template's `{name}`, the file name a server gives in `Content-Disposition`;
-     * it defaults to `download`.
+     * it defaults to `download`. A blob the server does not have throws [JmapException.BlobNotFound].
      */
     public suspend fun download(
         session: JmapSession,
@@ -68,7 +68,8 @@ public class JmapClient(
     /**
      * Fetches the session at [url], following redirects such as `/.well-known/jmap` (section 2.2).
      * Credentials only go to the origin of [url] and to [trustedOrigins]; a redirect elsewhere throws
-     * [JmapException.RedirectedElsewhere] before any credentials are sent there.
+     * [JmapException.RedirectedElsewhere] before any credentials are sent there. So does an `apiUrl`,
+     * `downloadUrl`, or `uploadUrl` on another origin, so the user can approve each one at sign-in.
      */
     public suspend fun session(
         url: String,
@@ -131,9 +132,11 @@ public class JmapClient(
         trusted: Set<String>,
     ): JmapSession {
         val dto = jmapDecoding { JmapJson.decodeFromJsonElement(SessionDto.serializer(), decode(response)) }
+        val apiUrl = urls.resolve(url, dto.apiUrl).requireTrusted(trusted)
+        urls.requireTrustedBlobEndpoints(url, dto, trusted)
         return JmapSession(
             sessionUrl = url.toString(),
-            apiUrl = urls.resolve(url, dto.apiUrl).requireTrusted(trusted).toString(),
+            apiUrl = apiUrl.toString(),
             username = dto.username,
             capabilities = dto.capabilities.keys,
             accounts =
@@ -195,6 +198,21 @@ public class JmapClient(
     private companion object {
         val REDIRECT_STATUSES = setOf(301, 302, 303, 307, 308)
     }
+}
+
+/**
+ * Blob endpoints may live on another origin (section 2). Asking now lets the user approve it at
+ * sign-in; otherwise every later upload and download would fail. A template that is not an allowed
+ * URL is refused only when it is used.
+ */
+private fun JmapUrls.requireTrustedBlobEndpoints(
+    url: Url,
+    dto: SessionDto,
+    trusted: Set<String>,
+) {
+    listOfNotNull(dto.downloadUrl, dto.uploadUrl)
+        .mapNotNull { template -> templateTarget(url, template) }
+        .forEach { target -> target.requireTrusted(trusted) }
 }
 
 /** Checks the session and every account each call touches before anything is sent. */
