@@ -110,20 +110,17 @@ class JmapBlobRecoveryTest {
     fun anUnapprovedBlobHostKeepsTheSession() =
         runTest {
             var sessions = 0
-            // The template's host depends on the account, so discovery checks it with a placeholder.
-            val perAccount =
-                session().dropLast(1) + """, "downloadUrl": "https://{accountId}.files.example/{blobId}"}"""
+            val elsewhere = session().dropLast(1) + """, "downloadUrl": "https://files.example/{blobId}"}"""
             val client =
                 JmapClient(
                     MockEngine {
                         sessions++
-                        json(perAccount)
+                        json(elsewhere)
                     },
                 )
-            val trusted = setOf("https://x.files.example:443")
-            val connection = JmapConnection(client, "https://example.org/session", ADA, trusted)
+            val connection = JmapConnection(client, "https://example.org/session", ADA)
             val error = assertFailsWith<JmapException.RedirectedElsewhere> { transfer(connection, upload = false) }
-            assertEquals("https://d1.files.example:443", error.origin)
+            assertEquals("https://files.example:443", error.origin)
             connection.session()
             assertEquals(1, sessions)
         }

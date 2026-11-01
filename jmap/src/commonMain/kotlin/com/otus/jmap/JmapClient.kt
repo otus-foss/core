@@ -68,13 +68,19 @@ public class JmapClient(
     /**
      * Fetches the session at [url], following redirects such as `/.well-known/jmap` (section 2.2).
      * Credentials only go to the origin of [url] and to [trustedOrigins]; a redirect elsewhere throws
-     * [JmapException.RedirectedElsewhere] before any credentials are sent there. So does an `apiUrl`,
-     * `downloadUrl`, or `uploadUrl` on another origin, so the user can approve each one at sign-in.
+     * [JmapException.RedirectedElsewhere] before any credentials are sent there, and so does an
+     * `apiUrl` on another origin.
+     *
+     * RFC 8620 allows `downloadUrl` and `uploadUrl` on yet another origin. Each blob request checks
+     * its own URL, so such a session still serves API calls. Pass [requireTrustedBlobOrigins] when
+     * signing in to also throw [JmapException.RedirectedElsewhere] for an untrusted blob origin, so
+     * the user can approve it before the login is saved.
      */
     public suspend fun session(
         url: String,
         auth: JmapAuth,
         trustedOrigins: Set<String> = emptySet(),
+        requireTrustedBlobOrigins: Boolean = false,
     ): JmapSession {
         var target = urls.parse(url)
         val trusted = trustedOrigins + target.origin()
@@ -85,7 +91,9 @@ public class JmapClient(
             if (response.status in REDIRECT_STATUSES && location != null) {
                 target = urls.resolve(target, location)
             } else {
-                return parseSession(target.requireTrusted(trusted), response, trusted)
+                val session = parseSession(target.requireTrusted(trusted), response, trusted)
+                if (requireTrustedBlobOrigins) urls.requireTrustedBlobOrigins(session)
+                return session
             }
         }
         throw JmapException.TooManyRedirects()
@@ -132,11 +140,9 @@ public class JmapClient(
         trusted: Set<String>,
     ): JmapSession {
         val dto = jmapDecoding { JmapJson.decodeFromJsonElement(SessionDto.serializer(), decode(response)) }
-        val apiUrl = urls.resolve(url, dto.apiUrl).requireTrusted(trusted)
-        urls.requireTrustedBlobEndpoints(url, dto, trusted)
         return JmapSession(
             sessionUrl = url.toString(),
-            apiUrl = apiUrl.toString(),
+            apiUrl = urls.resolve(url, dto.apiUrl).requireTrusted(trusted).toString(),
             username = dto.username,
             capabilities = dto.capabilities.keys,
             accounts =
@@ -202,18 +208,15 @@ public class JmapClient(
 }
 
 /**
- * Blob endpoints may live on another origin (section 2). Asking now lets the user approve it at
- * sign-in; otherwise every later upload and download would fail. A template that is not an allowed
- * URL is refused only when it is used.
+ * Throws [JmapException.RedirectedElsewhere] for a blob endpoint on an untrusted origin, so the
+ * user can approve it at sign-in instead of every later upload and download failing. A template
+ * that is not an allowed URL is refused only when it is used.
  */
-private fun JmapUrls.requireTrustedBlobEndpoints(
-    url: Url,
-    dto: SessionDto,
-    trusted: Set<String>,
-) {
-    listOfNotNull(dto.downloadUrl, dto.uploadUrl)
-        .mapNotNull { template -> templateTarget(url, template) }
-        .forEach { target -> target.requireTrusted(trusted) }
+private fun JmapUrls.requireTrustedBlobOrigins(session: JmapSession) {
+    val base = parse(session.sessionUrl)
+    listOfNotNull(session.downloadUrl, session.uploadUrl)
+        .mapNotNull { template -> templateTarget(base, template) }
+        .forEach { target -> target.requireTrusted(session.trustedOrigins) }
 }
 
 /** Checks the session and every account each call touches before anything is sent. */

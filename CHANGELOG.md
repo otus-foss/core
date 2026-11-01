@@ -2,11 +2,14 @@
 
 ## Unreleased
 
-- JMAP: `JmapClient.session` also checks the origins of the session's `downloadUrl` and `uploadUrl`
-  and throws `RedirectedElsewhere` for one the user has not approved, as it does for `apiUrl`, so
-  apps ask at sign-in instead of every upload and download failing. Breaking: a saved login whose
-  blob host was never approved now fails discovery with `RedirectedElsewhere`; approve the host,
-  such as by adding the account again, to migrate.
+- JMAP: add `requireTrustedBlobOrigins` to `JmapClient.session`, false by default. When true,
+  discovery also throws `RedirectedElsewhere` for a `downloadUrl` or `uploadUrl` on an origin the
+  user has not approved, so a sign-in can ask before every upload and download would fail.
+  Without it, discovery is unchanged: such a session still serves API calls, and only its blob
+  calls throw `RedirectedElsewhere`. Callers compiled against the earlier signature must rebuild.
+- Accounts: connecting asks for approval of a blob host on another origin, as it does for a
+  redirect or an `apiUrl` elsewhere, and saves it with the login's trusted origins. Saved logins
+  keep loading; adding such an account again approves its blob host.
 - JMAP: add `JmapPolicy.socketTimeoutMillis`, 30 s by default, the longest any request may go
   without data. Blob uploads and downloads no longer have `requestTimeoutMillis` as a total limit,
   so large attachments work on slow links. Callers that build `JmapPolicy` must rebuild.

@@ -35,8 +35,8 @@ Mail uses `AccountService.Mail`. Setup checks the advertised account capability 
 No calendar or contact service is assumed. The generic contract lets a future consumer choose
 its own capability and probe without introducing a provider-specific account flow.
 
-HTTPS discovery, HTTP Basic authentication, explicit consent for a redirect to another host,
-credential redaction, and app-private protected storage retain the existing Mail behavior.
+HTTPS discovery, HTTP Basic authentication, explicit consent for a redirect, API endpoint, or
+blob endpoint on another host, credential redaction, and app-private protected storage retain the existing Mail behavior.
 The accounts page hides the form behind "Connect an account". The button opens the design system's
 `SheetFrame`, with scrolling fields above the keyboard. A successful connection closes the sheet.
 Done, the scrim, Back, and a downward swipe dismiss it and discard the draft. The form holds its
