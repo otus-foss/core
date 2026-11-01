@@ -27,8 +27,12 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.util.lerp
 import com.otus.designsystem.resources.Res
+import com.otus.designsystem.resources.symbol_close
 import com.otus.designsystem.resources.symbol_search
+import com.otus.designsystem.shared.controls.elements.IconButton
+import com.otus.designsystem.shared.controls.elements.IconButtonLook
 import com.otus.designsystem.shared.controls.elements.Symbol
+import com.otus.designsystem.shared.input.elements.SearchField
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
@@ -36,7 +40,8 @@ import com.otus.designsystem.theme.typography.panelTextStyle
 /**
  * A search prompt as a page-colored pill in the control panel's header, such as "Search Inbox".
  * As the panel [collapse]s, the [filter] button grows in at its end once the pills above the list
- * have faded, so filters stay one tap away.
+ * have faded, so filters stay one tap away. With a [search], the pill itself is the field, its prompt
+ * the placeholder, so starting a search moves nothing.
  */
 @Composable
 public fun PanelSearchPill(
@@ -45,6 +50,7 @@ public fun PanelSearchPill(
     modifier: Modifier = Modifier,
     collapse: () -> Float = { 0f },
     filter: (@Composable () -> Unit)? = null,
+    search: PillSearch? = null,
 ) {
     // The pill fills the header, so press feedback would tint the whole field.
     val interactions = remember { MutableInteractionSource() }
@@ -54,10 +60,9 @@ public fun PanelSearchPill(
         modifier
             .fillMaxWidth()
             .heightIn(min = PanelTokens.touchTarget)
-            .semantics { contentDescription = label }
-            .clickable(interactions, indication = null, role = Role.Button, onClick = onClick),
+            .tappable(search == null, label, interactions, onClick),
         contentAlignment = Alignment.CenterStart,
-    ) { PillContent(label, filter, filterShown, collapse) }
+    ) { PillContent(label, filter, filterShown, collapse, search) }
 }
 
 @Composable
@@ -66,6 +71,7 @@ private fun PillContent(
     filter: (@Composable () -> Unit)?,
     filterShown: Boolean,
     collapse: () -> Float,
+    search: PillSearch?,
 ) {
     Row(
         Modifier
@@ -77,14 +83,25 @@ private fun PillContent(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         CompositionLocalProvider(LocalContentColor provides OtusColors.text2) { Symbol(Res.drawable.symbol_search) }
-        Text(
-            label,
-            Modifier.weight(1f),
-            style = panelTextStyle(),
-            color = OtusColors.text2,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
+        if (search == null) {
+            Text(
+                label,
+                Modifier.weight(1f),
+                style = panelTextStyle(),
+                color = OtusColors.text2,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        } else {
+            SearchField(search.query, search.onQueryChange, label, search.fieldModifier.weight(1f), search.onSubmit)
+            if (search.query.isNotEmpty()) {
+                IconButton("Clear search", { search.onQueryChange("") }, look = IconButtonLook.Bare) {
+                    CompositionLocalProvider(LocalContentColor provides OtusColors.text2) {
+                        Symbol(Res.drawable.symbol_close)
+                    }
+                }
+            }
+        }
         if (filter != null && filterShown) {
             Box(
                 Modifier.graphicsLayer {
@@ -97,3 +114,28 @@ private fun PillContent(
         }
     }
 }
+
+/**
+ * What a [PanelSearchPill] edits while it is the search field: the [query], with [onSubmit] on the
+ * keyboard's search key. [fieldModifier] goes on the text field, such as to focus it.
+ */
+public class PillSearch(
+    public val query: String,
+    public val onQueryChange: (String) -> Unit,
+    public val onSubmit: () -> Unit = {},
+    public val fieldModifier: Modifier = Modifier,
+)
+
+/** A tap on the pill while it is a prompt; as a field, the text field takes taps itself. */
+private fun Modifier.tappable(
+    prompt: Boolean,
+    label: String,
+    interactions: MutableInteractionSource,
+    onClick: () -> Unit,
+): Modifier =
+    if (prompt) {
+        semantics { contentDescription = label }
+            .clickable(interactions, indication = null, role = Role.Button, onClick = onClick)
+    } else {
+        this
+    }

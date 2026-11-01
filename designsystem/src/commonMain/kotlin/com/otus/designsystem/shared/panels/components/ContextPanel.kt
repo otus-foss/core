@@ -4,8 +4,13 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
@@ -15,13 +20,18 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.ProvideTextStyle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.MeasureResult
@@ -34,8 +44,10 @@ import com.otus.designsystem.shared.pages.components.PageChrome
 import com.otus.designsystem.shared.pages.components.pinnedChrome
 import com.otus.designsystem.shared.rows.components.Collapsible
 import com.otus.designsystem.shared.sidebar.components.sidebarOpenZone
+import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.motionTween
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.layout.QuickViewTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 import kotlin.math.roundToInt
 
@@ -53,9 +65,11 @@ public enum class ChipPlacement { Below, Overlapping, None }
  * [chips] item needs a stable key and a pill-shaped visual, and the panel cuts it out of its
  * surface.
  *
- * [collapse] reads a [PanelCollapse.progress]: as a list scrolls down, the panel shortens and pills
- * across its edge rise, shrink, and fade out. Pass the same reading to header content that
- * collapses with it, such as a [PanelSearchPill] or an [AccountStack].
+ * The [motion]'s collapse reads a [PanelCollapse.progress]: as a list scrolls down, the panel
+ * shortens and pills across its edge rise, shrink, and fade out. Pass the same reading to header
+ * content that collapses with it, such as a [PanelSearchPill] or an [AccountStack]. With a
+ * [PanelExpansion], dragging the panel down grows it under its header row, which stays where it
+ * is, and shows the motion's expanded content in the new room; the pills fade as it grows.
  */
 @Composable
 public fun ContextPanel(
@@ -64,7 +78,7 @@ public fun ContextPanel(
     navigation: (@Composable () -> Unit)? = null,
     trailingAction: (@Composable () -> Unit)? = null,
     chips: @Composable ContextPanelScope.() -> Unit = {},
-    collapse: () -> Float = { 0f },
+    motion: PanelMotion = PanelMotion(),
     content: @Composable () -> Unit,
 ) {
     val overlap =
@@ -81,6 +95,8 @@ public fun ContextPanel(
             listOf(
                 { PanelHeader(navigation, HeaderAction(trailingAction, shown = !railShown), null, content) },
                 { PanelRail(railShown, geometry, scope, trailingAction, chips) },
+                // Composed only while grown, so its content takes no taps or screen reader focus when shut.
+                { if (motion.expansion?.expanded == true) ExpansionRoom(motion) },
             ),
         modifier =
             modifier
@@ -88,8 +104,9 @@ public fun ContextPanel(
                 .fillMaxWidth()
                 .sidebarOpenZone()
                 .onGloballyPositioned(geometry::trackPanel)
+                .expandable(motion.expansion)
                 .panelSurface(geometry),
-        measurePolicy = PanelMeasurePolicy(placement, overlap::value, collapse, geometry),
+        measurePolicy = PanelMeasurePolicy(placement, overlap::value, motion, geometry),
     )
 }
 
@@ -125,7 +142,7 @@ private fun PanelRail(
 private class PanelMeasurePolicy(
     private val placement: ChipPlacement,
     private val overlap: () -> Float,
-    private val collapse: () -> Float,
+    private val motion: PanelMotion,
     private val geometry: PanelLayoutState,
 ) : MultiContentMeasurePolicy {
     override fun MeasureScope.measure(
@@ -135,26 +152,41 @@ private class PanelMeasurePolicy(
         val loose = constraints.copy(minHeight = 0)
         val header = measurables[0].first().measure(loose)
         val rail = measurables[1].firstOrNull()?.measure(loose)
-        val progress = collapse().coerceIn(0f, 1f)
-        val fade = if (placement == ChipPlacement.Overlapping) CollapseSteps.pills(progress) else 0f
+        // Never taller than the panel's place, such as above the keyboard: a taller layout is centered
+        // in it, which would push the header off the top.
+        val space = (constraints.maxHeight - header.height).coerceAtLeast(0)
+        val grown = (motion.expansion?.height ?: 0f).coerceIn(0f, space.toFloat())
+        val grownRoom =
+            measurables[2]
+                .firstOrNull()
+                ?.takeIf {
+                    grown >= 1f
+                }?.measure(Constraints.fixed(constraints.maxWidth, grown.roundToInt()))
+        val progress = motion.collapse().coerceIn(0f, 1f)
+        val growFade = (grown / QuickViewTokens.pillsFadeDistance.toPx()).coerceIn(0f, 1f)
+        val collapseFade = if (placement == ChipPlacement.Overlapping) CollapseSteps.pills(progress) else 0f
+        val fade = maxOf(collapseFade, growFade)
         val drop = lerp(PanelTokens.railDrop.toPx(), PanelTokens.collapsedDrop.toPx(), progress)
         val railHeight = rail?.height ?: 0
         val closed = PanelTokens.collapsedDrop.toPx()
         // Below, the edge runs along the rail's top; across, through its middle.
         val below = if (placement != ChipPlacement.None) maxOf(closed, drop - railHeight / 2f) else closed
-        val edge = header.height + lerp(below, drop, overlap())
-        val railTop = header.height + drop - railHeight / 2f - PanelTokens.pillRise.toPx() * fade
+        // The room's grab handle ends the grown panel, so the rail's share of the edge goes with the pills.
+        val edge = header.height + grown + lerp(below, drop, overlap()) * (1f - growFade)
+        // Growing, the pills only fade where they are; rising and shrinking belong to the scroll collapse.
+        val railTop = header.height + drop - railHeight / 2f - PanelTokens.pillRise.toPx() * collapseFade
         geometry.edge = edge
         geometry.railFade = fade
         val railPlaced = rail != null && fade < 1f
         val height = if (railPlaced) maxOf(edge, railTop + railHeight) else edge
-        return layout(constraints.maxWidth, height.roundToInt()) {
+        return layout(constraints.maxWidth, height.roundToInt().coerceAtMost(constraints.maxHeight)) {
             header.place(0, 0)
+            grownRoom?.place(0, header.height)
             // A faded rail is not placed, so its pills take no taps.
             if (railPlaced) {
                 rail.placeWithLayer(0, railTop.roundToInt()) {
                     alpha = 1f - fade
-                    scaleX = 1f - PanelTokens.PILL_SHRINK * fade
+                    scaleX = 1f - PanelTokens.PILL_SHRINK * collapseFade
                     scaleY = scaleX
                 }
             }
@@ -223,4 +255,37 @@ internal fun PanelHeader(
             }
         }
     }
+}
+
+/**
+ * The room a [PanelExpansion] grows below the header row: the expanded content, cut to the room,
+ * with the grab handle at its bottom.
+ */
+@Composable
+private fun ExpansionRoom(motion: PanelMotion) {
+    Column(Modifier.clipToBounds()) {
+        Box(Modifier.weight(1f).fillMaxWidth()) { motion.expanded() }
+        Box(
+            Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(vertical = PanelTokens.handlePadding)
+                .size(PanelTokens.handleWidth, PanelTokens.handleHeight)
+                .clip(CircleShape)
+                .background(OtusColors.bgLight),
+        )
+    }
+}
+
+/**
+ * Lets the user drag the panel taller and shorter with [expansion]; scrolling content inside hands
+ * it what it does not scroll itself.
+ */
+@Composable
+private fun Modifier.expandable(expansion: PanelExpansion?): Modifier {
+    if (expansion == null) return this
+    return nestedScroll(expansion.connection).draggable(
+        rememberDraggableState(expansion::drag),
+        Orientation.Vertical,
+        onDragStopped = { velocity -> expansion.release(velocity) },
+    )
 }
