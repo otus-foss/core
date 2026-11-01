@@ -46,6 +46,9 @@ public object PanelTokens {
      */
     public val sheetContentSlide: Dp = 8.dp
     public val sheetCloseSwipe: Dp = 72.dp
+
+    /** An upward flick faster than this, per second, closes a panel sheet the user has started to lift. */
+    public val sheetCloseFling: Dp = 800.dp
     public val handleWidth: Dp = 36.dp
     public val handleHeight: Dp = 4.dp
     public val handlePadding: Dp = 12.dp
