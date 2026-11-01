@@ -1,5 +1,6 @@
 package com.otus.designsystem.mail.read.elements
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -8,7 +9,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.UIKitView
-import com.otus.designsystem.theme.colors.OtusColors
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.readValue
 import platform.CoreGraphics.CGRectZero
@@ -38,19 +38,19 @@ public actual fun HtmlView(
 ) {
     val openLink by rememberUpdatedState(onOpenLink)
     val showRemote by rememberUpdatedState(onShowRemote)
-    val palette = OtusColors.palette
-    val placeholders = onShowRemote != null
     val renderKey = remember { newRenderKey() }
-    val document =
-        remember(html, loadRemote, palette, placeholders, quote, insets) {
-            sandboxedHtml(html, loadRemote, palette, renderKey, placeholders, quote, insets.spacers())
-        }
+    val page = rememberSandboxedPage(html, loadRemote, onShowRemote != null, quote, insets, renderKey)
     // WebKit keeps only a weak reference to its delegate.
     val delegate =
         remember { LinkDelegate(renderKey, onOpenLink = { openLink(it) }, onShowRemote = { showRemote?.invoke() }) }
-    key(document) {
+    if (page == null) {
+        // The view keeps its place while the first page is built.
+        Box(modifier)
+        return
+    }
+    key(page) {
         UIKitView(
-            factory = { htmlWebView(document, loadRemote, delegate) },
+            factory = { htmlWebView(page.document, page.loadRemote, delegate) },
             modifier = modifier,
         )
     }

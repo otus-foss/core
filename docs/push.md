@@ -27,7 +27,7 @@ storage keys, and platform delivery services keep their formats and identities.
     verification notice. Apple uses it to pause alerts. Throwing aborts creation; do not call
     subscription methods from the callback, since the sync lock is held.
   - `sync()` makes each server match, asking all servers in parallel. It creates or replaces
-    subscriptions, sends verification codes, renews subscriptions past half their granted
+    subscriptions, sends verification codes, renews verified subscriptions past half their granted
     lifetime for another 7 days, and deletes them when the endpoint is cleared.
   - `forget(loginId)` deletes a login's subscription and record. Call it before the login's
     credentials are removed; `JmapAccountRepository` takes it as `beforeRemove`.
@@ -40,14 +40,18 @@ storage keys, and platform delivery services keep their formats and identities.
 
 - A new subscription asks for `types`. Mail asks for `EmailDelivery`, which changes only when
   mail is delivered (RFC 8621, section 1.5).
+- A server keeps the types a subscription was created with, so each record saves them, and `sync`
+  replaces a subscription whose saved types differ from `types`. A record saved by an earlier
+  version has no types, so its subscription is replaced once, and the new one is verified again.
 - Creating a subscription also deletes this device's earlier ones, found by `deviceClientId`, so
   a reinstall does not leave the server pushing twice.
 - A server that answers `unknownMethod` or `forbidden`, or does not create the subscription, is
   marked `Refused`. The next `sync` tries again. A push URL that is not https is refused without
   asking the server, and the login's earlier subscription is deleted.
 - A subscription still unverified an hour after creation is created again, because the server
-  pushes nothing until the client returns the code. An update the server rejects, such as a wrong
-  code, also starts a new subscription.
+  pushes nothing until the client returns the code. An unverified subscription is not renewed, so
+  this holds even when the server grants less than two hours. An update the server rejects, such
+  as a wrong code, also starts a new subscription.
 - A server that cannot be reached keeps the login's record until the next `sync`.
 - A record of a login removed without `forget` is dropped without contacting the server, because
   its credentials are gone. The server deletes the subscription when it expires.

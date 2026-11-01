@@ -719,6 +719,46 @@ class FeatureModuleTests(unittest.TestCase):
         self.assertTrue(check("settings", "presentation.screens", "val c = Color(0xFF000000)"))
 
 
+class MotionTests(unittest.TestCase):
+    raw = "animate through Motion; springs and curves belong in theme/motion"
+    easing = "a tween outside theme/motion must name a MotionCurve easing"
+    literal = "tween durations come from Motion, not number literals"
+
+    def test_specs_that_bypass_motion_are_rejected(self):
+        for body, error in (
+            ("fun bar() = fadeIn(tween(morph.millis))", self.easing),
+            ("val spec = tween<Float>(240, easing = MotionCurve.Standard.easing)", self.literal),
+            ("val spec = TweenSpec<Float>(durationMillis = 300, easing = Linear)", self.literal),
+            ("val spec = tween<Float>(\n    millis,\n    delayMillis = 40,\n)", self.easing),
+            ("val spec = spring<Float>(stiffness = Spring.StiffnessLow)", self.raw),
+            ("val curve = CubicBezierEasing(0.4f, 0f, 0.2f, 1f)", self.raw),
+        ):
+            for module, package in (
+                ("designsystem", "shared.bars.components"),
+                ("settings", "presentation.components"),
+            ):
+                with self.subTest(body=body, module=module):
+                    self.assertIn(error, check(module, package, body))
+
+    def test_motion_specs_and_named_easings_pass(self):
+        for body in (
+            "val spec = Motion.tween<Float>(MotionSpeed.Fast, MotionCurve.Exit, scale)",
+            "val spec = motionTween<Float>(MotionSpeed.Quick)",
+            "fun bar() = fadeIn(Motion\n    .tween(scale = scale))",
+            "val clock = tween<Float>(morph.millis, easing = LinearEasing)",
+            "val fade = tween<Float>(rest, delayMillis = gap, easing = MotionCurve.Enter.easing)",
+            "val owl = TweenSpec<Float>(Motion.scaled(length, scale), easing = LinearEasing)",
+            '// tween(240)\nval label = "spring(1)"',
+        ):
+            with self.subTest(body=body):
+                self.assertEqual(check("designsystem", "shared.bars.components", body), [])
+
+    def test_theme_motion_defines_curves_and_tweens(self):
+        body = "val curve = CubicBezierEasing(0.4f, 0f, 0.2f, 1f)\nfun <T> base() = tween<T>(240)"
+        self.assertEqual(check("designsystem", "theme.motion", body), [])
+        self.assertIn(self.raw, check("designsystem", "theme.colors", body))
+
+
 class VisualResourceTests(unittest.TestCase):
     def test_feature_drawables_must_use_the_central_bundle(self):
         for module in ("accounts", "settings"):

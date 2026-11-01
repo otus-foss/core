@@ -14,6 +14,9 @@ public sealed interface JmapServerAddress {
     ) : JmapServerAddress
 }
 
+/** The longest DNS name (RFC 1035, section 2.3.4) plus a colon and a five-digit port. */
+private const val MAX_AUTHORITY_LENGTH = 253 + 6
+
 private val hostPattern =
     Regex("^[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?(\\.[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?)*(:[0-9]{1,5})?$")
 
@@ -30,10 +33,14 @@ public fun parseJmapServer(input: String): JmapServerAddress {
     return when {
         text.isEmpty() -> JmapServerAddress.Empty
         scheme == "http" -> JmapServerAddress.Insecure
-        scheme !in setOf("", "https") || !hostPattern.matches(authority) -> JmapServerAddress.Invalid
+        scheme !in setOf("", "https") || !authority.isHost() -> JmapServerAddress.Invalid
         else -> JmapServerAddress.Valid("https://${authority.lowercase()}${path.ifEmpty { "/.well-known/jmap" }}")
     }
 }
+
+// The length check comes first: the pattern recurses once per label, so a pasted run of
+// thousands of labels would overflow the stack before it could fail.
+private fun String.isHost(): Boolean = length <= MAX_AUTHORITY_LENGTH && hostPattern.matches(this)
 
 /** Details for connecting one account. The password is passed on, never stored by this model. */
 public data class JmapAccountDraft(

@@ -6,6 +6,7 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.elementNames
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonDecoder
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonEncoder
@@ -40,6 +41,11 @@ internal abstract class JsContactSerializer<T : Any>(
                 ?: throw SerializationException("$typeName is not a JSON object")
         requireType(members[TYPE_PROPERTY])
         val properties = members - TYPE_PROPERTY
+        // Encoding recurses once per level, so a value nested thousands of levels deep, such as an
+        // unknown property of a server's card, would overflow the stack when the card is written.
+        if (properties.values.any { it.nestsDeeperThan(MAX_NESTING) }) {
+            throw SerializationException("$typeName nests values more than $MAX_NESTING levels deep")
+        }
         val value = input.json.decodeFromJsonElement(generated, JsonObject(properties.filterKeys { it in knownNames }))
         return withExtra(value, properties.filterKeys { it !in knownNames })
     }
@@ -74,3 +80,14 @@ internal abstract class JsContactSerializer<T : Any>(
 
 /** The member that names the type of a JSContact object (RFC 9553, section 1.3.4). */
 internal const val TYPE_PROPERTY: String = "@type"
+
+/** Whether this value holds arrays or objects nested more than [levels] deep. */
+private fun JsonElement.nestsDeeperThan(levels: Int): Boolean =
+    when (this) {
+        is JsonArray -> levels == 0 || any { it.nestsDeeperThan(levels - 1) }
+        is JsonObject -> levels == 0 || values.any { it.nestsDeeperThan(levels - 1) }
+        else -> false
+    }
+
+/** Far deeper than any JSContact object or vendor extension needs, and shallow enough to encode. */
+private const val MAX_NESTING = 64

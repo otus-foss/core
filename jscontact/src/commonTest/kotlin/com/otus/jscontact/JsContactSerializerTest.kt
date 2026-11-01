@@ -36,6 +36,17 @@ class JsContactSerializerTest {
     }
 
     @Test
+    fun valuesNestedTooDeeplyToEncodeFailToDecode() {
+        val tooDeep = "[".repeat(1_000) + "]".repeat(1_000)
+        for (member in listOf("\"x\": $tooDeep", "\"localizations\": {\"de\": {\"x\": $tooDeep}}")) {
+            assertFailsWith<SerializationException>(member.take(20)) { CardJson.cardWith(member) }
+        }
+        val card = CardJson.cardWith("\"x\": " + "[".repeat(64) + "]".repeat(64))
+        val written = JsContactJson.encodeToString(Card.serializer(), card)
+        assertEquals(card, CardJson.decode(written))
+    }
+
+    @Test
     fun aTypeThatDiffersEvenOnlyInCaseIsRejected() {
         for (type in listOf("\"foo\"", "\"Bar\"", "\"Resource\"", "5", "null", "{}")) {
             assertFailsWith<SerializationException> { decode("""{"@type":$type,"baz":5}""") }

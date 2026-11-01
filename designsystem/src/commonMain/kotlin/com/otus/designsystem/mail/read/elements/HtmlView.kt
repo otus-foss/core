@@ -2,11 +2,16 @@ package com.otus.designsystem.mail.read.elements
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.LayoutDirection
+import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.colors.OtusPalette
 import com.otus.designsystem.theme.colors.toHex
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlin.math.roundToInt
 
 /**
@@ -33,6 +38,36 @@ public expect fun HtmlView(
     quote: HtmlQuote? = null,
     insets: PaddingValues = PaddingValues(),
 )
+
+/** A [sandboxedHtml] [document] and whether it may load remote content, so its view can match it. */
+internal data class SandboxedPage(
+    val document: String,
+    val loadRemote: Boolean,
+)
+
+/**
+ * [HtmlView]'s page, built off the main thread since a message can be large, or null until the
+ * first one is ready. While a change of an argument rebuilds it, the last page stays.
+ */
+@Composable
+internal fun rememberSandboxedPage(
+    html: String,
+    loadRemote: Boolean,
+    placeholders: Boolean,
+    quote: HtmlQuote?,
+    insets: PaddingValues,
+    key: RenderKey,
+): SandboxedPage? {
+    val palette = OtusColors.palette
+    val page by produceState<SandboxedPage?>(null, html, loadRemote, palette, placeholders, quote, insets, key) {
+        value =
+            withContext(Dispatchers.Default) {
+                val spacers = insets.spacers()
+                SandboxedPage(sandboxedHtml(html, loadRemote, palette, key, placeholders, quote, spacers), loadRemote)
+            }
+    }
+    return page
+}
 
 /**
  * [html] behind a Content Security Policy that blocks every outside resource except, with
@@ -112,26 +147,30 @@ internal fun PaddingValues.spacers(): HtmlSpacers =
 private fun spacer(height: Int): String = if (height > 0) "<div style=\"height:${height}px\"></div>" else ""
 
 /** Whether [html] sets a text or background color, in a color attribute, a style attribute, or a style sheet. */
-internal fun hasOwnColors(html: String): Boolean = COLOR_ATTRIBUTE.containsMatchIn(html) || stylesMatch(html, CSS_COLOR)
+internal fun hasOwnColors(html: String): Boolean = scanHtml(html).sets(COLOR_ATTRIBUTES, CSS_COLOR)
 
 /** Whether [html] lays itself out, in a table or on a background of its own, as designed mail does. */
-internal fun hasOwnLayout(html: String): Boolean =
-    TABLE_TAG.containsMatchIn(html) ||
-        BACKGROUND_ATTRIBUTE.containsMatchIn(html) ||
-        stylesMatch(html, CSS_BACKGROUND)
+internal fun hasOwnLayout(html: String): Boolean {
+    val scan = scanHtml(html)
+    return scan.tags.any { it.name == "table" && !it.closing } || scan.sets(BACKGROUND_ATTRIBUTES, CSS_BACKGROUND)
+}
 
-/** Whether [declaration] matches inside a style sheet or style attribute of [html]. */
-private fun stylesMatch(
-    html: String,
+/**
+ * Whether a start tag has one of [attributes], or a style attribute or style sheet has a
+ * [declaration]. The scan is linear, since a message's markup comes from its sender.
+ */
+private fun HtmlScan.sets(
+    attributes: Set<String>,
     declaration: Regex,
-): Boolean = STYLES.findAll(html).any { styles -> styles.groupValues.drop(1).any(declaration::containsMatchIn) }
+): Boolean =
+    tags.any { tag -> attributes.any(tag.attributes::containsKey) } ||
+        tags.any { tag -> tag.attributes["style"]?.let(declaration::containsMatchIn) == true } ||
+        styleSheets.any(declaration::containsMatchIn)
 
-private val TABLE_TAG = Regex("<table(?=[\\s/>])", RegexOption.IGNORE_CASE)
-private val BACKGROUND_ATTRIBUTE = Regex("""(?i)<[^>]*\s(?:bgcolor|background)\s*=""")
+private val BACKGROUND_ATTRIBUTES = setOf("bgcolor", "background")
 private val CSS_BACKGROUND = Regex("""(?i)(?:^|[\s;{])background(?:-color|-image)?\s*:""")
 
-private val COLOR_ATTRIBUTE = Regex("""(?i)<[^>]*\s(?:bg)?color\s*=""")
-private val STYLES = Regex("""(?is)<style\b[^>]*>(.*?)</style>|\sstyle\s*=\s*(?:"([^"]*)"|'([^']*)')""")
+private val COLOR_ATTRIBUTES = setOf("color", "bgcolor")
 private val CSS_COLOR = Regex("""(?i)(?:^|[\s;{])(?:color|background(?:-color)?)\s*:""")
 
 internal fun Color.css(): String = toHex().lowercase()

@@ -22,9 +22,13 @@ internal fun textHtml(text: String): String =
         append(escaped(text.substring(last)))
     }.replace("\n", "<br>")
 
-/** A Markdown link to a web or mail address, or a bare web address without trailing punctuation. */
+/**
+ * A Markdown link to a web or mail address, or a bare web address without trailing punctuation. A
+ * label holds no `[`, so a search from each `[` stops at the next one, and a long run of brackets
+ * in a sender's text takes linear time rather than quadratic.
+ */
 private val LINK =
-    Regex("""\[([^\]\n]+)]\(((?:https?://|mailto:)[^\s()<>]+)\)|(https?://[^\s()<>]*[^\s()<>.,;:!?])""")
+    Regex("""\[([^\[\]\n]+)]\(((?:https?://|mailto:)[^\s()<>]+)\)|(https?://[^\s()<>]*[^\s()<>.,;:!?])""")
 
 /**
  * The [levels] a quote quotes, each whole under its pill and inside the one before it, one step

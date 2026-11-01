@@ -66,16 +66,17 @@ Start it by hand from GitHub Actions to check again.
 
 The CI `quality` workflow runs only on pull requests that change more than Markdown. The `check`
 job runs `checkAll` as three parallel jobs: `qualityCheck`, `checkDesignSystem`, and
-`checkLibraries`. The `ios` job runs every module's iOS simulator tests on macOS 15 with
-Xcode 26.3. The repositories cannot require checks on their GitHub plan, so CI reports results
-but cannot block a merge. The `publish` workflow runs on version tags; see [Releasing](releasing.md)
-and [decision 0013](decisions/0013-local-quality-gate.md).
+`checkLibraries`. The `ios` job, which would run every module's iOS simulator tests on macOS 15
+with Xcode 26.3, is paused with `if: false`, so CI runs no simulator tests for now. The
+repositories cannot require checks on their GitHub plan, so CI reports results but cannot block a
+merge. The `publish` workflow is paused too: it runs only by hand and then validates without
+uploading, and a version tag starts nothing. See [Releasing](releasing.md) and
+[decision 0013](decisions/0013-local-quality-gate.md).
 
 The publisher builds Android and both iOS library variants on Linux and verifies the complete
 local Maven publication before uploading. Pull request CI does not build publications. Manual publisher runs perform validation only.
-Publication checks cannot replace iOS app linking or simulator tests. The `ios` job is paused
-with `if: false`, so CI runs no simulator tests until it is enabled again. See
-[decision 0011](decisions/0011-linux-library-publication.md).
+Publication checks cannot replace iOS app linking or simulator tests, which CI does not run while
+the `ios` job is paused. See [decision 0011](decisions/0011-linux-library-publication.md).
 
 ## Coverage
 

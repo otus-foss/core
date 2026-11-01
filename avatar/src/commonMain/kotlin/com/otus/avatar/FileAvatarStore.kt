@@ -10,7 +10,11 @@ import kotlinx.io.files.Path
 import kotlinx.io.files.SystemFileSystem
 import kotlinx.io.readByteArray
 
-/** App-private, bounded encoded-image cache. Records use hashed keys and atomic replacement. */
+/**
+ * App-private, bounded encoded-image cache. Records use hashed keys and atomic replacement. The
+ * store reads every record's size and age once and keeps them in memory, so use one store per
+ * directory.
+ */
 public class FileAvatarStore(
     directory: String,
     private val maxBytes: Long = DEFAULT_MAX_BYTES,
@@ -19,6 +23,7 @@ public class FileAvatarStore(
     private val directory = Path(directory)
     private val lock = Mutex()
     private val files = SystemFileSystem
+    private var index: AvatarDiskIndex? = null
 
     init {
         require(maxBytes >= HEADER_BYTES && maxEntries > 0)
@@ -30,6 +35,7 @@ public class FileAvatarStore(
             val size = files.metadataOrNull(path)?.size ?: return@access null
             if (size !in HEADER_BYTES..MAX_AVATAR_BYTES + HEADER_BYTES) {
                 files.delete(path)
+                index?.remove(path.name)
                 return@access null
             }
             files.source(path).buffered().use { source ->
@@ -63,6 +69,7 @@ public class FileAvatarStore(
                     entry.image == null -> STYLE_RECORD
                     else -> IMAGE_RECORD
                 }
+            val disk = index()
             files.createDirectories(directory)
             val target = path(key)
             val temporary = Path(directory, "${target.name}.part")
@@ -73,7 +80,8 @@ public class FileAvatarStore(
                     if (bytes != null) sink.write(bytes)
                 }
                 files.atomicMove(temporary, target)
-                prune()
+                disk.put(target.name, HEADER_BYTES + (bytes?.size ?: 0), entry.created)
+                disk.prune().forEach { files.delete(Path(directory, it), mustExist = false) }
             } finally {
                 files.delete(temporary, mustExist = false)
             }
@@ -81,13 +89,19 @@ public class FileAvatarStore(
     }
 
     override suspend fun clear() {
-        access { records().forEach { files.delete(it) } }
+        access {
+            records().forEach { files.delete(it) }
+            index?.clear()
+        }
     }
 
     override suspend fun removeAccount(account: String) {
         access {
             val prefix = "${avatarCacheDigest(account)}-"
-            records().filter { it.name.startsWith(prefix) }.forEach { files.delete(it) }
+            records().filter { it.name.startsWith(prefix) }.forEach { record ->
+                files.delete(record)
+                index?.remove(record.name)
+            }
         }
     }
 
@@ -103,38 +117,26 @@ public class FileAvatarStore(
             emptyList()
         }
 
-    private fun prune() {
+    /** The index of the records on disk, read the first time a write needs it. */
+    private fun index(): AvatarDiskIndex {
+        val current = index
+        if (current != null) return current
         // A process killed during a write can leave a temporary record behind.
         records().filter { it.name.endsWith(".part") }.forEach { files.delete(it) }
-        val records = records().map(::diskRecord).sortedBy { it.created }
-        var bytes = records.sumOf { it.size }
-        var count = records.size
-        // Oldest first, until the rest fits.
-        for (record in records) {
-            if (bytes <= maxBytes && count <= maxEntries) break
-            files.delete(record.path)
-            bytes -= record.size
-            count--
-        }
+        val loaded = AvatarDiskIndex(maxBytes, maxEntries)
+        records().forEach { path -> loaded.put(path.name, files.metadataOrNull(path)?.size ?: 0, created(path)) }
+        index = loaded
+        return loaded
     }
 
-    private fun diskRecord(path: Path): DiskRecord =
-        DiskRecord(
-            path,
-            size = files.metadataOrNull(path)?.size ?: 0,
-            created = runCatching { files.source(path).buffered().use { it.readLong() } }.getOrDefault(0),
-        )
+    /** The record's creation time, or 0 so that an unreadable record is pruned first. */
+    private fun created(path: Path): Long =
+        runCatching { files.source(path).buffered().use { it.readLong() } }.getOrDefault(0)
 
     private suspend fun <T> access(block: () -> T): T? =
         withContext(Dispatchers.IO) {
             lock.withLock { nullOnFailure { block() } }
         }
-
-    private class DiskRecord(
-        val path: Path,
-        val size: Long,
-        val created: Long,
-    )
 
     private companion object {
         const val HEADER_BYTES = 9L

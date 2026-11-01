@@ -7,6 +7,7 @@ import android.view.ContextThemeWrapper
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,20 +31,21 @@ public actual fun HtmlView(
     val openLink by rememberUpdatedState(onOpenLink)
     val showRemote by rememberUpdatedState(onShowRemote)
     val palette = OtusColors.palette
-    val placeholders = onShowRemote != null
     val renderKey = remember { newRenderKey() }
-    val document =
-        remember(html, loadRemote, palette, placeholders, quote, insets) {
-            sandboxedHtml(html, loadRemote, palette, renderKey, placeholders, quote, insets.spacers())
-        }
-    // A new document gets a new view, so no page or setting of the last one carries over.
-    key(document) {
+    val page = rememberSandboxedPage(html, loadRemote, onShowRemote != null, quote, insets, renderKey)
+    if (page == null) {
+        // The view keeps its place while the first page is built.
+        Box(modifier)
+        return
+    }
+    // A new page gets a new view, so no page or setting of the last one carries over.
+    key(page) {
         AndroidView(
             factory = { context ->
                 val links =
                     LinkClient(renderKey, onOpenLink = { openLink(it) }, onShowRemote = { showRemote?.invoke() })
-                sandboxedWebView(context, loadRemote, darken = !palette.isLight, links).apply {
-                    loadDataWithBaseURL(null, document, "text/html", "utf-8", null)
+                sandboxedWebView(context, page.loadRemote, darken = !palette.isLight, links).apply {
+                    loadDataWithBaseURL(null, page.document, "text/html", "utf-8", null)
                 }
             },
             modifier = modifier,

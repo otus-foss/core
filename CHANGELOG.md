@@ -2,6 +2,91 @@
 
 ## Unreleased
 
+- Accounts: `parseJmapServer` reads a server address longer than a DNS name and port, 259
+  characters, as `Invalid` before matching it, so pasting thousands of host labels no longer
+  overflows the stack.
+- JMAP: add `requireTrustedBlobOrigins` to `JmapClient.session`, false by default. When true,
+  discovery also throws `RedirectedElsewhere` for a `downloadUrl` or `uploadUrl` on an origin the
+  user has not approved, so a sign-in can ask before every upload and download would fail.
+  Without it, discovery is unchanged: such a session still serves API calls, and only its blob
+  calls throw `RedirectedElsewhere`. Callers compiled against the earlier signature must rebuild.
+- Accounts: connecting asks for approval of a blob host on another origin, as it does for a
+  redirect or an `apiUrl` elsewhere, and saves it with the login's trusted origins. Saved logins
+  keep loading; adding such an account again approves its blob host.
+- JMAP: add `JmapPolicy.socketTimeoutMillis`, 30 s by default, the longest any request may go
+  without data. Blob uploads and downloads no longer have `requestTimeoutMillis` as a total limit,
+  so large attachments work on slow links. Callers that build `JmapPolicy` must rebuild.
+- JMAP: add `JmapException.BlobNotFound`, which a download now throws for HTTP 404 instead of
+  `NotJmap`. `JmapConnection` keeps its cached session after `BlobNotFound` and
+  `RedirectedElsewhere`. Breaking: an exhaustive `when` over `JmapException` needs a branch for it,
+  and code that caught `NotJmap` for a missing blob catches `BlobNotFound` instead.
+- JMAP: `JmapException.RequestFailed` takes and exposes `limit`, the limit a
+  `urn:ietf:params:jmap:error:limit` problem names (RFC 8620, section 3.6.1). Code that constructs
+  it must rebuild.
+- `RichText` finds a draft's `<img>` tags with HtmlView's linear scan instead of a regular
+  expression, so markup with many `<img` and no `>` no longer stalls the editor. Only real
+  `<img>` tags with a `src` split the text: one inside a comment or another tag no longer does, and
+  a `src` or `width` in single quotes or none now counts.
+- Add `InputKind.Username`, a login name on the email keyboard. It and `InputKind.Password` now
+  tell password managers and other autofill services which login field they are, and
+  `AccountSetupScreen` uses them, so a password manager can fill the account form. An exhaustive
+  `when` over `InputKind` needs a branch for `Username`.
+- `TimeWheelPicker` no longer crashes when `allowed` holds no five-minute step, such as 10:01 to
+  10:04; it offers the range's start alone.
+- `BarMorph`'s fades follow `MotionCurve.Standard` through `Motion` instead of Compose's default
+  easing, which draws the same curve, so a change to the curve now reaches them.
+  `tools/check_architecture.py` rejects `spring`, `CubicBezierEasing`, and a `tween` or
+  `TweenSpec` without an easing or with a literal duration outside `theme/motion`. Update the
+  apps' copies of the checker to match.
+- `decodeImage`, `rememberImage`, and `rememberAvatarImage` decode images with a side over
+  4096 px, such as 24-megapixel photos and panoramas, instead of returning null. They still sample
+  the image down to `maxSize` while decoding; only an image of more than about 268 million pixels
+  is refused.
+- `HtmlView` builds its page on a background thread and shows nothing in its place until the
+  first page is ready. It reads the message's markup in one linear scan instead of regular
+  expressions, so markup without a closing `>` or a long unquoted `data:` image source no longer
+  stalls the main thread or overflows the stack. Only real tags set its colors, layout, and image
+  placeholders: an `<img>` or a `color` attribute inside a comment, a style sheet, or an attribute
+  value no longer counts, and `<img/src=…>` now gets a placeholder. In a plain-text quote, a
+  Markdown link's label no longer contains `[`.
+
+- `PushSubscriptions` saves the data types of each login's subscription, and `sync` replaces a
+  subscription whose saved types differ from the `types` it was given, because a server keeps the
+  types a subscription was created with. Records saved by earlier versions have no types, so each
+  login's subscription is created again once after the update and goes through verification
+  again. The public API is unchanged.
+- Add `SmoothCornerShape`, a `CornerBasedShape` whose corners ease into their edges like Figma's
+  corner smoothing at 0.6 (G2 corners), and `Modifier.strokeBorder`, a border that strokes a
+  shape's path directly so it stays on the fill at fractional positions. Every rounded surface in
+  the design system and the settings screens now draws with `SmoothCornerShape` and its borders with
+  `strokeBorder`; a corner near half the shorter side stays a plain arc, so pills keep round ends.
+  An app that draws `RoundedCornerShape` from a token next to Meta's surfaces gets plain corners.
+- Corner tokens round about a quarter less. `SheetTokens.radius` and `MenuTokens.radius` go from
+  30 to 22 dp. `SheetTokens.rowRadius`, `SignatureTokens.editorRadius`, `ReadTokens.bannerRadius`,
+  and `ThemeTokens.customPreviewRadius` go from 24 to 18 dp. `PanelTokens.panelRadius` and
+  `FilterTokens.cardRadius` go from 22 to 16 dp. `ThemeTokens.cardRadius` and
+  `FilterTokens.searchRadius` go from 20 to 15 dp. `NudgeTokens.radius` goes from 28 to 20 dp.
+  `ActionBarTokens.dateRadius`, `ComposeTokens.recipientRadius`, `ComposeTokens.quoteRadius`,
+  `ReadTokens.placeholderRadius`, and `CalendarTokens.monthCornerRadius` go from 14 to 10 dp.
+  `ThemeTokens.sketchBarRadius` goes from 10 to 8 dp, and `CalendarTokens.endpointRadius` from 6
+  to 4 dp. `ActionBarTokens.radius` is now half of `collapsedActionWidth` and
+  `ComposeTokens.formatButtonRadius` half of `formatButtonSize`; both keep their values, 30 and
+  20 dp.
+- Add `AppIconStyle.Chrome`, `Rainbow`, `Trans`, `Bi`, and `Lesbian`, with their Android launcher
+  icons (`otus_mail_icon_chrome` and so on) and Compose drawables (`brand_mail_icon_*`). An
+  exhaustive `when` over `AppIconStyle` needs a branch for each, and an app that offers the styles
+  as launcher aliases needs an alias for each. `AppIconStyle.markColor` is now `text1` for
+  `Monochrome` and `Chrome` and the accent for every other style; before, every style but `Accent`
+  was `text1`.
+- Add `MailAppIcon`, a launcher icon preview in its rounded tile, `IconChoice`, a picture option in
+  a grid that is one radio button, `BrandColors` with the launcher icons' tile colors, and
+  `BrandTokens.appIconSize`, `appIconRadius`, and `ADAPTIVE_ICON_BLEED`. The settings App icon
+  row opens a grid of the icons instead of a list of names.
+- Add `otus_mail_status_icon`, a white owl and envelope drawable for Android's status bar.
+- Add `ToastMessage.swipeAction`. When a toast is swiped away, it runs instead of `onClose`, and
+  its label replaces Dismiss as the screen reader's swipe action, such as Send for a held message.
+  Without it, a swipe still runs `onClose`. `ToastMessage` is a data class, so code that
+  destructures it or calls `copy` positionally must be recompiled.
 - Breaking: rebuild `ContextPanel` after the Otus v2 control panel design. It runs edge to edge,
   draws behind the status bar and pads its content below it, and rounds only its 30 dp bottom
   corners, with a stroke on the bottom edge, and has one 56 dp header row. Pills sit across the
@@ -751,6 +836,29 @@
   title.
 - Add `Collapsible`, which unfolds its content downward with a fade while expanded and folds it
   back up, at the default motion speed, for rows nested under a collapsible row.
+- `HttpWebsiteIconSource` reads a page's icon links in one linear pass and parses on
+  `Dispatchers.Default`, so a hostile page, such as one of thousands of unclosed `<!--`, no longer
+  holds the caller's thread for seconds. An unclosed comment now hides the rest of the page, and a
+  `</head>` inside a comment no longer ends the head.
+- `AvatarService` asks a website that has no icon, or does not answer, again after a day rather
+  than after five minutes when it fetches icons from the website itself, so a sender's domain
+  learns the device's IP address at most once a day. Contact and icon-proxy misses are still
+  retried after five minutes.
+- `FileAvatarStore` reads the size and age of its records once and keeps them in memory, so a
+  write no longer lists the directory and opens every record. A temporary file left by a killed
+  process is deleted on the store's first write. Use one store per directory.
+- `VCard.parse` joins the soft line breaks of a quoted-printable value in linear time; a long
+  value of many short continuation lines took seconds before.
+- `VCard.write` no longer lets a line break split a content line: it percent-encodes control
+  characters in MEMBER, PHOTO, and URL values, escapes a lone CR in text and parameter values,
+  and leaves out a `kind` that is not a vCard token, such as `example.com:baz`, which then reads
+  back as an individual.
+- `PushSubscriptions.sync` renews only verified subscriptions. An unverified one is created again
+  an hour after creation even when the server grants less than two hours; before, each renewal
+  restarted its verification hour, so it was never replaced.
+- Decoding a JSContact object throws a `SerializationException` when a member nests arrays or
+  objects more than 64 levels deep. Before, such a card decoded but overflowed the stack, with a
+  `StackOverflowError`, when it was encoded again.
 - Breaking: `ContextPanel` takes `motion: PanelMotion` in place of `collapse`. A `PanelMotion`
   carries the scroll collapse, an optional `PanelExpansion`, and the content the panel grows. With
   an expansion, dragging the panel grows it under its header row, which stays put, and the pills

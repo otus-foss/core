@@ -36,6 +36,16 @@ class JmapServerAddressTest {
     }
 
     @Test
+    fun aHostLongerThanAnyDnsNameIsRejectedWithoutOverflowingTheStack() {
+        assertEquals(JmapServerAddress.Invalid, parseJmapServer("a.".repeat(5_000) + "example.com"))
+        val longest = "${"a".repeat(63)}.".repeat(3) + "a".repeat(61)
+        assertEquals(
+            JmapServerAddress.Valid("https://$longest:8443/.well-known/jmap"),
+            parseJmapServer("$longest:8443"),
+        )
+    }
+
+    @Test
     fun draftNeverPrintsItsPassword() {
         assertFalse("hunter2" in JmapAccountDraft("https://a.example/.well-known/jmap", "me", "hunter2").toString())
     }

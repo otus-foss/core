@@ -214,7 +214,7 @@ private fun AddAccountForm(
         { username = it },
         placeholder = "you@example.com",
         supportingText = ConnectFailure.InvalidUsername.message(service).takeIf { ':' in username },
-        kind = InputKind.Email,
+        kind = InputKind.Username,
     )
     InputField(
         "Password",

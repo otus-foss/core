@@ -54,7 +54,8 @@ public class JmapAccountRepository(
         if (!isValidUsername(draft.username)) return ConnectOutcome.Failed(ConnectFailure.InvalidUsername)
         return try {
             val auth = JmapAuth.Basic(draft.username, draft.password)
-            val session = client.session(draft.sessionUrl, auth, draft.trustedOrigins)
+            // Ask for every host that would receive credentials, blob hosts included, before saving.
+            val session = client.session(draft.sessionUrl, auth, draft.trustedOrigins, requireTrustedBlobOrigins = true)
             if (verifyService(session, auth)) {
                 save(draft, session)
             } else {

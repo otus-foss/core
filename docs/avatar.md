@@ -25,9 +25,10 @@ changes initials without changing the address's color.
 
 `AvatarOptions.externalContactImages` and `domainIcons` default to false, and `iconProxy` to null. Embedded contact
 images and authenticated JMAP blobs still work. Public image requests use a separate HTTP client
-that has no account credentials. Mail enables all three options for inbox senders, so contacts with
-external photos and senders without a contact photo can display images automatically. Callers of
-the reusable service can keep remote requests disabled.
+that has no account credentials. Mail turns on `externalContactImages` and `domainIcons` together
+with its website-icons setting, which is off by default, and sets `iconProxy` from the icon source the
+user picks: none for the websites themselves, DuckDuckGo, or a Bulwark server. Callers of the
+reusable service can keep remote requests disabled.
 
 ```kotlin
 val images = HttpAvatarImageLoader()
@@ -53,10 +54,14 @@ cache keys, so initials always follow the current name.
 
 App entry points supply `FileAvatarStore` in the app's private cache directory. It survives
 process restarts and uses hashed filenames, atomic record replacement, a 32 MiB disk limit and at most
-256 records. Every image is capped at 512 KiB. Successful images are reused for 30 days; missing
-images are retried after five minutes. Existing images remain visible during an expired/offline
-lookup. The OS may reclaim cache files. Removing or reconnecting an account deletes its private
+256 records. Every image is capped at 512 KiB. Successful images are reused for 30 days. A contact
+or icon-proxy lookup that found nothing is retried after five minutes, and a website that was asked
+directly is asked again after a day, as the [brand logos](#brand-logos) section explains. Existing
+images remain visible during an expired/offline lookup. The OS may reclaim cache files. Removing or reconnecting an account deletes its private
 contact records while retaining public website icons. Callers must not mutate image bytes.
+The store reads the size and age of its records once, on its first write, and keeps them in
+memory, so a write deletes the oldest records without opening the others. Use one store per
+directory: records another store writes there are not counted until the next process.
 
 Concurrent lookups share a pending result for each contact or domain key. At most eight fetches run
 at once. Cancellation of the owner lets waiting callers retry. Cache invalidation also covers
@@ -65,7 +70,9 @@ lookups waiting for a fetch permit and prevents old results from repopulating me
 `HttpWebsiteIconSource` first reads a bounded portion of the website's HTML and tries advertised raster icon links,
 prioritizing larger declared sizes and Apple touch icons. Relative links use the final website URL
 after redirects. This finds Proton's 180 px touch icon rather than enlarging the 32 px proxy favicon.
-If discovery fails, it tries HTTPS `apple-touch-icon.png`, `favicon.png`, and `favicon.ico`.
+It reads the `<link>` tags before `</head>` in one pass that skips comments and tags longer than
+2 KiB, so its time grows linearly with the page, and it parses on `Dispatchers.Default`, never on
+the caller's thread. If discovery fails, it tries HTTPS `apple-touch-icon.png`, `favicon.png`, and `favicon.ico`.
 The service sends all of these requests to the sender's registrable website domain from the bundled
 Public Suffix List, never to the exact hostname. All direct website attempts together have an
 8-second budget. For example, `noreply@email.openai.com` fetches only from `openai.com`. Multi-label suffixes such as `co.uk`, private hosting suffixes
@@ -105,8 +112,10 @@ Fetching a website icon tells that website the device's IP address and when the 
 sender. A sender who gave each recipient a unique subdomain, such as `u-12345.example.com`, could
 otherwise use the icon request as a read receipt. The service therefore fetches and caches icons
 only per registrable domain, so every subdomain shares one request to `example.com`. The registrable
-domain still learns the device's IP address once per cache period, which is why `domainIcons` is
-off by default and callers may keep it off.
+domain still learns the device's IP address once per cache period when it has an icon, and once a
+day when it has none or does not answer, which is why `domainIcons` is off by default and callers
+may keep it off. An icon proxy's misses are retried after five minutes, because the proxy, not the
+sender's website, sees those requests.
 
 `PublicSuffixDomainResolver` accepts an injected suspend loader for the rules. Mail wiring reads
 `files/public_suffix_list.dat` from packaged Compose resources. The parser is common Kotlin,
@@ -187,9 +196,10 @@ still leave a photo unavailable during slow or changing searches; normal avatar 
 Common tests cover resolution priority, account/options isolation, missing capabilities, exact email
 matching, address-book permissions, blobs/data URIs/external URLs, website-domain resolution,
 provider icons, icon-cache options and domain-only requests, cache expiry/eviction/invalidation,
-cancellation, credential isolation, redirects, refused private and special-use hosts, and
-response-size limits. Persistent-cache tests cover process recreation, bounded disk usage, corrupt
-records and account removal.
+cancellation, credential isolation, redirects, refused private and special-use hosts,
+response-size limits, linear-time parsing of hostile HTML, and the miss lifetimes of websites and
+proxies. Persistent-cache tests cover process recreation, bounded disk usage, pruning by age after a
+restart, corrupt records and account removal.
 Contact search tests also cover later-page exact matches, server-clamped page sizes, exhaustion,
 changing queries, stalled pagination, search deadlines, and caller cancellation.
 Mail's inbox tests cover restoring avatars before network work; see
