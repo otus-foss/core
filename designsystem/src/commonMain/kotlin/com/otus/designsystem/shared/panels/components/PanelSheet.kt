@@ -1,5 +1,6 @@
 package com.otus.designsystem.shared.panels.components
 
+import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
@@ -19,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,23 +32,32 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.util.lerp
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.motion.LocalMotionScale
+import com.otus.designsystem.theme.motion.Motion
 import com.otus.designsystem.theme.motion.MotionCurve
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
 import com.otus.designsystem.theme.shapes.toPath
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 /**
@@ -131,21 +142,24 @@ private fun SheetSurface(
     modifier: Modifier,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    var lift by remember { mutableFloatStateOf(0f) }
-    val closeDistance = with(LocalDensity.current) { PanelTokens.sheetCloseSwipe.toPx() }
+    val scope = rememberCoroutineScope()
+    val density = LocalDensity.current
+    val sheet = remember(scope) { SheetLift(scope) }
+    sheet.closeDistance = with(density) { PanelTokens.sheetCloseSwipe.toPx() }
+    sheet.closeFling = with(density) { PanelTokens.sheetCloseFling.toPx() }
+    sheet.motionScale = LocalMotionScale.current
+    sheet.onDismiss = onDismiss
     Box(modifier) {
         Column(
             Modifier
                 .fillMaxWidth()
-                .graphicsLayer { translationY = lift }
+                .graphicsLayer { translationY = sheet.lift }
                 .semantics { traversalIndex = -1f }
+                .nestedScroll(sheet.connection)
                 .draggable(
-                    rememberDraggableState { lift = (lift + it).coerceAtMost(0f) },
+                    rememberDraggableState(sheet::move),
                     Orientation.Vertical,
-                    onDragStopped = {
-                        if (lift < -closeDistance) onDismiss()
-                        lift = 0f
-                    },
+                    onDragStopped = { velocity -> sheet.settle(velocity) },
                 ).panelEdge()
                 // The surface comes first, so it takes the growing height.
                 .grownTo(progress, collapsedHeight)
@@ -154,6 +168,71 @@ private fun SheetSurface(
             content = content,
         )
     }
+}
+
+/**
+ * How far the user lifts a panel sheet toward closing it, by dragging it or swiping its content.
+ * Content that scrolls hands the swipe to the sheet once it reaches its end, and takes it back as
+ * the sheet returns, so a long list still closes with a swipe or a flick up. A new swipe stops the
+ * sheet settling back.
+ */
+private class SheetLift(
+    private val scope: CoroutineScope,
+) {
+    var lift by mutableFloatStateOf(0f)
+        private set
+    var closeDistance = 0f
+    var closeFling = 0f
+    var motionScale = 1f
+    var onDismiss: () -> Unit = {}
+    private var returning: Job? = null
+
+    fun move(delta: Float) {
+        returning?.cancel()
+        lift = (lift + delta).coerceAtMost(0f)
+    }
+
+    fun settle(velocity: Float) {
+        returning?.cancel()
+        if (lift < -closeDistance || (lift < 0f && velocity < -closeFling)) {
+            onDismiss()
+            lift = 0f
+        } else {
+            returning =
+                scope.launch {
+                    animate(lift, 0f, animationSpec = Motion.tween(scale = motionScale)) { value, _ -> lift = value }
+                }
+        }
+    }
+
+    val connection: NestedScrollConnection =
+        object : NestedScrollConnection {
+            override fun onPreScroll(
+                available: Offset,
+                source: NestedScrollSource,
+            ): Offset {
+                if (lift >= 0f || available.y <= 0f) return Offset.Zero
+                val step = available.y.coerceAtMost(-lift)
+                move(step)
+                return Offset(0f, step)
+            }
+
+            override fun onPostScroll(
+                consumed: Offset,
+                available: Offset,
+                source: NestedScrollSource,
+            ): Offset {
+                if (source != NestedScrollSource.UserInput || available.y >= 0f) return Offset.Zero
+                move(available.y)
+                return Offset(0f, available.y)
+            }
+
+            override suspend fun onPreFling(available: Velocity): Velocity {
+                if (lift >= 0f) return Velocity.Zero
+                settle(available.y)
+                return available
+            }
+        }
 }
 
 /**
