@@ -151,11 +151,11 @@ internal sealed interface RichBlock {
 
 /** [html] as text blocks with an image block between each two, always starting and ending in text. */
 internal fun split(html: String): List<RichBlock> {
-    val images = imageTag.findAll(html).toList()
-    return (listOf(-1) + images.map { it.range.last })
-        .zip(images.map { it.range.first } + html.length)
-        .map { (end, start) -> RichBlock.Text(html.substring(end + 1, start)) }
-        .zip(images.map { RichBlock.Image(it.groupValues[1], it.width(), it.description()) } + null)
+    val images = imageTags(html)
+    return (listOf(0) + images.map { it.end })
+        .zip(images.map { it.start } + html.length)
+        .map { (end, start) -> RichBlock.Text(html.substring(end, start)) }
+        .zip(images.map { RichBlock.Image(it.source, it.width?.dp, it.description) } + null)
         .flatMap { (text, image) -> listOfNotNull(text, image) }
 }
 
@@ -171,27 +171,3 @@ internal fun imageHtml(
 }
 
 private fun String.escaped(): String = replace("&", "&amp;").replace("\"", "&quot;").replace("<", "&lt;")
-
-private fun MatchResult.description(): String =
-    altAttribute
-        .find(value)
-        ?.groupValues
-        ?.get(1)
-        ?.replace("&lt;", "<")
-        ?.replace("&quot;", "\"")
-        ?.replace("&amp;", "&")
-        .orEmpty()
-
-private val altAttribute = Regex("""\balt="([^"]*)"""")
-
-private fun MatchResult.width(): Dp? =
-    widthAttribute
-        .find(value)
-        ?.groupValues
-        ?.get(1)
-        ?.toIntOrNull()
-        ?.dp
-
-private val widthAttribute = Regex("""\bwidth="(\d+)"""")
-
-private val imageTag = Regex("""<img\b[^>]*\bsrc="([^"]*)"[^>]*>""")

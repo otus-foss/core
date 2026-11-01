@@ -20,6 +20,10 @@
 - JMAP: `JmapException.RequestFailed` takes and exposes `limit`, the limit a
   `urn:ietf:params:jmap:error:limit` problem names (RFC 8620, section 3.6.1). Code that constructs
   it must rebuild.
+- `RichText` finds a draft's `<img>` tags with HtmlView's linear scan instead of a regular
+  expression, so markup with many `<img` and no `>` no longer stalls the editor. Only real
+  `<img>` tags with a `src` split the text: one inside a comment or another tag no longer does, and
+  a `src` or `width` in single quotes or none now counts.
 - Add `InputKind.Username`, a login name on the email keyboard. It and `InputKind.Password` now
   tell password managers and other autofill services which login field they are, and
   `AccountSetupScreen` uses them, so a password manager can fill the account form. An exhaustive
