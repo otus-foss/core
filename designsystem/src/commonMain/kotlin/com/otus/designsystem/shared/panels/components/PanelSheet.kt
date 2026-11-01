@@ -1,5 +1,6 @@
 package com.otus.designsystem.shared.panels.components
 
+import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
@@ -19,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,22 +32,29 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.util.lerp
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.motion.LocalMotionScale
+import com.otus.designsystem.theme.motion.Motion
 import com.otus.designsystem.theme.motion.MotionCurve
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 /**
@@ -131,20 +140,67 @@ private fun SheetSurface(
     content: @Composable ColumnScope.() -> Unit,
 ) {
     var lift by remember { mutableFloatStateOf(0f) }
-    val closeDistance = with(LocalDensity.current) { PanelTokens.sheetCloseSwipe.toPx() }
+    val density = LocalDensity.current
+    val closeDistance = with(density) { PanelTokens.sheetCloseSwipe.toPx() }
+    val closeFling = with(density) { PanelTokens.sheetCloseFling.toPx() }
+    val scope = rememberCoroutineScope()
+    val motionScale = LocalMotionScale.current
+    val settle: (Float) -> Unit = { velocity ->
+        if (lift < -closeDistance || (lift < 0f && velocity < -closeFling)) {
+            onDismiss()
+            lift = 0f
+        } else {
+            scope.launch {
+                animate(lift, 0f, animationSpec = Motion.tween(scale = motionScale)) { value, _ ->
+                    lift =
+                        value
+                }
+            }
+        }
+    }
+    // Content that scrolls hands the swipe to the sheet once it reaches its end, and takes it back
+    // as the sheet returns, so a long list still closes with a swipe or a flick up.
+    val connection =
+        remember(settle) {
+            object : NestedScrollConnection {
+                override fun onPreScroll(
+                    available: Offset,
+                    source: NestedScrollSource,
+                ): Offset {
+                    if (lift >= 0f || available.y <= 0f) return Offset.Zero
+                    val step = available.y.coerceAtMost(-lift)
+                    lift += step
+                    return Offset(0f, step)
+                }
+
+                override fun onPostScroll(
+                    consumed: Offset,
+                    available: Offset,
+                    source: NestedScrollSource,
+                ): Offset {
+                    if (source != NestedScrollSource.UserInput || available.y >= 0f) return Offset.Zero
+                    lift += available.y
+                    return Offset(0f, available.y)
+                }
+
+                override suspend fun onPreFling(available: Velocity): Velocity {
+                    if (lift >= 0f) return Velocity.Zero
+                    settle(available.y)
+                    return available
+                }
+            }
+        }
     Box(modifier) {
         Column(
             Modifier
                 .fillMaxWidth()
                 .graphicsLayer { translationY = lift }
                 .semantics { traversalIndex = -1f }
+                .nestedScroll(connection)
                 .draggable(
                     rememberDraggableState { lift = (lift + it).coerceAtMost(0f) },
                     Orientation.Vertical,
-                    onDragStopped = {
-                        if (lift < -closeDistance) onDismiss()
-                        lift = 0f
-                    },
+                    onDragStopped = { velocity -> settle(velocity) },
                 ).panelEdge()
                 // The surface comes first, so it takes the growing height.
                 .grownTo(progress, collapsedHeight)
