@@ -11,6 +11,9 @@
   `NotJmap`. `JmapConnection` keeps its cached session after `BlobNotFound` and
   `RedirectedElsewhere`. Breaking: an exhaustive `when` over `JmapException` needs a branch for it,
   and code that caught `NotJmap` for a missing blob catches `BlobNotFound` instead.
+- JMAP: `JmapException.RequestFailed` takes and exposes `limit`, the limit a
+  `urn:ietf:params:jmap:error:limit` problem names (RFC 8620, section 3.6.1). Code that constructs
+  it must rebuild.
 - Add `ButtonPair`, a secondary and a primary action in one outlined pill whose primary half
   widens for a long label. `ConfirmDialog`, `ChangeLogSheet`, `BirthdayPicker`, and
   `FilterPanelFooter` use it. `FilterPanelFooter` is now 48 dp tall like other buttons.

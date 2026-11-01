@@ -78,7 +78,7 @@ internal class RawResponse(
     val location: String?,
     val text: String,
 ) {
-    /** Throws for a non-success status; a problem-details body (RFC 7807) adds its type. */
+    /** Throws for a non-success status; a problem-details body (RFC 7807) adds its type and limit. */
     fun requireSuccess() {
         if (status !in SUCCESS) throw failure()
     }
@@ -88,11 +88,14 @@ internal class RawResponse(
             UNAUTHORIZED -> JmapException.Unauthorized()
             FORBIDDEN -> JmapException.Forbidden()
             NOT_FOUND -> JmapException.NotJmap("nothing found at this address")
-            else -> JmapException.RequestFailed(status, problemType())
+            else -> requestFailed()
         }
 
-    private fun problemType(): String? =
-        runCatching { JmapJson.parseToJsonElement(text).jsonObject }.getOrNull()?.string("type")
+    /** Keeps a problem's `type` (RFC 7807) and the `limit` a limit problem names (RFC 8620, section 3.6.1). */
+    private fun requestFailed(): JmapException.RequestFailed {
+        val problem = runCatching { JmapJson.parseToJsonElement(text).jsonObject }.getOrNull()
+        return JmapException.RequestFailed(status, problem?.string("type"), problem?.string("limit"))
+    }
 
     private companion object {
         val SUCCESS = 200..299

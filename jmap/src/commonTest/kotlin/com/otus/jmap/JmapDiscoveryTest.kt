@@ -10,6 +10,7 @@ import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 class JmapDiscoveryTest {
@@ -163,8 +164,12 @@ class JmapDiscoveryTest {
             assertTrue(failure(HttpStatusCode.Forbidden) is JmapException.Forbidden)
             assertTrue(failure(HttpStatusCode.NotFound) is JmapException.NotJmap)
             assertTrue(failure(HttpStatusCode.OK, "<html></html>") is JmapException.NotJmap)
-            val problem = failure(HttpStatusCode.BadRequest, """{"type": "urn:ietf:params:jmap:error:limit"}""")
-            assertEquals("urn:ietf:params:jmap:error:limit", (problem as JmapException.RequestFailed).type)
+            val limit = """{"type": "urn:ietf:params:jmap:error:limit", "limit": "maxSizeRequest"}"""
+            val problem = assertIs<JmapException.RequestFailed>(failure(HttpStatusCode.BadRequest, limit))
+            assertEquals("urn:ietf:params:jmap:error:limit", problem.type)
+            assertEquals("maxSizeRequest", problem.limit)
+            val plain = assertIs<JmapException.RequestFailed>(failure(HttpStatusCode.InternalServerError))
+            assertEquals(null, plain.limit)
         }
 
     @Test

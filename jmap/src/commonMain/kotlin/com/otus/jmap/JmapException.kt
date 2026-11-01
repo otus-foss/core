@@ -56,10 +56,14 @@ public sealed class JmapException(
         public val capability: String,
     ) : JmapException("Not supported by this server or account: $capability")
 
-    /** A request-level problem (RFC 8620, section 3.6.1), or another HTTP failure status. */
+    /**
+     * A request-level problem (RFC 8620, section 3.6.1), or another HTTP failure status. [limit] names
+     * the limit a `urn:ietf:params:jmap:error:limit` problem reports, such as `maxCallsInRequest`.
+     */
     public class RequestFailed(
         public val status: Int,
         public val type: String?,
+        public val limit: String? = null,
     ) : JmapException("The request failed with HTTP $status${type?.let { " ($it)" }.orEmpty()}.")
 
     /**

@@ -114,6 +114,8 @@ Developed and checked against Stalwart. It moved here from otus-mail at version 
 - `upload(accountId, bytes, mediaType)` stores a blob through the session's `uploadUrl` (section 6.1)
   with the same https and trusted-origin checks as downloads. Redirects are not followed. A blob over
   the advertised `maxSizeUpload` throws `UploadTooLarge` before anything is sent.
+- `RequestFailed` keeps the problem `type` and, for `urn:ietf:params:jmap:error:limit`, the `limit`
+  the server names, such as `maxSizeRequest` (section 3.6.1).
 - `JmapSession.capabilityObjects` and `JmapAccount.capabilityObjects` keep each capability's object,
   such as the core limits (`maxObjectsInSet`, `maxSizeUpload`), the mail limits, or the supported Sieve
   extensions. Apps decode the parts they need; malformed values read as unknown.
@@ -145,7 +147,7 @@ only), OAuth, and sharing logins between the two installed apps.
 | --- | --- | --- |
 | 2, 2.2 | Session resource; `/.well-known/jmap` with redirects (relative `Location` included); RFC 3986 URL resolution | `JmapDiscoveryTest`, `JmapUrlResolutionTest` |
 | 3.2–3.4 | Request envelope with `using`, invocations, `sessionState` | `JmapRequestTest`, `JmapConnectionTest` |
-| 3.6.1 | Request-level problem details become `RequestFailed(type)` | `JmapDiscoveryTest` |
+| 3.6.1 | Request-level problem details become `RequestFailed(type, limit)` | `JmapDiscoveryTest` |
 | 3.6.2 | Method-level errors become `MethodError(type)` for that call only | `JmapRequestTest` |
 | 3.7 | Result references | `JmapRequestTest` |
 | 5.1, 5.2, 5.5 | `/get`, `/changes`, `/query` | `JmapRequestTest`, Mail tests |
