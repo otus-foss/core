@@ -16,8 +16,9 @@ import com.otus.designsystem.theme.motion.LocalMotionScale
 /**
  * A one-line label that rolls only what changed, as [AnimatedText] does: in a number, each digit
  * that changed slides up when the number grew and down when it shrank, and a digit gained or lost
- * at the front rolls in or out while the words after it ease to their new place. A changed word
- * rolls whole. Unchanged digits and words stay still.
+ * at the front rolls in or out while the words after it ease to their new place. A sign before a
+ * number, as in "+5", stays put while its digits roll. A changed word rolls whole. Unchanged digits
+ * and words stay still.
  */
 @Composable
 public fun RollingWords(
@@ -30,9 +31,11 @@ public fun RollingWords(
     Row(modifier.clipToBounds()) {
         words.forEachIndexed { index, word ->
             key(index) {
-                if (word.isNotEmpty() && word.all(Char::isDigit)) {
+                val number = word.number()
+                if (number != null) {
+                    if (number.sign.isNotEmpty()) RollingCell(number.sign, direction, style)
                     // Digits line up from the end, so 12 to 15 rolls only the 5; empty places hold no width.
-                    val places = word.padStart(DIGIT_PLACES, ' ')
+                    val places = number.digits.padStart(DIGIT_PLACES, ' ')
                     places.forEachIndexed { place, digit ->
                         key(places.length - place) { RollingCell(digit.toString().trim(), direction, style) }
                     }
@@ -83,8 +86,21 @@ private class LastText(
 
 private fun String.firstNumber(): Long? =
     split(' ')
-        .firstOrNull { it.isNotEmpty() && it.all(Char::isDigit) }
+        .firstNotNullOfOrNull { it.number() }
+        ?.digits
         ?.toLongOrNull()
+
+/** A word that is a number, such as "12" or "+5": its [sign] and its [digits]. */
+private class WordNumber(
+    val sign: String,
+    val digits: String,
+)
+
+private fun String.number(): WordNumber? {
+    val sign = takeWhile { it == '+' || it == '-' }
+    val digits = drop(sign.length)
+    return WordNumber(sign, digits).takeIf { digits.isNotEmpty() && digits.all(Char::isDigit) }
+}
 
 /** Places kept for a number's digits, so a digit gained at the front rolls in instead of popping. */
 private const val DIGIT_PLACES = 6
