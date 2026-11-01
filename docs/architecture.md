@@ -86,6 +86,10 @@ The checker in `tools/check_architecture.py` enforces these rules at source leve
   storage, and navigation controllers stay outside them. Shared features do not import one
   another; app wiring composes them. Literal colors stay in the design-system `theme` subtree.
 - `domain` packages use no UI, platform, networking, or database APIs.
+- Animations take their duration and curve from `Motion`. Outside `theme/motion`, code never calls
+  `spring` or `CubicBezierEasing`, and every `tween` or `TweenSpec` names its easing and takes no
+  number literal as its duration. The checker cannot see a Compose default spec left out of a call
+  such as `animateFloatAsState(target)` or `fadeIn()`, so review still covers those.
 - No catch-all `utils`, `helpers`, or `manager` packages, wildcard imports, or inline
   suppressions.
 

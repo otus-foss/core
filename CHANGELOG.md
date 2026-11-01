@@ -20,6 +20,11 @@
 - JMAP: `JmapException.RequestFailed` takes and exposes `limit`, the limit a
   `urn:ietf:params:jmap:error:limit` problem names (RFC 8620, section 3.6.1). Code that constructs
   it must rebuild.
+- `BarMorph`'s fades follow `MotionCurve.Standard` through `Motion` instead of Compose's default
+  easing, which draws the same curve, so a change to the curve now reaches them.
+  `tools/check_architecture.py` rejects `spring`, `CubicBezierEasing`, and a `tween` or
+  `TweenSpec` without an easing or with a literal duration outside `theme/motion`. Update the
+  apps' copies of the checker to match.
 - `decodeImage`, `rememberImage`, and `rememberAvatarImage` decode images with a side over
   4096 px, such as 24-megapixel photos and panoramas, instead of returning null. They still sample
   the image down to `maxSize` while decoding; only an image of more than about 268 million pixels

@@ -53,12 +53,12 @@ public fun <T> BarMorph(
     modifier: Modifier = Modifier,
     content: @Composable (T) -> Unit,
 ) {
-    val morph = Morph(Motion.millis(MotionSpeed.Normal, LocalMotionScale.current))
+    val morph = Morph(LocalMotionScale.current)
     SharedTransitionLayout(modifier) {
         AnimatedContent(
             shown,
             transitionSpec = {
-                fadeIn(tween(morph.millis)) togetherWith fadeOut(tween(morph.millis)) using SizeTransform(clip = false)
+                fadeIn(morph.crossfade) togetherWith fadeOut(morph.crossfade) using SizeTransform(clip = false)
             },
             label = "Bar morph",
         ) { bar ->
@@ -100,15 +100,20 @@ private fun SharedTransitionScope.part(
         }
 }
 
-/** The steps of one morph, lasting [millis]: the height, then the width. */
+/** The steps of one morph at the motion [scale], lasting [millis]: the height, then the width. */
 @OptIn(ExperimentalSharedTransitionApi::class)
 private class Morph(
-    val millis: Int,
+    scale: Float,
 ) {
+    val millis = Motion.millis(MotionSpeed.Normal, scale)
     private val heightMillis = (millis * HEIGHT_SHARE).roundToInt()
 
-    /** The arriving part fades in while the width changes. */
-    val fade: FiniteAnimationSpec<Float> = tween(millis - heightMillis, delayMillis = heightMillis)
+    /** Bars without parts cross-fade over the whole morph, as the parts change in place. */
+    val crossfade: FiniteAnimationSpec<Float> = Motion.tween(MotionSpeed.Normal, MotionCurve.Standard, scale)
+
+    /** The arriving part fades in while the width changes, on the curve its bounds follow. */
+    val fade: FiniteAnimationSpec<Float> =
+        tween(millis - heightMillis, delayMillis = heightMillis, easing = MotionCurve.Standard.easing)
 
     /** Through the starting bounds at the target's height. */
     val bounds =
