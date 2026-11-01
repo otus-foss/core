@@ -19,6 +19,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.Velocity
+import androidx.compose.ui.util.lerp
 import com.otus.designsystem.theme.motion.LocalMotionScale
 import com.otus.designsystem.theme.motion.Motion
 import com.otus.designsystem.theme.motion.MotionCurve
@@ -94,9 +95,12 @@ public class PanelExpansion internal constructor(
         stop = index
         dragging = false
         running?.cancel()
+        val from = height
+        // The target is read on every frame, so a stop that moves meanwhile, such as with the
+        // keyboard, is followed rather than overshot.
         running =
             scope.launch {
-                animate(height, stops[index], animationSpec = spec) { value, _ -> height = value }
+                animate(0f, 1f, animationSpec = spec) { fraction, _ -> height = lerp(from, stops[index], fraction) }
                 skipping = false
             }
     }
@@ -163,15 +167,12 @@ public class PanelExpansion internal constructor(
         this.motionScale = motionScale
         this.flingSpeed = flingSpeed
         val held = this.stops.getOrNull(stop) ?: 0f
-        if (!dragging && before != null && held != before) {
-            // New content, or a panel on its way, moves to the stop on the motion curve. Else the
-            // layout moved it, such as the keyboard, and a resting panel follows at once rather than
-            // stand off its stop and read as dragged.
-            if (changed || running?.isActive == true) {
-                moveTo(stop, Motion.tween(scale = motionScale))
-            } else {
-                height = held
-            }
+        // A moving panel already heads for the stop wherever it is. A resting one moves on the motion
+        // curve for new content, and else follows at once, as with the keyboard, rather than stand
+        // off its stop and read as dragged.
+        val resting = !dragging && running?.isActive != true
+        if (resting && held != (before ?: held)) {
+            if (changed) moveTo(stop, Motion.tween(scale = motionScale)) else height = held
         }
         if (height > this.stops.last()) height = this.stops.last()
     }
