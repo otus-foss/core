@@ -44,7 +44,10 @@ public class PanelExpansion internal constructor(
     private var motionScale = 1f
     private var flingSpeed = 0f
     private var running: Job? = null
-    private var dragging = false
+
+    /** Whether the user is dragging the panel right now. */
+    public var dragging: Boolean by mutableStateOf(false)
+        private set
 
     /** Whether the running animation heads up to its stop, from below it. */
     private var rising = false
@@ -165,6 +168,18 @@ public class PanelExpansion internal constructor(
     /** Hands scrolling that content inside the panel leaves over to the panel, so it follows on. */
     internal val connection: NestedScrollConnection =
         object : NestedScrollConnection {
+            // Once the panel follows a drag, it keeps it: content shrinking with the panel could
+            // otherwise scroll again and take the rest of the drag.
+            override fun onPreScroll(
+                available: Offset,
+                source: NestedScrollSource,
+            ): Offset {
+                if (!dragging || source != NestedScrollSource.UserInput || available.y == 0f) return Offset.Zero
+                val before = height
+                drag(available.y)
+                return Offset(0f, height - before)
+            }
+
             override fun onPostScroll(
                 consumed: Offset,
                 available: Offset,
