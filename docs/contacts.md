@@ -133,7 +133,10 @@ written again loses nothing. A declared property always wins over an `extra` ent
 name. Encoding writes `@type` first on every object. Decoding accepts a missing `@type` and fails
 when a present one names another type.
 
-These serializers work only with JSON. Any other kotlinx.serialization format throws.
+These serializers work only with JSON. Any other kotlinx.serialization format throws. Decoding
+also throws a `SerializationException` for an object with a member that nests arrays or objects
+more than 64 levels deep, such as a hostile vendor property, because encoding recurses once per
+level and would overflow the stack when the card is written again.
 
 ### Partial cards
 

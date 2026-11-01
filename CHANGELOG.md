@@ -752,6 +752,9 @@
 - `PushSubscriptions.sync` renews only verified subscriptions. An unverified one is created again
   an hour after creation even when the server grants less than two hours; before, each renewal
   restarted its verification hour, so it was never replaced.
+- Decoding a JSContact object throws a `SerializationException` when a member nests arrays or
+  objects more than 64 levels deep. Before, such a card decoded but overflowed the stack, with a
+  `StackOverflowError`, when it was encoded again.
 
 ## 0.7.0 - 2026-10-11
 
