@@ -6,14 +6,17 @@ import com.otus.designsystem.shared.settings.components.SettingRow
 import com.otus.designsystem.shared.settings.elements.ValueButton
 import com.otus.settings.presentation.SettingsItem
 
-/** A search result: the item's name, where it lives, and its current value or a chevron for a page. */
+/**
+ * A search result under its page's heading: its name, its section or a top-level page's summary,
+ * and its current value, or a chevron for a page.
+ */
 @Composable
 internal fun SettingsResultRow(item: SettingsItem) {
-    val where = item.path.joinToString(" › ").ifEmpty { item.summary }
+    val detail = item.section ?: item.summary
     if (item.isPage) {
-        SettingPageRow(item.title, item.onOpen, description = where, icon = item.icon)
+        SettingPageRow(item.title, item.onOpen, description = detail, icon = item.icon)
     } else {
-        SettingRow(item.title, item.onOpen, description = where, icon = item.icon) {
+        SettingRow(item.title, item.onOpen, description = detail, icon = item.icon) {
             item.value?.let { ValueButton(it) }
         }
     }
