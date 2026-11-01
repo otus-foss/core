@@ -21,18 +21,21 @@ import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import kotlinx.coroutines.launch
 
 /**
- * How far a list has scrolled a collapsing [ContextPanel], from [progress] 0 at the top of the list
- * to 1 after [PanelTokens.collapseDistance]. Attach [connection] to the list with `nestedScroll`:
- * the panel follows the scroll itself, not a timer, so scrolling back up reverses it exactly.
+ * How far a list has scrolled a collapsing [ContextPanel] away, from [progress] 0 to 1 over
+ * [PanelTokens.collapseDistance]. Attach [connection] to the list with `nestedScroll`: the panel
+ * follows the scroll itself, not a timer, so scrolling up anywhere in the list brings it back.
  */
 @Stable
 public class PanelCollapse internal constructor(
     private val distance: Float,
 ) {
-    private var scrolled by mutableFloatStateOf(0f)
+    // How far the list sits from its top, which tells whether settling must move the list.
+    private var offset by mutableFloatStateOf(0f)
+    private var hidden by mutableFloatStateOf(0f)
+    private var scrollingUp = false
 
     public val progress: Float
-        get() = (scrolled / distance).coerceIn(0f, 1f)
+        get() = hidden / distance
 
     public val connection: NestedScrollConnection =
         object : NestedScrollConnection {
@@ -41,38 +44,53 @@ public class PanelCollapse internal constructor(
                 available: Offset,
                 source: NestedScrollSource,
             ): Offset {
-                scrolled = (scrolled - consumed.y).coerceAtLeast(0f)
+                if (consumed.y != 0f) move(-consumed.y)
                 return Offset.Zero
             }
         }
 
-    /** Scrolls [list] to the nearer end of the collapse, so the panel never rests half collapsed. */
+    private fun move(delta: Float) {
+        scrollingUp = delta < 0f
+        offset = (offset + delta).coerceAtLeast(0f)
+        hidden = (hidden + delta).coerceIn(0f, distance)
+    }
+
+    /**
+     * Finishes a half collapse. Near the top the list scrolls to the nearer end, so the first row
+     * meets the panel's edge; further down only the panel moves, the way the last scroll went.
+     */
     internal suspend fun settle(
         list: ScrollableState,
         spec: AnimationSpec<Float>,
     ) {
+        if (progress <= 0f || progress >= 1f) return
         val end =
             when {
-                progress <= 0f || progress >= 1f -> return
+                offset > distance -> if (scrollingUp) 0f else distance
                 progress < HALF -> 0f
                 else -> distance
             }
-        val target = end - scrolled
-        // A programmatic scroll skips nested scrolling, so it moves the progress itself.
+        // Inside a list scroll so a touch interrupts it. A programmatic scroll skips nested
+        // scrolling, so it moves the progress itself.
         list.scroll {
+            if (offset > distance) {
+                animate(hidden, end, animationSpec = spec) { value, _ -> hidden = value }
+                return@scroll
+            }
             var done = 0f
-            animate(0f, target, animationSpec = spec) { value, _ ->
+            animate(0f, end - hidden, animationSpec = spec) { value, _ ->
                 val step = scrollBy(value - done)
                 done += step
-                scrolled = (scrolled + step).coerceAtLeast(0f)
+                move(step)
             }
         }
         // Rounding can leave the progress a hair short of the end, which would settle again forever.
-        scrolled = end
+        hidden = end
     }
 
     internal fun expand() {
-        scrolled = 0f
+        offset = 0f
+        hidden = 0f
     }
 
     private companion object {
@@ -81,8 +99,8 @@ public class PanelCollapse internal constructor(
 }
 
 /**
- * A [PanelCollapse] for [list]. Released halfway, the list settles to the nearer state on the app's
- * motion curve at the user's animation speed; back at its top, such as after a jump to the first
+ * A [PanelCollapse] for [list]. Released halfway, the panel settles on the app's motion curve at
+ * the user's animation speed, as [PanelCollapse.settle] describes; back at its top, such as after a jump to the first
  * row, the panel is fully expanded.
  */
 @Composable
