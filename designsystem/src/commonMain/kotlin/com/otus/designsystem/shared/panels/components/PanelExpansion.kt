@@ -62,6 +62,13 @@ public class PanelExpansion internal constructor(
     public var skipping: Boolean by mutableStateOf(false)
         private set
 
+    /**
+     * Whether the user drags the panel or it animates to a stop, rather than resting, so a change
+     * of position comes from the panel itself and not from the layout, such as the keyboard.
+     */
+    public var moving: Boolean by mutableStateOf(false)
+        private set
+
     /** The stop the panel last settled on or is heading to. */
     public var stop: Int by mutableIntStateOf(0)
         private set
@@ -104,12 +111,20 @@ public class PanelExpansion internal constructor(
         val from = height
         // The target is read on every frame, so a stop that moves meanwhile, such as with the
         // keyboard, is followed rather than overshot.
+        moving = true
         running =
             scope.launch {
                 animate(0f, 1f, animationSpec = spec) { fraction, _ -> height = lerp(from, stops[index], fraction) }
                 if (index == 0) direct = false
                 skipping = direct
+                moving = false
             }
+    }
+
+    /** A drag that ended right on a stop: nothing left to animate. */
+    private fun settled() {
+        dragging = false
+        if (running?.isActive != true) moving = false
     }
 
     /** Back to the panel as it always is. */
@@ -117,6 +132,7 @@ public class PanelExpansion internal constructor(
 
     internal fun drag(delta: Float) {
         dragging = true
+        moving = true
         skipping = direct
         running?.cancel()
         height = (height + delta).coerceIn(0f, stops.last())
@@ -157,7 +173,7 @@ public class PanelExpansion internal constructor(
                 consumed: Velocity,
                 available: Velocity,
             ): Velocity {
-                if (height !in stops) release(available.y) else dragging = false
+                if (height !in stops) release(available.y) else settled()
                 return Velocity.Zero
             }
         }
