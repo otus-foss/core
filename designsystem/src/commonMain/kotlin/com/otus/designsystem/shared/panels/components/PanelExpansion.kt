@@ -43,6 +43,7 @@ public class PanelExpansion internal constructor(
     private var flingSpeed = 0f
     private var running: Job? = null
     private var dragging = false
+    private var content: Any? = null
 
     /** The extra height in pixels, between 0 and the last stop. */
     internal var height by mutableFloatStateOf(0f)
@@ -139,18 +140,24 @@ public class PanelExpansion internal constructor(
         stops: List<Float>,
         motionScale: Float,
         flingSpeed: Float,
+        content: Any?,
     ) {
         val before = this.stops.getOrNull(stop)
+        val changed = content != this.content
+        this.content = content
         this.stops = listOf(0f) + stops.filter { it > 0f }.sorted()
         this.motionScale = motionScale
         this.flingSpeed = flingSpeed
-        // A stop that shrinks under the panel, such as when the keyboard rises, takes the panel down
-        // with it at once; else the panel would read as dragged past it.
         val held = this.stops.getOrNull(stop) ?: 0f
-        val shrank = held < (before ?: held)
-        if (!dragging && shrank && height > held) {
-            running?.cancel()
-            height = held
+        if (!dragging && before != null && held != before) {
+            // New content, or a panel on its way, moves to the stop on the motion curve. Else the
+            // layout moved it, such as the keyboard, and a resting panel follows at once rather than
+            // stand off its stop and read as dragged.
+            if (changed || running?.isActive == true) {
+                moveTo(stop, Motion.tween(scale = motionScale))
+            } else {
+                height = held
+            }
         }
         if (height > this.stops.last()) height = this.stops.last()
     }
@@ -159,16 +166,21 @@ public class PanelExpansion internal constructor(
 /**
  * A [PanelExpansion] whose stops, after the panel as it always is, are [stops] of extra height in
  * order, such as a quick view and then every filter. It settles on the app's motion curve at the
- * user's animation speed.
+ * user's animation speed. When a stop moves under a resting panel it follows at once, as with the
+ * keyboard, unless the [content] it grows for changed too, such as a search getting its first
+ * letter; then it moves on the motion curve.
  */
 @Composable
-public fun rememberPanelExpansion(stops: List<Dp>): PanelExpansion {
+public fun rememberPanelExpansion(
+    stops: List<Dp>,
+    content: Any? = null,
+): PanelExpansion {
     val scope = rememberCoroutineScope()
     val expansion = remember(scope) { PanelExpansion(scope) }
     val density = LocalDensity.current
     val motionScale = LocalMotionScale.current
     with(density) {
-        expansion.configure(stops.map { it.toPx() }, motionScale, QuickViewTokens.flingSpeed.toPx())
+        expansion.configure(stops.map { it.toPx() }, motionScale, QuickViewTokens.flingSpeed.toPx(), content)
     }
     return expansion
 }
