@@ -36,9 +36,11 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
+import com.otus.designsystem.shared.controls.elements.RollingWords
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.shared.controls.elements.textEnterSpec
@@ -135,7 +137,7 @@ private fun ContextChoices(
     }
 }
 
-/** The primary's label while there is no context, faded to [alpha]. */
+/** The primary's label while there is no context, faded to [alpha]; a new count rolls in. */
 @Composable
 private fun PrimaryLabel(
     face: Transition<PrimaryFace>,
@@ -149,14 +151,15 @@ private fun PrimaryLabel(
             .clearAndSetSemantics {},
         contentAlignment = Alignment.CenterStart,
     ) {
-        Text(
+        RollingWords(
             it.label,
-            color = LocalContentColor.current,
-            fontSize = ActionBarTokens.titleSize,
-            lineHeight = ActionBarTokens.titleLineHeight,
-            fontWeight = FontWeight.SemiBold,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
+            style =
+                TextStyle(
+                    color = LocalContentColor.current,
+                    fontSize = ActionBarTokens.titleSize,
+                    lineHeight = ActionBarTokens.titleLineHeight,
+                    fontWeight = FontWeight.SemiBold,
+                ),
         )
     }
 }
