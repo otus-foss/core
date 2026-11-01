@@ -5,21 +5,27 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalDensity
 import com.otus.designsystem.mail.attachments.components.AttachmentKind
 import com.otus.designsystem.shared.controls.elements.CountBadge
 import com.otus.designsystem.shared.controls.elements.Symbol
@@ -29,6 +35,7 @@ import com.otus.designsystem.shared.people.components.PersonAvatar
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.layout.CornerTokens
 import com.otus.designsystem.theme.tokens.layout.QuickViewTokens
+import kotlin.math.ceil
 
 /** What a [QuickFace] shows in its circle. */
 public sealed interface QuickFaceLook {
@@ -73,21 +80,46 @@ public fun QuickFaces(
 }
 
 /**
- * [faces] in a row that scrolls sideways with [visible] of them across its width, fading at an edge
- * with more faces past it, such as the people a search finds.
+ * [faces] in a row that scrolls sideways, such as the people a search finds, fading at an edge
+ * with more faces past it. A "+N" pill at the row's end counts the faces still to the right.
  */
 @Composable
 public fun ScrollingFaces(
     faces: List<QuickFace>,
     modifier: Modifier = Modifier,
-    visible: Int = VISIBLE_FACES,
 ) {
     val scroll = rememberScrollState()
-    BoxWithConstraints(modifier.fillMaxWidth().scrollFade(scroll)) {
-        val slot = maxWidth / visible
-        Row(Modifier.horizontalScroll(scroll, overscrollEffect = null)) {
-            faces.forEach { face -> Face(face, Modifier.width(slot)) }
+    val slot = with(LocalDensity.current) { QuickViewTokens.faceSlot.toPx() }
+    // Faces wholly or partly past the right edge.
+    val left by remember(scroll, slot) { derivedStateOf { ceil((scroll.maxValue - scroll.value) / slot).toInt() } }
+    Box(modifier.fillMaxWidth()) {
+        Row(Modifier.fillMaxWidth().scrollFade(scroll).horizontalScroll(scroll, overscrollEffect = null)) {
+            faces.forEach { face -> Face(face, Modifier.width(QuickViewTokens.faceSlot)) }
         }
+        if (left > 0) MorePill(left, Modifier.align(Alignment.TopEnd))
+    }
+}
+
+/** How many more faces wait to the right, centered on the faces' circles. */
+@Composable
+private fun MorePill(
+    count: Int,
+    modifier: Modifier,
+) {
+    Box(
+        modifier
+            .height(QuickViewTokens.faceSize)
+            .wrapContentHeight(),
+    ) {
+        Text(
+            "+$count",
+            Modifier
+                .background(OtusColors.bgLight, CircleShape)
+                .padding(horizontal = QuickViewTokens.morePadding, vertical = QuickViewTokens.dotRing),
+            color = OtusColors.text1,
+            fontSize = QuickViewTokens.labelSize,
+            lineHeight = QuickViewTokens.labelLineHeight,
+        )
     }
 }
 
@@ -148,6 +180,3 @@ private fun FaceMark(
 }
 
 private val FaceShape = RoundedCornerShape(CornerTokens.chip)
-
-/** Faces a [ScrollingFaces] row shows across its width. */
-public const val VISIBLE_FACES: Int = 5
