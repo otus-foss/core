@@ -20,6 +20,8 @@
 - JMAP: `JmapException.RequestFailed` takes and exposes `limit`, the limit a
   `urn:ietf:params:jmap:error:limit` problem names (RFC 8620, section 3.6.1). Code that constructs
   it must rebuild.
+- `TimeWheelPicker` no longer crashes when `allowed` holds no five-minute step, such as 10:01 to
+  10:04; it offers the range's start alone.
 - `BarMorph`'s fades follow `MotionCurve.Standard` through `Motion` instead of Compose's default
   easing, which draws the same curve, so a change to the curve now reaches them.
   `tools/check_architecture.py` rejects `spring`, `CubicBezierEasing`, and a `tween` or
