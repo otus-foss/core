@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -87,7 +89,8 @@ public class EntryTaps(
 /**
  * The card on the theme's raised color, filled with the accent while selected. A [dimmed] card
  * fades toward the page as much as its text fades, so read and unread mail differ in both. On a
- * theme whose raised color is its page color, such as Black, an outline marks the card.
+ * theme whose raised color is its page color, such as Black, an outline marks the card. Under
+ * [LocalEntriesOnRaised] the two colors trade places, so the card stands out from a raised surface.
  */
 @Composable
 private fun Modifier.entryCard(
@@ -96,7 +99,13 @@ private fun Modifier.entryCard(
 ): Modifier {
     val selected = selection?.selected == true
     val strength = if (dimmed) OtusAlpha.DIMMED else 1f
-    val raised = lerp(OtusColors.bgRegular, OtusColors.bgDark, strength)
+    val onRaised = LocalEntriesOnRaised.current
+    val raised =
+        lerp(
+            if (onRaised) OtusColors.bgDark else OtusColors.bgRegular,
+            if (onRaised) OtusColors.bgRegular else OtusColors.bgDark,
+            strength,
+        )
     val fill = animateColorAsState(if (selected) OtusColors.accentDark else raised, motionTween()).value
     val top = joinedCorner(selection?.joinedAbove == true, EntryTokens.radius)
     val bottom = joinedCorner(selection?.joinedBelow == true, EntryTokens.radius)
@@ -114,6 +123,9 @@ private fun Modifier.entryCard(
     }.entryOutline(outlined, outline, shape)
         .clip(shape)
 }
+
+/** Whether entries sit on a raised surface, such as a grown control panel, rather than on the page. */
+public val LocalEntriesOnRaised: ProvidableCompositionLocal<Boolean> = staticCompositionLocalOf { false }
 
 private fun Modifier.entryOutline(
     outlined: Boolean,
