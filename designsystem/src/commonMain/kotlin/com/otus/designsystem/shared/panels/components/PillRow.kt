@@ -1,5 +1,6 @@
 package com.otus.designsystem.shared.panels.components
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,17 +33,7 @@ public fun PillRow(
         horizontalArrangement = Arrangement.spacedBy(PanelTokens.iconGap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(
-            Modifier
-                .weight(1f)
-                .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
-                .drawWithContent {
-                    drawContent()
-                    val fade = PanelTokens.fadeWidth.toPx().coerceAtMost(size.width / 2)
-                    drawEdgeFade((scroll.value / fade).coerceIn(0f, 1f), fade, atEnd = false)
-                    drawEdgeFade(((scroll.maxValue - scroll.value) / fade).coerceIn(0f, 1f), fade, atEnd = true)
-                },
-        ) {
+        Box(Modifier.weight(1f).scrollFade(scroll)) {
             Row(
                 Modifier
                     .horizontalScroll(scroll, overscrollEffect = null)
@@ -55,3 +46,13 @@ public fun PillRow(
         trailing?.invoke()
     }
 }
+
+/** Fades the content at an edge [scroll] has more past, as the control panel's rail does. */
+internal fun Modifier.scrollFade(scroll: ScrollState): Modifier =
+    graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
+        .drawWithContent {
+            drawContent()
+            val fade = PanelTokens.fadeWidth.toPx().coerceAtMost(size.width / 2)
+            drawEdgeFade((scroll.value / fade).coerceIn(0f, 1f), fade, atEnd = false)
+            drawEdgeFade(((scroll.maxValue - scroll.value) / fade).coerceIn(0f, 1f), fade, atEnd = true)
+        }
