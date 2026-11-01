@@ -22,6 +22,12 @@ public object QuickViewTokens {
     public val tileLabelGap: Dp = 6.dp
     public val badgeInset: Dp = 8.dp
     public val faceSize: Dp = 52.dp
+
+    /** The width each face takes in a scrolling row, its circle and a short name. */
+    public val faceSlot: Dp = 68.dp
+
+    /** The sides of the "+N" pill at a scrolling row's end. */
+    public val morePadding: Dp = 8.dp
     public val dotSize: Dp = 12.dp
     public val dotRing: Dp = 3.dp
     public val labelSize: TextUnit = 12.sp
