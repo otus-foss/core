@@ -33,6 +33,12 @@ internal object SettingTokens {
     val textGap: Dp = 4.dp
     val dividerWidth: Dp = 1.dp
 
+    /** The heading above a group of search results: space above it, its label, and its icons. */
+    val groupGap: Dp = 12.dp
+    val groupLabelSize: TextUnit = 13.sp
+    val groupIconSize: Dp = 18.dp
+    val groupIconGap: Dp = 8.dp
+
     val valueRadius: Dp = CornerTokens.chip
     val valuePaddingHorizontal: Dp = 12.dp
     val valuePaddingVertical: Dp = 8.dp
