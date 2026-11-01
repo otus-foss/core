@@ -10,8 +10,13 @@ date-format examples, and the `SettingsEntry` contract. The settings list receiv
 entries with titles, summaries, icons, and callbacks. The app decides which pages exist and
 where they lead.
 
-The app supplies its own `DateFormatPreferenceStore`. Selection writes the store before
-updating the displayed preference; an unsuccessful write does not report a saved change.
+The app supplies its own `DateFormatPreferenceStore`. Selection calls the store's `write` before
+updating the displayed preference, so a `write` that throws leaves the shown choice unchanged.
+`write` returns nothing, though, and the provided stores save in the background:
+`AndroidDateFormatPreferenceStore` with `SharedPreferences.apply()` and
+`IosDateFormatPreferenceStore` with `NSUserDefaults`. A failed save on disk is never reported, so
+the new choice shows as saved and may be lost after a restart. `AnimationSettingsState` and the
+animation stores work the same way.
 The appearance screen offers date formatting as a flat `SettingRow` with the pattern in a
 `ValueButton`; tapping it opens a `ChoiceSheet`. Its trailing `content` slot places app-owned
 sections below it, such as Mail's swipe actions. Its Look section starts with a Theme row that

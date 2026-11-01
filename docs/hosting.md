@@ -19,8 +19,11 @@ iOS apps or run simulator tests.
 
 ## Packages
 
-Meta publishes to GitHub Packages at `https://maven.pkg.github.com/reazndev/otus-meta`. A version
-tag on `main` starts the `publish` workflow on Linux. Its `build` job runs the modules' host tests,
+Meta publishes to GitHub Packages at `https://maven.pkg.github.com/reazndev/otus-meta`.
+**Publishing is paused:** the `publish` workflow runs only when started by hand, and a manual run
+never uploads, so a version tag publishes nothing until the tag trigger returns to
+`.github/workflows/publish.yml`. With that trigger, a version tag on `main` starts the workflow on
+Linux. Its `build` job runs the modules' host tests,
 builds every publication in an isolated local Maven repository, and verifies the root metadata,
 platform binaries, checksums, and `com.otus` dependency versions. Its `publish` job then uploads
 with the workflow's `GITHUB_TOKEN`. The workflow does not run `checkAll`; run it by hand before tagging.
