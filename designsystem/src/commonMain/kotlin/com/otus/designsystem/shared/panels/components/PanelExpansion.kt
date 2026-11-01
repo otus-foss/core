@@ -9,6 +9,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -49,6 +50,13 @@ public class PanelExpansion internal constructor(
     internal var height by mutableFloatStateOf(0f)
         private set
 
+    /**
+     * Whether the panel is moving past a stop without stopping, such as a button opening every
+     * filter, so what shows at the stops in between should stay hidden.
+     */
+    public var skipping: Boolean by mutableStateOf(false)
+        private set
+
     /** The stop the panel last settled on or is heading to. */
     public var stop: Int by mutableIntStateOf(0)
         private set
@@ -82,10 +90,15 @@ public class PanelExpansion internal constructor(
         spec: AnimationSpec<Float>,
     ) {
         val index = target.coerceIn(0, stops.lastIndex)
+        skipping = abs(index - position) > 1f
         stop = index
         dragging = false
         running?.cancel()
-        running = scope.launch { animate(height, stops[index], animationSpec = spec) { value, _ -> height = value } }
+        running =
+            scope.launch {
+                animate(height, stops[index], animationSpec = spec) { value, _ -> height = value }
+                skipping = false
+            }
     }
 
     /** Back to the panel as it always is. */
@@ -93,6 +106,7 @@ public class PanelExpansion internal constructor(
 
     internal fun drag(delta: Float) {
         dragging = true
+        skipping = false
         running?.cancel()
         height = (height + delta).coerceIn(0f, stops.last())
     }
