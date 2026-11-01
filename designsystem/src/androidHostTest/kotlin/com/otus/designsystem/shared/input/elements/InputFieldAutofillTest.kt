@@ -12,7 +12,6 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35])
@@ -31,7 +30,8 @@ class InputFieldAutofillTest {
         }
         assertEquals(ContentType.Username, contentTypeOf("Username"))
         assertEquals(ContentType.Password, contentTypeOf("Password"))
-        assertNull(contentTypeOf("Email"))
+        // Compose offers an email-keyboard field as an email address on its own; it is not a login field.
+        assertEquals(ContentType.EmailAddress, contentTypeOf("Email"))
     }
 
     private fun contentTypeOf(description: String): ContentType? =
