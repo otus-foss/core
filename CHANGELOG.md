@@ -740,6 +740,9 @@
   than after five minutes when it fetches icons from the website itself, so a sender's domain
   learns the device's IP address at most once a day. Contact and icon-proxy misses are still
   retried after five minutes.
+- `FileAvatarStore` reads the size and age of its records once and keeps them in memory, so a
+  write no longer lists the directory and opens every record. A temporary file left by a killed
+  process is deleted on the store's first write. Use one store per directory.
 
 ## 0.7.0 - 2026-10-11
 

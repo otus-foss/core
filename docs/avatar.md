@@ -58,6 +58,9 @@ or icon-proxy lookup that found nothing is retried after five minutes, and a web
 directly is asked again after a day, as the [brand logos](#brand-logos) section explains. Existing
 images remain visible during an expired/offline lookup. The OS may reclaim cache files. Removing or reconnecting an account deletes its private
 contact records while retaining public website icons. Callers must not mutate image bytes.
+The store reads the size and age of its records once, on its first write, and keeps them in
+memory, so a write deletes the oldest records without opening the others. Use one store per
+directory: records another store writes there are not counted until the next process.
 
 Concurrent lookups share a pending result for each contact or domain key. At most eight fetches run
 at once. Cancellation of the owner lets waiting callers retry. Cache invalidation also covers
@@ -194,8 +197,8 @@ matching, address-book permissions, blobs/data URIs/external URLs, website-domai
 provider icons, icon-cache options and domain-only requests, cache expiry/eviction/invalidation,
 cancellation, credential isolation, redirects, refused private and special-use hosts,
 response-size limits, linear-time parsing of hostile HTML, and the miss lifetimes of websites and
-proxies. Persistent-cache tests cover process recreation, bounded disk usage, corrupt
-records and account removal.
+proxies. Persistent-cache tests cover process recreation, bounded disk usage, pruning by age after a
+restart, corrupt records and account removal.
 Contact search tests also cover later-page exact matches, server-clamped page sizes, exhaustion,
 changing queries, stalled pagination, search deadlines, and caller cancellation.
 Mail's inbox tests cover restoring avatars before network work; see
