@@ -6,9 +6,13 @@ is unchanged. Both target Android and iOS; screens compose the common design sys
 ## Settings
 
 `com.otus:settings` owns `SettingsScreen`, `AppearanceSettingsScreen`, `DateFormatSettingsState`,
-date-format examples, and the `SettingsEntry` contract. The settings list receives ordered
-entries with titles, summaries, icons, and callbacks. The app decides which pages exist and
-where they lead.
+date-format examples, and the settings index. The app builds the index with `settingsIndex`:
+top-level pages with summaries and icons, and inside each page its sections, settings, current
+values, options, and subpages. The app decides which pages exist and where they lead. The home
+lists the top-level pages. A search finds any page, setting, or option and groups the results under
+their page. Opening a result calls the page's callback with the setting's title, and the app
+provides it as `LocalFoundSetting` so the row flashes. `appearanceIndex` lists the Appearance
+page's settings for the app's index.
 
 The app supplies its own `DateFormatPreferenceStore`. Selection calls the store's `write` before
 updating the displayed preference, so a `write` that throws leaves the shown choice unchanged.

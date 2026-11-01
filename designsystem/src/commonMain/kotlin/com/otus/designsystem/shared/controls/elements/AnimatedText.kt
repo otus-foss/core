@@ -1,6 +1,7 @@
 package com.otus.designsystem.shared.controls.elements
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -42,19 +43,22 @@ public fun AnimatedText(
         modifier = modifier.clipToBounds().clearAndSetSemantics { this.text = AnnotatedString(text) },
         contentKey = { it.text },
         contentAlignment = Alignment.Center,
-        transitionSpec = {
-            val direction = if (targetState.order >= initialState.order) 1 else -1
-            val incoming =
-                slideInVertically(textEnterSpec(motionScale)) { direction * it } + fadeIn(textEnterSpec(motionScale))
-            val outgoing =
-                slideOutVertically(textExitSpec(motionScale)) { -direction * it } + fadeOut(textExitSpec(motionScale))
-            (incoming togetherWith outgoing).using(null)
-        },
+        transitionSpec = { roll(if (targetState.order >= initialState.order) 1 else -1, motionScale) using null },
         label = "Text replacement",
     ) { label ->
         Text(label.text, style = style, textAlign = textAlign)
     }
 }
+
+/** The new text slides in from below, or above for a [direction] of -1, as the old slides out. */
+internal fun roll(
+    direction: Int,
+    motionScale: Float,
+): ContentTransform =
+    (slideInVertically(textEnterSpec(motionScale)) { direction * it } + fadeIn(textEnterSpec(motionScale)))
+        .togetherWith(
+            slideOutVertically(textExitSpec(motionScale)) { -direction * it } + fadeOut(textExitSpec(motionScale)),
+        )
 
 /** New text arrives at the normal speed. */
 internal fun <T> textEnterSpec(motionScale: Float): TweenSpec<T> =

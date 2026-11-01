@@ -116,9 +116,10 @@ rows, and the setup screen. The app supplies a login store, transport, coroutine
 callbacks, and the required `AccountService`. Mail chooses the RFC 8621 mail capability and
 `Mailbox/get`; the library does not assume that another service is advertised.
 
-`settings` owns the settings list, Appearance screen, date-format state, and examples.
-The app supplies `SettingsEntry` values and callbacks, the date-format preference store, and
-navigation. Shared settings do not embed Mail folder or rule destinations.
+`settings` owns the settings list and its search, Appearance screen, date-format state, and
+examples. The app builds a `settingsIndex` of its pages and settings, each page with a callback
+that opens it on a found setting, and supplies the date-format preference store and navigation.
+Shared settings do not embed Mail folder or rule destinations.
 
 Both modules retain `domain`, `data`, and `presentation` boundaries where used. Their screens
 compose shared design-system components. App-specific navigation and installed-app credentials

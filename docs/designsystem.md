@@ -62,13 +62,13 @@ The element and component lists below describe UI layers, not flat packages.
 - `elements`: `ActionButton`, `ActionRow`, `AnimatedText`, `Avatar`, `AvatarImage`, `BarIconButton`, `BarAddButton`, `CalendarDay`,
   `AddressPill`, `ButtonPill`, `ComposeField`, `HtmlView`, `QuoteChip`, `RichTextBody` (with `RichText` and `TextFormat`),
   `CalendarMonthBackground`, `Chip`, `ColorSlider`, `ColorSwatch`, `AddSwatch`, `SwatchStack`, `IconButton` (with `IconButtonLook`), `IconPill`, `InputField` (with `InputKind`), `FieldLabel`, `RemoveFieldButton`, `LabelPill`, `RefreshIndicator`,
-  `FolderColorSwatch`, `LocalIconTint`, `RowButton`, `SearchField`, `SearchPrompt`, `SelectionRow`, `SidebarEntry`, `SidebarHeading`,
+  `FolderColorSwatch`, `LocalIconTint`, `RowButton`, `SearchField`, `PanelNavigation`, `PanelTitle`, `SelectionRow`, `SidebarEntry`, `SidebarHeading`,
   `SidebarCount`, `SidebarExpandButton`, `SidebarPill`, `SidebarInboxEntry`, `SidebarMailboxTile`,
   `SidebarFolderEntry` (with `SidebarFolder`), `SidebarDivider`, `SectionCaption`, `Symbol`, `Toast` (with `ToastAction`),
   `ToggleSwitch`, `ValueButton`, `FilterChip` (with `FilterChipRole` and `ChipLabel`), `FolderGlyph`,
   `FolderPath`, `FolderStack`, `PageDots`, `DatePill`, `DestinationPill`, `PlainAction`, `HtmlQuote`, `FirstFit`, and the
   `controlPressFeedback` modifier.
-- `components`: `ActionBar`, `ActionBarHost`, `BarAction`, `BarContext`, `BarToken`, `ButtonPair`, `ChoiceDialog`, `ChoiceSheet` (with `ChoiceRow`), `RadioChoiceSheet`, `ConfirmDialog`, `InputSheet`, `ContextPanel`, `DatePickerDialog`,
+- `components`: `ActionBar`, `ActionBarHost`, `BarAction`, `BarContext`, `BarToken`, `ButtonPair`, `ChoiceDialog`, `ChoiceSheet` (with `ChoiceRow`), `RadioChoiceSheet`, `ConfirmDialog`, `InputSheet`, `ContextPanel` (with `PanelCollapse`), `PanelSearchPill`, `AccountStack`, `PanelSearchField`, `SearchHitRow`, `ExpandingSearch`, `PanelSheet`, `DatePickerDialog`,
   `MonthNavigation`, `MonthYearPicker`, `PageScaffold`, `Subpage`, `PageSection`, `PanelSurface`,
   `PickerSearch`, `PreviewCard`, `PullToRefresh`, `ReorderableColumn`, `ReorderableTree`, `SelectionSheet`, `SheetFrame`, `SettingRow`, `SettingPageRow`,
   `SettingToggleRow`, `SettingsSection`, `InfoTip` (with `InfoText`; also the `info` parameter of `SettingsSection` and `SettingToggleRow`), `SpecificDatePicker`, `Sidebar`, `SidebarHeader`, `SidebarMailboxGrid`, `ScopeSheet`, `ScopeRow` and `ScopeChildRow` (with `ScopeOption`), `PickerChip`, `AccountGroupRow`,
@@ -369,17 +369,28 @@ The element and component lists below describe UI layers, not flat packages.
   is sent from, avatar first and a chevron last, with long addresses ending in an ellipsis.
 - `BarNotice` sits just above a page's action bar and says what its main action will do
   differently, such as "Scheduled for Mon 19 Oct, 8:00", with a button such as Change.
-- `FilterPanel` grows down out of a control panel, on its surface, border, and radius, over a
-  scrim, so it reads as that panel opening. Its header stays put, and the footer floats at the
-  bottom while the body scrolls under it, fading out over `PanelTokens.fadeWidth` just above it.
-  It is at most as tall as the room its modifier gives it. A plain ✕ at the top end, a tap on the
-  scrim, back, and an upward swipe close it; screen readers read only the panel while it is open
-  and start at its title. `FilterPanelHeader` has the title, or a back button named after the page
-  it returns to, and leaves room for the panel's ✕. `FilterSection` puts a small `text3` label above wrapping
+- `ContextPanel` is the control panel at the top of a page. It runs edge to edge, draws behind
+  the status bar, and rounds only its bottom corners. Its 56 dp header row holds a
+  `PanelNavigation` chevron, whose glyph sits at the start of its target so the target may overlap
+  the content after it, and the content, such as a `PanelTitle` or a `PanelSearchPill` beside an
+  `AccountStack`.
+  Pills across its edge are cut out of it by a 4 dp page-colored ring. `rememberPanelCollapse`
+  ties it to a list's scroll: from 0 at the top to 1 after 60 dp the panel shortens by 30 dp,
+  the pills fade by 0.6, the search pill tightens from 0.2, an `AccountStack` folds from
+  0.4, and the search pill's filter button grows in from 0.6. A release halfway settles on the
+  nearer state on the standard curve at the user's animation speed.
+- `PanelSheet` is the control panel unfolded for a task, such as filters, search, or the account
+  switcher. It grows down from the panel's height over a scrim and ends in a grab handle; back, a
+  tap on the scrim, and an upward swipe close it. `PanelSheetHeader` keeps the panel's header row.
+- `FilterPanel` is a `PanelSheet` whose header is a `FilterPanelTitle`: the chevron, which closes
+  it, and the title in the header row, with `FilterResetAction` at the row's end. The footer floats at the bottom while the
+  body scrolls under it, fading out over `PanelTokens.fadeWidth` just above it. Screen readers read
+  only the panel while it is open. `FilterPanelHeader` has a page title, or a back button named
+  after the page it returns to. `FilterSection` puts a small `text3` label above wrapping
   `FilterChip`s, which are `bgRegular` capsules while off and `selectedFill` while on, read as a
   checkbox, a radio, or a button. A `ChipLabel`'s prefix, such as a folder's parents, shows in `text3`.
-  `FilterPanelFooter` is a `ButtonPair` of Reset, greyed out while there is nothing to reset, and
-  the apply button, whose label screen readers announce politely when it changes.
+  `FilterPanelFooter` is one accent button, whose label screen readers announce politely when it
+  changes.
   The panel always takes all of its room, so a short page keeps the height of a long
   one and leaves space above the footer. Slide between its pages with `SlidingPages`.
   `FilterFolderRow` is one folder of a checkable tree: a chevron for parents, a `FolderGlyph`, the
@@ -424,13 +435,12 @@ itself.
 | `small` | 10 dp | Compact rule chips, theme sketch bars |
 | `chip` | 14 dp | Quote and attachment chips, value buttons, rule chips, date tokens, the calendar month outline, page sketches, swipe reveal corners |
 | `button` | 20 dp | Formatting buttons, search fields in the filter panel, theme cards |
-| `panel` | 22 dp | The control panel at the top of a page and the `FilterPanel` that grows out of it |
+| `panel` | 22 dp | Entry cards, inbox row selection, filter cards, and the bar's icon highlight |
 | `row` | 24 dp | Rows and cards in pages, menus, and sheets, row groups, sidebar entries, the signature editor, custom theme previews |
 | `large` | 28 dp | The formatting row above the keyboard and its Send, nudge cards |
-| `surface` | 30 dp | The action bar, menus, dropdowns, and the top corners of sheets, dialogs, and wheel pickers |
+| `surface` | 30 dp | The action bar, menus, dropdowns, the control panel's bottom corners, and the top corners of sheets, dialogs, and wheel pickers |
 
-Only the control panel keeps 22 dp. `InboxTokens.selectionRadius` follows it, so a selected
-message row rounds like the panel. A `BarMorph` clips each part to the smaller of the formatting
+`InboxTokens.selectionRadius` follows `panel`, so a selected message row rounds like an entry card. A `BarMorph` clips each part to the smaller of the formatting
 row's and the action bar's radius, so neither bar loses an edge while one turns into the other.
 
 ## Motion

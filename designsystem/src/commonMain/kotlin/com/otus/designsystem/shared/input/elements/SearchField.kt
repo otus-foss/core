@@ -42,7 +42,7 @@ public fun SearchField(
         keyboardActions = KeyboardActions(onSearch = { onSearch() }),
         decorationBox = { field ->
             Box(contentAlignment = Alignment.CenterStart) {
-                if (value.isEmpty()) Text(placeholder, style = style, maxLines = 1)
+                if (value.isEmpty()) Text(placeholder, style = style, color = OtusColors.text2, maxLines = 1)
                 field()
             }
         },

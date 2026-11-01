@@ -87,6 +87,43 @@
   its label replaces Dismiss as the screen reader's swipe action, such as Send for a held message.
   Without it, a swipe still runs `onClose`. `ToastMessage` is a data class, so code that
   destructures it or calls `copy` positionally must be recompiled.
+- Breaking: rebuild `ContextPanel` after the Otus v2 control panel design. It runs edge to edge,
+  draws behind the status bar and pads its content below it, and rounds only its 30 dp bottom
+  corners, with a stroke on the bottom edge, and has one 56 dp header row. Pills sit across the
+  bottom edge in a 4 dp page-colored ring. `compact: Boolean` is
+  replaced by `collapse`, a 0 to 1 scroll progress from `rememberPanelCollapse(list)`, whose
+  `connection` follows a list's scroll: the panel shortens over 60 dp and its pills rise, shrink,
+  and fade out. Releasing halfway settles on the nearer state, and the list's top expands it.
+- Add `PanelNavigation`, the header's chevron or ✕ with its glyph at the start of the 48 dp
+  target, and `PanelTitle`, a 20 sp semibold page title.
+- Add `PanelSearchPill`, the inbox's "Search Inbox" pill, which tightens from 52 to 44 dp as the
+  panel collapses and grows a filter button in at its end. Add `AccountStack`, overlapping
+  account avatars that fold into one with a "+N" badge, and `PanelSearchField` and
+  `SearchHitRow` for a search in the panel.
+- Add `PanelSheet` and `PanelSheetHeader`: the control panel unfolded for a task over a scrim,
+  with a grab handle. `FilterPanel` is built on it.
+- Breaking: `FilterPanel` has no ✕. Its `header` takes a `FilterPanelTitle`, the chevron, title,
+  and actions in the panel's header row. `FilterPanelFooter` is one accent button; Reset moves to
+  the header as `FilterResetAction`. `FilterTokens.contentSlide` and
+  `closeSwipe` move to `PanelTokens` as `sheetContentSlide` and `sheetCloseSwipe`.
+- `PageScaffold` and `Subpage` take a `search`: a search button in the header grows leftward into
+  a field over the title (`ExpandingSearch`, `rememberSearchExpansion`) and dims the body until
+  something is typed.
+- Breaking: remove `SettingsEntry`. `SettingsScreen` takes an `index: List<SettingsItem>` built
+  with `settingsIndex { page(title, open) { section(title) { setting(…); toggle(…) } } }`, where
+  `open` receives the found setting's title, or null for the page's top. The home lists the
+  top-level pages. A search lists every matching page, setting, and option, ranked by name, then
+  option, then path, and grouped under a `SettingsGroupHeader` that opens their page. Apps replace
+  each `SettingsEntry(title, summary, icon, onOpen)` with
+  `page(title, { onOpen() }, icon, summary = summary)` and add their pages' settings inside it.
+- Add `appearanceIndex` and `appIconIndex`, the search entries of the Appearance page, and
+  `List<SettingsItem>.search`.
+- Add `LocalFoundSetting`. While it names a `SettingRow`'s title, that row scrolls into view and
+  flashes once, so a search result shows where it opened.
+- Add `Modifier.belowControlPanel()` and `Modifier.pageSideInset()` for pages whose control panel
+  draws behind the status bar.
+- Breaking: remove `SearchPrompt`, replaced by `PanelSearchPill`, and
+  `PanelTokens.compactChipPull`. `SearchField` shows its placeholder in `text2`.
 - Add `ButtonPair`, a secondary and a primary action in one outlined pill whose primary half
   widens for a long label. `ConfirmDialog`, `ChangeLogSheet`, `BirthdayPicker`, and
   `FilterPanelFooter` use it. `FilterPanelFooter` is now 48 dp tall like other buttons.
@@ -822,6 +859,32 @@
 - Decoding a JSContact object throws a `SerializationException` when a member nests arrays or
   objects more than 64 levels deep. Before, such a card decoded but overflowed the stack, with a
   `StackOverflowError`, when it was encoded again.
+- Breaking: `ContextPanel` takes `motion: PanelMotion` in place of `collapse`. A `PanelMotion`
+  carries the scroll collapse, an optional `PanelExpansion`, and the content the panel grows. With
+  an expansion, dragging the panel grows it under its header row, which stays put, and the pills
+  fade in place. It never grows past its place, such as above the keyboard.
+- Add `PanelExpansion` and `rememberPanelExpansion(stops, content)`: the panel follows the finger
+  and settles on the nearest stop, or the next one after a fling, on the decelerating curve for
+  only as long as the distance left needs. `expandTo` and `collapse` move it on the motion curve.
+  A stop the layout moves, such as with the keyboard, carries a resting panel with it; new
+  `content` animates instead. `skipping`, `moving`, `dragging`, `position`, and `expanded` tell
+  callers what it does; a panel opened straight to a stop goes straight back.
+- `PanelSheet` hands a swipe up from its scrolling content to the sheet once the content ends,
+  settles a short swipe back on the motion curve, and closes on a flick up
+  (`PanelTokens.sheetCloseFling`).
+- `PanelSearchPill` takes a `PillSearch`, which makes the pill itself the search field, its prompt
+  the placeholder, with a clear button once text is typed.
+- Add `PillRow`, pills in a row that scrolls with the rail's edge fade and a trailing button.
+- Add the quick view pieces in `mail/quickview`: `QuickCounts`, `QuickFaces`, `ScrollingFaces`
+  (fixed 68 dp slots and a rolling "+N" pill for the faces past its end), and `QuickJump`, with
+  `QuickViewTokens`.
+- Add `FoldingSection` and `rememberSectionFold`: a caption whose content shrinks, fades, and folds
+  away as a list under it scrolls, and unfolds with the list's top or the caption's chevron.
+- Add `LocalEntriesOnRaised`, which gives entry cards the page color on a raised surface.
+- Add `FilterShowBar`, an `ActionBar` with Show as its primary and Reset filters, the new
+  `symbol_filter_list_off`, as its icon.
+- `ActionBar` changes a primary's label in place while its symbol stays, and `RollingWords` rolls
+  only the changed digits of a number, with a sign such as "+" held still.
 
 ## 0.7.0 - 2026-10-11
 

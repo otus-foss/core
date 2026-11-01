@@ -178,6 +178,7 @@ private fun SettingRowLayout(
     val verticalPadding = if (compact) SettingTokens.compactRowPadding else SettingTokens.rowPadding
     Row(
         modifier
+            .foundFlash(title.text)
             .fillMaxWidth()
             .then(separation)
             .padding(horizontal = PageTokens.textInset, vertical = verticalPadding),
