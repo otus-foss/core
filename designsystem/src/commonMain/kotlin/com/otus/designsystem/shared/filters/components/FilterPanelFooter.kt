@@ -1,6 +1,7 @@
 package com.otus.designsystem.shared.filters.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -8,6 +9,7 @@ import com.otus.designsystem.shared.controls.components.PrimaryLabel
 import com.otus.designsystem.shared.controls.elements.ActionButton
 import com.otus.designsystem.shared.overlays.components.SheetHeaderAction
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 import com.otus.designsystem.theme.tokens.selection.FilterTokens
 
 /**
@@ -21,16 +23,43 @@ public fun FilterPanelFooter(
     modifier: Modifier = Modifier,
     applyEnabled: Boolean = true,
     counting: Boolean = false,
-) {
-    ActionButton(
+): Unit =
+    ShowButton(applyLabel, onApply, modifier.fillMaxWidth().padding(FilterTokens.footerPadding), applyEnabled, counting)
+
+/**
+ * The same button in place of a page's action bar, as tall as the bar, while filters fill the
+ * page's grown control panel.
+ */
+@Composable
+public fun FilterShowBar(
+    applyLabel: String,
+    onApply: () -> Unit,
+    applyEnabled: Boolean = true,
+    counting: Boolean = false,
+): Unit =
+    ShowButton(
         applyLabel,
         onApply,
-        modifier.fillMaxWidth().padding(FilterTokens.footerPadding),
-        primary = true,
-        enabled = applyEnabled,
-        labelContent = { PrimaryLabel(applyLabel, applyEnabled, counting) },
+        Modifier.fillMaxWidth().heightIn(min = ActionBarTokens.height),
+        applyEnabled,
+        counting,
     )
-}
+
+@Composable
+private fun ShowButton(
+    applyLabel: String,
+    onApply: () -> Unit,
+    modifier: Modifier,
+    applyEnabled: Boolean,
+    counting: Boolean,
+) = ActionButton(
+    applyLabel,
+    onApply,
+    modifier,
+    primary = true,
+    enabled = applyEnabled,
+    labelContent = { PrimaryLabel(applyLabel, applyEnabled, counting) },
+)
 
 /** Reset at the end of a [FilterPanel]'s header, greyed out while [enabled] is false. */
 @Composable
