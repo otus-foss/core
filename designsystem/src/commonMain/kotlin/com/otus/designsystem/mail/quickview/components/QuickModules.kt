@@ -37,10 +37,7 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.LayoutDirection
-import com.otus.designsystem.resources.Res
-import com.otus.designsystem.resources.symbol_filter_list
 import com.otus.designsystem.shared.controls.elements.CountBadge
-import com.otus.designsystem.shared.controls.elements.IconButton
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.theme.colors.OtusColors
@@ -93,12 +90,13 @@ private fun CountTile(
 }
 
 /**
- * The Jump to row closing every quick view: [destinations], usually folder chips, in one line that
- * scrolls sideways and fades at its end, then the button that opens every filter.
+ * The row closing every quick view: [destinations], such as folder chips to jump or move to, in one
+ * line that scrolls sideways and fades at its end, then the [trailing] button, such as All filters
+ * or Move.
  */
 @Composable
 public fun QuickJump(
-    onFilters: () -> Unit,
+    trailing: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     destinations: @Composable RowScope.() -> Unit,
 ) {
@@ -116,7 +114,7 @@ public fun QuickJump(
             verticalAlignment = Alignment.CenterVertically,
             content = destinations,
         )
-        IconButton("All filters", onFilters) { Symbol(Res.drawable.symbol_filter_list) }
+        trailing()
     }
 }
 
@@ -189,4 +187,4 @@ private fun Modifier.fadeEnd(): Modifier {
     }
 }
 
-private val TileShape = RoundedCornerShape(CornerTokens.row)
+internal val TileShape = RoundedCornerShape(CornerTokens.row)
