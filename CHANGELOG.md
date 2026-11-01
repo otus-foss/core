@@ -7,6 +7,9 @@
   apps ask at sign-in instead of every upload and download failing. Breaking: a saved login whose
   blob host was never approved now fails discovery with `RedirectedElsewhere`; approve the host,
   such as by adding the account again, to migrate.
+- JMAP: add `JmapPolicy.socketTimeoutMillis`, 30 s by default, the longest any request may go
+  without data. Blob uploads and downloads no longer have `requestTimeoutMillis` as a total limit,
+  so large attachments work on slow links. Callers that build `JmapPolicy` must rebuild.
 - JMAP: add `JmapException.BlobNotFound`, which a download now throws for HTTP 404 instead of
   `NotJmap`. `JmapConnection` keeps its cached session after `BlobNotFound` and
   `RedirectedElsewhere`. Breaking: an exhaustive `when` over `JmapException` needs a branch for it,

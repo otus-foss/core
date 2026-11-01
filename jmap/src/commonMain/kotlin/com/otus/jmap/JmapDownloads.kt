@@ -35,6 +35,7 @@ internal class JmapDownloads(
                 .prepareGet(target) {
                     header(HttpHeaders.Authorization, auth.header())
                     header(HttpHeaders.Accept, mediaType)
+                    blobTransfer()
                 }.execute { response ->
                     if (response.status == HttpStatusCode.NotFound) throw JmapException.BlobNotFound(blobId)
                     RawResponse(response.status.value, location = null, text = "").requireSuccess()

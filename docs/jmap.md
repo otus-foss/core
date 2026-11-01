@@ -114,6 +114,10 @@ Developed and checked against Stalwart. It moved here from otus-mail at version 
 - `upload(accountId, bytes, mediaType)` stores a blob through the session's `uploadUrl` (section 6.1)
   with the same https and trusted-origin checks as downloads. Redirects are not followed. A blob over
   the advertised `maxSizeUpload` throws `UploadTooLarge` before anything is sent.
+- `JmapPolicy` time limits: `connectTimeoutMillis` (15 s) for each connection, `requestTimeoutMillis`
+  (30 s) for a whole session or API request, and `socketTimeoutMillis` (30 s) for any request that
+  sends or receives nothing. Uploads and downloads take longer the larger the blob and the slower the
+  link, so only the connection and socket limits apply to them.
 - `RequestFailed` keeps the problem `type` and, for `urn:ietf:params:jmap:error:limit`, the `limit`
   the server names, such as `maxSizeRequest` (section 3.6.1).
 - `JmapSession.capabilityObjects` and `JmapAccount.capabilityObjects` keep each capability's object,
@@ -157,8 +161,8 @@ only), OAuth, and sharing logins between the two installed apps.
 | 5.5 | FilterOperator trees, Comparator `collation`, `canCalculateChanges`, and the server's `limit` | `JmapFilterTest`, `JmapQueryTest` |
 | 5.6 | `/queryChanges` with the cached filter and sort, `maxChanges`, and `extra`; `added` in index order | `JmapQueryChangesTest` |
 | 2 | Blob endpoints on another origin are approved at discovery | `JmapDiscoveryTest` |
-| 6.1 | Authenticated uploads through the advertised URI template, within `maxSizeUpload` | `JmapUploadTest` |
-| 6.2 | Bounded authenticated blob downloads through the advertised URI template, with trusted-origin checks, and `BlobNotFound` for a 404 | `JmapDownloadTest`, `JmapBlobRecoveryTest` |
+| 6.1 | Authenticated uploads through the advertised URI template, within `maxSizeUpload`, without a whole-call time limit | `JmapUploadTest`, `JmapTimeoutTest` |
+| 6.2 | Bounded authenticated blob downloads through the advertised URI template, with trusted-origin checks, `BlobNotFound` for a 404, and no whole-call time limit | `JmapDownloadTest`, `JmapBlobRecoveryTest`, `JmapTimeoutTest` |
 | RFC 7617 | Basic credentials; a colon in the username is rejected | `JmapLoginTest` |
 | 1.3, 5.5 | Query counters support the full unsigned 53-bit range | `JmapDecodingTest` |
 | 1.4 | UTCDate written in its `Z` form without trailing fraction zeros; any RFC 3339 offset, a leap second, and a fraction longer than nine digits read; years outside 0000 to 9999 refused | `UtcDateSerializerTest` |
@@ -199,7 +203,7 @@ by `checkAll` and the Android CI job. Tests cover explicit and implicit response
 network failures and cancellation, capability checks, changes, account replacement, storage failures,
 and corrupt-list preservation. Mail's app tests also cover storage-error recovery and same-named accounts.
 `JmapBlobRecoveryTest` covers endpoint rediscovery, cancellation, late failures after session replacement,
-and the failures that keep the session.
+and the failures that keep the session. `JmapTimeoutTest` runs slow servers in virtual time.
 
 `./gradlew :jmap:iosSimulatorArm64Test` runs in the macOS CI job. The iOS store tests inject the native
 Keychain boundary to exercise failed updates/additions/deletions while checking preserved metadata

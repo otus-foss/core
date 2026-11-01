@@ -1,5 +1,8 @@
 package com.otus.jmap
 
+import io.ktor.client.plugins.HttpTimeoutConfig
+import io.ktor.client.plugins.timeout
+import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsChannel
 import io.ktor.http.URLBuilder
@@ -114,6 +117,14 @@ internal suspend fun HttpResponse.limitedBytes(limit: Long): ByteArray {
 }
 
 internal suspend fun HttpResponse.limitedText(limit: Long): String = limitedBytes(limit).decodeToString()
+
+/**
+ * A blob transfer takes longer the larger the blob and the slower the link, so it has no total time
+ * limit; [JmapPolicy.socketTimeoutMillis] still ends one that stalls.
+ */
+internal fun HttpRequestBuilder.blobTransfer() {
+    timeout { requestTimeoutMillis = HttpTimeoutConfig.INFINITE_TIMEOUT_MS }
+}
 
 /**
  * RFC 6570 level 1. Encode each value before substitution, including slashes and URI delimiters.

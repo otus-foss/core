@@ -192,6 +192,7 @@ public class JmapClient(
         install(HttpTimeout) {
             connectTimeoutMillis = policy.connectTimeoutMillis
             requestTimeoutMillis = policy.requestTimeoutMillis
+            socketTimeoutMillis = policy.socketTimeoutMillis
         }
     }
 
