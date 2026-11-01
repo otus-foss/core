@@ -79,7 +79,7 @@ class ContextPanelScreenshotTest {
             navigation = { PanelNavigation("Open navigation", {}) },
             trailingAction = { Filter() },
             chips = { Pills() },
-            collapse = { collapse },
+            motion = PanelMotion(collapse = { collapse }),
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 PanelSearchPill("Search Inbox", {}, Modifier.weight(1f), collapse = { collapse }, filter = { Filter() })
