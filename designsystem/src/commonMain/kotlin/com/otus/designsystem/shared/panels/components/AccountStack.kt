@@ -1,7 +1,6 @@
 package com.otus.designsystem.shared.panels.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -75,10 +74,10 @@ private fun FoldingAvatars(
             avatars.forEachIndexed { index, avatar ->
                 PersonAvatar(
                     avatar,
-                    PanelTokens.stackAvatarSize,
+                    PanelTokens.stackAvatarSize - PanelTokens.stackRing * 2,
                     Modifier
                         .graphicsLayer { if (index > 0) alpha = 1f - CollapseSteps.stack(collapse()) }
-                        .border(PanelTokens.stackRing, OtusColors.bgDark, CircleShape),
+                        .panelRing(),
                 )
             }
         },
@@ -111,7 +110,7 @@ private fun BoxScope.PlusBadge(
                 scaleX = lerp(PanelTokens.BADGE_START_SCALE, 1f, shown)
                 scaleY = scaleX
                 translationX = PanelTokens.badgeOffset.toPx()
-            }.border(PanelTokens.stackRing, OtusColors.bgDark, CircleShape)
+            }.panelRing()
             .background(OtusColors.bgLight, CircleShape)
             .padding(horizontal = PanelTokens.badgePadding),
         style = panelTextStyle(),
@@ -121,3 +120,11 @@ private fun BoxScope.PlusBadge(
         maxLines = 1,
     )
 }
+
+/**
+ * A ring in the panel's color around what follows, drawn behind it rather than over its edge. A
+ * border on top would leave the content's anti-aliased edge showing outside it as a light hairline.
+ */
+private fun Modifier.panelRing(): Modifier =
+    background(OtusColors.bgDark, CircleShape)
+        .padding(PanelTokens.stackRing)
