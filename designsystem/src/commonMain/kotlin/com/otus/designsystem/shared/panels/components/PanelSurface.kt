@@ -26,7 +26,15 @@ private fun DrawScope.drawPanelFrame(
     frame: PanelFrame,
     border: Stroke,
 ) {
-    val viewport = Path().apply { addRect(Rect(frame.viewport.left, 0f, frame.viewport.right, size.height)) }
+    // Rail holes reach into the trailing action's hole, so they merge with it like neighboring pills
+    // do and the pills' fade is the only edge, never a cut where the rail stops.
+    val railEnd =
+        frame.holes
+            .filterNot { it.scrolling }
+            .minOfOrNull { it.bounds.center.x }
+            ?.coerceAtLeast(frame.viewport.right)
+            ?: frame.viewport.right
+    val viewport = Path().apply { addRect(Rect(frame.viewport.left, 0f, railEnd, size.height)) }
     // Holes are opaque geometry on their pills. Blending them by opacity would show two half-visible
     // contours while pill groups swap.
     val surface =
