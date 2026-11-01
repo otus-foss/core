@@ -25,9 +25,10 @@ changes initials without changing the address's color.
 
 `AvatarOptions.externalContactImages` and `domainIcons` default to false, and `iconProxy` to null. Embedded contact
 images and authenticated JMAP blobs still work. Public image requests use a separate HTTP client
-that has no account credentials. Mail enables all three options for inbox senders, so contacts with
-external photos and senders without a contact photo can display images automatically. Callers of
-the reusable service can keep remote requests disabled.
+that has no account credentials. Mail turns on `externalContactImages` and `domainIcons` together
+with its website-icons setting, which is off by default, and sets `iconProxy` from the icon source the
+user picks: none for the websites themselves, DuckDuckGo, or a Bulwark server. Callers of the
+reusable service can keep remote requests disabled.
 
 ```kotlin
 val images = HttpAvatarImageLoader()
