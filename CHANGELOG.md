@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Add `LazyListState.animateScrollToItem(index, animationSpec)` in `theme.motion`, which scrolls to an
+  item on a Motion tween where Compose's own `animateScrollToItem` always uses a spring that
+  ignores the user's animation speed. `WheelPicker` and the date range calendar now scroll with it,
+  and `tools/check_architecture.py` rejects an `animateScrollToItem`, `animateScrollToPage`,
+  `animateScrollBy`, or `animate*AsState` call left on its default spec. Update the apps' copies of
+  the checker to match.
 - Accounts: `parseJmapServer` reads a server address longer than a DNS name and port, 259
   characters, as `Invalid` before matching it, so pasting thousands of host labels no longer
   overflows the stack.
