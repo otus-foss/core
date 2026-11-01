@@ -116,7 +116,7 @@ decisions, not verified Figma values, and no Figma frame for the bar has been in
 | Property | Value |
 | --- | --- |
 | Gap between group and shell | 8 dp |
-| Corner radius | 30 dp, rounder than the 22 dp control panel |
+| Corner radius | 30 dp, the same as the control panel's bottom corners |
 | Group horizontal padding | 7 dp |
 | Gap between secondary slots | 2 dp |
 | Symbol size | 24 dp |

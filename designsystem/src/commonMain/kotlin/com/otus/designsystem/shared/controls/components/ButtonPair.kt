@@ -111,8 +111,9 @@ private fun Modifier.pairTrack(): Modifier =
         )
     }
 
+/** A primary button's label, with a progress ring after it while [busy]. */
 @Composable
-private fun PrimaryLabel(
+internal fun PrimaryLabel(
     label: String,
     enabled: Boolean,
     busy: Boolean,

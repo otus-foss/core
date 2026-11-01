@@ -38,9 +38,8 @@ class FilterPanelScreenshotTest {
                     open = true,
                     collapsedHeight = 112.dp,
                     onDismiss = {},
-                    header = { FilterPanelHeader("Filters") },
-                    footer = { FilterPanelFooter("Show 12 conversations", {}, {}, resetEnabled = false) },
-                    modifier = Modifier.padding(8.dp),
+                    header = { FilterPanelTitle("Inbox", {}) { FilterResetAction({}, enabled = false) } },
+                    footer = { FilterPanelFooter("Show 12 conversations", {}) },
                 ) { Sections() }
             }
         }
@@ -53,10 +52,10 @@ class FilterPanelScreenshotTest {
                     open = true,
                     collapsedHeight = 112.dp,
                     onDismiss = {},
-                    header = { FilterPanelHeader("Metadata", onBack = {}) },
-                    footer = { FilterPanelFooter("Show 30 conversations", {}, {}) },
-                    modifier = Modifier.padding(8.dp),
+                    header = { FilterPanelTitle("Inbox", {}) },
+                    footer = { FilterPanelFooter("Show 30 conversations", {}) },
                 ) {
+                    FilterPanelHeader("Metadata", onBack = {})
                     FilterSection("Type", Modifier.padding(horizontal = FilterTokens.bodyInset)) {
                         FilterChip("Newsletters", selected = false, onClick = {})
                         FilterChip("Calendar invites", selected = true, onClick = {})
@@ -73,9 +72,8 @@ class FilterPanelScreenshotTest {
                     open = true,
                     collapsedHeight = 112.dp,
                     onDismiss = {},
-                    header = { FilterPanelHeader("Filters") },
-                    footer = { FilterPanelFooter("Show 12 conversations", {}, {}) },
-                    modifier = Modifier.padding(8.dp),
+                    header = { FilterPanelTitle("Inbox", {}) { FilterResetAction({}, enabled = true) } },
+                    footer = { FilterPanelFooter("Show 12 conversations", {}) },
                 ) { repeat(BODY_REPEATS) { Sections() } }
             }
         }
@@ -83,7 +81,7 @@ class FilterPanelScreenshotTest {
     @Test
     fun footerCounting() =
         compose.screenshot("filter_panel_footer_counting") {
-            FilterPanelFooter("Show conversations", {}, {}, counting = true)
+            FilterPanelFooter("Show conversations", {}, counting = true)
         }
 
     @Test

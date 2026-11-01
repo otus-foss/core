@@ -2,6 +2,32 @@
 
 ## Unreleased
 
+- Breaking: rebuild `ContextPanel` after the Otus v2 control panel design. It runs edge to edge,
+  draws behind the status bar and pads its content below it, and rounds only its 30 dp bottom
+  corners, with a stroke on the bottom edge, and has one 56 dp header row. Pills sit across the
+  bottom edge in a 4 dp page-colored ring. `compact: Boolean` is
+  replaced by `collapse`, a 0 to 1 scroll progress from `rememberPanelCollapse(list)`, whose
+  `connection` follows a list's scroll: the panel shortens over 60 dp and its pills rise, shrink,
+  and fade out. Releasing halfway settles on the nearer state, and the list's top expands it.
+- Add `PanelNavigation`, the header's chevron or ✕ with its glyph at the start of the 48 dp
+  target, and `PanelTitle`, a 20 sp semibold page title.
+- Add `PanelSearchPill`, the inbox's "Search Inbox" pill, which tightens from 52 to 44 dp as the
+  panel collapses and grows a filter button in at its end. Add `AccountStack`, overlapping
+  account avatars that fold into one with a "+N" badge, and `PanelSearchField` and
+  `SearchHitRow` for a search in the panel.
+- Add `PanelSheet` and `PanelSheetHeader`: the control panel unfolded for a task over a scrim,
+  with a grab handle. `FilterPanel` is built on it.
+- Breaking: `FilterPanel` has no ✕. Its `header` takes a `FilterPanelTitle`, the chevron, title,
+  and actions in the panel's header row. `FilterPanelFooter` is one accent button; Reset moves to
+  the header as `FilterResetAction`. `FilterTokens.contentSlide` and
+  `closeSwipe` move to `PanelTokens` as `sheetContentSlide` and `sheetCloseSwipe`.
+- `PageScaffold` and `Subpage` take a `search`: a search button in the header grows leftward into
+  a field over the title (`ExpandingSearch`, `rememberSearchExpansion`) and dims the body until
+  something is typed. `SettingsScreen` searches its rows by title and summary.
+- Add `Modifier.belowControlPanel()` and `Modifier.pageSideInset()` for pages whose control panel
+  draws behind the status bar.
+- Breaking: remove `SearchPrompt`, replaced by `PanelSearchPill`, and
+  `PanelTokens.compactChipPull`. `SearchField` shows its placeholder in `text2`.
 - Add `ButtonPair`, a secondary and a primary action in one outlined pill whose primary half
   widens for a long label. `ConfirmDialog`, `ChangeLogSheet`, `BirthdayPicker`, and
   `FilterPanelFooter` use it. `FilterPanelFooter` is now 48 dp tall like other buttons.
