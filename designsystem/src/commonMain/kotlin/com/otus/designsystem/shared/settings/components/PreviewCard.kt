@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -28,6 +27,7 @@ import com.otus.designsystem.resources.symbol_chevron_right
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.tokens.settings.PreviewTokens
 import com.otus.designsystem.theme.tokens.settings.SettingTokens
@@ -49,7 +49,7 @@ public fun PreviewCard(
     preview: @Composable () -> Unit,
 ) {
     val interactions = remember { MutableInteractionSource() }
-    val shape = RoundedCornerShape(SheetTokens.rowRadius)
+    val shape = SmoothCornerShape(SheetTokens.rowRadius)
     val asOneItem =
         if (onClick == null) {
             Modifier.semantics(mergeDescendants = true) {}
@@ -101,7 +101,7 @@ private fun PageSketch(marker: SketchMarker) {
     Row(
         Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(PreviewTokens.sketchRadius))
+            .clip(SmoothCornerShape(PreviewTokens.sketchRadius))
             .background(OtusColors.bgDark)
             .clearAndSetSemantics {}
             .padding(PreviewTokens.sketchPadding),

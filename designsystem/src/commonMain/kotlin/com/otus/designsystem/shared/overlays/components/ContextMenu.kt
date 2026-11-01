@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.expandVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -19,7 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -44,6 +42,8 @@ import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
+import com.otus.designsystem.theme.shapes.strokeBorder
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.MenuTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
@@ -120,8 +120,8 @@ internal fun MenuPopup(
 
 /** The raised `bgDark` surface with a `bgLight` outline that every menu sits on. */
 internal fun Modifier.menuSurface(): Modifier {
-    val shape = RoundedCornerShape(MenuTokens.radius)
-    return background(OtusColors.bgDark, shape).border(PanelTokens.borderWidth, OtusColors.bgLight, shape)
+    val shape = SmoothCornerShape(MenuTokens.radius)
+    return background(OtusColors.bgDark, shape).strokeBorder(PanelTokens.borderWidth, OtusColors.bgLight, shape)
 }
 
 /** Calls [onPress] with the point of every press on the element, without taking the press from it. */
@@ -138,7 +138,7 @@ private fun MenuRow(
     onClick: () -> Unit,
 ) {
     val interactions = remember { MutableInteractionSource() }
-    val shape = RoundedCornerShape(MenuTokens.radius - MenuTokens.inset)
+    val shape = SmoothCornerShape(MenuTokens.radius - MenuTokens.inset)
     Row(
         Modifier
             .fillMaxWidth()

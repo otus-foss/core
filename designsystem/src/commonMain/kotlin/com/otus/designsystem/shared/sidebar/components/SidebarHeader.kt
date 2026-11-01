@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -35,6 +34,7 @@ import com.otus.designsystem.shared.people.components.ChipAvatar
 import com.otus.designsystem.shared.people.components.SilentAvatarStack
 import com.otus.designsystem.shared.sidebar.elements.SidebarDetail
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.layout.SidebarTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
@@ -81,7 +81,7 @@ private fun HeaderTitle(
     modifier: Modifier,
 ) {
     val interactions = remember { MutableInteractionSource() }
-    val shape = RoundedCornerShape(SidebarTokens.entryRadius)
+    val shape = SmoothCornerShape(SidebarTokens.entryRadius)
     Row(
         modifier
             .fillMaxHeight()

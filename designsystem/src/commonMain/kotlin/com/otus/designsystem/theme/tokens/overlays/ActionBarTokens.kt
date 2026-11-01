@@ -22,7 +22,9 @@ public object ActionBarTokens {
     /** Distance from the screen edges, matching the context panel at the top of a page. */
     public val barInset: Dp = PageTokens.pageInset
     public val gap: Dp = 8.dp
-    public val radius: Dp = CornerTokens.surface
+
+    /** Half the collapsed action, so the action's end keeps its shape as it collapses to a circle. */
+    public val radius: Dp = collapsedActionWidth / 2
     public val groupPadding: Dp = 7.dp
     public val slotGap: Dp = 2.dp
     public val symbolSize: Dp = 24.dp

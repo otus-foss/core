@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -32,6 +31,7 @@ import com.otus.designsystem.shared.controls.elements.IconButton
 import com.otus.designsystem.shared.controls.elements.IconButtonLook
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.layout.PageTokens
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
@@ -86,7 +86,7 @@ private fun DialogSurface(
             .widthIn(max = PageTokens.dialogMaxWidth)
             .fillMaxWidth()
             .semantics { paneTitle = title },
-        shape = RoundedCornerShape(SheetTokens.radius),
+        shape = SmoothCornerShape(SheetTokens.radius),
         color = OtusColors.bgDark,
         contentColor = OtusColors.text1,
         border = BorderStroke(PanelTokens.borderWidth, OtusColors.strokeBgDark),

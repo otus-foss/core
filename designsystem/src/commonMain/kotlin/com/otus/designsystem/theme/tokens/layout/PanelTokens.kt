@@ -1,11 +1,12 @@
 package com.otus.designsystem.theme.tokens.layout
 
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 
 public object PanelTokens {
     public val touchTarget: Dp = 48.dp
@@ -38,7 +39,8 @@ public object PanelTokens {
 
     /** The control panel runs edge to edge from the top, so only its bottom corners round. */
     public val bottomRadius: Dp = CornerTokens.surface
-    public val bottomShape: Shape = RoundedCornerShape(bottomStart = bottomRadius, bottomEnd = bottomRadius)
+    public val bottomShape: Shape =
+        SmoothCornerShape(CornerSize(0.dp), CornerSize(0.dp), CornerSize(bottomRadius), CornerSize(bottomRadius))
 
     /**
      * A panel sheet, the panel unfolded for a task: how far its contents slide while they fade in,
@@ -66,7 +68,7 @@ public object PanelTokens {
     public val headerGap: Dp = 6.dp
 
     /** How far below the header row the panel's edge, and the pills across it, sit at the top of a list. */
-    public val railDrop: Dp = 34.dp
+    public val railDrop: Dp = 30.dp
 
     /** The panel's edge below the header row once collapsed, or on a page without pills. */
     public val collapsedDrop: Dp = 4.dp
@@ -78,9 +80,8 @@ public object PanelTokens {
     public val pillRise: Dp = 18.dp
     public const val PILL_SHRINK: Float = 0.04f
 
-    /** The inbox's search pill, at the top of the list and collapsed. */
-    public val searchPillHeight: Dp = 52.dp
-    public val compactSearchPillHeight: Dp = 44.dp
+    /** The inbox's search pill, the same height whether the panel is expanded or collapsed. */
+    public val searchPillHeight: Dp = 44.dp
 
     /** Insets inside the search pill, the gap after its icon, and its filter button's size as it starts growing in. */
     public val searchPillStart: Dp = 16.dp

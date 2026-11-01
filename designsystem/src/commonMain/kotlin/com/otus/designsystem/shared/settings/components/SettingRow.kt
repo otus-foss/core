@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.toggleable
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,6 +35,7 @@ import com.otus.designsystem.shared.people.components.PersonText
 import com.otus.designsystem.shared.rows.components.RowDensity
 import com.otus.designsystem.shared.rows.components.topHairline
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.layout.PageTokens
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
@@ -118,7 +118,7 @@ public fun SettingRow(
 private fun Modifier.rowButton(onClick: () -> Unit): Modifier {
     val interactions = remember { MutableInteractionSource() }
     return clickable(interactions, indication = null, role = Role.Button, onClick = onClick)
-        .controlPressFeedback(interactions, RoundedCornerShape(SheetTokens.rowRadius))
+        .controlPressFeedback(interactions, SmoothCornerShape(SheetTokens.rowRadius))
 }
 
 /**
@@ -151,7 +151,7 @@ public fun SettingToggleRow(
                     indication = null,
                     role = Role.Switch,
                     onValueChange = onCheckedChange,
-                ).controlPressFeedback(interactions, RoundedCornerShape(SheetTokens.rowRadius)),
+                ).controlPressFeedback(interactions, SmoothCornerShape(SheetTokens.rowRadius)),
     )
 }
 
