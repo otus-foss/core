@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.contentType
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -65,7 +66,12 @@ internal fun InputBox(
     BasicTextField(
         value = value,
         onValueChange = onValueChange,
-        modifier = modifier.fillMaxWidth().semantics { contentDescription = description },
+        modifier =
+            modifier.fillMaxWidth().semantics {
+                contentDescription = description
+                val type = look.kind.contentType
+                if (type != null) contentType = type
+            },
         singleLine = true,
         textStyle = style,
         cursorBrush = SolidColor(OtusColors.accentLight),

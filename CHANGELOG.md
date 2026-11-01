@@ -20,6 +20,10 @@
 - JMAP: `JmapException.RequestFailed` takes and exposes `limit`, the limit a
   `urn:ietf:params:jmap:error:limit` problem names (RFC 8620, section 3.6.1). Code that constructs
   it must rebuild.
+- Add `InputKind.Username`, a login name on the email keyboard. It and `InputKind.Password` now
+  tell password managers and other autofill services which login field they are, and
+  `AccountSetupScreen` uses them, so a password manager can fill the account form. An exhaustive
+  `when` over `InputKind` needs a branch for `Username`.
 - `TimeWheelPicker` no longer crashes when `allowed` holds no five-minute step, such as 10:01 to
   10:04; it offers the range's start alone.
 - `BarMorph`'s fades follow `MotionCurve.Standard` through `Motion` instead of Compose's default
