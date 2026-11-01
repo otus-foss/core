@@ -45,6 +45,9 @@ public class PanelExpansion internal constructor(
     private var flingSpeed = 0f
     private var running: Job? = null
     private var dragging = false
+
+    /** Whether the panel was opened straight to its stop, past the ones in between. */
+    private var direct = false
     private var content: Any? = null
 
     /** The extra height in pixels, between 0 and the last stop. */
@@ -52,8 +55,9 @@ public class PanelExpansion internal constructor(
         private set
 
     /**
-     * Whether the panel is moving past a stop without stopping, such as a button opening every
-     * filter, so what shows at the stops in between should stay hidden.
+     * Whether the stops in between are passed by, so what shows at them should stay hidden: while
+     * the panel moves past a stop without stopping, and for as long as it was opened straight to a
+     * stop, such as by a button that opens every filter, until it is back at the start.
      */
     public var skipping: Boolean by mutableStateOf(false)
         private set
@@ -91,7 +95,9 @@ public class PanelExpansion internal constructor(
         spec: AnimationSpec<Float>,
     ) {
         val index = target.coerceIn(0, stops.lastIndex)
-        skipping = abs(index - position) > 1f
+        val skips = abs(index - position) > 1f
+        if (skips && index > 0) direct = true
+        skipping = skips || direct
         stop = index
         dragging = false
         running?.cancel()
@@ -101,7 +107,8 @@ public class PanelExpansion internal constructor(
         running =
             scope.launch {
                 animate(0f, 1f, animationSpec = spec) { fraction, _ -> height = lerp(from, stops[index], fraction) }
-                skipping = false
+                if (index == 0) direct = false
+                skipping = direct
             }
     }
 
@@ -110,18 +117,19 @@ public class PanelExpansion internal constructor(
 
     internal fun drag(delta: Float) {
         dragging = true
-        skipping = false
+        skipping = direct
         running?.cancel()
         height = (height + delta).coerceIn(0f, stops.last())
     }
 
     internal fun release(velocity: Float) {
-        val nearest = stops.indices.minBy { abs(stops[it] - height) }
+        // Opened straight to a stop, the panel only goes back to it or to the start.
+        val choices = if (direct) listOf(0, stop) else stops.indices.toList()
         val target =
             when {
-                velocity > flingSpeed -> stops.indexOfFirst { it > height }.takeIf { it >= 0 } ?: stops.lastIndex
-                velocity < -flingSpeed -> stops.indexOfLast { it < height }.coerceAtLeast(0)
-                else -> nearest
+                velocity > flingSpeed -> choices.firstOrNull { stops[it] > height } ?: choices.last()
+                velocity < -flingSpeed -> choices.lastOrNull { stops[it] < height } ?: 0
+                else -> choices.minBy { abs(stops[it] - height) }
             }
         // The panel is already moving, so it carries on at once, decelerating, for only as long as
         // the distance left needs.
