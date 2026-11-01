@@ -166,7 +166,8 @@ private class PanelMeasurePolicy(
         val closed = PanelTokens.collapsedDrop.toPx()
         // Below, the edge runs along the rail's top; across, through its middle.
         val below = if (placement != ChipPlacement.None) maxOf(closed, drop - railHeight / 2f) else closed
-        val edge = header.height + grown + lerp(below, drop, overlap())
+        // The room's grab handle ends the grown panel, so the rail's share of the edge goes with the pills.
+        val edge = header.height + grown + lerp(below, drop, overlap()) * (1f - growFade)
         val railTop = header.height + grown + drop - railHeight / 2f - PanelTokens.pillRise.toPx() * fade
         geometry.edge = edge
         geometry.railFade = fade
