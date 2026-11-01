@@ -26,8 +26,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.TextStyle
 import com.otus.designsystem.mail.attachments.components.AttachmentKind
 import com.otus.designsystem.shared.controls.elements.CountBadge
+import com.otus.designsystem.shared.controls.elements.RollingWords
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.panels.components.scrollFade
 import com.otus.designsystem.shared.people.components.ChipAvatar
@@ -111,14 +113,17 @@ private fun MorePill(
             .height(QuickViewTokens.faceSize)
             .wrapContentHeight(),
     ) {
-        Text(
+        // The count rolls as the row scrolls, as the Show button's does when filters change.
+        RollingWords(
             "+$count",
             Modifier
                 .background(OtusColors.bgLight, CircleShape)
                 .padding(horizontal = QuickViewTokens.morePadding, vertical = QuickViewTokens.dotRing),
-            color = OtusColors.text1,
-            fontSize = QuickViewTokens.labelSize,
-            lineHeight = QuickViewTokens.labelLineHeight,
+            TextStyle(
+                color = OtusColors.text1,
+                fontSize = QuickViewTokens.labelSize,
+                lineHeight = QuickViewTokens.labelLineHeight,
+            ),
         )
     }
 }
