@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -27,6 +26,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.ChoiceSheetTokens
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
@@ -141,7 +141,7 @@ public fun SheetHeaderAction(
         modifier
             .heightIn(min = PanelTokens.touchTarget)
             .clickable(interactions, indication = null, enabled = enabled, role = Role.Button, onClick = onClick)
-            .controlPressFeedback(interactions, RoundedCornerShape(SheetTokens.rowRadius))
+            .controlPressFeedback(interactions, SmoothCornerShape(SheetTokens.rowRadius))
             .padding(horizontal = SheetTokens.inset),
         contentAlignment = Alignment.Center,
     ) { Text(label, color = if (enabled) color else OtusColors.text3, fontWeight = FontWeight.SemiBold) }

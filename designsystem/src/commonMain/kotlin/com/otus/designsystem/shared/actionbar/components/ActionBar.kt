@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ProvideTextStyle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -40,6 +39,7 @@ import com.otus.designsystem.shared.pages.components.PageChrome
 import com.otus.designsystem.shared.pages.components.ReportClearance
 import com.otus.designsystem.shared.pages.components.pinnedChrome
 import com.otus.designsystem.shared.panels.elements.darkSurface
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 import kotlin.math.roundToInt
@@ -121,7 +121,7 @@ private fun SecondaryGroup(
     onAdd: (() -> Unit)?,
     modifier: Modifier,
 ) {
-    val shape = RoundedCornerShape(ActionBarTokens.radius)
+    val shape = SmoothCornerShape(ActionBarTokens.radius)
     // The bar sets the group's width; while it moves in, the icons keep their places and clip.
     Box(
         modifier

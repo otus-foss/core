@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,6 +17,7 @@ import com.otus.designsystem.shared.people.components.ChipAvatar
 import com.otus.designsystem.shared.people.components.PersonAvatar
 import com.otus.designsystem.shared.people.elements.Avatar
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 
 /** What an action bar's context is about, drawn at the start of its shell. */
@@ -113,7 +113,7 @@ private fun DateSquare(date: BarToken.Date) {
     Column(
         Modifier
             .size(ActionBarTokens.tokenSize)
-            .clip(RoundedCornerShape(ActionBarTokens.dateRadius))
+            .clip(SmoothCornerShape(ActionBarTokens.dateRadius))
             .background(OtusColors.bgLight),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,

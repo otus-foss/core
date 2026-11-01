@@ -1,6 +1,5 @@
 package com.otus.designsystem.mail.attachments.components
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -8,7 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -35,6 +33,8 @@ import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.overlays.components.ContextMenu
 import com.otus.designsystem.shared.overlays.components.MenuAction
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
+import com.otus.designsystem.theme.shapes.strokeBorder
 import com.otus.designsystem.theme.tokens.editing.ComposeTokens
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
@@ -52,7 +52,7 @@ public fun AttachmentChip(
     modifier: Modifier = Modifier,
     actions: List<MenuAction> = emptyList(),
 ) {
-    val shape = RoundedCornerShape(ComposeTokens.recipientRadius)
+    val shape = SmoothCornerShape(ComposeTokens.recipientRadius)
     var open by remember { mutableStateOf(false) }
     var height by remember { mutableIntStateOf(0) }
     val opensMenu =
@@ -66,7 +66,7 @@ public fun AttachmentChip(
             .heightIn(min = PanelTokens.touchTarget)
             .widthIn(max = ComposeTokens.attachmentMaxWidth)
             .onSizeChanged { height = it.height }
-            .border(PanelTokens.borderWidth, OtusColors.bgLight, shape)
+            .strokeBorder(PanelTokens.borderWidth, OtusColors.bgLight, shape)
             .then(opensMenu)
             .semantics(mergeDescendants = true) { contentDescription = "$name, $detail" }
             .padding(start = PanelTokens.chipPadding),

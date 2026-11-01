@@ -129,9 +129,6 @@ internal object CollapseSteps {
     /** The pills riding the edge, then rising, shrinking, and fading out by 0.6. */
     fun pills(progress: Float): Float = step(progress, 0f, PILLS_END)
 
-    /** The search pill tightening from 52 to 44 dp from 0.2. */
-    fun search(progress: Float): Float = step(progress, SEARCH_START, 1f)
-
     /** The account stack folding into one avatar from 0.4. */
     fun stack(progress: Float): Float = step(progress, STACK_START, STACK_END)
 
@@ -154,7 +151,6 @@ internal object CollapseSteps {
     ): Float = ((progress - start) / (end - start)).coerceIn(0f, 1f)
 
     private const val PILLS_END = 0.6f
-    private const val SEARCH_START = 0.2f
     private const val STACK_START = 0.4f
     private const val STACK_END = 0.9f
     private const val BADGE_START = 0.75f

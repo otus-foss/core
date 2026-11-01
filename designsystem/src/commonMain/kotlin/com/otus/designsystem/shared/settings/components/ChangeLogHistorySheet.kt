@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -20,6 +19,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import com.otus.designsystem.shared.overlays.components.SheetFrame
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.tokens.settings.ChangeLogTokens
@@ -49,7 +49,7 @@ public fun ChangeLogHistorySheet(
                 LabeledDivider(installedLabel)
                 Column(
                     Modifier
-                        .clip(RoundedCornerShape(SheetTokens.rowRadius))
+                        .clip(SmoothCornerShape(SheetTokens.rowRadius))
                         .background(OtusColors.bgRegular)
                         .padding(bottom = ChangeLogTokens.releaseGap),
                 ) { installed.forEach { Release(it) } }
