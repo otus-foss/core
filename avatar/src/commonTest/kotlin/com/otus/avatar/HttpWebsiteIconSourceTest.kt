@@ -12,6 +12,9 @@ import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.measureTime
 
 class HttpWebsiteIconSourceTest {
     @Test
@@ -113,6 +116,41 @@ class HttpWebsiteIconSourceTest {
         assertEquals(
             listOf("https://cdn.example.net/large.png?a=1&b=2", "https://company.com/mail/small.png"),
             websiteIconUrls(page),
+        )
+    }
+
+    @Test
+    fun commentsAndTheEndOfTheHeadHideLinksLikeInABrowser() {
+        val page =
+            AvatarWebsitePage(
+                "https://company.com/",
+                """
+                <!-- <link rel=icon href=/commented.png> </head> -->
+                <header><link rel=icon href=/kept.png></header>
+                <linked rel=icon href=/other-tag.png>
+                </HEAD >
+                <link rel=icon href=/body.png>
+                """.trimIndent(),
+            )
+        assertEquals(listOf("https://company.com/kept.png"), websiteIconUrls(page))
+        val unclosed =
+            AvatarWebsitePage("https://company.com/", "<link rel=icon href=/a.png><!-- <link rel=icon href=/b.png>")
+        assertEquals(listOf("https://company.com/a.png"), websiteIconUrls(unclosed))
+    }
+
+    @Test
+    fun hostileMarkupIsParsedInLinearTime() {
+        val longTags = ("<link " + "a".repeat(2_000) + ">").repeat(32)
+        val longSizes = ("<link rel=icon sizes=" + "1".repeat(1_900) + " href=/a.png>").repeat(32)
+        val hostile = listOf("<!--".repeat(16_384), "<link".repeat(13_107), longTags, longSizes)
+        hostile.forEach { html ->
+            val page = AvatarWebsitePage("https://company.com/", html)
+            val elapsed = measureTime { websiteIconUrls(page) }
+            assertTrue(elapsed < 500.milliseconds, "Parsing ${html.take(8)} took $elapsed")
+        }
+        assertEquals(
+            listOf("https://company.com/a.png"),
+            websiteIconUrls(AvatarWebsitePage("https://company.com/", longSizes)),
         )
     }
 

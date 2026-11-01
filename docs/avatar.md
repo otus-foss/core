@@ -65,7 +65,9 @@ lookups waiting for a fetch permit and prevents old results from repopulating me
 `HttpWebsiteIconSource` first reads a bounded portion of the website's HTML and tries advertised raster icon links,
 prioritizing larger declared sizes and Apple touch icons. Relative links use the final website URL
 after redirects. This finds Proton's 180 px touch icon rather than enlarging the 32 px proxy favicon.
-If discovery fails, it tries HTTPS `apple-touch-icon.png`, `favicon.png`, and `favicon.ico`.
+It reads the `<link>` tags before `</head>` in one pass that skips comments and tags longer than
+2 KiB, so its time grows linearly with the page, and it parses on `Dispatchers.Default`, never on
+the caller's thread. If discovery fails, it tries HTTPS `apple-touch-icon.png`, `favicon.png`, and `favicon.ico`.
 The service sends all of these requests to the sender's registrable website domain from the bundled
 Public Suffix List, never to the exact hostname. All direct website attempts together have an
 8-second budget. For example, `noreply@email.openai.com` fetches only from `openai.com`. Multi-label suffixes such as `co.uk`, private hosting suffixes
@@ -187,8 +189,8 @@ still leave a photo unavailable during slow or changing searches; normal avatar 
 Common tests cover resolution priority, account/options isolation, missing capabilities, exact email
 matching, address-book permissions, blobs/data URIs/external URLs, website-domain resolution,
 provider icons, icon-cache options and domain-only requests, cache expiry/eviction/invalidation,
-cancellation, credential isolation, redirects, refused private and special-use hosts, and
-response-size limits. Persistent-cache tests cover process recreation, bounded disk usage, corrupt
+cancellation, credential isolation, redirects, refused private and special-use hosts,
+response-size limits, and linear-time parsing of hostile HTML. Persistent-cache tests cover process recreation, bounded disk usage, corrupt
 records and account removal.
 Contact search tests also cover later-page exact matches, server-clamped page sizes, exhaustion,
 changing queries, stalled pagination, search deadlines, and caller cancellation.

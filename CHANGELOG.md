@@ -732,6 +732,10 @@
   title.
 - Add `Collapsible`, which unfolds its content downward with a fade while expanded and folds it
   back up, at the default motion speed, for rows nested under a collapsible row.
+- `HttpWebsiteIconSource` reads a page's icon links in one linear pass and parses on
+  `Dispatchers.Default`, so a hostile page, such as one of thousands of unclosed `<!--`, no longer
+  holds the caller's thread for seconds. An unclosed comment now hides the rest of the page, and a
+  `</head>` inside a comment no longer ends the head.
 
 ## 0.7.0 - 2026-10-11
 
