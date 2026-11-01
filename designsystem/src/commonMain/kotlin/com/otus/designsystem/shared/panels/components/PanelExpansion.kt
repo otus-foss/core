@@ -1,8 +1,8 @@
 package com.otus.designsystem.shared.panels.components
 
 import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.core.animate
-import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -17,13 +17,16 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.Velocity
+import com.otus.designsystem.theme.motion.LocalMotionScale
+import com.otus.designsystem.theme.motion.Motion
 import com.otus.designsystem.theme.motion.MotionCurve
-import com.otus.designsystem.theme.motion.motionTween
+import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.tokens.layout.QuickViewTokens
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.math.abs
+import kotlin.math.roundToInt
 
 /**
  * How far a [ContextPanel] has grown below its header row, which the user drags: the panel follows
@@ -35,7 +38,7 @@ public class PanelExpansion internal constructor(
     private val scope: CoroutineScope,
 ) {
     internal var stops: List<Float> = listOf(0f)
-    internal var spec: AnimationSpec<Float> = tween()
+    private var motionScale = 1f
     private var flingSpeed = 0f
     private var running: Job? = null
 
@@ -66,6 +69,13 @@ public class PanelExpansion internal constructor(
 
     /** Moves to [target] on the app's motion curve, such as when a button opens the full panel. */
     public fun expandTo(target: Int) {
+        moveTo(target, Motion.tween(scale = motionScale))
+    }
+
+    private fun moveTo(
+        target: Int,
+        spec: AnimationSpec<Float>,
+    ) {
         val index = target.coerceIn(0, stops.lastIndex)
         stop = index
         running?.cancel()
@@ -88,7 +98,12 @@ public class PanelExpansion internal constructor(
                 velocity < -flingSpeed -> stops.indexOfLast { it < height }.coerceAtLeast(0)
                 else -> nearest
             }
-        expandTo(target)
+        // The panel is already moving, so it carries on at once, decelerating, for only as long as
+        // the distance left needs.
+        val span = (stops.zipWithNext { a, b -> b - a }.maxOrNull() ?: 1f).coerceAtLeast(1f)
+        val left = (abs(stops[target] - height) / span).coerceIn(SHORTEST_SETTLE, 1f)
+        val millis = Motion.millis(MotionSpeed.Normal, motionScale) * left
+        moveTo(target, TweenSpec(millis.roundToInt(), easing = MotionCurve.Enter.easing))
     }
 
     /** Hands scrolling that content inside the panel leaves over to the panel, so it follows on. */
@@ -116,11 +131,11 @@ public class PanelExpansion internal constructor(
 
     internal fun configure(
         stops: List<Float>,
-        spec: AnimationSpec<Float>,
+        motionScale: Float,
         flingSpeed: Float,
     ) {
         this.stops = listOf(0f) + stops.filter { it > 0f }.sorted()
-        this.spec = spec
+        this.motionScale = motionScale
         this.flingSpeed = flingSpeed
         if (height > this.stops.last()) height = this.stops.last()
     }
@@ -136,9 +151,12 @@ public fun rememberPanelExpansion(stops: List<Dp>): PanelExpansion {
     val scope = rememberCoroutineScope()
     val expansion = remember(scope) { PanelExpansion(scope) }
     val density = LocalDensity.current
-    val spec = motionTween<Float>(curve = MotionCurve.Standard)
+    val motionScale = LocalMotionScale.current
     with(density) {
-        expansion.configure(stops.map { it.toPx() }, spec, QuickViewTokens.flingSpeed.toPx())
+        expansion.configure(stops.map { it.toPx() }, motionScale, QuickViewTokens.flingSpeed.toPx())
     }
     return expansion
 }
+
+/** The shortest settle, as a share of a full one, so a release next to a stop still eases in. */
+private const val SHORTEST_SETTLE = 0.35f
