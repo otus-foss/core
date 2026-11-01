@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Accounts: `parseJmapServer` reads a server address longer than a DNS name and port, 259
+  characters, as `Invalid` before matching it, so pasting thousands of host labels no longer
+  overflows the stack.
 - JMAP: add `requireTrustedBlobOrigins` to `JmapClient.session`, false by default. When true,
   discovery also throws `RedirectedElsewhere` for a `downloadUrl` or `uploadUrl` on an origin the
   user has not approved, so a sign-in can ask before every upload and download would fail.
