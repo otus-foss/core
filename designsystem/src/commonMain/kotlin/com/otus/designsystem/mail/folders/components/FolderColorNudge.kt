@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -36,6 +35,7 @@ import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.shared.panels.elements.darkSurface
 import com.otus.designsystem.theme.colors.FolderColor
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.feedback.NudgeTokens
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 
@@ -53,7 +53,7 @@ public fun FolderColorNudge(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val shape = RoundedCornerShape(NudgeTokens.radius)
+    val shape = SmoothCornerShape(NudgeTokens.radius)
     Column(
         modifier
             .fillMaxWidth()

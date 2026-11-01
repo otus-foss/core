@@ -33,10 +33,10 @@ public object ComposeTokens {
 
     /** The formatting row docked above the keyboard. */
     public val formatBarHeight: Dp = 56.dp
-    internal val formatBarRadius: Dp = CornerTokens.large
+    internal val formatBarRadius: Dp = formatBarHeight / 2
     public val formatBarInset: Dp = 4.dp
     public val formatButtonSize: Dp = 40.dp
-    public val formatButtonRadius: Dp = CornerTokens.button
+    public val formatButtonRadius: Dp = formatButtonSize / 2
     public val formatIconSize: Dp = 24.dp
     public val formatDividerHeight: Dp = 24.dp
 

@@ -1,10 +1,10 @@
 package com.otus.designsystem.shared.selection.elements
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.layout.SidebarTokens
 
 /**
@@ -13,4 +13,4 @@ import com.otus.designsystem.theme.tokens.layout.SidebarTokens
  * any indent, so the fill spans the whole row.
  */
 public fun Modifier.currentPlace(): Modifier =
-    clip(RoundedCornerShape(SidebarTokens.entryRadius)).background(OtusColors.selectedFill)
+    clip(SmoothCornerShape(SidebarTokens.entryRadius)).background(OtusColors.selectedFill)
