@@ -12,11 +12,10 @@ import com.otus.settings.presentation.SettingsItem
  */
 @Composable
 internal fun SettingsResultRow(item: SettingsItem) {
-    val detail = item.section ?: item.summary
     if (item.isPage) {
-        SettingPageRow(item.title, item.onOpen, description = detail, icon = item.icon)
+        SettingPageRow(item.title, item::onOpen, description = item.detail, icon = item.icon)
     } else {
-        SettingRow(item.title, item.onOpen, description = detail, icon = item.icon) {
+        SettingRow(item.title, item::onOpen, description = item.detail, icon = item.icon) {
             item.value?.let { ValueButton(it) }
         }
     }
