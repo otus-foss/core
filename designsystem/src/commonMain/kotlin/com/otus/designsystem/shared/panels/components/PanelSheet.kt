@@ -24,8 +24,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
@@ -44,6 +44,7 @@ import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.MotionCurve
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
+import com.otus.designsystem.theme.shapes.toPath
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import kotlin.math.roundToInt
@@ -162,15 +163,13 @@ private fun SheetSurface(
 internal fun Modifier.panelEdge(): Modifier =
     clip(PanelTokens.bottomShape).drawBehind {
         val border = PanelTokens.borderWidth.toPx()
-        val radius = CornerRadius(PanelTokens.bottomRadius.toPx())
+        val edge = Rect(-border, -border, size.width + border, size.height - border / 2)
         drawRect(OtusColors.bgDark)
         // Drawn past the top and sides, which the clip cuts away, so only the bottom stroke shows.
         clipRect {
-            drawRoundRect(
+            drawPath(
+                PanelTokens.bottomShape.toPath(edge, layoutDirection, this),
                 OtusColors.strokeBgDark,
-                topLeft = Offset(-border, -radius.y),
-                size = Size(size.width + border * 2, size.height + radius.y - border / 2),
-                cornerRadius = radius,
                 style = Stroke(border),
             )
         }
