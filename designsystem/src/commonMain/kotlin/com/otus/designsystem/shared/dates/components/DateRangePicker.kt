@@ -1,5 +1,6 @@
 package com.otus.designsystem.shared.dates.components
 
+import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -24,6 +25,9 @@ import com.otus.dateformat.formatRelative
 import com.otus.dateformat.formatRelativeRange
 import com.otus.designsystem.shared.controls.elements.ActionButton
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.motion.MotionSpeed
+import com.otus.designsystem.theme.motion.animateScrollToItem
+import com.otus.designsystem.theme.motion.motionTween
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.tokens.selection.CalendarTokens
 import kotlinx.coroutines.CoroutineScope
@@ -80,15 +84,19 @@ public fun DateRangeCalendar(
     RangeCalendarBody(rememberRangeCalendar(start), start, end, onChange, modifier)
 }
 
-/** Today, the weeks a range calendar shows, and its scroll position, which opens on [start]'s month. */
+/**
+ * Today, the weeks a range calendar shows, and its scroll position, which opens on [start]'s month
+ * and moves to another on [scroll].
+ */
 private class RangeCalendar(
     val today: LocalDate,
     val weeks: CalendarWeeks,
     val listState: LazyListState,
     private val scope: CoroutineScope,
+    private val scroll: AnimationSpec<Float>,
 ) {
     fun goToMonth(month: LocalDate) {
-        scope.launch { listState.animateScrollToItem(weeks.indexOf(month.yearMonth.firstDay)) }
+        scope.launch { listState.animateScrollToItem(weeks.indexOf(month.yearMonth.firstDay), scroll) }
     }
 }
 
@@ -99,7 +107,8 @@ private fun rememberRangeCalendar(start: String?): RangeCalendar {
     val weeks = remember(today) { CalendarWeeks(today) }
     val listState = rememberLazyListState(weeks.indexOf(initialMonth))
     val scope = rememberCoroutineScope()
-    return remember(today, weeks, listState, scope) { RangeCalendar(today, weeks, listState, scope) }
+    val scroll = motionTween<Float>(MotionSpeed.Relaxed)
+    return remember(today, weeks, listState, scope, scroll) { RangeCalendar(today, weeks, listState, scope, scroll) }
 }
 
 @Composable

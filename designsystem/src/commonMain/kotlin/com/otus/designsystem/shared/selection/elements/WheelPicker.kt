@@ -38,6 +38,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.motion.MotionCurve
+import com.otus.designsystem.theme.motion.MotionSpeed
+import com.otus.designsystem.theme.motion.animateScrollToItem
+import com.otus.designsystem.theme.motion.motionTween
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.selection.WheelTokens
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -56,10 +60,11 @@ internal fun WheelPicker(
     val scroll = rememberLazyListState(selected)
     val choose by rememberUpdatedState(onSelect)
     var positioning by remember { mutableStateOf(false) }
+    val turn = motionTween<Float>(MotionSpeed.Normal, MotionCurve.Standard)
     LaunchedEffect(selected, options.size) {
         positioning = true
         try {
-            scroll.animateScrollToItem(selected)
+            scroll.animateScrollToItem(selected, turn)
         } finally {
             positioning = false
         }
