@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -37,6 +36,7 @@ import com.otus.designsystem.shared.rows.components.RowDensity
 import com.otus.designsystem.shared.rows.components.topHairline
 import com.otus.designsystem.shared.selection.components.valueOutline
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.selection.RuleChipTokens
 import org.jetbrains.compose.resources.DrawableResource
 
@@ -55,7 +55,7 @@ public fun RuleChip(
     onClick: (() -> Unit)? = null,
 ) {
     val compact = density == RowDensity.Compact
-    val shape = RoundedCornerShape(if (compact) RuleChipTokens.compactRadius else RuleChipTokens.radius)
+    val shape = SmoothCornerShape(if (compact) RuleChipTokens.compactRadius else RuleChipTokens.radius)
     RuleLineRow(
         line,
         compact,
@@ -82,7 +82,7 @@ public fun RuleChipGroup(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
 ) {
-    val shape = RoundedCornerShape(RuleChipTokens.radius)
+    val shape = SmoothCornerShape(RuleChipTokens.radius)
     Column(
         modifier
             .valueOutline(shape)

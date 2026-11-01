@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -21,6 +20,7 @@ import com.otus.designsystem.shared.controls.elements.LeadingSymbol
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 import org.jetbrains.compose.resources.DrawableResource
@@ -37,7 +37,7 @@ public fun ActionRow(
     mirrorTrailingInRtl: Boolean = false,
 ) {
     val interactions = remember { MutableInteractionSource() }
-    val shape = RoundedCornerShape(SheetTokens.rowRadius)
+    val shape = SmoothCornerShape(SheetTokens.rowRadius)
     Row(
         modifier
             .fillMaxWidth()

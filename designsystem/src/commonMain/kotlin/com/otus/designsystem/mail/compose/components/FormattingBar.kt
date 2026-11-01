@@ -3,7 +3,6 @@ package com.otus.designsystem.mail.compose.components
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -18,7 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -48,6 +46,8 @@ import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.shared.panels.components.drawEdgeFade
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
+import com.otus.designsystem.theme.shapes.strokeBorder
 import com.otus.designsystem.theme.tokens.editing.ComposeTokens
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
@@ -71,7 +71,7 @@ public fun FormattingBar(
     leading: (@Composable () -> Unit)? = null,
     trailing: (@Composable () -> Unit)? = null,
 ) {
-    val shape = RoundedCornerShape(ComposeTokens.formatBarRadius)
+    val shape = SmoothCornerShape(ComposeTokens.formatBarRadius)
     val parts = LocalBarParts.current
     Box(
         // Widen before applying BarMorph so it moves the whole row.
@@ -84,7 +84,7 @@ public fun FormattingBar(
             .background(OtusColors.bgDark, shape),
     ) {
         // Drawn before the buttons, so the Send's accent border covers it where the two meet.
-        Box(Modifier.matchParentSize().border(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape))
+        Box(Modifier.matchParentSize().strokeBorder(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape))
         FormattingRow(text, onLink, leading, trailing?.let { { Box(parts.primary) { it() } } })
     }
 }
@@ -151,7 +151,7 @@ public fun FormatButton(
     enabled: Boolean = true,
 ) {
     val interactions = remember { MutableInteractionSource() }
-    val shape = RoundedCornerShape(ComposeTokens.formatButtonRadius)
+    val shape = SmoothCornerShape(ComposeTokens.formatButtonRadius)
     Box(
         Modifier
             .size(PanelTokens.touchTarget)

@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,6 +27,7 @@ import com.otus.designsystem.shared.controls.elements.IconButton
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.selection.elements.WheelPicker
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.tokens.selection.CalendarTokens
 import kotlinx.datetime.LocalDate
@@ -117,7 +117,7 @@ internal fun DateWheels(
     Row(
         modifier
             .fillMaxWidth()
-            .background(OtusColors.bgRegular, RoundedCornerShape(SheetTokens.radius))
+            .background(OtusColors.bgRegular, SmoothCornerShape(SheetTokens.radius))
             .padding(SheetTokens.gap),
         horizontalArrangement = Arrangement.spacedBy(SheetTokens.gap),
         content = wheels,

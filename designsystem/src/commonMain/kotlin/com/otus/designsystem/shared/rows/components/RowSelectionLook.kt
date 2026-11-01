@@ -7,7 +7,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,6 +19,7 @@ import com.otus.designsystem.resources.symbol_check
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.motionTween
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 import com.otus.designsystem.theme.tokens.rows.InboxTokens
 
@@ -36,7 +36,7 @@ internal fun Modifier.selectionTint(selection: RowSelection?): Modifier {
             if (selection?.selected == true) OtusColors.accentDark else Color.Transparent,
             motionTween(),
         ).value
-    return clip(RoundedCornerShape(top, top, bottom, bottom)).background(tint)
+    return clip(SmoothCornerShape(top, top, bottom, bottom)).background(tint)
 }
 
 /** [leading], or a check circle [markSize] wide while the row is [selected]. */

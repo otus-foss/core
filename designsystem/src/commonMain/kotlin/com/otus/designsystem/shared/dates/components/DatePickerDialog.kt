@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
@@ -27,6 +26,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.tokens.selection.CalendarTokens
@@ -69,7 +69,7 @@ private fun PickerSurface(
             .widthIn(max = SheetTokens.maxWidth)
             .fillMaxWidth()
             .height(height),
-        shape = RoundedCornerShape(topStart = SheetTokens.radius, topEnd = SheetTokens.radius),
+        shape = SmoothCornerShape(topStart = SheetTokens.radius, topEnd = SheetTokens.radius),
         color = OtusColors.bgDark,
         contentColor = OtusColors.text1,
         border = BorderStroke(PanelTokens.borderWidth, OtusColors.strokeBgDark),
