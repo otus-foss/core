@@ -2,14 +2,12 @@ package com.otus.designsystem.shared.controls.elements
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ContentTransform
-import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.layout.Row
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -52,44 +50,8 @@ public fun AnimatedText(
     }
 }
 
-/**
- * A one-line label whose changed words roll, as [AnimatedText] does: a higher number slides up and
- * a lower one down, and the words after it ease to their new place. Unchanged words stay still.
- */
-@Composable
-public fun RollingWords(
-    text: String,
-    modifier: Modifier = Modifier,
-    style: TextStyle = LocalTextStyle.current,
-) {
-    val motionScale = LocalMotionScale.current
-    val words = text.split(' ')
-    Row(modifier.clipToBounds()) {
-        words.forEachIndexed { index, word ->
-            AnimatedContent(
-                targetState = if (index < words.lastIndex) "$word " else word,
-                transitionSpec = {
-                    roll(rollDirection(initialState, targetState), motionScale) using
-                        SizeTransform(clip = false) { _, _ -> textEnterSpec(motionScale) }
-                },
-                label = "Rolling word",
-            ) { Text(it, style = style, maxLines = 1, softWrap = false) }
-        }
-    }
-}
-
-/** Down for a lower number, up for anything else. */
-private fun rollDirection(
-    from: String,
-    to: String,
-): Int {
-    val old = from.trim().toLongOrNull()
-    val new = to.trim().toLongOrNull()
-    return if (old != null && new != null && new < old) -1 else 1
-}
-
 /** The new text slides in from below, or above for a [direction] of -1, as the old slides out. */
-private fun roll(
+internal fun roll(
     direction: Int,
     motionScale: Float,
 ): ContentTransform =
