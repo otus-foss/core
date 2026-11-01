@@ -42,6 +42,39 @@
   placeholders: an `<img>` or a `color` attribute inside a comment, a style sheet, or an attribute
   value no longer counts, and `<img/src=…>` now gets a placeholder. In a plain-text quote, a
   Markdown link's label no longer contains `[`.
+
+- Add `SmoothCornerShape`, a `CornerBasedShape` whose corners ease into their edges like Figma's
+  corner smoothing at 0.6 (G2 corners), and `Modifier.strokeBorder`, a border that strokes a
+  shape's path directly so it stays on the fill at fractional positions. Every rounded surface in
+  the design system and the settings screens now draws with `SmoothCornerShape` and its borders with
+  `strokeBorder`; a corner near half the shorter side stays a plain arc, so pills keep round ends.
+  An app that draws `RoundedCornerShape` from a token next to Meta's surfaces gets plain corners.
+- Corner tokens round about a quarter less. `SheetTokens.radius` and `MenuTokens.radius` go from
+  30 to 22 dp. `SheetTokens.rowRadius`, `SignatureTokens.editorRadius`, `ReadTokens.bannerRadius`,
+  and `ThemeTokens.customPreviewRadius` go from 24 to 18 dp. `PanelTokens.panelRadius` and
+  `FilterTokens.cardRadius` go from 22 to 16 dp. `ThemeTokens.cardRadius` and
+  `FilterTokens.searchRadius` go from 20 to 15 dp. `NudgeTokens.radius` goes from 28 to 20 dp.
+  `ActionBarTokens.dateRadius`, `ComposeTokens.recipientRadius`, `ComposeTokens.quoteRadius`,
+  `ReadTokens.placeholderRadius`, and `CalendarTokens.monthCornerRadius` go from 14 to 10 dp.
+  `ThemeTokens.sketchBarRadius` goes from 10 to 8 dp, and `CalendarTokens.endpointRadius` from 6
+  to 4 dp. `ActionBarTokens.radius` is now half of `collapsedActionWidth` and
+  `ComposeTokens.formatButtonRadius` half of `formatButtonSize`; both keep their values, 30 and
+  20 dp.
+- Add `AppIconStyle.Chrome`, `Rainbow`, `Trans`, `Bi`, and `Lesbian`, with their Android launcher
+  icons (`otus_mail_icon_chrome` and so on) and Compose drawables (`brand_mail_icon_*`). An
+  exhaustive `when` over `AppIconStyle` needs a branch for each, and an app that offers the styles
+  as launcher aliases needs an alias for each. `AppIconStyle.markColor` is now `text1` for
+  `Monochrome` and `Chrome` and the accent for every other style; before, every style but `Accent`
+  was `text1`.
+- Add `MailAppIcon`, a launcher icon preview in its rounded tile, `IconChoice`, a picture option in
+  a grid that is one radio button, `BrandColors` with the launcher icons' tile colors, and
+  `BrandTokens.appIconSize`, `appIconRadius`, and `ADAPTIVE_ICON_BLEED`. The settings App icon
+  row opens a grid of the icons instead of a list of names.
+- Add `otus_mail_status_icon`, a white owl and envelope drawable for Android's status bar.
+- Add `ToastMessage.swipeAction`. When a toast is swiped away, it runs instead of `onClose`, and
+  its label replaces Dismiss as the screen reader's swipe action, such as Send for a held message.
+  Without it, a swipe still runs `onClose`. `ToastMessage` is a data class, so code that
+  destructures it or calls `copy` positionally must be recompiled.
 - Add `ButtonPair`, a secondary and a primary action in one outlined pill whose primary half
   widens for a long label. `ConfirmDialog`, `ChangeLogSheet`, `BirthdayPicker`, and
   `FilterPanelFooter` use it. `FilterPanelFooter` is now 48 dp tall like other buttons.
