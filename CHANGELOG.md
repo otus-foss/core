@@ -47,6 +47,11 @@
   value no longer counts, and `<img/src=…>` now gets a placeholder. In a plain-text quote, a
   Markdown link's label no longer contains `[`.
 
+- `PushSubscriptions` saves the data types of each login's subscription, and `sync` replaces a
+  subscription whose saved types differ from the `types` it was given, because a server keeps the
+  types a subscription was created with. Records saved by earlier versions have no types, so each
+  login's subscription is created again once after the update and goes through verification
+  again. The public API is unchanged.
 - Add `SmoothCornerShape`, a `CornerBasedShape` whose corners ease into their edges like Figma's
   corner smoothing at 0.6 (G2 corners), and `Modifier.strokeBorder`, a border that strokes a
   shape's path directly so it stays on the fill at fractional positions. Every rounded surface in

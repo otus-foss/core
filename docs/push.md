@@ -40,6 +40,9 @@ storage keys, and platform delivery services keep their formats and identities.
 
 - A new subscription asks for `types`. Mail asks for `EmailDelivery`, which changes only when
   mail is delivered (RFC 8621, section 1.5).
+- A server keeps the types a subscription was created with, so each record saves them, and `sync`
+  replaces a subscription whose saved types differ from `types`. A record saved by an earlier
+  version has no types, so its subscription is replaced once, and the new one is verified again.
 - Creating a subscription also deletes this device's earlier ones, found by `deviceClientId`, so
   a reinstall does not leave the server pushing twice.
 - A server that answers `unknownMethod` or `forbidden`, or does not create the subscription, is
