@@ -42,6 +42,7 @@ public class PanelExpansion internal constructor(
     private var motionScale = 1f
     private var flingSpeed = 0f
     private var running: Job? = null
+    private var dragging = false
 
     /** The extra height in pixels, between 0 and the last stop. */
     internal var height by mutableFloatStateOf(0f)
@@ -81,6 +82,7 @@ public class PanelExpansion internal constructor(
     ) {
         val index = target.coerceIn(0, stops.lastIndex)
         stop = index
+        dragging = false
         running?.cancel()
         running = scope.launch { animate(height, stops[index], animationSpec = spec) { value, _ -> height = value } }
     }
@@ -89,6 +91,7 @@ public class PanelExpansion internal constructor(
     public fun collapse(): Unit = expandTo(0)
 
     internal fun drag(delta: Float) {
+        dragging = true
         running?.cancel()
         height = (height + delta).coerceIn(0f, stops.last())
     }
@@ -127,7 +130,7 @@ public class PanelExpansion internal constructor(
                 consumed: Velocity,
                 available: Velocity,
             ): Velocity {
-                if (height !in stops) release(available.y)
+                if (height !in stops) release(available.y) else dragging = false
                 return Velocity.Zero
             }
         }
@@ -137,9 +140,18 @@ public class PanelExpansion internal constructor(
         motionScale: Float,
         flingSpeed: Float,
     ) {
+        val before = this.stops.getOrNull(stop)
         this.stops = listOf(0f) + stops.filter { it > 0f }.sorted()
         this.motionScale = motionScale
         this.flingSpeed = flingSpeed
+        // A stop that shrinks under the panel, such as when the keyboard rises, takes the panel down
+        // with it at once; else the panel would read as dragged past it.
+        val held = this.stops.getOrNull(stop) ?: 0f
+        val shrank = held < (before ?: held)
+        if (!dragging && shrank && height > held) {
+            running?.cancel()
+            height = held
+        }
         if (height > this.stops.last()) height = this.stops.last()
     }
 }
