@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.LocalContentColor
@@ -48,13 +49,29 @@ public fun PanelSearchPill(
     // The pill fills the header, so press feedback would tint the whole field.
     val interactions = remember { MutableInteractionSource() }
     val filterShown by remember { derivedStateOf { CollapseSteps.filter(collapse()) > 0f } }
-    Row(
+    // The 44 dp pill sits in a 48 dp touch target, so the prompt keeps an accessible size.
+    Box(
         modifier
+            .fillMaxWidth()
+            .heightIn(min = PanelTokens.touchTarget)
+            .semantics { contentDescription = label }
+            .clickable(interactions, indication = null, role = Role.Button, onClick = onClick),
+        contentAlignment = Alignment.CenterStart,
+    ) { PillContent(label, filter, filterShown, collapse) }
+}
+
+@Composable
+private fun PillContent(
+    label: String,
+    filter: (@Composable () -> Unit)?,
+    filterShown: Boolean,
+    collapse: () -> Float,
+) {
+    Row(
+        Modifier
             .fillMaxWidth()
             .height(PanelTokens.searchPillHeight)
             .background(OtusColors.bgRegular, CircleShape)
-            .semantics { contentDescription = label }
-            .clickable(interactions, indication = null, role = Role.Button, onClick = onClick)
             .padding(start = PanelTokens.searchPillStart, end = PanelTokens.searchPillEnd),
         horizontalArrangement = Arrangement.spacedBy(PanelTokens.searchIconGap),
         verticalAlignment = Alignment.CenterVertically,
