@@ -54,10 +54,10 @@ import kotlin.math.roundToInt
  * It grows down from the panel's [collapsedHeight] on the same full-bleed surface over a scrim,
  * with a grab handle at its bottom. Place it where the control panel sits; [modifier] sets the
  * room it may fill. While [open] it handles system back; back, a tap on the scrim, and an upward
- * swipe call [onDismiss]; a pull down past the grab handle calls [onPullDown], when given, such as
- * to open the next step of the panel. The [header], usually a [PanelSheetHeader] in the panel's own header
- * row, stays in place and fades in over the panel's; the [content] below it fades in while it
- * slides down.
+ * swipe call [onDismiss]; a pull down on it calls [onPullDown], when given, such as to open the
+ * next step of the panel, without moving the sheet. The [header], usually a [PanelSheetHeader]
+ * in the panel's own header row, stays in place and fades in over the panel's; the [content]
+ * below it fades in while it slides down.
  */
 @Composable
 public fun PanelSheet(
@@ -137,12 +137,11 @@ private fun SheetSurface(
     val density = LocalDensity.current
     val closeDistance = with(density) { PanelTokens.sheetCloseSwipe.toPx() }
     val pullDistance = with(density) { QuickViewTokens.pullDistance.toPx() }
-    val stretch = with(density) { QuickViewTokens.pullStretch.toPx() }
     Box(modifier) {
         Column(
             Modifier
                 .fillMaxWidth()
-                .graphicsLayer { translationY = if (lift > 0f) resisted(lift, pullDistance, stretch) else lift }
+                .graphicsLayer { translationY = lift.coerceAtMost(0f) }
                 .semantics { traversalIndex = -1f }
                 .draggable(
                     rememberDraggableState {

@@ -30,9 +30,6 @@ public object QuickViewTokens {
     /** How far down a pull must go before the panel opens one step further. */
     public val pullDistance: Dp = 56.dp
 
-    /** How far a pull stretches the panel at most before it opens, so the drag feels attached. */
-    public val pullStretch: Dp = 24.dp
-
     /** The share of a fading edge on the Jump to row, which shows it scrolls on. */
     public const val JUMP_FADE: Float = 0.85f
 
