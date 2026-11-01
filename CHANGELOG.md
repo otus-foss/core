@@ -20,6 +20,13 @@
 - JMAP: `JmapException.RequestFailed` takes and exposes `limit`, the limit a
   `urn:ietf:params:jmap:error:limit` problem names (RFC 8620, section 3.6.1). Code that constructs
   it must rebuild.
+- `HtmlView` builds its page on a background thread and shows nothing in its place until the
+  first page is ready. It reads the message's markup in one linear scan instead of regular
+  expressions, so markup without a closing `>` or a long unquoted `data:` image source no longer
+  stalls the main thread or overflows the stack. Only real tags set its colors, layout, and image
+  placeholders: an `<img>` or a `color` attribute inside a comment, a style sheet, or an attribute
+  value no longer counts, and `<img/src=…>` now gets a placeholder. In a plain-text quote, a
+  Markdown link's label no longer contains `[`.
 - Add `ButtonPair`, a secondary and a primary action in one outlined pill whose primary half
   widens for a long label. `ConfirmDialog`, `ChangeLogSheet`, `BirthdayPicker`, and
   `FilterPanelFooter` use it. `FilterPanelFooter` is now 48 dp tall like other buttons.

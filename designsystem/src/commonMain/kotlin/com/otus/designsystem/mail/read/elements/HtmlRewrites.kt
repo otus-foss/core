@@ -8,25 +8,29 @@ import com.otus.designsystem.theme.tokens.content.ReadTokens
 /**
  * [html] with each remote `<img>` swapped for a dashed placeholder of the same size, so the layout
  * holds while images stay blocked. A placeholder links to the [key]'s show images link. Images with
- * a `data:` or `cid:` source are part of the message and stay.
+ * a `data:` or `cid:` source are part of the message and stay. Only real start tags count, found
+ * in one linear scan, so text, comments, and style sheets stay as they are.
  */
 internal fun withImagePlaceholders(
     html: String,
     key: RenderKey,
-): String =
-    IMG_TAG.replace(html) { match ->
-        val tag = match.value
-        if (REMOTE.containsMatchIn(imageSource(tag))) placeholder(tag, key) else tag
+): String {
+    val remote = scanHtml(html).tags.filter { it.name == "img" && !it.closing && isRemote(it) }
+    if (remote.isEmpty()) return html
+    return buildString {
+        // A plain loop: the markup between images is copied piece by piece, and each piece needs the last end.
+        var last = 0
+        remote.forEach { image ->
+            appendRange(html, last, image.start)
+            append(placeholder(image.text, key))
+            last = image.end
+        }
+        appendRange(html, last, html.length)
     }
+}
 
-/** The `src` of an `<img>` tag in any quotes, or empty without one. */
-private fun imageSource(tag: String): String =
-    SRC
-        .find(tag)
-        ?.groupValues
-        ?.drop(1)
-        ?.firstOrNull { it.isNotEmpty() }
-        .orEmpty()
+/** Whether the image [tag]'s `src` is a web address, which a placeholder stands in for. */
+private fun isRemote(tag: HtmlTag): Boolean = REMOTE.containsMatchIn(tag.attributes["src"].orEmpty())
 
 /** The show images link that stands in for the image [tag]. */
 private fun placeholder(
@@ -106,9 +110,6 @@ private fun Float.cssNumber(): String = if (this % 1f == 0f) toInt().toString() 
 private const val PX = "px"
 private const val BLOCKED = "blocked"
 
-/** An `<img>` start tag; a `>` inside a quoted attribute value, such as `alt="a > b"`, does not end it. */
-private val IMG_TAG = Regex("""(?i)<img\b(?:[^>"']|"[^"]*"|'[^']*')*>""")
-private val SRC = Regex("""(?i)\ssrc\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))""")
 private val REMOTE = Regex("""(?i)^\s*(?:https?:)?//""")
 
 /** The Material Symbols `hide_image` path, drawn in the placeholder's center. */
