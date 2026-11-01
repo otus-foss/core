@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,6 +30,7 @@ import com.otus.designsystem.theme.brand.BrandColors
 import com.otus.designsystem.theme.brand.BrandTokens
 import com.otus.designsystem.theme.colors.AccentPreset
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
@@ -47,7 +47,7 @@ public fun MailAppIcon(
     Box(
         modifier
             .size(BrandTokens.appIconSize)
-            .clip(RoundedCornerShape(BrandTokens.appIconRadius))
+            .clip(SmoothCornerShape(BrandTokens.appIconRadius))
             .background(style.tile),
         contentAlignment = Alignment.Center,
     ) {

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -26,6 +25,7 @@ import com.otus.designsystem.shared.folders.elements.FolderPath
 import com.otus.designsystem.shared.people.components.PersonChip
 import com.otus.designsystem.shared.people.components.Recipient
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.content.ReadTokens
 import com.otus.designsystem.theme.tokens.editing.ComposeTokens
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
@@ -47,7 +47,7 @@ public fun SuggestedFolderRow(
     Row(
         modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(SheetTokens.rowRadius))
+            .clip(SmoothCornerShape(SheetTokens.rowRadius))
             .clickable(onClick = onClick)
             .clearAndSetSemantics {
                 contentDescription = description

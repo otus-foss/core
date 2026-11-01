@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.toggleable
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Checkbox
 import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.Text
@@ -23,6 +22,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 
@@ -42,7 +42,7 @@ public fun SelectionRow(
     leading: (@Composable () -> Unit)? = null,
 ) {
     val interactions = remember { MutableInteractionSource() }
-    val shape = RoundedCornerShape(SheetTokens.rowRadius)
+    val shape = SmoothCornerShape(SheetTokens.rowRadius)
     val choose =
         if (singleChoice) {
             Modifier.selectable(selected, interactions, indication = null, role = Role.RadioButton, onClick = onClick)
