@@ -17,14 +17,21 @@ internal fun String.vCardLines(): List<String> {
             .replace(FOLD, "")
             .split('\n')
     return buildList {
+        // A quoted-printable line that is still continuing, joined in place so that each part is copied once.
+        val continued = StringBuilder()
         for (line in physical) {
-            val previous = lastOrNull()
-            if (previous != null && previous.continuesQuotedPrintable()) {
-                set(lastIndex, previous.dropLast(1) + line)
+            if (continued.isNotEmpty()) {
+                continued.deleteAt(continued.lastIndex).append(line)
+                if (continued.endsWith('=')) continue
+                add(continued.toString())
+                continued.clear()
+            } else if (line.continuesQuotedPrintable()) {
+                continued.append(line)
             } else if (line.isNotBlank()) {
                 add(line)
             }
         }
+        if (continued.isNotEmpty()) add(continued.toString())
     }
 }
 

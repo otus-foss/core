@@ -743,6 +743,8 @@
 - `FileAvatarStore` reads the size and age of its records once and keeps them in memory, so a
   write no longer lists the directory and opens every record. A temporary file left by a killed
   process is deleted on the store's first write. Use one store per directory.
+- `VCard.parse` joins the soft line breaks of a quoted-printable value in linear time; a long
+  value of many short continuation lines took seconds before.
 
 ## 0.7.0 - 2026-10-11
 
