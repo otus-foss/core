@@ -20,6 +20,10 @@
 - JMAP: `JmapException.RequestFailed` takes and exposes `limit`, the limit a
   `urn:ietf:params:jmap:error:limit` problem names (RFC 8620, section 3.6.1). Code that constructs
   it must rebuild.
+- `decodeImage`, `rememberImage`, and `rememberAvatarImage` decode images with a side over
+  4096 px, such as 24-megapixel photos and panoramas, instead of returning null. They still sample
+  the image down to `maxSize` while decoding; only an image of more than about 268 million pixels
+  is refused.
 - `HtmlView` builds its page on a background thread and shows nothing in its place until the
   first page is ready. It reads the message's markup in one linear scan instead of regular
   expressions, so markup without a closing `>` or a long unquoted `data:` image source no longer

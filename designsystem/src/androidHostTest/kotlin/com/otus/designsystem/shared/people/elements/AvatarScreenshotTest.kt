@@ -27,6 +27,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35], qualifiers = "w360dp-h640dp-xhdpi")
@@ -65,29 +66,38 @@ class AvatarScreenshotTest {
 
     @Test
     fun decodedImageIsDownsampled() {
-        val image = assertNotNull(decodeAvatarImage(gradientPng(size = 1024)))
+        val image = assertNotNull(decodeAvatarImage(gradientPng(width = 1024)))
         assertEquals(256, image.width)
+    }
+
+    @Test
+    fun anImageWiderThan4096PixelsIsDownsampledToo() {
+        val image = assertNotNull(decodeImage(gradientPng(width = 6000, height = 120), maxSize = 160))
+        assertTrue(image.width in 1..160, "Width ${image.width}")
     }
 
     @Test
     fun invalidBytesDecodeToNull() = assertNull(decodeAvatarImage(byteArrayOf(1, 2, 3)))
 
-    private fun gradientPng(size: Int = 96): ByteArray {
-        val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+    private fun gradientPng(
+        width: Int = 96,
+        height: Int = width,
+    ): ByteArray {
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val paint =
             Paint().apply {
                 shader =
                     LinearGradient(
                         0f,
                         0f,
-                        size.toFloat(),
-                        size.toFloat(),
+                        width.toFloat(),
+                        height.toFloat(),
                         Color.rgb(242, 153, 74),
                         Color.rgb(86, 204, 242),
                         Shader.TileMode.CLAMP,
                     )
             }
-        Canvas(bitmap).drawRect(0f, 0f, size.toFloat(), size.toFloat(), paint)
+        Canvas(bitmap).drawRect(0f, 0f, width.toFloat(), height.toFloat(), paint)
         return ByteArrayOutputStream()
             .apply { bitmap.compress(Bitmap.CompressFormat.PNG, 100, this) }
             .toByteArray()
