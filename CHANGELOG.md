@@ -740,6 +740,32 @@
   title.
 - Add `Collapsible`, which unfolds its content downward with a fade while expanded and folds it
   back up, at the default motion speed, for rows nested under a collapsible row.
+- Breaking: `ContextPanel` takes `motion: PanelMotion` in place of `collapse`. A `PanelMotion`
+  carries the scroll collapse, an optional `PanelExpansion`, and the content the panel grows. With
+  an expansion, dragging the panel grows it under its header row, which stays put, and the pills
+  fade in place. It never grows past its place, such as above the keyboard.
+- Add `PanelExpansion` and `rememberPanelExpansion(stops, content)`: the panel follows the finger
+  and settles on the nearest stop, or the next one after a fling, on the decelerating curve for
+  only as long as the distance left needs. `expandTo` and `collapse` move it on the motion curve.
+  A stop the layout moves, such as with the keyboard, carries a resting panel with it; new
+  `content` animates instead. `skipping`, `moving`, `dragging`, `position`, and `expanded` tell
+  callers what it does; a panel opened straight to a stop goes straight back.
+- `PanelSheet` hands a swipe up from its scrolling content to the sheet once the content ends,
+  settles a short swipe back on the motion curve, and closes on a flick up
+  (`PanelTokens.sheetCloseFling`).
+- `PanelSearchPill` takes a `PillSearch`, which makes the pill itself the search field, its prompt
+  the placeholder, with a clear button once text is typed.
+- Add `PillRow`, pills in a row that scrolls with the rail's edge fade and a trailing button.
+- Add the quick view pieces in `mail/quickview`: `QuickCounts`, `QuickFaces`, `ScrollingFaces`
+  (fixed 68 dp slots and a rolling "+N" pill for the faces past its end), and `QuickJump`, with
+  `QuickViewTokens`.
+- Add `FoldingSection` and `rememberSectionFold`: a caption whose content shrinks, fades, and folds
+  away as a list under it scrolls, and unfolds with the list's top or the caption's chevron.
+- Add `LocalEntriesOnRaised`, which gives entry cards the page color on a raised surface.
+- Add `FilterShowBar`, an `ActionBar` with Show as its primary and Reset filters, the new
+  `symbol_filter_list_off`, as its icon.
+- `ActionBar` changes a primary's label in place while its symbol stays, and `RollingWords` rolls
+  only the changed digits of a number, with a sign such as "+" held still.
 
 ## 0.7.0 - 2026-10-11
 
