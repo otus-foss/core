@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -36,6 +35,7 @@ import com.mohamedrejeb.richeditor.ui.BasicRichTextEditor
 import com.otus.designsystem.mail.compose.elements.RichBlock
 import com.otus.designsystem.mail.compose.elements.RichText
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.editing.ComposeTokens
 import com.otus.designsystem.theme.tokens.layout.PageTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
@@ -149,7 +149,7 @@ private fun ImageBlock(
                 Modifier
                     .fillMaxWidth()
                     .height(ComposeTokens.inlineImageLoadingHeight)
-                    .clip(RoundedCornerShape(ComposeTokens.recipientRadius))
+                    .clip(SmoothCornerShape(ComposeTokens.recipientRadius))
                     .background(OtusColors.bgDark),
             )
         } else {

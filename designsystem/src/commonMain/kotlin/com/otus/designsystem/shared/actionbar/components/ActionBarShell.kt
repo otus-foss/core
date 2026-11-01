@@ -8,7 +8,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -20,7 +19,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -50,6 +48,8 @@ import com.otus.designsystem.theme.motion.LocalMotionScale
 import com.otus.designsystem.theme.motion.MotionCurve
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
+import com.otus.designsystem.theme.shapes.strokeBorder
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 import kotlin.math.roundToInt
@@ -69,7 +69,7 @@ internal fun PrimaryShell(
     entry: BarEntry,
     modifier: Modifier = Modifier,
 ) {
-    val shape = RoundedCornerShape(ActionBarTokens.radius)
+    val shape = SmoothCornerShape(ActionBarTokens.radius)
     val menu = rememberBarMenu()
     val shown = entry.shownContext(context, primary.label)
     val animation = rememberCollapse(context != null, entry)
@@ -82,7 +82,7 @@ internal fun PrimaryShell(
             .primaryButton(primary, context, menu, shape),
     ) {
         // Drawn before the action, so the action's accent border covers it where the two meet.
-        Box(Modifier.matchParentSize().border(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape))
+        Box(Modifier.matchParentSize().strokeBorder(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape))
         CompositionLocalProvider(
             LocalContentColor provides if (primary.enabled) OtusColors.text1 else OtusColors.text3,
         ) {
@@ -124,7 +124,7 @@ private fun ContextChoices(
 ) {
     val menu = rememberBarMenu()
     val interactions = remember { MutableInteractionSource() }
-    val shape = RoundedCornerShape(ActionBarTokens.radius)
+    val shape = SmoothCornerShape(ActionBarTokens.radius)
     Box(modifier.padding(end = ActionBarTokens.collapsedActionWidth)) {
         Box(
             Modifier
@@ -186,7 +186,7 @@ private fun rememberCollapse(
 private fun Action(
     primary: BarAction,
     face: Transition<PrimaryFace>,
-    shape: RoundedCornerShape,
+    shape: SmoothCornerShape,
     modifier: Modifier,
 ) {
     Box(modifier) {
@@ -197,7 +197,7 @@ private fun Action(
                 .fillMaxWidth()
                 .background(if (primary.enabled) OtusColors.accentDark else OtusColors.bgDark, shape)
                 // A disabled action loses its accent entirely, so it reads as part of the shell.
-                .border(
+                .strokeBorder(
                     PanelTokens.borderWidth,
                     if (primary.enabled) OtusColors.accentRegular else OtusColors.strokeBgDark,
                     shape,

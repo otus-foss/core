@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -43,6 +42,7 @@ import com.otus.designsystem.shared.rows.elements.nestIndent
 import com.otus.designsystem.shared.sidebar.elements.SidebarCount
 import com.otus.designsystem.shared.sidebar.elements.SidebarFolder
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.tokens.rows.FolderRowTokens
@@ -124,7 +124,7 @@ private fun FolderRowLayout(
                 role = Role.Button,
                 onLongClick = slots.onLongClick?.let { { it(pressedAt) } },
                 onClick = slots.onClick,
-            ).controlPressFeedback(interactions, RoundedCornerShape(SheetTokens.rowRadius))
+            ).controlPressFeedback(interactions, SmoothCornerShape(SheetTokens.rowRadius))
             .treeGuides(folder.depth)
             .nestIndent(FolderRowTokens.nestIndent, folder.depth)
             .padding(

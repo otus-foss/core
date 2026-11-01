@@ -3,14 +3,12 @@ package com.otus.designsystem.shared.rows.components
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.staticCompositionLocalOf
@@ -32,6 +30,8 @@ import androidx.compose.ui.unit.dp
 import com.otus.designsystem.theme.colors.OtusAlpha
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.motionTween
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
+import com.otus.designsystem.theme.shapes.strokeBorder
 import com.otus.designsystem.theme.tokens.rows.EntryTokens
 
 /**
@@ -111,7 +111,7 @@ private fun Modifier.entryCard(
     val bottom = joinedCorner(selection?.joinedBelow == true, EntryTokens.radius)
     // Only the lower entry of a joined pair reaches up, so the gap is covered once.
     val reach = animateDpAsState(if (selection?.joinedAbove == true) EntryTokens.gap else 0.dp, motionTween()).value
-    val shape = RoundedCornerShape(top, top, bottom, bottom)
+    val shape = SmoothCornerShape(top, top, bottom, bottom)
     val outline = OtusColors.strokeBgDark.copy(alpha = strength)
     val outlined = !selected && OtusColors.bgDark == OtusColors.bgRegular
     // Drawn behind rather than inside the clip, so the fill can reach past the top edge.
@@ -131,4 +131,4 @@ private fun Modifier.entryOutline(
     outlined: Boolean,
     color: Color,
     shape: Shape,
-): Modifier = if (outlined) border(EntryTokens.outline, color, shape) else this
+): Modifier = if (outlined) strokeBorder(EntryTokens.outline, color, shape) else this

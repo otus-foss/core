@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,6 +18,8 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.style.TextOverflow
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.colors.readableOn
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
+import com.otus.designsystem.theme.shapes.strokeBorder
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.settings.SettingTokens
 import com.otus.designsystem.theme.tokens.settings.ThemeTokens
@@ -38,12 +39,12 @@ public fun ValueButton(
     fill: Color? = null,
     outline: Color = OtusColors.bgLight,
 ) {
-    val shape = RoundedCornerShape(SettingTokens.valueRadius)
+    val shape = SmoothCornerShape(SettingTokens.valueRadius)
     Row(
         modifier
             .widthIn(max = SettingTokens.valueMaxWidth)
             .valueBackground(fill, shape)
-            .border(PanelTokens.borderWidth, outline, shape)
+            .strokeBorder(PanelTokens.borderWidth, outline, shape)
             .padding(
                 start = if (swatch == null) SettingTokens.valuePaddingHorizontal else SettingTokens.valuePaddingSwatch,
                 end = SettingTokens.valuePaddingHorizontal,

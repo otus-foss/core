@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -37,6 +36,7 @@ import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.shared.sidebar.elements.SidebarDetail
 import com.otus.designsystem.shared.sidebar.elements.SidebarOwl
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.layout.SidebarTokens
 
@@ -95,7 +95,7 @@ private fun Modifier.updateButton(
 ): Modifier {
     if (onUpdate == null) return this
     val interactions = remember { MutableInteractionSource() }
-    val shape = RoundedCornerShape(SidebarTokens.entryRadius)
+    val shape = SmoothCornerShape(SidebarTokens.entryRadius)
     return semantics { contentDescription = "Update available, $version installed" }
         .clickable(interactions, indication = null, onClickLabel = "Get the update", onClick = onUpdate)
         .clip(shape)
