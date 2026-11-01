@@ -2,12 +2,18 @@ package com.otus.designsystem.mail.quickview.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -17,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import com.otus.designsystem.mail.attachments.components.AttachmentKind
 import com.otus.designsystem.shared.controls.elements.CountBadge
 import com.otus.designsystem.shared.controls.elements.Symbol
+import com.otus.designsystem.shared.panels.components.scrollFade
 import com.otus.designsystem.shared.people.components.ChipAvatar
 import com.otus.designsystem.shared.people.components.PersonAvatar
 import com.otus.designsystem.theme.colors.OtusColors
@@ -62,6 +69,25 @@ public fun QuickFaces(
     QuickModule(modifier, Arrangement.Start) {
         faces.take(slots).forEach { face -> Face(face, Modifier.weight(1f)) }
         repeat(slots - faces.size.coerceAtMost(slots)) { Box(Modifier.weight(1f)) }
+    }
+}
+
+/**
+ * [faces] in a row that scrolls sideways with [visible] of them across its width, fading at an edge
+ * with more faces past it, such as the people a search finds.
+ */
+@Composable
+public fun ScrollingFaces(
+    faces: List<QuickFace>,
+    modifier: Modifier = Modifier,
+    visible: Int = VISIBLE_FACES,
+) {
+    val scroll = rememberScrollState()
+    BoxWithConstraints(modifier.fillMaxWidth().scrollFade(scroll)) {
+        val slot = maxWidth / visible
+        Row(Modifier.horizontalScroll(scroll, overscrollEffect = null)) {
+            faces.forEach { face -> Face(face, Modifier.width(slot)) }
+        }
     }
 }
 
@@ -122,3 +148,6 @@ private fun FaceMark(
 }
 
 private val FaceShape = RoundedCornerShape(CornerTokens.chip)
+
+/** Faces a [ScrollingFaces] row shows across its width. */
+public const val VISIBLE_FACES: Int = 5
