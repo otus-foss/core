@@ -118,6 +118,33 @@ class AvatarPersistenceTest {
             assertSame(image, service.cached(request, options)?.image)
             assertSame(image, service.resolve(request, options).image)
         }
+
+    @Test
+    fun aWebsiteWithoutAnIconIsAskedOnceADayWhileAProxyIsAskedAgainAfterFiveMinutes() =
+        runTest {
+            var now = 0L
+            val urls = mutableListOf<String>()
+            val service =
+                AvatarService(
+                    images =
+                        AvatarImageLoader {
+                            urls += it
+                            null
+                        },
+                    cacheConfig = AvatarCacheConfig(nowMillis = { now }),
+                )
+            val proxied = options.copy(iconProxy = IconProxy("https://icons.example.net/{domain}.ico"))
+            for (minute in 0L..60L step 10) {
+                now = minute * MINUTE
+                service.resolve(request, options)
+                service.resolve(request, proxied)
+            }
+            assertEquals(3, urls.count { it.startsWith("https://proton.me/") })
+            assertEquals(7, urls.count { it.startsWith("https://icons.example.net/") })
+            now = 24 * 60 * MINUTE
+            service.resolve(request, options)
+            assertEquals(6, urls.count { it.startsWith("https://proton.me/") })
+        }
 }
 
 private class TestAvatarStore : AvatarStore {
@@ -140,3 +167,5 @@ private class TestAvatarStore : AvatarStore {
         entries.keys.removeAll { it.account == account }
     }
 }
+
+private const val MINUTE = 60_000L

@@ -53,9 +53,10 @@ cache keys, so initials always follow the current name.
 
 App entry points supply `FileAvatarStore` in the app's private cache directory. It survives
 process restarts and uses hashed filenames, atomic record replacement, a 32 MiB disk limit and at most
-256 records. Every image is capped at 512 KiB. Successful images are reused for 30 days; missing
-images are retried after five minutes. Existing images remain visible during an expired/offline
-lookup. The OS may reclaim cache files. Removing or reconnecting an account deletes its private
+256 records. Every image is capped at 512 KiB. Successful images are reused for 30 days. A contact
+or icon-proxy lookup that found nothing is retried after five minutes, and a website that was asked
+directly is asked again after a day, as the [brand logos](#brand-logos) section explains. Existing
+images remain visible during an expired/offline lookup. The OS may reclaim cache files. Removing or reconnecting an account deletes its private
 contact records while retaining public website icons. Callers must not mutate image bytes.
 
 Concurrent lookups share a pending result for each contact or domain key. At most eight fetches run
@@ -107,8 +108,10 @@ Fetching a website icon tells that website the device's IP address and when the 
 sender. A sender who gave each recipient a unique subdomain, such as `u-12345.example.com`, could
 otherwise use the icon request as a read receipt. The service therefore fetches and caches icons
 only per registrable domain, so every subdomain shares one request to `example.com`. The registrable
-domain still learns the device's IP address once per cache period, which is why `domainIcons` is
-off by default and callers may keep it off.
+domain still learns the device's IP address once per cache period when it has an icon, and once a
+day when it has none or does not answer, which is why `domainIcons` is off by default and callers
+may keep it off. An icon proxy's misses are retried after five minutes, because the proxy, not the
+sender's website, sees those requests.
 
 `PublicSuffixDomainResolver` accepts an injected suspend loader for the rules. Mail wiring reads
 `files/public_suffix_list.dat` from packaged Compose resources. The parser is common Kotlin,
@@ -190,7 +193,8 @@ Common tests cover resolution priority, account/options isolation, missing capab
 matching, address-book permissions, blobs/data URIs/external URLs, website-domain resolution,
 provider icons, icon-cache options and domain-only requests, cache expiry/eviction/invalidation,
 cancellation, credential isolation, redirects, refused private and special-use hosts,
-response-size limits, and linear-time parsing of hostile HTML. Persistent-cache tests cover process recreation, bounded disk usage, corrupt
+response-size limits, linear-time parsing of hostile HTML, and the miss lifetimes of websites and
+proxies. Persistent-cache tests cover process recreation, bounded disk usage, corrupt
 records and account removal.
 Contact search tests also cover later-page exact matches, server-clamped page sizes, exhaustion,
 changing queries, stalled pagination, search deadlines, and caller cancellation.

@@ -736,6 +736,10 @@
   `Dispatchers.Default`, so a hostile page, such as one of thousands of unclosed `<!--`, no longer
   holds the caller's thread for seconds. An unclosed comment now hides the rest of the page, and a
   `</head>` inside a comment no longer ends the head.
+- `AvatarService` asks a website that has no icon, or does not answer, again after a day rather
+  than after five minutes when it fetches icons from the website itself, so a sender's domain
+  learns the device's IP address at most once a day. Contact and icon-proxy misses are still
+  retried after five minutes.
 
 ## 0.7.0 - 2026-10-11
 
