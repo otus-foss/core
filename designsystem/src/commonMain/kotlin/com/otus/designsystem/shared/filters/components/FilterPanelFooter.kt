@@ -1,17 +1,18 @@
 package com.otus.designsystem.shared.filters.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.otus.designsystem.shared.controls.components.ButtonPair
-import com.otus.designsystem.shared.controls.components.PairButton
+import com.otus.designsystem.resources.Res
+import com.otus.designsystem.resources.symbol_filter_list
+import com.otus.designsystem.resources.symbol_filter_list_off
+import com.otus.designsystem.shared.actionbar.components.ActionBar
+import com.otus.designsystem.shared.actionbar.components.BarAction
 import com.otus.designsystem.shared.controls.components.PrimaryLabel
 import com.otus.designsystem.shared.controls.elements.ActionButton
 import com.otus.designsystem.shared.overlays.components.SheetHeaderAction
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 import com.otus.designsystem.theme.tokens.selection.FilterTokens
 
 /**
@@ -37,8 +38,8 @@ public fun FilterPanelFooter(
 }
 
 /**
- * Reset beside the Show button, in place of a page's action bar and as tall as it, while filters
- * fill the page's grown control panel. Reset greys out while [resetEnabled] is false.
+ * An [ActionBar] in place of a page's own while filters fill the page's grown control panel: Show
+ * as its primary, and Reset as its one icon, greyed out while [resetEnabled] is false.
  */
 @Composable
 public fun FilterShowBar(
@@ -47,13 +48,13 @@ public fun FilterShowBar(
     onReset: () -> Unit,
     applyEnabled: Boolean = true,
     resetEnabled: Boolean = true,
-    counting: Boolean = false,
 ) {
-    ButtonPair(
-        PairButton("Reset", onReset, resetEnabled),
-        PairButton(applyLabel, onApply, applyEnabled),
-        Modifier.heightIn(min = ActionBarTokens.height),
-        primaryBusy = counting,
+    ActionBar(
+        BarAction(applyLabel, Res.drawable.symbol_filter_list, applyEnabled, onClick = onApply),
+        secondary =
+            listOf(
+                BarAction("Reset filters", Res.drawable.symbol_filter_list_off, resetEnabled, onClick = onReset),
+            ),
     )
 }
 
