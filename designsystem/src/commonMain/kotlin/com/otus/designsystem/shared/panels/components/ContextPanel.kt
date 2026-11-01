@@ -95,7 +95,8 @@ public fun ContextPanel(
             listOf(
                 { PanelHeader(navigation, HeaderAction(trailingAction, shown = !railShown), null, content) },
                 { PanelRail(railShown, geometry, scope, trailingAction, chips) },
-                { if (motion.expansion != null) ExpansionRoom(motion) },
+                // Composed only while grown, so its content takes no taps or screen reader focus when shut.
+                { if (motion.expansion?.expanded == true) ExpansionRoom(motion) },
             ),
         modifier =
             modifier

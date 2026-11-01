@@ -54,6 +54,8 @@ import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -139,68 +141,24 @@ private fun SheetSurface(
     modifier: Modifier,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    var lift by remember { mutableFloatStateOf(0f) }
-    val density = LocalDensity.current
-    val closeDistance = with(density) { PanelTokens.sheetCloseSwipe.toPx() }
-    val closeFling = with(density) { PanelTokens.sheetCloseFling.toPx() }
     val scope = rememberCoroutineScope()
-    val motionScale = LocalMotionScale.current
-    val settle: (Float) -> Unit = { velocity ->
-        if (lift < -closeDistance || (lift < 0f && velocity < -closeFling)) {
-            onDismiss()
-            lift = 0f
-        } else {
-            scope.launch {
-                animate(lift, 0f, animationSpec = Motion.tween(scale = motionScale)) { value, _ ->
-                    lift =
-                        value
-                }
-            }
-        }
-    }
-    // Content that scrolls hands the swipe to the sheet once it reaches its end, and takes it back
-    // as the sheet returns, so a long list still closes with a swipe or a flick up.
-    val connection =
-        remember(settle) {
-            object : NestedScrollConnection {
-                override fun onPreScroll(
-                    available: Offset,
-                    source: NestedScrollSource,
-                ): Offset {
-                    if (lift >= 0f || available.y <= 0f) return Offset.Zero
-                    val step = available.y.coerceAtMost(-lift)
-                    lift += step
-                    return Offset(0f, step)
-                }
-
-                override fun onPostScroll(
-                    consumed: Offset,
-                    available: Offset,
-                    source: NestedScrollSource,
-                ): Offset {
-                    if (source != NestedScrollSource.UserInput || available.y >= 0f) return Offset.Zero
-                    lift += available.y
-                    return Offset(0f, available.y)
-                }
-
-                override suspend fun onPreFling(available: Velocity): Velocity {
-                    if (lift >= 0f) return Velocity.Zero
-                    settle(available.y)
-                    return available
-                }
-            }
-        }
+    val density = LocalDensity.current
+    val sheet = remember(scope) { SheetLift(scope) }
+    sheet.closeDistance = with(density) { PanelTokens.sheetCloseSwipe.toPx() }
+    sheet.closeFling = with(density) { PanelTokens.sheetCloseFling.toPx() }
+    sheet.motionScale = LocalMotionScale.current
+    sheet.onDismiss = onDismiss
     Box(modifier) {
         Column(
             Modifier
                 .fillMaxWidth()
-                .graphicsLayer { translationY = lift }
+                .graphicsLayer { translationY = sheet.lift }
                 .semantics { traversalIndex = -1f }
-                .nestedScroll(connection)
+                .nestedScroll(sheet.connection)
                 .draggable(
-                    rememberDraggableState { lift = (lift + it).coerceAtMost(0f) },
+                    rememberDraggableState(sheet::move),
                     Orientation.Vertical,
-                    onDragStopped = { velocity -> settle(velocity) },
+                    onDragStopped = { velocity -> sheet.settle(velocity) },
                 ).panelEdge()
                 // The surface comes first, so it takes the growing height.
                 .grownTo(progress, collapsedHeight)
@@ -209,6 +167,71 @@ private fun SheetSurface(
             content = content,
         )
     }
+}
+
+/**
+ * How far the user lifts a panel sheet toward closing it, by dragging it or swiping its content.
+ * Content that scrolls hands the swipe to the sheet once it reaches its end, and takes it back as
+ * the sheet returns, so a long list still closes with a swipe or a flick up. A new swipe stops the
+ * sheet settling back.
+ */
+private class SheetLift(
+    private val scope: CoroutineScope,
+) {
+    var lift by mutableFloatStateOf(0f)
+        private set
+    var closeDistance = 0f
+    var closeFling = 0f
+    var motionScale = 1f
+    var onDismiss: () -> Unit = {}
+    private var returning: Job? = null
+
+    fun move(delta: Float) {
+        returning?.cancel()
+        lift = (lift + delta).coerceAtMost(0f)
+    }
+
+    fun settle(velocity: Float) {
+        returning?.cancel()
+        if (lift < -closeDistance || (lift < 0f && velocity < -closeFling)) {
+            onDismiss()
+            lift = 0f
+        } else {
+            returning =
+                scope.launch {
+                    animate(lift, 0f, animationSpec = Motion.tween(scale = motionScale)) { value, _ -> lift = value }
+                }
+        }
+    }
+
+    val connection: NestedScrollConnection =
+        object : NestedScrollConnection {
+            override fun onPreScroll(
+                available: Offset,
+                source: NestedScrollSource,
+            ): Offset {
+                if (lift >= 0f || available.y <= 0f) return Offset.Zero
+                val step = available.y.coerceAtMost(-lift)
+                move(step)
+                return Offset(0f, step)
+            }
+
+            override fun onPostScroll(
+                consumed: Offset,
+                available: Offset,
+                source: NestedScrollSource,
+            ): Offset {
+                if (source != NestedScrollSource.UserInput || available.y >= 0f) return Offset.Zero
+                move(available.y)
+                return Offset(0f, available.y)
+            }
+
+            override suspend fun onPreFling(available: Velocity): Velocity {
+                if (lift >= 0f) return Velocity.Zero
+                settle(available.y)
+                return available
+            }
+        }
 }
 
 /**
