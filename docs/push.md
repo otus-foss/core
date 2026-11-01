@@ -27,7 +27,7 @@ storage keys, and platform delivery services keep their formats and identities.
     verification notice. Apple uses it to pause alerts. Throwing aborts creation; do not call
     subscription methods from the callback, since the sync lock is held.
   - `sync()` makes each server match, asking all servers in parallel. It creates or replaces
-    subscriptions, sends verification codes, renews subscriptions past half their granted
+    subscriptions, sends verification codes, renews verified subscriptions past half their granted
     lifetime for another 7 days, and deletes them when the endpoint is cleared.
   - `forget(loginId)` deletes a login's subscription and record. Call it before the login's
     credentials are removed; `JmapAccountRepository` takes it as `beforeRemove`.
@@ -46,8 +46,9 @@ storage keys, and platform delivery services keep their formats and identities.
   marked `Refused`. The next `sync` tries again. A push URL that is not https is refused without
   asking the server, and the login's earlier subscription is deleted.
 - A subscription still unverified an hour after creation is created again, because the server
-  pushes nothing until the client returns the code. An update the server rejects, such as a wrong
-  code, also starts a new subscription.
+  pushes nothing until the client returns the code. An unverified subscription is not renewed, so
+  this holds even when the server grants less than two hours. An update the server rejects, such
+  as a wrong code, also starts a new subscription.
 - A server that cannot be reached keeps the login's record until the next `sync`.
 - A record of a login removed without `forget` is dropped without contacting the server, because
   its credentials are gone. The server deletes the subscription when it expires.

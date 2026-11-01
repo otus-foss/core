@@ -76,6 +76,22 @@ class PushSubscriptionUpkeepTest {
         }
 
     @Test
+    fun anUnverifiedSubscriptionWithAShortLifetimeIsCreatedAgainRatherThanRenewed() =
+        runTest {
+            val store = Store()
+            createdSubscription(store, subscribingServer("2026-10-14T09:00:00Z"))
+            val quiet = Server { error("unexpected call: $it") }
+            subscriptions(quiet, store, at = now + 40.minutes).sync()
+            val retry =
+                Server {
+                    if ("PushSubscription/get" in it) NO_SUBSCRIPTIONS else created().replace("ps1", "ps2")
+                }
+            subscriptions(retry, store, at = now + 70.minutes).sync()
+            val create = retry.sent.last()
+            assertTrue("\"create\"" in create && "\"destroy\":[\"ps1\"]" in create, create)
+        }
+
+    @Test
     fun aShortenedLifetimeIsRenewedHalfwayInsteadOfOnEverySync() =
         runTest {
             val store = Store()

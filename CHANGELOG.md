@@ -749,6 +749,9 @@
   characters in MEMBER, PHOTO, and URL values, escapes a lone CR in text and parameter values,
   and leaves out a `kind` that is not a vCard token, such as `example.com:baz`, which then reads
   back as an individual.
+- `PushSubscriptions.sync` renews only verified subscriptions. An unverified one is created again
+  an hour after creation even when the server grants less than two hours; before, each renewal
+  restarted its verification hour, so it was never replaced.
 
 ## 0.7.0 - 2026-10-11
 
