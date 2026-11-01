@@ -75,9 +75,12 @@ public fun FilterPanelTitle(
     ) { PanelTitle(title, Modifier.padding(start = PanelTokens.titleStart)) }
 }
 
-/** The [body], which scrolls under the [footer] floating at the bottom and fades out above it. */
+/**
+ * The [body], which scrolls under the [footer] floating at the bottom and fades out above it, as
+ * the filter panel lays out its sections and its Show button.
+ */
 @Composable
-private fun FloatingFooter(
+public fun FloatingFooter(
     footer: @Composable () -> Unit,
     modifier: Modifier,
     body: @Composable () -> Unit,

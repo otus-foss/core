@@ -6,7 +6,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 /**
- * The quick view a control panel opens to when pulled down: modules of one height, so any two
+ * The quick view a control panel grows into when dragged down: modules of one height, so any two
  * the user picks stack the same, and the one-line Jump to row under them.
  */
 public object QuickViewTokens {
@@ -27,8 +27,11 @@ public object QuickViewTokens {
     public val labelSize: TextUnit = 12.sp
     public val labelLineHeight: TextUnit = 15.sp
 
-    /** How far down a pull must go before the panel opens one step further. */
-    public val pullDistance: Dp = 56.dp
+    /** A drag released faster than this, per second, settles on the next stop the way it went. */
+    public val flingSpeed: Dp = 800.dp
+
+    /** How far the panel grows before its pills have faded out. */
+    public val pillsFadeDistance: Dp = 60.dp
 
     /** The share of a fading edge on the Jump to row, which shows it scrolls on. */
     public const val JUMP_FADE: Float = 0.85f

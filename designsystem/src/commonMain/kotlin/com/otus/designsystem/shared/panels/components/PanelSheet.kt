@@ -45,7 +45,6 @@ import com.otus.designsystem.theme.motion.MotionCurve
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
-import com.otus.designsystem.theme.tokens.layout.QuickViewTokens
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import kotlin.math.roundToInt
 
@@ -54,10 +53,9 @@ import kotlin.math.roundToInt
  * It grows down from the panel's [collapsedHeight] on the same full-bleed surface over a scrim,
  * with a grab handle at its bottom. Place it where the control panel sits; [modifier] sets the
  * room it may fill. While [open] it handles system back; back, a tap on the scrim, and an upward
- * swipe call [onDismiss]; a pull down on it calls [onPullDown], when given, such as to open the
- * next step of the panel, without moving the sheet. The [header], usually a [PanelSheetHeader]
- * in the panel's own header row, stays in place and fades in over the panel's; the [content]
- * below it fades in while it slides down.
+ * swipe call [onDismiss]. The [header], usually a [PanelSheetHeader] in the panel's own header
+ * row, stays in place and fades in over the panel's; the [content] below it fades in while it
+ * slides down.
  */
 @Composable
 public fun PanelSheet(
@@ -66,7 +64,6 @@ public fun PanelSheet(
     onDismiss: () -> Unit,
     header: @Composable () -> Unit,
     modifier: Modifier = Modifier,
-    onPullDown: (() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val progress by animateFloatAsState(
@@ -89,7 +86,7 @@ public fun PanelSheet(
                 .background(OtusColors.scrim.copy(alpha = SheetTokens.SCRIM_ALPHA))
                 .pointerInput(onDismiss) { detectTapGestures { onDismiss() } },
         )
-        SheetSurface(progress, collapsedHeight, SheetPulls(onDismiss, onPullDown), modifier) {
+        SheetSurface(progress, collapsedHeight, onDismiss, modifier) {
             Box(Modifier.graphicsLayer { alpha = progress }) { header() }
             // Not filling, so the handle keeps its place below content that fills the room.
             Column(
@@ -129,31 +126,23 @@ public fun PanelSheetHeader(
 private fun SheetSurface(
     progress: Float,
     collapsedHeight: Dp,
-    pulls: SheetPulls,
+    onDismiss: () -> Unit,
     modifier: Modifier,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     var lift by remember { mutableFloatStateOf(0f) }
-    val density = LocalDensity.current
-    val closeDistance = with(density) { PanelTokens.sheetCloseSwipe.toPx() }
-    val pullDistance = with(density) { QuickViewTokens.pullDistance.toPx() }
+    val closeDistance = with(LocalDensity.current) { PanelTokens.sheetCloseSwipe.toPx() }
     Box(modifier) {
         Column(
             Modifier
                 .fillMaxWidth()
-                .graphicsLayer { translationY = lift.coerceAtMost(0f) }
+                .graphicsLayer { translationY = lift }
                 .semantics { traversalIndex = -1f }
                 .draggable(
-                    rememberDraggableState {
-                        val most = if (pulls.onPullDown == null) 0f else Float.MAX_VALUE
-                        lift = (lift + it).coerceAtMost(most)
-                    },
+                    rememberDraggableState { lift = (lift + it).coerceAtMost(0f) },
                     Orientation.Vertical,
                     onDragStopped = {
-                        when {
-                            lift < -closeDistance -> pulls.onDismiss()
-                            lift >= pullDistance -> pulls.onPullDown?.invoke()
-                        }
+                        if (lift < -closeDistance) onDismiss()
                         lift = 0f
                     },
                 ).panelEdge()
@@ -198,9 +187,3 @@ private fun Modifier.grownTo(
         val height = lerp(start.toFloat(), placeable.height.toFloat(), progress).roundToInt()
         layout(placeable.width, height) { placeable.place(0, 0) }
     }
-
-/** What an upward swipe and a downward pull on a [PanelSheet] do. */
-private class SheetPulls(
-    val onDismiss: () -> Unit,
-    val onPullDown: (() -> Unit)?,
-)
