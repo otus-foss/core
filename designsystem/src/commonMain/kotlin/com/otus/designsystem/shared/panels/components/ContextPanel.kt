@@ -151,8 +151,11 @@ private class PanelMeasurePolicy(
         val loose = constraints.copy(minHeight = 0)
         val header = measurables[0].first().measure(loose)
         val rail = measurables[1].firstOrNull()?.measure(loose)
-        val grown = motion.expansion?.height ?: 0f
-        val room =
+        // Never taller than the panel's place, such as above the keyboard: a taller layout is centered
+        // in it, which would push the header off the top.
+        val space = (constraints.maxHeight - header.height).coerceAtLeast(0)
+        val grown = (motion.expansion?.height ?: 0f).coerceIn(0f, space.toFloat())
+        val grownRoom =
             measurables[2]
                 .firstOrNull()
                 ?.takeIf {
@@ -173,9 +176,9 @@ private class PanelMeasurePolicy(
         geometry.railFade = fade
         val railPlaced = rail != null && fade < 1f
         val height = if (railPlaced) maxOf(edge, railTop + railHeight) else edge
-        return layout(constraints.maxWidth, height.roundToInt()) {
+        return layout(constraints.maxWidth, height.roundToInt().coerceAtMost(constraints.maxHeight)) {
             header.place(0, 0)
-            room?.place(0, header.height)
+            grownRoom?.place(0, header.height)
             // A faded rail is not placed, so its pills take no taps.
             if (railPlaced) {
                 rail.placeWithLayer(0, railTop.roundToInt()) {
