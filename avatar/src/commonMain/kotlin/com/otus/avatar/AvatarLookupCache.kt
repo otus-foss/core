@@ -23,9 +23,11 @@ internal class AvatarLookupCache(
 
     suspend fun peek(key: AvatarCacheKey): StoredAvatar? = storageLock.withLock { peekStored(key) }
 
+    /** A miss found for [key] is fresh for [missLifetime], capped at the cache lifetime. */
     suspend fun load(
         key: AvatarCacheKey,
         started: Long,
+        missLifetime: Long = MISS_LIFETIME,
         fetch: suspend () -> StoredAvatar?,
     ): StoredAvatar {
         while (true) {
@@ -33,7 +35,7 @@ internal class AvatarLookupCache(
             val lookup =
                 lock.withLock {
                     val cached = recent(key)
-                    if (cached != null && cached.isFresh(now(), lifetime)) return cached
+                    if (cached != null && cached.isFresh(now(), lifetime, missLifetime)) return cached
                     if (started != generation) {
                         owner = true
                         Lookup(started)
@@ -44,7 +46,7 @@ internal class AvatarLookupCache(
                         }
                     }
                 }
-            val result = if (owner) fetchShared(key, lookup, fetch) else lookup.result.await()
+            val result = if (owner) fetchShared(key, lookup, missLifetime, fetch) else lookup.result.await()
             if (result != null) return result
         }
     }
@@ -103,6 +105,7 @@ internal class AvatarLookupCache(
     private suspend fun fetchShared(
         key: AvatarCacheKey,
         lookup: Lookup,
+        missLifetime: Long,
         fetch: suspend () -> StoredAvatar?,
     ): StoredAvatar {
         var result: StoredAvatar? = null
@@ -111,7 +114,7 @@ internal class AvatarLookupCache(
                 storageLock.withLock {
                     if (lock.withLock { generation == lookup.generation }) peekStored(key) else null
                 }
-            if (saved != null && saved.isFresh(now(), lifetime)) {
+            if (saved != null && saved.isFresh(now(), lifetime, missLifetime)) {
                 result = saved
                 return saved
             }
@@ -172,14 +175,16 @@ internal class AvatarLookupCache(
     }
 }
 
-/** Whether this entry is younger than [lifetime] at [now], or within five minutes for a miss. */
+/** Whether this entry is younger than [lifetime] at [now], or than [missLifetime] too for a miss. */
 private fun StoredAvatar.isFresh(
     now: Long,
     lifetime: Long,
+    missLifetime: Long,
 ): Boolean {
     val age = now - created
-    val ttl = if (image == null && style == null) minOf(lifetime, MISS_LIFETIME) else lifetime
+    val ttl = if (image == null && style == null) minOf(lifetime, missLifetime) else lifetime
     return age >= 0 && age < ttl
 }
 
-private const val MISS_LIFETIME = 5 * 60 * 1000L
+/** How long a lookup that found nothing is kept, unless the caller asks for longer. */
+internal const val MISS_LIFETIME = 5 * 60 * 1000L

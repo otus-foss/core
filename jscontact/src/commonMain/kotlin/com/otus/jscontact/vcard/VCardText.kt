@@ -17,14 +17,21 @@ internal fun String.vCardLines(): List<String> {
             .replace(FOLD, "")
             .split('\n')
     return buildList {
+        // A quoted-printable line that is still continuing, joined in place so that each part is copied once.
+        val continued = StringBuilder()
         for (line in physical) {
-            val previous = lastOrNull()
-            if (previous != null && previous.continuesQuotedPrintable()) {
-                set(lastIndex, previous.dropLast(1) + line)
+            if (continued.isNotEmpty()) {
+                continued.deleteAt(continued.lastIndex).append(line)
+                if (continued.endsWith('=')) continue
+                add(continued.toString())
+                continued.clear()
+            } else if (line.continuesQuotedPrintable()) {
+                continued.append(line)
             } else if (line.isNotBlank()) {
                 add(line)
             }
         }
+        if (continued.isNotEmpty()) add(continued.toString())
     }
 }
 
@@ -61,9 +68,13 @@ internal fun String.unescapeText(): String =
         if (char == "n" || char == "N") "\n" else char
     }
 
-/** This text escaped for a vCard value: backslashes, line breaks, commas, and semicolons (RFC 6350, section 3.4). */
+/**
+ * This text escaped for a vCard value: backslashes, line breaks, commas, and semicolons (RFC 6350, section 3.4).
+ * A lone CR is a line break too, since [vCardLines] reads it as one.
+ */
 internal fun String.escapeText(): String =
     replace("\r\n", "\n")
+        .replace('\r', '\n')
         .replace("\\", "\\\\")
         .replace("\n", "\\n")
         .replace(",", "\\,")
@@ -132,6 +143,7 @@ internal fun String.decodeCarets(): String =
 internal fun String.encodeCarets(): String =
     replace("^", "^^")
         .replace("\r\n", "\n")
+        .replace('\r', '\n')
         .replace("\n", "^n")
         .replace("\"", "^'")
 

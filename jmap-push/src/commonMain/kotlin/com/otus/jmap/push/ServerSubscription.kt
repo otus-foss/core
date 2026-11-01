@@ -31,11 +31,14 @@ internal class ServerSubscription(
             if (id != null) destroy(id)
             return null
         }
-        // A server keeps a subscription's types, so other types need a new subscription.
+        // A server keeps a subscription's types, so other types need a new subscription. Only a
+        // verified one is renewed: renewing restarts `since`, so with a lifetime under twice the
+        // verification window an unverified one would be renewed forever instead of created again.
         return when {
             id == null || record.subscribed != endpoint || record.types != types -> create(endpoint, replacing = id)
-            record.verificationCode != null || expiresSoon(record) -> upkeep(record, id, endpoint)
+            record.verificationCode != null -> upkeep(record, id, endpoint)
             verificationLapsed(record) -> create(endpoint, replacing = id)
+            record.verified && expiresSoon(record) -> upkeep(record, id, endpoint)
             else -> record
         }
     }

@@ -30,6 +30,9 @@ COMPOSABLE = r"@(?:androidx\.compose\.runtime\.)?Composable\b"
 SERVICE_TYPES = (
     r"\b\w*(?:ViewModel|Repository|NavController)\b|\b(?:viewModel|koinInject|hiltViewModel)\s*[(<]"
 )
+# Animation specs that bypass Motion. `Motion.tween` is a member call, so the dot excludes it.
+RAW_MOTION = r"(?<![\w.])(?:spring|CubicBezierEasing)\s*[(<]"
+TWEEN_CALL = r"(?<![\w.])(?:tween|TweenSpec)\s*(?:<[^<>()]*>)?\s*\("
 
 
 def source_code(text: str) -> str:
@@ -234,6 +237,8 @@ def violations(path: Path, text: str, ui_modules: frozenset[str] = frozenset()) 
     in_theme = package_matches and is_ui_module(module) and theme_location(location)
     if not in_theme and literal_color(code):
         errors.append("literal colors belong in theme")
+    if not (in_theme and location[:2] == ["theme", "motion"]):
+        errors.extend(motion_violations(code))
     references = library_references(code)
     if is_ui_module(module):
         ui_modules = ui_modules | {module}
@@ -248,6 +253,35 @@ def violations(path: Path, text: str, ui_modules: frozenset[str] = frozenset()) 
             errors.append("Compose is limited to design-system, accounts, and settings modules")
         errors.extend(feature_violations(path, base, location, code))
     return sorted(set(errors))
+
+
+def motion_violations(code: str) -> list[str]:
+    """Animations outside `theme/motion` take their duration and curve from Motion.
+
+    A spring or a new curve never does. A tween must name its easing, so Compose's default easing
+    cannot slip in, and its duration cannot be a number literal.
+    """
+    code = reference_code(code)
+    errors = []
+    if re.search(RAW_MOTION, code):
+        errors.append("animate through Motion; springs and curves belong in theme/motion")
+    for call in re.finditer(TWEEN_CALL, code):
+        arguments = call_arguments(code, call.end() - 1)
+        if not re.search(r"\beasing\s*=", arguments):
+            errors.append("a tween outside theme/motion must name a MotionCurve easing")
+        if re.match(r"\s*(?:durationMillis\s*=\s*)?[-+]?\d", arguments):
+            errors.append("tween durations come from Motion, not number literals")
+    return errors
+
+
+def call_arguments(code: str, open_paren: int) -> str:
+    """The text between the parenthesis at open_paren and the one that closes it."""
+    depth = 0
+    for index in range(open_paren, len(code)):
+        depth += {"(": 1, ")": -1}.get(code[index], 0)
+        if depth == 0:
+            return code[open_paren + 1 : index]
+    return code[open_paren + 1 :]
 
 
 def feature_violations(path: Path, base: str, location: list[str], code: str) -> list[str]:

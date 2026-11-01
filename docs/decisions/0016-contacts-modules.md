@@ -3,6 +3,9 @@
 Status: written on Meta `feat/jmap-contacts` on 2026-10-22, not merged. No app uses the modules
 yet, and their tests have not run.
 
+The status and limits below describe the modules when this was written. See
+[the amendment](#amendment-in-use-by-mail-2026-11-01) for their current use.
+
 ## Decision
 
 The user asked for an implementation of the JMAP contacts specifications with no UI. Otus Meta
@@ -93,3 +96,14 @@ server keeps whatever this client did not decode.
 3. Proposed: Mail moves its contact photo lookup and recipient suggestions to `jmap-contacts`.
 4. Proposed: contact management in Mail and attendee suggestions in Calendar, as the issues above
    plan.
+
+## Amendment: in use by Mail (2026-11-01)
+
+Recorded on 2026-11-01 to correct the status and limits above, which are no longer true.
+
+- Both modules reached `main` with #79 on 2026-10-25. They are listed under Unreleased in the
+  changelog, since Meta publishing is paused.
+- Mail imports `jscontact` and `jmap-contacts` for its contacts feature, as
+  [the contacts guide](../contacts.md) says. `avatar` depends on `jmap-contacts` and keeps its own
+  small types for contact photo lookup.
+- Their tests are part of `checkAll`, like every library module's.

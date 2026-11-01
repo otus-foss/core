@@ -4,6 +4,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.request.header
 import io.ktor.client.request.prepareGet
 import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
 import kotlinx.io.IOException
 
@@ -34,7 +35,9 @@ internal class JmapDownloads(
                 .prepareGet(target) {
                     header(HttpHeaders.Authorization, auth.header())
                     header(HttpHeaders.Accept, mediaType)
+                    blobTransfer()
                 }.execute { response ->
+                    if (response.status == HttpStatusCode.NotFound) throw JmapException.BlobNotFound(blobId)
                     RawResponse(response.status.value, location = null, text = "").requireSuccess()
                     JmapBlob(
                         response.limitedBytes(maxBytes),

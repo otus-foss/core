@@ -51,7 +51,10 @@ import platform.ImageIO.kCGImageSourceCreateThumbnailFromImageAlways
 import platform.ImageIO.kCGImageSourceCreateThumbnailWithTransform
 import platform.ImageIO.kCGImageSourceThumbnailMaxPixelSize
 
-/** ImageIO thumbnails decode at [maxSize], so large photos never allocate a full-size bitmap. */
+/**
+ * ImageIO thumbnails decode at [maxSize], so large photos never allocate a full-size bitmap and
+ * need no limit on their sides.
+ */
 @OptIn(ExperimentalForeignApi::class)
 public actual fun decodeImage(
     bytes: ByteArray,
@@ -85,9 +88,9 @@ private fun imageSource(bytes: ByteArray): CGImageSourceRef? {
 private fun hasAllowedSize(source: CGImageSourceRef): Boolean {
     val properties = CGImageSourceCopyPropertiesAtIndex(source, 0u, null) ?: return false
     try {
-        val width = properties.intValue(kCGImagePropertyPixelWidth)
-        val height = properties.intValue(kCGImagePropertyPixelHeight)
-        return width in 1..MAX_IMAGE_DIMENSION && height in 1..MAX_IMAGE_DIMENSION
+        val width = properties.intValue(kCGImagePropertyPixelWidth) ?: 0
+        val height = properties.intValue(kCGImagePropertyPixelHeight) ?: 0
+        return isDecodableSize(width, height)
     } finally {
         CFRelease(properties)
     }
@@ -186,7 +189,6 @@ private fun draw(
     }
 }
 
-private const val MAX_IMAGE_DIMENSION = 4096
 private const val BYTES_PER_PIXEL = 4
 private const val BITS_PER_COMPONENT = 8
 private const val THUMBNAIL_OPTION_COUNT = 3L

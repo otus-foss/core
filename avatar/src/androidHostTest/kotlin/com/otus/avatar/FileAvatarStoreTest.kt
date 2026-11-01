@@ -44,9 +44,9 @@ class FileAvatarStoreTest {
         runTest {
             val directory = Files.createTempDirectory("otus-avatars").toFile()
             try {
+                File(directory, "orphan.avatar.part").writeBytes(ByteArray(30))
                 val store = FileAvatarStore(directory.path, maxBytes = 25, maxEntries = 2)
                 store.write(contact, StoredAvatar(AvatarImage(byteArrayOf(1, 2, 3)), 1))
-                File(directory, "orphan.avatar.part").writeBytes(ByteArray(30))
                 store.write(domain, StoredAvatar(AvatarImage(byteArrayOf(4, 5, 6)), 2))
                 assertFalse(File(directory, "orphan.avatar.part").exists())
                 store.write(contact.copy(value = "new"), StoredAvatar(AvatarImage(byteArrayOf(7, 8, 9)), 3))
@@ -57,6 +57,25 @@ class FileAvatarStoreTest {
                 assertNull(store.read(domain))
                 store.write(domain, StoredAvatar(AvatarImage(ByteArray(MAX_AVATAR_BYTES.toInt() + 1)), 4))
                 assertNull(store.read(domain))
+            } finally {
+                directory.deleteRecursively()
+            }
+        }
+
+    @Test
+    fun aRecreatedStorePrunesTheRecordsOfAnEarlierProcessByAge() =
+        runTest {
+            val directory = Files.createTempDirectory("otus-avatars").toFile()
+            try {
+                val image = AvatarImage(byteArrayOf(1, 2, 3))
+                val earlier = FileAvatarStore(directory.path, maxEntries = 2)
+                earlier.write(domain, StoredAvatar(image, 2))
+                earlier.write(contact, StoredAvatar(image, 1))
+                val store = FileAvatarStore(directory.path, maxEntries = 2)
+                store.write(contact.copy(value = "new"), StoredAvatar(image, 3))
+                assertNull(store.read(contact))
+                assertEquals(2L, store.read(domain)?.created)
+                assertEquals(2, directory.listFiles().orEmpty().size)
             } finally {
                 directory.deleteRecursively()
             }

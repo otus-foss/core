@@ -1,5 +1,8 @@
 package com.otus.jmap
 
+import io.ktor.client.plugins.HttpTimeoutConfig
+import io.ktor.client.plugins.timeout
+import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsChannel
 import io.ktor.http.URLBuilder
@@ -29,6 +32,20 @@ internal class JmapUrls(
         session: JmapSession,
         expanded: String,
     ): Url = resolve(parse(session.sessionUrl), expanded).requireTrusted(session.trustedOrigins)
+
+    /**
+     * Where a session [template] sends requests, with each variable filled by a placeholder, or null
+     * when the result is not a URL the policy allows.
+     */
+    fun templateTarget(
+        base: Url,
+        template: String,
+    ): Url? =
+        try {
+            resolve(base, TEMPLATE_VARIABLE.replace(template, TEMPLATE_PLACEHOLDER))
+        } catch (expected: JmapException.InsecureUrl) {
+            null
+        }
 
     private fun build(
         text: String,
@@ -64,7 +81,7 @@ internal class RawResponse(
     val location: String?,
     val text: String,
 ) {
-    /** Throws for a non-success status; a problem-details body (RFC 7807) adds its type. */
+    /** Throws for a non-success status; a problem-details body (RFC 7807) adds its type and limit. */
     fun requireSuccess() {
         if (status !in SUCCESS) throw failure()
     }
@@ -74,11 +91,14 @@ internal class RawResponse(
             UNAUTHORIZED -> JmapException.Unauthorized()
             FORBIDDEN -> JmapException.Forbidden()
             NOT_FOUND -> JmapException.NotJmap("nothing found at this address")
-            else -> JmapException.RequestFailed(status, problemType())
+            else -> requestFailed()
         }
 
-    private fun problemType(): String? =
-        runCatching { JmapJson.parseToJsonElement(text).jsonObject }.getOrNull()?.string("type")
+    /** Keeps a problem's `type` (RFC 7807) and the `limit` a limit problem names (RFC 8620, section 3.6.1). */
+    private fun requestFailed(): JmapException.RequestFailed {
+        val problem = runCatching { JmapJson.parseToJsonElement(text).jsonObject }.getOrNull()
+        return JmapException.RequestFailed(status, problem?.string("type"), problem?.string("limit"))
+    }
 
     private companion object {
         val SUCCESS = 200..299
@@ -99,6 +119,14 @@ internal suspend fun HttpResponse.limitedBytes(limit: Long): ByteArray {
 internal suspend fun HttpResponse.limitedText(limit: Long): String = limitedBytes(limit).decodeToString()
 
 /**
+ * A blob transfer takes longer the larger the blob and the slower the link, so it has no total time
+ * limit; [JmapPolicy.socketTimeoutMillis] still ends one that stalls.
+ */
+internal fun HttpRequestBuilder.blobTransfer() {
+    timeout { requestTimeoutMillis = HttpTimeoutConfig.INFINITE_TIMEOUT_MS }
+}
+
+/**
  * RFC 6570 level 1. Encode each value before substitution, including slashes and URI delimiters.
  * Encoding leaves dots alone, and resolution and HTTP clients remove "." and ".." path segments,
  * so such a value would move the request to another path; it is refused instead.
@@ -107,9 +135,7 @@ internal fun expandUriTemplate(
     template: String,
     values: Map<String, String>,
 ): String {
-    val expanded =
-        // Android's ICU regex engine rejects an unescaped "}", which the JVM accepts.
-        Regex("\\{([^{}]+)\\}").replace(template) { match -> templateValue(values, match.groupValues[1]) }
+    val expanded = TEMPLATE_VARIABLE.replace(template) { match -> templateValue(values, match.groupValues[1]) }
     if ('{' in expanded || '}' in expanded) throw JmapException.NotJmap("invalid URI template")
     return expanded
 }
@@ -128,3 +154,9 @@ private fun templateValue(
 internal fun String.isDotSegment(): Boolean = this in DOT_SEGMENTS
 
 private val DOT_SEGMENTS = setOf(".", "..")
+
+// Android's ICU regex engine rejects an unescaped "}", which the JVM accepts.
+private val TEMPLATE_VARIABLE = Regex("\\{([^{}]+)\\}")
+
+/** Fills every template variable when only the template's origin matters. */
+private const val TEMPLATE_PLACEHOLDER = "x"

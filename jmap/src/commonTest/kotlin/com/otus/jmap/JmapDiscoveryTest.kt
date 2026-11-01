@@ -2,11 +2,15 @@ package com.otus.jmap
 
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.headersOf
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 class JmapDiscoveryTest {
@@ -87,6 +91,58 @@ class JmapDiscoveryTest {
         }
 
     @Test
+    fun anUnapprovedBlobHostFailsOnlyBlobCalls() =
+        runTest {
+            val (engine, requests) = blobHostServer()
+            val client = JmapClient(engine)
+            val session = client.session(wellKnown, ADA)
+            assertEquals(
+                listOf("a"),
+                client.request(session, ADA) { call(GetMethod(MAILBOX, "d1")) }.list.map { it.id },
+            )
+            val error =
+                assertFailsWith<JmapException.RedirectedElsewhere> {
+                    client.download(session, ADA, "d1", "photo", "image/png", 10)
+                }
+            assertEquals(USERCONTENT, error.origin)
+            assertTrue(requests.none { it.host == "usercontent.example" }, "Nothing goes to an unapproved host")
+        }
+
+    @Test
+    fun signInCanAskForTheBlobHostBeforeCredentialsGoThere() =
+        runTest {
+            val (engine, requests) = blobHostServer()
+            val client = JmapClient(engine)
+            val error =
+                assertFailsWith<JmapException.RedirectedElsewhere> {
+                    client.session(wellKnown, ADA, requireTrustedBlobOrigins = true)
+                }
+            assertEquals(USERCONTENT, error.origin)
+            assertTrue(requests.none { it.host == "usercontent.example" }, "Discovery sends nothing there")
+
+            val session = client.session(wellKnown, ADA, setOf(error.origin), requireTrustedBlobOrigins = true)
+            assertContentEquals(byteArrayOf(1), client.download(session, ADA, "d1", "photo", "image/png", 10).bytes)
+            assertEquals("usercontent.example", requests.last().host)
+            assertTrue(requests.last().authorized, "An approved blob origin receives credentials")
+        }
+
+    @Test
+    fun signInChecksTheUploadHostButLeavesAnInsecureTemplateToFailWhenUsed() =
+        runTest {
+            val upload = MockEngine { json(withBlobs(""""uploadUrl": "https://upload.example/{accountId}/"""")) }
+            val error =
+                assertFailsWith<JmapException.RedirectedElsewhere> {
+                    JmapClient(upload).session(wellKnown, ADA, requireTrustedBlobOrigins = true)
+                }
+            assertEquals("https://upload.example:443", error.origin)
+
+            val insecure = MockEngine { json(withBlobs(""""downloadUrl": "http://mail.example.org/{blobId}"""")) }
+            val client = JmapClient(insecure)
+            val session = client.session(wellKnown, ADA, requireTrustedBlobOrigins = true)
+            assertFailsWith<JmapException.InsecureUrl> { client.download(session, ADA, "d1", "photo", "image/png", 10) }
+        }
+
+    @Test
     fun plainHttpIsRefusedEverywhere() =
         runTest {
             val any = MockEngine { json(session()) }
@@ -122,8 +178,12 @@ class JmapDiscoveryTest {
             assertTrue(failure(HttpStatusCode.Forbidden) is JmapException.Forbidden)
             assertTrue(failure(HttpStatusCode.NotFound) is JmapException.NotJmap)
             assertTrue(failure(HttpStatusCode.OK, "<html></html>") is JmapException.NotJmap)
-            val problem = failure(HttpStatusCode.BadRequest, """{"type": "urn:ietf:params:jmap:error:limit"}""")
-            assertEquals("urn:ietf:params:jmap:error:limit", (problem as JmapException.RequestFailed).type)
+            val limit = """{"type": "urn:ietf:params:jmap:error:limit", "limit": "maxSizeRequest"}"""
+            val problem = assertIs<JmapException.RequestFailed>(failure(HttpStatusCode.BadRequest, limit))
+            assertEquals("urn:ietf:params:jmap:error:limit", problem.type)
+            assertEquals("maxSizeRequest", problem.limit)
+            val plain = assertIs<JmapException.RequestFailed>(failure(HttpStatusCode.InternalServerError))
+            assertEquals(null, plain.limit)
         }
 
     @Test
@@ -133,4 +193,28 @@ class JmapDiscoveryTest {
             assertFailsWith<JmapException.TooManyRedirects> { JmapClient(loop).session(wellKnown, ADA) }
             assertFailsWith<JmapException.InsecureUrl> { JmapClient(loop).session("not a url", ADA) }
         }
+}
+
+/** The fixture session with the given blob template properties added. */
+private fun withBlobs(templates: String): String = session().dropLast(1) + ", $templates}"
+
+private const val USERCONTENT = "https://usercontent.example:443"
+
+/** A server whose downloads live on `usercontent.example`; it answers Mailbox/get and blob requests. */
+private fun blobHostServer(): Pair<MockEngine, MutableList<Recorded>> {
+    val requests = mutableListOf<Recorded>()
+    val mailboxes = """{"methodResponses": [["Mailbox/get", {"state": "m", "list": [{"id": "a"}]}, "c0"]]}"""
+    val session = withBlobs(""""downloadUrl": "https://usercontent.example/{accountId}/{blobId}"""")
+    val png = headersOf(HttpHeaders.ContentType, "image/png")
+    val engine =
+        MockEngine { request ->
+            val record = request.record()
+            requests += record
+            when {
+                record.host == "usercontent.example" -> respond(byteArrayOf(1), headers = png)
+                record.path == "/jmap/" -> json(mailboxes)
+                else -> json(session)
+            }
+        }
+    return engine to requests
 }

@@ -68,14 +68,17 @@ public class AvatarService(
             websites.brandKey(request, site, options)?.let { key ->
                 load(key, started) { websites.brandLogo(site, options) }
             }
-        return brand ?: load(domainKey(site, options), started) { websites.icon(site, options) }
+        val missLifetime = if (options.iconProxy == null) WEBSITE_MISS_LIFETIME else MISS_LIFETIME
+        return brand ?: load(domainKey(site, options), started, missLifetime) { websites.icon(site, options) }
     }
 
     private suspend fun load(
         key: AvatarCacheKey,
         started: Long,
+        missLifetime: Long = MISS_LIFETIME,
         image: suspend () -> AvatarImage?,
-    ): AvatarImage? = cache.load(key, started) { fetches.withPermit { image()?.let { StoredAvatar(it, 0) } } }.image
+    ): AvatarImage? =
+        cache.load(key, started, missLifetime) { fetches.withPermit { image()?.let { StoredAvatar(it, 0) } } }.image
 
     /** Local images only, so refreshed rows keep their avatar before network work. */
     public suspend fun cached(
@@ -143,6 +146,12 @@ public class AvatarService(
 
     private companion object {
         const val MAX_CONCURRENT_FETCHES = 8
+
+        /**
+         * Each attempt tells the sender's website the device's IP address and when the sender was
+         * shown, so a website without an icon is asked again at most once a day.
+         */
+        const val WEBSITE_MISS_LIFETIME = 24 * 60 * 60 * 1000L
     }
 }
 

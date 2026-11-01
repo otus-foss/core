@@ -22,6 +22,7 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
@@ -147,5 +148,32 @@ class JmapAccountRepositoryTest {
                 repository(engine).connect(draft.copy(trustedOrigins = setOf(confirm.origin))),
             )
             assertEquals(setOf(confirm.origin), store.logins().single().trustedOrigins)
+        }
+
+    @Test
+    fun aBlobHostOnAnotherOriginIsApprovedBeforeSavingAndThenServesDownloads() =
+        runTest {
+            val session =
+                STALWART_SESSION.trim().dropLast(1) + """, "downloadUrl": "https://files.example.net/{blobId}"}"""
+            val engine =
+                MockEngine { request ->
+                    val json = headersOf(HttpHeaders.ContentType, "application/json")
+                    when {
+                        request.url.host == "files.example.net" -> respond(byteArrayOf(7), HttpStatusCode.OK)
+                        request.url.encodedPath == "/jmap/" -> respond(mailboxes, HttpStatusCode.OK, json)
+                        else -> respond(session, HttpStatusCode.OK, json)
+                    }
+                }
+            val confirm = assertIs<ConnectOutcome.ConfirmHost>(repository(engine).connect(draft))
+            assertEquals("files.example.net", confirm.host)
+            assertTrue(store.logins().isEmpty())
+
+            assertIs<ConnectOutcome.Connected>(
+                repository(engine).connect(draft.copy(trustedOrigins = setOf(confirm.origin))),
+            )
+            val login = store.logins().single()
+            assertEquals(setOf(confirm.origin), login.trustedOrigins)
+            val connection = JmapConnections(JmapClient(engine), store).connection(login)
+            assertContentEquals(byteArrayOf(7), connection.download("d333333", "photo", "image/png", 10).bytes)
         }
 }
