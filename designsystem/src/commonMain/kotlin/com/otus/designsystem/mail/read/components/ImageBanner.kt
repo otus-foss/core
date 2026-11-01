@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -17,6 +16,7 @@ import com.otus.designsystem.shared.controls.elements.StripButton
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.panels.elements.darkSurface
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.content.ReadTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 import org.jetbrains.compose.resources.DrawableResource
@@ -33,7 +33,7 @@ public fun ImageBanner(
     actions: List<BannerAction>,
     modifier: Modifier = Modifier,
 ) {
-    val shape = RoundedCornerShape(ReadTokens.bannerRadius)
+    val shape = SmoothCornerShape(ReadTokens.bannerRadius)
     Row(
         modifier
             .fillMaxWidth()

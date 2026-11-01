@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -24,6 +23,7 @@ import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.shared.people.components.ChipAvatar
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.settings.SettingTokens
 import org.jetbrains.compose.resources.DrawableResource
@@ -60,7 +60,7 @@ public fun ValuePicker(
             ValueOutline(
                 Modifier
                     .fillPickerWidth(fill)
-                    .controlPressFeedback(interactions, RoundedCornerShape(SettingTokens.valueRadius)),
+                    .controlPressFeedback(interactions, SmoothCornerShape(SettingTokens.valueRadius)),
             ) {
                 ValueLabel(value, keyword, avatar, icon, enabled, fill)
                 Box(Modifier.size(PanelTokens.borderWidth, PanelTokens.iconSize).background(OtusColors.bgLight))

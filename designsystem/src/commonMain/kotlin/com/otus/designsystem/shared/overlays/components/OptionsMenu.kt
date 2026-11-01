@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.toggleable
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,6 +27,7 @@ import com.otus.designsystem.shared.controls.elements.ToggleSwitch
 import com.otus.designsystem.shared.selection.components.Dropdown
 import com.otus.designsystem.shared.selection.components.ListCaption
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.editing.ComposeTokens
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.MenuTokens
@@ -102,7 +102,7 @@ private fun ToggleOption(item: OptionsItem.Toggle) {
 /** The current choice: a `selectedFill` fill, rounded inside the menu, read as selected. */
 private fun Modifier.currentChoice(current: Boolean): Modifier =
     if (current) {
-        clip(RoundedCornerShape(MenuTokens.radius - MenuTokens.inset))
+        clip(SmoothCornerShape(MenuTokens.radius - MenuTokens.inset))
             .background(OtusColors.selectedFill)
             .semantics { selected = true }
     } else {

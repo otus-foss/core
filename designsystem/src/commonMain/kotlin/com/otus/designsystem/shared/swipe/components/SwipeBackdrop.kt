@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,6 +26,7 @@ import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.Motion
 import com.otus.designsystem.theme.motion.MotionSpeed
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.rows.EntryTokens
 import com.otus.designsystem.theme.tokens.rows.SwipeTokens
 import kotlin.math.abs
@@ -53,7 +53,7 @@ internal fun SwipeBackdrop(
     val shift = with(density) { SwipeTokens.iconEntry.toPx() } * (1f - progress) * if (fromLeft) -1f else 1f
     Box(
         modifier
-            .clip(RoundedCornerShape(EntryTokens.radius))
+            .clip(SmoothCornerShape(EntryTokens.radius))
             .background(OtusColors.accentRegular)
             .drawBehind { if (flash > 0f) drawRect(OtusColors.text1.copy(alpha = flash)) },
     ) {

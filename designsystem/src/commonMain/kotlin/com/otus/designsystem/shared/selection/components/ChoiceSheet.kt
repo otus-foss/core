@@ -37,6 +37,7 @@ import com.otus.designsystem.shared.people.components.PersonText
 import com.otus.designsystem.shared.rows.components.topHairline
 import com.otus.designsystem.theme.colors.FolderColor
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.ChoiceSheetTokens
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
@@ -156,7 +157,7 @@ private fun <T> ChoiceGroup(
     row: (T) -> ChoiceRow,
     onSelect: (T) -> Unit,
 ) {
-    Column(Modifier.clip(RoundedCornerShape(SheetTokens.rowRadius)).background(OtusColors.bgRegular)) {
+    Column(Modifier.clip(SmoothCornerShape(SheetTokens.rowRadius)).background(OtusColors.bgRegular)) {
         options.forEachIndexed { index, option ->
             ChoiceOption(row(option), option == selected, first = index == 0) { onSelect(option) }
         }

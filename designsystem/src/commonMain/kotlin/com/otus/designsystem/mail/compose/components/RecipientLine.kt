@@ -1,6 +1,5 @@
 package com.otus.designsystem.mail.compose.components
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,6 +38,7 @@ import com.otus.designsystem.mail.compose.elements.ComposeLine
 import com.otus.designsystem.shared.people.components.Recipient
 import com.otus.designsystem.shared.people.components.RecipientChip
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.strokeBorder
 import com.otus.designsystem.theme.tokens.editing.ComposeTokens
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
@@ -92,7 +92,7 @@ private fun MoreChip(
     Box(
         Modifier
             .height(ComposeTokens.recipientHeight)
-            .border(PanelTokens.borderWidth, OtusColors.bgLight, shape)
+            .strokeBorder(PanelTokens.borderWidth, OtusColors.bgLight, shape)
             .clickable(onClickLabel = "Show everyone", role = Role.Button, onClick = onClick)
             .padding(horizontal = PanelTokens.chipPadding),
         contentAlignment = Alignment.Center,

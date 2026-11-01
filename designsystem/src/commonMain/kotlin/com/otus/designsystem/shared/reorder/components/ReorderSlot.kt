@@ -1,7 +1,6 @@
 package com.otus.designsystem.shared.reorder.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
@@ -9,6 +8,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.zIndex
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 
 /**
@@ -24,7 +24,7 @@ internal fun Modifier.reorderSlot(
     background: Color,
     shift: Float = 0f,
     draggedAlpha: Float = 1f,
-    draggedShape: Shape = RoundedCornerShape(SheetTokens.rowRadius),
+    draggedShape: Shape = SmoothCornerShape(SheetTokens.rowRadius),
 ): Modifier =
     zIndex(if (dragged) 1f else 0f)
         .graphicsLayer {

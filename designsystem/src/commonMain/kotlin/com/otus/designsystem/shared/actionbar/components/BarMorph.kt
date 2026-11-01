@@ -17,7 +17,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -31,6 +30,7 @@ import com.otus.designsystem.theme.motion.LocalMotionScale
 import com.otus.designsystem.theme.motion.Motion
 import com.otus.designsystem.theme.motion.MotionCurve
 import com.otus.designsystem.theme.motion.MotionSpeed
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.editing.ComposeTokens
 import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 import kotlin.math.PI
@@ -95,7 +95,7 @@ private fun SharedTransitionScope.part(
             val radius = BLUR_RADIUS.toPx() * morph.blurShare(if (arriving) shown else 1f - shown)
             renderEffect = if (radius > 0f) BlurEffect(radius, radius, TileMode.Clamp) else null
             // The rounder bar's corners lie inside the less round clip, so neither bar loses an edge.
-            shape = RoundedCornerShape(minOf(ComposeTokens.formatBarRadius, ActionBarTokens.radius))
+            shape = SmoothCornerShape(minOf(ComposeTokens.formatBarRadius, ActionBarTokens.radius))
             clip = true
         }
 }
