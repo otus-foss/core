@@ -109,7 +109,7 @@ private fun AnimationSpeedSheet(
     )
 }
 
-private val AnimationSpeed.label: String
+internal val AnimationSpeed.label: String
     get() =
         when (this) {
             AnimationSpeed.Instant -> "Instant"
@@ -127,5 +127,5 @@ private val AnimationSpeed.detail: String?
         }
 
 /** The pattern as its value button shows it; the device setting is shortened so it fits. */
-private val DateFormatPreference.shortLabel: String
+internal val DateFormatPreference.shortLabel: String
     get() = if (this == DateFormatPreference.DeviceLocale) "Device" else patternLabel

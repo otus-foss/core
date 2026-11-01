@@ -54,7 +54,7 @@ public fun AppIconSetting(appIcon: AppIconSettingsState) {
 
 private const val ICON_COLUMNS = 3
 
-private val AppIconStyle.label: String
+internal val AppIconStyle.label: String
     get() =
         when (this) {
             AppIconStyle.Accent -> "Accent"
