@@ -23,6 +23,13 @@ public object QuickViewTokens {
     public val badgeInset: Dp = 8.dp
     public val faceSize: Dp = 52.dp
 
+    /** A person module's card: its sides, the gap after the avatar, and its name and address sizes. */
+    public val personStart: Dp = 14.dp
+    public val personEnd: Dp = 12.dp
+    public val personGap: Dp = 14.dp
+    public val personNameSize: TextUnit = 16.sp
+    public val personAddressSize: TextUnit = 14.sp
+
     /** The width each face takes in a scrolling row, its circle and a short name. */
     public val faceSlot: Dp = 68.dp
 
