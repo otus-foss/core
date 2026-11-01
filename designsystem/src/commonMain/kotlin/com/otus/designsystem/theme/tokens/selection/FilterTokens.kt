@@ -71,11 +71,6 @@ public object FilterTokens {
     /** How far the panel keeps from the window's top and bottom edges. */
     public val screenInset: Dp = 16.dp
 
-    /** How far the panel's contents slide while they fade in. */
-    public val contentSlide: Dp = 8.dp
-
-    /** An upward swipe on the panel longer than this closes it. */
-    public val closeSwipe: Dp = 72.dp
     public val badgeSize: Dp = 16.dp
     public val badgeTextSize: TextUnit = 10.sp
 }

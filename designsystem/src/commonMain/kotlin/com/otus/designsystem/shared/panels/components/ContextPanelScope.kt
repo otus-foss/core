@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
@@ -133,9 +134,13 @@ internal fun PanelChipRail(
             },
     ) {
         // Span the viewport so pills outside a resizing group are not clipped at its animated width.
-        // Stretching only the rail would separate the pills from the panel's cutouts.
+        // Stretching only the rail would separate the pills from the panel's cutouts. The inset
+        // scrolls with the pills, so a scrolled pill still reaches the screen edge.
         Row(
-            Modifier.fillMaxWidth().horizontalScroll(scroll, overscrollEffect = null),
+            Modifier
+                .fillMaxWidth()
+                .horizontalScroll(scroll, overscrollEffect = null)
+                .padding(horizontal = PanelTokens.panelInset),
             horizontalArrangement = Arrangement.spacedBy(PanelTokens.chipGap),
         ) { content() }
     }
