@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,6 +21,8 @@ import com.otus.designsystem.shared.settings.components.ColorSheet
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.colors.OtusPalette
 import com.otus.designsystem.theme.colors.ThemeChoice
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
+import com.otus.designsystem.theme.shapes.strokeBorder
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.settings.ThemeTokens
 import com.otus.settings.presentation.options
@@ -58,11 +59,11 @@ private fun ThemePreview(
     palette: OtusPalette,
     modifier: Modifier,
 ) {
-    val shape = RoundedCornerShape(ThemeTokens.customPreviewRadius)
+    val shape = SmoothCornerShape(ThemeTokens.customPreviewRadius)
     Column(
         modifier
             .background(palette.bgRegular, shape)
-            .border(PanelTokens.borderWidth, palette.strokeBgDark, shape)
+            .strokeBorder(PanelTokens.borderWidth, palette.strokeBgDark, shape)
             .padding(ThemeTokens.customPreviewPadding),
         verticalArrangement = Arrangement.spacedBy(ThemeTokens.cardGap),
     ) {

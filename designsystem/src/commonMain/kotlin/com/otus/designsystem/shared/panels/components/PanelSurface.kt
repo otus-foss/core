@@ -10,6 +10,8 @@ import androidx.compose.ui.graphics.PathOperation
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
+import com.otus.designsystem.theme.shapes.toPath
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 
 internal fun Modifier.panelSurface(
@@ -33,7 +35,7 @@ private fun DrawScope.drawPanelFrame(
     // contours while pill groups swap.
     val inset = border.width / 2
     val outline = Rect(inset, inset, size.width - inset, frame.bottom)
-    val panel = Path().apply { addRoundRect(RoundRect(outline, CornerRadius(PanelTokens.panelRadius.toPx()))) }
+    val panel = SmoothCornerShape(PanelTokens.panelRadius).toPath(outline, layoutDirection, this)
     val surface =
         frame.holes.fold(panel) { shape, hole ->
             val rect = hole.bounds

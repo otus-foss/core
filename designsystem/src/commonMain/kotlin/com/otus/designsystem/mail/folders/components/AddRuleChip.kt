@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -19,9 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.semantics.Role
@@ -32,6 +29,8 @@ import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.shared.settings.elements.outlineDash
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
+import com.otus.designsystem.theme.shapes.toPath
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.selection.RuleChipTokens
 
@@ -47,7 +46,7 @@ public fun AddRuleChip(
     modifier: Modifier = Modifier,
 ) {
     val interactions = remember { MutableInteractionSource() }
-    val shape = RoundedCornerShape(RuleChipTokens.radius)
+    val shape = SmoothCornerShape(RuleChipTokens.radius)
     Row(
         modifier
             .dashedOutline(OtusColors.bgLight)
@@ -77,11 +76,13 @@ public fun AddRuleChip(
 private fun Modifier.dashedOutline(color: Color): Modifier =
     drawBehind {
         val width = PanelTokens.borderWidth.toPx()
-        drawRoundRect(
+        drawPath(
+            SmoothCornerShape(RuleChipTokens.radius).toPath(
+                Rect(width / 2, width / 2, size.width - width / 2, size.height - width / 2),
+                layoutDirection,
+                this,
+            ),
             color,
-            topLeft = Offset(width / 2, width / 2),
-            size = Size(size.width - width, size.height - width),
-            cornerRadius = CornerRadius(minOf(RuleChipTokens.radius.toPx(), size.height / 2)),
             style = Stroke(width, pathEffect = outlineDash()),
         )
     }

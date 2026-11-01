@@ -3,7 +3,6 @@ package com.otus.designsystem.shared.reorder.components
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.shape.CornerSize
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -20,6 +19,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.tokens.rows.ReorderTreeTokens
 
@@ -114,7 +114,7 @@ private fun blockRowShape(
 ): Shape {
     val top = if (joinedAbove) ZeroCornerSize else HalfHeightCorner(SheetTokens.rowRadius)
     val bottom = if (joinedBelow) ZeroCornerSize else HalfHeightCorner(SheetTokens.rowRadius)
-    return RoundedCornerShape(top, top, bottom, bottom)
+    return SmoothCornerShape(top, top, bottom, bottom)
 }
 
 /**
