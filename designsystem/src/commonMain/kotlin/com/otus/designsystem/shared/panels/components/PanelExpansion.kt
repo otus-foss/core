@@ -5,6 +5,7 @@ import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.core.animate
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -63,9 +64,11 @@ public class PanelExpansion internal constructor(
             return (next - 1) + ((height - start) / span).coerceIn(0f, 1f)
         }
 
-    /** Whether the panel stands out past its first stop, so what is behind it should not take taps. */
-    public val expanded: Boolean
-        get() = height > 0f
+    /**
+     * Whether the panel stands out past its first stop, so what is behind it should not take taps.
+     * Derived, so a screen that reads it recomposes when it flips, not on every frame of a drag.
+     */
+    public val expanded: Boolean by derivedStateOf { height > 0f }
 
     /** Moves to [target] on the app's motion curve, such as when a button opens the full panel. */
     public fun expandTo(target: Int) {
