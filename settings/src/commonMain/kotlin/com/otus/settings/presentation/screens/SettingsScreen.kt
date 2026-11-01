@@ -35,7 +35,7 @@ public fun SettingsScreen(
             Column {
                 index
                     .filter { it.isPage && it.page == null }
-                    .forEach { SettingPageRow(it.title, it.onOpen, description = it.summary, icon = it.icon) }
+                    .forEach { SettingPageRow(it.title, it::onOpen, description = it.detail, icon = it.icon) }
             }
         } else {
             SearchResults(index.search(query))
@@ -54,7 +54,7 @@ private fun SearchResults(found: List<SettingsItem>) {
         .forEachIndexed { index, (page, items) ->
             Column {
                 if (page != null) {
-                    SettingsGroupHeader(page.path.joinToString(" › "), page.icon, page.onOpen, divided = index > 0)
+                    SettingsGroupHeader(page.path.joinToString(" › "), page.icon, page::onOpen, divided = index > 0)
                 }
                 Column { items.forEach { SettingsResultRow(it) } }
             }

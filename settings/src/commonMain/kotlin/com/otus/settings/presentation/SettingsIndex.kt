@@ -3,35 +3,47 @@ package com.otus.settings.presentation
 import org.jetbrains.compose.resources.DrawableResource
 
 /**
- * One thing settings search finds: a page, or a setting on one. It lives under [section] on
- * [page], which is null for a top-level page. [options] are the choices it offers, so a search for
- * one finds the setting. [summary] describes a top-level page on the settings home.
+ * One thing settings search finds: a setting, or a page that [opens] one. It lives on [page],
+ * which is null for a top-level page. [detail] is the section it sits under, or a top-level page's
+ * summary. [options] are the choices it offers, so a search for one finds the setting.
  */
 public class SettingsItem internal constructor(
     public val title: String,
     public val page: SettingsPage?,
-    public val section: String?,
+    public val detail: String?,
     public val icon: DrawableResource?,
     public val value: String?,
     public val options: List<String>,
-    public val isPage: Boolean,
-    public val summary: String?,
-    public val onOpen: () -> Unit,
-)
+    public val opens: SettingsPage?,
+) {
+    public val isPage: Boolean get() = opens != null
 
-/** A settings page by its [path] of page titles from the settings home, with its icon. */
+    /** Opens the page this item opens at its top, or this setting's page with the setting found. */
+    public fun onOpen() {
+        opens?.onOpen() ?: page?.open(title)
+    }
+}
+
+/**
+ * A settings page by its [path] of page titles from the settings home, with its icon. [open] shows
+ * it with the named setting found, or at its top for null.
+ */
 public class SettingsPage internal constructor(
     public val path: List<String>,
     public val icon: DrawableResource?,
-    public val onOpen: () -> Unit,
-)
+    internal val open: (setting: String?) -> Unit,
+) {
+    public fun onOpen() {
+        open(null)
+    }
+}
 
 @DslMarker
 internal annotation class SettingsIndexDsl
 
 /** Builds the settings index: top-level pages, each holding its settings and subpages. */
 public fun settingsIndex(build: SettingsIndexScope.() -> Unit): List<SettingsItem> =
-    buildList { SettingsIndexScope(page = null, open = {}, items = this).build() }
+    buildList { SettingsIndexScope(page = null, items = this).build() }
 
 /**
  * A page while the index is built, or the settings home for top-level pages. Its settings open it
@@ -40,7 +52,6 @@ public fun settingsIndex(build: SettingsIndexScope.() -> Unit): List<SettingsIte
 @SettingsIndexDsl
 public class SettingsIndexScope internal constructor(
     private val page: SettingsPage?,
-    private val open: (setting: String?) -> Unit,
     private val items: MutableList<SettingsItem>,
 ) {
     private val icon = page?.icon
@@ -59,9 +70,9 @@ public class SettingsIndexScope internal constructor(
         options: List<String> = emptyList(),
         content: SettingsIndexScope.() -> Unit = {},
     ) {
-        items += SettingsItem(title, page, section, icon, value, options, isPage = true, summary) { open(null) }
-        val child = SettingsPage(page?.path.orEmpty() + title, icon) { open(null) }
-        SettingsIndexScope(child, open, items).content()
+        val child = SettingsPage(page?.path.orEmpty() + title, icon, open)
+        items += SettingsItem(title, page, section ?: summary, icon, value, options, opens = child)
+        SettingsIndexScope(child, items).content()
     }
 
     /** The settings under the heading [title] on this page. */
@@ -82,8 +93,7 @@ public class SettingsIndexScope internal constructor(
         options: List<String> = emptyList(),
         icon: DrawableResource? = this.icon,
     ) {
-        items +=
-            SettingsItem(title, page, section, icon, value, options, isPage = false, summary = null) { open(title) }
+        items += SettingsItem(title, page, section, icon, value, options, opens = null)
     }
 
     /** A setting that turns something on or off. */
@@ -110,7 +120,7 @@ private fun SettingsItem.rank(query: String): Int? {
     return when {
         title.has() -> 0
         options.any { it.has() } -> 1
-        page?.path.orEmpty().any { it.has() } || section?.has() == true || summary?.has() == true -> 2
+        page?.path.orEmpty().any { it.has() } || detail?.has() == true -> 2
         else -> null
     }
 }

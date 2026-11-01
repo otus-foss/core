@@ -1,4 +1,4 @@
-package com.otus.settings.presentation.screens
+package com.otus.settings.presentation
 
 import com.otus.dateformat.DateFormatPreference
 import com.otus.designsystem.resources.Res
@@ -8,14 +8,10 @@ import com.otus.designsystem.resources.symbol_palette
 import com.otus.designsystem.resources.symbol_speed
 import com.otus.designsystem.theme.brand.AppIconStyle
 import com.otus.designsystem.theme.motion.AnimationSpeed
-import com.otus.settings.presentation.AnimationSettingsState
-import com.otus.settings.presentation.AppIconSettingsState
-import com.otus.settings.presentation.DateFormatSettingsState
-import com.otus.settings.presentation.SettingsIndexScope
-import com.otus.settings.presentation.ThemeSettingsState
 import com.otus.settings.presentation.components.label
-import com.otus.settings.presentation.options
-import com.otus.settings.presentation.themeTitle
+import com.otus.settings.presentation.screens.AppearanceSettingsScreen
+import com.otus.settings.presentation.screens.label
+import com.otus.settings.presentation.screens.shortLabel
 
 /**
  * What search finds on [AppearanceSettingsScreen]: the Theme page, which [openTheme] shows, and the
