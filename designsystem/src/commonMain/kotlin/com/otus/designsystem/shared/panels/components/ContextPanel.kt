@@ -163,7 +163,8 @@ private class PanelMeasurePolicy(
                 }?.measure(Constraints.fixed(constraints.maxWidth, grown.roundToInt()))
         val progress = motion.collapse().coerceIn(0f, 1f)
         val growFade = (grown / QuickViewTokens.pillsFadeDistance.toPx()).coerceIn(0f, 1f)
-        val fade = maxOf(if (placement == ChipPlacement.Overlapping) CollapseSteps.pills(progress) else 0f, growFade)
+        val collapseFade = if (placement == ChipPlacement.Overlapping) CollapseSteps.pills(progress) else 0f
+        val fade = maxOf(collapseFade, growFade)
         val drop = lerp(PanelTokens.railDrop.toPx(), PanelTokens.collapsedDrop.toPx(), progress)
         val railHeight = rail?.height ?: 0
         val closed = PanelTokens.collapsedDrop.toPx()
@@ -171,7 +172,8 @@ private class PanelMeasurePolicy(
         val below = if (placement != ChipPlacement.None) maxOf(closed, drop - railHeight / 2f) else closed
         // The room's grab handle ends the grown panel, so the rail's share of the edge goes with the pills.
         val edge = header.height + grown + lerp(below, drop, overlap()) * (1f - growFade)
-        val railTop = header.height + grown + drop - railHeight / 2f - PanelTokens.pillRise.toPx() * fade
+        // Growing, the pills only fade where they are; rising and shrinking belong to the scroll collapse.
+        val railTop = header.height + drop - railHeight / 2f - PanelTokens.pillRise.toPx() * collapseFade
         geometry.edge = edge
         geometry.railFade = fade
         val railPlaced = rail != null && fade < 1f
@@ -183,7 +185,7 @@ private class PanelMeasurePolicy(
             if (railPlaced) {
                 rail.placeWithLayer(0, railTop.roundToInt()) {
                     alpha = 1f - fade
-                    scaleX = 1f - PanelTokens.PILL_SHRINK * fade
+                    scaleX = 1f - PanelTokens.PILL_SHRINK * collapseFade
                     scaleY = scaleX
                 }
             }
