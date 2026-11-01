@@ -23,7 +23,18 @@
   `closeSwipe` move to `PanelTokens` as `sheetContentSlide` and `sheetCloseSwipe`.
 - `PageScaffold` and `Subpage` take a `search`: a search button in the header grows leftward into
   a field over the title (`ExpandingSearch`, `rememberSearchExpansion`) and dims the body until
-  something is typed. `SettingsScreen` searches its rows by title and summary.
+  something is typed.
+- Breaking: remove `SettingsEntry`. `SettingsScreen` takes an `index: List<SettingsItem>` built
+  with `settingsIndex { page(title, open) { section(title) { setting(…); toggle(…) } } }`, where
+  `open` receives the found setting's title, or null for the page's top. The home lists the
+  top-level pages. A search lists every matching page, setting, and option, ranked by name, then
+  option, then path, and grouped under a `SettingsGroupHeader` that opens their page. Apps replace
+  each `SettingsEntry(title, summary, icon, onOpen)` with
+  `page(title, { onOpen() }, icon, summary = summary)` and add their pages' settings inside it.
+- Add `appearanceIndex` and `appIconIndex`, the search entries of the Appearance page, and
+  `List<SettingsItem>.search`.
+- Add `LocalFoundSetting`. While it names a `SettingRow`'s title, that row scrolls into view and
+  flashes once, so a search result shows where it opened.
 - Add `Modifier.belowControlPanel()` and `Modifier.pageSideInset()` for pages whose control panel
   draws behind the status bar.
 - Breaking: remove `SearchPrompt`, replaced by `PanelSearchPill`, and
