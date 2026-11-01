@@ -46,6 +46,9 @@ public class PanelExpansion internal constructor(
     private var running: Job? = null
     private var dragging = false
 
+    /** Whether the running animation heads up to its stop, from below it. */
+    private var rising = false
+
     /** Whether the panel was opened straight to its stop, past the ones in between. */
     private var direct = false
     private var content: Any? = null
@@ -79,10 +82,13 @@ public class PanelExpansion internal constructor(
      */
     public val position: Float
         get() {
-            val next = stops.indexOfFirst { it >= height }.coerceAtLeast(1)
             if (stops.size < 2) return 0f
+            // Stops within a pixel are one height, such as a full search room and every filter; at
+            // such a height the panel is at the one of them it heads for.
+            var next = stops.indexOfFirst { it >= height - TIE }.coerceAtLeast(1)
+            if (stop > next && stops[stop] - stops[next] < TIE) next = stop
             val start = stops[next - 1]
-            val span = (stops[next] - start).takeIf { it > 0f } ?: return next.toFloat()
+            val span = (stops[next] - start).takeIf { it >= TIE } ?: return next.toFloat()
             return (next - 1) + ((height - start) / span).coerceIn(0f, 1f)
         }
 
@@ -109,6 +115,7 @@ public class PanelExpansion internal constructor(
         dragging = false
         running?.cancel()
         val from = height
+        rising = stops[index] >= from
         // The target is read on every frame, so a stop that moves meanwhile, such as with the
         // keyboard, is followed rather than overshot.
         moving = true
@@ -198,6 +205,9 @@ public class PanelExpansion internal constructor(
         if (resting && held != (before ?: held)) {
             if (changed) moveTo(stop, Motion.tween(scale = motionScale)) else height = held
         }
+        // The animation reaches a moved stop only on its next frame; a panel rising to a stop that
+        // shrank stops at it now, so it never reads as past it meanwhile.
+        if (running?.isActive == true && rising && height > held) height = held
         if (height > this.stops.last()) height = this.stops.last()
     }
 }
@@ -226,3 +236,6 @@ public fun rememberPanelExpansion(
 
 /** The shortest settle, as a share of a full one, so a release next to a stop still eases in. */
 private const val SHORTEST_SETTLE = 0.35f
+
+/** Pixels within which two stops count as one height. */
+private const val TIE = 1f
