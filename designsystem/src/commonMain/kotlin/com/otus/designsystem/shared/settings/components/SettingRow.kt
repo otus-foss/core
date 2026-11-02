@@ -67,7 +67,7 @@ public fun SettingRow(
     trailing: @Composable () -> Unit = {},
 ) {
     val enabled = LocalSettingsEnabled.current
-    val leading = icon?.let { { LeadingSymbol(it, enabled = enabled) } }
+    val leading: (@Composable () -> Unit)? = icon?.let { { LeadingSymbol(it, enabled = enabled) } }
     SettingRow(title, onClick, leading, modifier, description, density, trailing)
 }
 
