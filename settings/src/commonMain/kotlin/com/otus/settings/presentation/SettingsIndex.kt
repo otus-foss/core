@@ -5,17 +5,23 @@ import org.jetbrains.compose.resources.DrawableResource
 /**
  * One thing settings search finds: a setting, or a page that [opens] one. It lives on [page],
  * which is null for a top-level page. [detail] is the section it sits under, or a top-level page's
- * summary. [options] are the choices it offers, so a search for one finds the setting.
+ * summary. [options] are the choices it offers and [keywords] other words people use for it, so a
+ * search for either finds the setting. [unavailable] says what it waits on while its page shows it
+ * disabled, such as another setting that has to be on first.
  */
 public class SettingsItem internal constructor(
     public val title: String,
     public val page: SettingsPage?,
     public val detail: String?,
     public val icon: DrawableResource?,
-    public val value: String?,
-    public val options: List<String>,
+    private val facts: ItemFacts,
     public val opens: SettingsPage?,
 ) {
+    public val value: String? get() = facts.value
+    public val options: List<String> get() = facts.options
+    public val keywords: List<String> get() = facts.keywords
+    public val unavailable: String? get() = facts.unavailable
+
     public val isPage: Boolean get() = opens != null
 
     /** Opens the page this item opens at its top, or this setting's page with the setting found. */
@@ -23,6 +29,14 @@ public class SettingsItem internal constructor(
         opens?.onOpen() ?: page?.open(title)
     }
 }
+
+/** What an item shows and what else search matches it by. */
+internal class ItemFacts(
+    val value: String?,
+    val options: List<String>,
+    val keywords: List<String>,
+    val unavailable: String?,
+)
 
 /**
  * A settings page by its [path] of page titles from the settings home, with its icon. [open] shows
@@ -56,10 +70,13 @@ public class SettingsIndexScope internal constructor(
 ) {
     private val icon = page?.icon
     private var section: String? = null
+    private var waiting: String? = null
+    private val pageKeywords = mutableListOf<String>()
 
     /**
      * A page under this one, which [open] shows at its top for null or with the named setting
-     * found. Its [content] lists what the page holds.
+     * found. Its [content] lists what the page holds, and may name other words for the page with
+     * [keywords].
      */
     public fun page(
         title: String,
@@ -71,8 +88,15 @@ public class SettingsIndexScope internal constructor(
         content: SettingsIndexScope.() -> Unit = {},
     ) {
         val child = SettingsPage(page?.path.orEmpty() + title, icon, open)
-        items += SettingsItem(title, page, section ?: summary, icon, value, options, opens = child)
-        SettingsIndexScope(child, items).content()
+        val inside = SettingsIndexScope(child, mutableListOf()).apply(content)
+        val facts = ItemFacts(value, options, inside.pageKeywords, waiting)
+        items += SettingsItem(title, page, section ?: summary, icon, facts, opens = child)
+        items += inside.items
+    }
+
+    /** Other words people use for this page, which search matches as it matches options. */
+    public fun keywords(vararg words: String) {
+        pageKeywords += words
     }
 
     /** The settings under the heading [title] on this page. */
@@ -86,41 +110,75 @@ public class SettingsIndexScope internal constructor(
         section = outer
     }
 
-    /** A setting showing [value], one of its [options] if it offers a choice. */
+    /**
+     * Settings and pages that this page shows disabled while they wait on another setting, which
+     * [reason] names; null while they are available. Search shows the reason with each one.
+     */
+    public fun unavailable(
+        reason: String?,
+        content: SettingsIndexScope.() -> Unit,
+    ) {
+        val outer = waiting
+        waiting = reason ?: outer
+        content()
+        waiting = outer
+    }
+
+    /** A setting showing [value], one of its [options] if it offers a choice; [keywords] are other words for it. */
     public fun setting(
         title: String,
         value: String? = null,
         options: List<String> = emptyList(),
         icon: DrawableResource? = this.icon,
+        keywords: List<String> = emptyList(),
     ) {
-        items += SettingsItem(title, page, section, icon, value, options, opens = null)
+        items += SettingsItem(title, page, section, icon, ItemFacts(value, options, keywords, waiting), opens = null)
     }
 
-    /** A setting that turns something on or off. */
+    /** A setting that turns something on or off, with [keywords] as [setting] takes them. */
     public fun toggle(
         title: String,
         on: Boolean,
         icon: DrawableResource? = this.icon,
+        keywords: List<String> = emptyList(),
     ) {
-        setting(title, if (on) "On" else "Off", icon = icon)
+        setting(title, if (on) "On" else "Off", icon = icon, keywords = keywords)
     }
 }
 
-/** The items matching [query], best first: by name, then by one of their options, then by path. */
+/**
+ * The items matching [query], best first: by name, then by one of their options or keywords, then
+ * by path. A query of several words that no field holds whole, such as "swipe archive", still
+ * finds an item that holds every word somewhere, after all of those.
+ */
 public fun List<SettingsItem>.search(query: String): List<SettingsItem> {
     val wanted = query.trim()
     if (wanted.isEmpty()) return emptyList()
-    return mapNotNull { item -> item.rank(wanted)?.let { item to it } }
-        .sortedBy { (_, rank) -> rank }
+    val words = wanted.split(Whitespace)
+    return mapNotNull { item -> item.match(wanted, words)?.let { item to it } }
+        .sortedBy { (_, match) -> match }
         .map { (item, _) -> item }
 }
 
-private fun SettingsItem.rank(query: String): Int? {
-    fun String.has() = contains(query, ignoreCase = true)
+/** How an item matches a query, best first. */
+private enum class Match { Title, Named, Placed, EveryWord }
+
+private fun SettingsItem.match(
+    query: String,
+    words: List<String>,
+): Match? {
+    val named = options + keywords
+    val placed = page?.path.orEmpty() + listOfNotNull(detail)
+    val every = listOf(title) + named + placed
     return when {
-        title.has() -> 0
-        options.any { it.has() } -> 1
-        page?.path.orEmpty().any { it.has() } || detail?.has() == true -> 2
+        title.has(query) -> Match.Title
+        named.any { it.has(query) } -> Match.Named
+        placed.any { it.has(query) } -> Match.Placed
+        words.size > 1 && words.all { word -> every.any { it.has(word) } } -> Match.EveryWord
         else -> null
     }
 }
+
+private fun String.has(query: String) = contains(query, ignoreCase = true)
+
+private val Whitespace = Regex("\\s+")

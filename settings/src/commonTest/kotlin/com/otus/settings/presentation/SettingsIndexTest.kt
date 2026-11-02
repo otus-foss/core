@@ -13,8 +13,13 @@ class SettingsIndexTest {
                     setting("Swipe right", "Archive", listOf("Archive", "Trash"))
                     setting("Swipe left", "Trash", listOf("Archive", "Trash"))
                 }
-                section("Reading") { toggle("Show quoted text", on = true) }
+                section("Reading") { toggle("Show quoted text", on = true, keywords = listOf("Replies")) }
                 page("Action bar", { opened += "Action bar: $it" }) { setting("Layout", "Per screen") }
+                page("Filter panel", { opened += it }) {
+                    keywords("Control panel")
+                    unavailable("Add the Quick filters section first") { setting("Quick filters", "2 shown") }
+                    unavailable(reason = null) { setting("Quick view", "3 shown") }
+                }
             }
         }
 
@@ -44,6 +49,28 @@ class SettingsIndexTest {
             .page
             ?.onOpen()
         assertEquals(listOf<String?>("Swipe left", "Action bar: null"), opened)
+    }
+
+    @Test
+    fun keywordsFindASettingAsItsOptionsDo() {
+        assertEquals(listOf("Show quoted text"), index.search("replies").map { it.title })
+        assertEquals(listOf("Filter panel"), index.search("control panel").map { it.title })
+    }
+
+    @Test
+    fun everyWordOfAQueryCanMatchADifferentField() {
+        // "swipe" is in the title and "trash" in an option; no field holds the whole query.
+        assertEquals(listOf("Swipe right", "Swipe left"), index.search("swipe trash").map { it.title })
+        assertEquals(emptyList<SettingsItem>(), index.search("swipe sender"))
+    }
+
+    @Test
+    fun anUnavailableSettingIsFoundWithItsReason() {
+        val quick = index.search("quick filters").single()
+        assertEquals("Add the Quick filters section first", quick.unavailable)
+        assertEquals(listOf("Mail behavior", "Filter panel"), quick.page?.path)
+        assertEquals(null, index.search("layout").single().unavailable)
+        assertEquals(null, index.search("quick view").single().unavailable)
     }
 
     @Test

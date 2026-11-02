@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.toggleable
+import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,7 +53,8 @@ import kotlin.math.min
  * the whole row is one button; without it, only its trailing controls act. A
  * [RowDensity.Compact] row drops the hairline and fits one line in
  * [PanelTokens.compactRowHeight]; a taller trailing control reaches into its padding instead of
- * making it taller.
+ * making it taller. Inside [DependentSettings] that is not enabled, the row is dimmed and ignores
+ * taps.
  */
 @Composable
 public fun SettingRow(
@@ -63,7 +66,9 @@ public fun SettingRow(
     density: RowDensity = RowDensity.Regular,
     trailing: @Composable () -> Unit = {},
 ) {
-    SettingRow(title, onClick, icon?.let { { LeadingSymbol(it) } }, modifier, description, density, trailing)
+    val enabled = LocalSettingsEnabled.current
+    val leading = icon?.let { { LeadingSymbol(it, enabled = enabled) } }
+    SettingRow(title, onClick, leading, modifier, description, density, trailing)
 }
 
 /** A [SettingRow] with [leading] before its text in place of an icon, such as an avatar. */
@@ -113,17 +118,19 @@ public fun SettingRow(
     )
 }
 
-/** Makes the whole row one button with the shared press feedback. */
+/** Makes the whole row one button with the shared press feedback; disabled [DependentSettings] ignore taps. */
 @Composable
 private fun Modifier.rowButton(onClick: () -> Unit): Modifier {
     val interactions = remember { MutableInteractionSource() }
-    return clickable(interactions, indication = null, role = Role.Button, onClick = onClick)
+    val enabled = LocalSettingsEnabled.current
+    return clickable(interactions, indication = null, enabled = enabled, role = Role.Button, onClick = onClick)
         .controlPressFeedback(interactions, SmoothCornerShape(SheetTokens.rowRadius))
 }
 
 /**
  * A settings row that turns something on or off; the whole row is the switch. An [info] button
  * after the title explains the setting on request, so the [description] can stay one short line.
+ * Inside [DependentSettings] that is not enabled, its switch keeps its position, dimmed.
  */
 @Composable
 public fun SettingToggleRow(
@@ -136,12 +143,13 @@ public fun SettingToggleRow(
     info: InfoText? = null,
 ) {
     val interactions = remember { MutableInteractionSource() }
+    val enabled = LocalSettingsEnabled.current
     SettingRowLayout(
         RowTitle(title, info),
         description,
         person = null,
-        icon?.let { { LeadingSymbol(it) } },
-        trailing = { ToggleSwitch(checked) },
+        icon?.let { { LeadingSymbol(it, enabled = enabled) } },
+        trailing = { ToggleSwitch(checked, enabled = enabled) },
         density = RowDensity.Regular,
         modifier =
             modifier
@@ -149,6 +157,7 @@ public fun SettingToggleRow(
                     checked,
                     interactions,
                     indication = null,
+                    enabled = enabled,
                     role = Role.Switch,
                     onValueChange = onCheckedChange,
                 ).controlPressFeedback(interactions, SmoothCornerShape(SheetTokens.rowRadius)),
@@ -185,22 +194,26 @@ private fun SettingRowLayout(
         horizontalArrangement = Arrangement.spacedBy(SettingTokens.rowGap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        leading?.invoke()
-        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(SettingTokens.textGap)) {
-            SettingTitle(title, compact)
-            if (description != null) {
-                PersonText(
-                    description,
-                    person,
-                    color = OtusColors.text2,
-                    fontSize = SettingTokens.descriptionSize,
-                    lineHeight = SettingTokens.descriptionLineHeight,
-                )
+        // A disabled row dims everything but its description, which says what it waits on.
+        val content = if (LocalSettingsEnabled.current) LocalContentColor.current else OtusColors.text3
+        CompositionLocalProvider(LocalContentColor provides content) {
+            leading?.invoke()
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(SettingTokens.textGap)) {
+                SettingTitle(title, compact)
+                if (description != null) {
+                    PersonText(
+                        description,
+                        person,
+                        color = OtusColors.text2,
+                        fontSize = SettingTokens.descriptionSize,
+                        lineHeight = SettingTokens.descriptionLineHeight,
+                    )
+                }
             }
+            // The row pads its content, so the control may only claim the height inside that padding.
+            val inner = PanelTokens.compactRowHeight - SettingTokens.compactRowPadding * 2
+            if (compact) Box(Modifier.overlapHeight(inner)) { trailing() } else trailing()
         }
-        // The row pads its content, so the control may only claim the height inside that padding.
-        val inner = PanelTokens.compactRowHeight - SettingTokens.compactRowPadding * 2
-        if (compact) Box(Modifier.overlapHeight(inner)) { trailing() } else trailing()
     }
 }
 
