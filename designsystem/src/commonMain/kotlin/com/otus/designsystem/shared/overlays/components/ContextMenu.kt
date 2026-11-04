@@ -74,21 +74,32 @@ internal fun ContextMenu(
     onDismiss: () -> Unit,
     unrolls: Boolean = true,
 ) {
-    MenuPopup(position, onDismiss, unrolls = unrolls) {
-        Column(
-            Modifier
-                .width(IntrinsicSize.Max)
-                .widthIn(min = MenuTokens.minWidth)
-                .heightIn(max = MenuTokens.dropdownMaxHeight)
-                .menuSurface()
-                .verticalScroll(rememberScrollState())
-                .padding(MenuTokens.inset),
-        ) {
-            actions.forEach { action ->
-                MenuRow(action) {
-                    onDismiss()
-                    action.onClick()
-                }
+    MenuPopup(position, onDismiss, unrolls = unrolls) { MenuRows(actions, onDismiss, Modifier.menuSurface()) }
+}
+
+/**
+ * [actions] as menu rows that scroll once they reach [MenuTokens.dropdownMaxHeight]. A picked row
+ * runs [onDismiss], then its action. [surface] draws behind the rows, inside the menu's size.
+ */
+@Composable
+internal fun MenuRows(
+    actions: List<MenuAction>,
+    onDismiss: () -> Unit,
+    surface: Modifier = Modifier,
+) {
+    Column(
+        Modifier
+            .width(IntrinsicSize.Max)
+            .widthIn(min = MenuTokens.minWidth)
+            .heightIn(max = MenuTokens.dropdownMaxHeight)
+            .then(surface)
+            .verticalScroll(rememberScrollState())
+            .padding(MenuTokens.inset),
+    ) {
+        actions.forEach { action ->
+            MenuRow(action) {
+                onDismiss()
+                action.onClick()
             }
         }
     }

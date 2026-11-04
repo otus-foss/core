@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- `ActionBar` takes `allActions`: a drag up on the secondary group grows it into a menu of them,
+  following the finger. A secondary action's `menu` now opens the same way, as one surface with
+  a panel above the group, instead of in a `ContextMenu` above its button. The panel keeps the
+  bar's gap around the primary's corner, and the group's own icons hide while it is open.
+- Add `Motion.paced(distance, curve, scale)` and `Motion.PACE_DP_PER_MILLI`, a tween whose length
+  follows the distance it covers, between Quick and Relaxed, so short and tall surfaces grow at
+  the same speed.
 - Accounts: an account without a sending address no longer crashes Connected accounts. Its avatar
   shows without a button, and `AvatarButton` takes a null `onClick` for an avatar that does
   nothing. Callers compiled against the earlier signature must rebuild.
