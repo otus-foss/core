@@ -21,17 +21,23 @@ import com.otus.designsystem.theme.tokens.settings.SettingTokens
 
 /**
  * An on/off switch. It only shows [checked]; the enclosing row is the toggle and supplies the
- * accessible name and switch role.
+ * accessible name and switch role. A switch that is not [enabled] keeps its position in dimmer
+ * colors, for a row that ignores taps.
  */
 @Composable
 public fun ToggleSwitch(
     checked: Boolean,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
 ) {
     val travel = SettingTokens.switchWidth - SettingTokens.switchThumb - SettingTokens.switchInset * 2
     val thumb by animateDpAsState(if (checked) travel else 0.dp, motionTween(MotionSpeed.Fast))
     val track by animateColorAsState(
-        if (checked) OtusColors.accentLight else OtusColors.bgLight,
+        when {
+            !checked -> OtusColors.bgLight
+            enabled -> OtusColors.accentLight
+            else -> OtusColors.accentDark
+        },
         motionTween(MotionSpeed.Fast),
     )
     Box(
@@ -47,7 +53,7 @@ public fun ToggleSwitch(
                 .offset(x = thumb)
                 .size(SettingTokens.switchThumb)
                 .clip(CircleShape)
-                .background(OtusColors.text1),
+                .background(if (enabled) OtusColors.text1 else OtusColors.text3),
         )
     }
 }

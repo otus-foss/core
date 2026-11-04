@@ -9,10 +9,21 @@ is unchanged. Both target Android and iOS; screens compose the common design sys
 date-format examples, and the settings index. The app builds the index with `settingsIndex`:
 top-level pages with summaries and icons, and inside each page its sections, settings, current
 values, options, and subpages. The app decides which pages exist and where they lead. The home
-lists the top-level pages. A search finds any page, setting, or option and groups the results under
-their page. Opening a result calls the page's callback with the setting's title, and the app
+lists the top-level pages. A search finds any page, setting, option, or keyword and groups the
+results under their page. Keywords are other words people use for a setting, such as "Dark mode"
+for Theme: `setting` and `toggle` take them, and a page names its own with `keywords(...)` in its
+content. A query of several words also finds a setting that holds every word in some field, so
+"swipe archive" finds the swipe whose option is Archive. Settings and pages that their page shows
+disabled go inside `unavailable(reason) { ... }`, and their results show the reason in place of
+their section. Opening a result calls the page's callback with the setting's title, and the app
 provides it as `LocalFoundSetting` so the row flashes. `appearanceIndex` lists the Appearance
 page's settings for the app's index.
+
+`DependentSettings(enabled) { ... }` holds rows that only apply while another setting is set.
+Unless enabled, each `SettingRow`, `SettingToggleRow`, and `SettingPageRow` inside stays where it
+is, draws its title, icon, value, and switch dimmed, and ignores taps; give it a description that
+says what it waits on. Prefer it to hiding the row, so the page keeps its shape and search still
+finds the setting.
 
 The app supplies its own `DateFormatPreferenceStore`. Selection calls the store's `write` before
 updating the displayed preference, so a `write` that throws leaves the shown choice unchanged.

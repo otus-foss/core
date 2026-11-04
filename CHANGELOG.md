@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+- Add `DependentSettings(enabled)`, for setting rows that only apply while another setting is
+  set. Unless enabled, every `SettingRow`, `SettingToggleRow`, and `SettingPageRow` inside stays in
+  place, draws its title, icon, value, and switch dimmed, and ignores taps; its description says
+  what it waits on. `LocalSettingsEnabled` carries the state, and `ToggleSwitch` takes `enabled`.
+- Settings search: `setting` and `toggle` take `keywords`, other words for the setting, which
+  search matches as it matches options, and a page names its own with `keywords(...)` in its
+  content. Items inside `unavailable(reason) { ... }` carry the reason their page shows them
+  disabled, and their results show it in place of their section. `SettingsItem` exposes
+  `keywords` and `unavailable`. A query of several words now also finds an item that holds each
+  word in its title, options, keywords, or path, ranked after whole matches. `appearanceIndex`
+  adds keywords such as "Dark mode" for Theme. Callers compiled against the earlier signatures
+  must rebuild.
 - Add `LazyListState.animateScrollToItem(index, animationSpec)` in `theme.motion`, which scrolls to an
   item on a Motion tween where Compose's own `animateScrollToItem` always uses a spring that
   ignores the user's animation speed. `WheelPicker` and the date range calendar now scroll with it,
