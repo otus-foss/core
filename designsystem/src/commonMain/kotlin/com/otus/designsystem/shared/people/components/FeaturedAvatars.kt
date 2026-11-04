@@ -1,6 +1,5 @@
 package com.otus.designsystem.shared.people.components
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,9 +10,9 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import com.otus.designsystem.shared.controls.elements.optionalButton
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.layout.PageTokens
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
@@ -51,7 +50,7 @@ private fun Face(
     Column(
         Modifier
             .width(AvatarTokens.featuredWidth)
-            .avatarAction(face.onClick),
+            .optionalButton(face.onClick),
         verticalArrangement = Arrangement.spacedBy(PageTokens.rowGap),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -67,6 +66,3 @@ private fun Face(
 }
 
 private const val TOP_ROW = 2
-
-private fun Modifier.avatarAction(onClick: (() -> Unit)?): Modifier =
-    onClick?.let { clickable(role = Role.Button, onClick = it) } ?: this

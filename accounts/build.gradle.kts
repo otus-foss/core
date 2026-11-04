@@ -27,7 +27,7 @@ kotlin {
                 .toInt()
         compilerOptions { jvmTarget = JvmTarget.JVM_11 }
         androidResources { enable = true }
-        withHostTest {}
+        withHostTest { isIncludeAndroidResources = true }
         lint { ignoreTestSources = true }
     }
     sourceSets {
@@ -43,6 +43,11 @@ kotlin {
             implementation(kotlin("test"))
             implementation(libs.ktor.client.mock)
             implementation(libs.kotlinx.coroutines.test)
+        }
+        getByName("androidHostTest").dependencies {
+            implementation(libs.robolectric)
+            implementation(libs.androidx.compose.ui.test)
+            implementation(libs.androidx.compose.ui.test.manifest)
         }
     }
 }
