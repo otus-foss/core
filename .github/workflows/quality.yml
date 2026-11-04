@@ -19,10 +19,38 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Decides which jobs this change needs. Workflow-only and Markdown-only changes skip the build,
+  # except a change to this workflow, and changes that touch only Android code skip the macOS job.
+  # A run started by hand runs everything.
+  changes:
+    if: github.event_name == 'workflow_dispatch' || !github.event.pull_request.draft
+    runs-on: ubicloud-standard-2
+    permissions:
+      pull-requests: read
+    outputs:
+      build: ${{ steps.files.outputs.build }}
+      ios: ${{ steps.files.outputs.ios }}
+    steps:
+      - id: files
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          if [ -z "$PR" ]; then
+            printf 'build=true\nios=true\n' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR/files" --jq '.[].filename' > files.txt
+          touched() { if grep -qvE "$1" files.txt || grep -qx '.github/workflows/quality.yml' files.txt; then echo true; else echo false; fi; }
+          echo "build=$(touched '^\.github/|\.md$')" >> "$GITHUB_OUTPUT"
+          echo "ios=$(touched '^\.github/|\.md$|^docs/|(^|/)src/(androidMain|androidHostTest|androidUnitTest|androidTest)/')" >> "$GITHUB_OUTPUT"
+          cat "$GITHUB_OUTPUT"
+
   # Each job runs one part of checkAll, so the parts run at the same time. Every part except
   # quality skips qualityCheck, which each module's check task would otherwise run again.
   check:
-    if: github.event_name == 'workflow_dispatch' || !github.event.pull_request.draft
+    needs: changes
+    if: needs.changes.outputs.build == 'true'
     name: check (${{ matrix.part }})
     runs-on: ubicloud-standard-2
     strategy:
@@ -55,7 +83,8 @@ jobs:
       - run: ./gradlew ${{ matrix.tasks }} --console=plain
 
   ios:
-    if: github.event_name == 'workflow_dispatch' || !github.event.pull_request.draft
+    needs: changes
+    if: needs.changes.outputs.ios == 'true'
     # Ubicloud has no macOS runners, so this job runs on GitHub's.
     runs-on: macos-15
     steps:
