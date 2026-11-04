@@ -17,6 +17,11 @@ runners. The `ios` quality jobs and their `runs-on: macos-15` label stay in the 
 `if: false` pauses them. Delete that condition to run them again. Until then, CI does not link
 iOS apps or run simulator tests.
 
+`actionlint` lints workflows in pull requests that change `.github/`. `issue link` warns when a
+pull request closes no issue, and `issue report` lists each Monday the open issues that merged pull
+requests name, in an issue called "Open issues with merged work". Dependabot opens one grouped
+pull request a week for GitHub Actions and one for Gradle, leaving the pinned Otus libraries alone.
+
 ## Packages
 
 Meta publishes to GitHub Packages at `https://maven.pkg.github.com/reazndev/otus-meta`.
