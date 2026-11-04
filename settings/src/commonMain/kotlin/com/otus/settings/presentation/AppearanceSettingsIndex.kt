@@ -31,19 +31,32 @@ public fun SettingsIndexScope.appearanceIndex(
             Res.drawable.symbol_palette,
             value = theme.choice.themeTitle,
             options = theme.choice.options.map { it.title },
-        )
+        ) { keywords("Dark mode", "Light mode", "Accent color", "Colors") }
         look()
         setting(
             "Date format",
             dateFormat.preference.shortLabel,
             DateFormatPreference.entries.map { it.patternLabel },
             Res.drawable.symbol_calendar_month,
+            keywords = listOf("Dates"),
         )
-        setting("Animations", animation.speed.label, AnimationSpeed.entries.map { it.label }, Res.drawable.symbol_speed)
+        setting(
+            "Animations",
+            animation.speed.label,
+            AnimationSpeed.entries.map { it.label },
+            Res.drawable.symbol_speed,
+            keywords = listOf("Motion", "Reduce motion", "Transitions"),
+        )
     }
 }
 
 /** The App icon row of [com.otus.settings.presentation.components.AppIconSetting], for search. */
 public fun SettingsIndexScope.appIconIndex(appIcon: AppIconSettingsState) {
-    setting("App icon", appIcon.style.label, AppIconStyle.entries.map { it.label }, Res.drawable.symbol_owl)
+    setting(
+        "App icon",
+        appIcon.style.label,
+        AppIconStyle.entries.map { it.label },
+        Res.drawable.symbol_owl,
+        keywords = listOf("Launcher", "Home screen"),
+    )
 }

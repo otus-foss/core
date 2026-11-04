@@ -33,7 +33,8 @@ import kotlinx.datetime.LocalDate
 /**
  * Shared appearance settings. The Look section opens the theme page with [onTheme], named by the
  * current theme, and shows the date format and animation speed; an app adds its own rows to it in
- * [look], such as the sidebar. Behavior, such as gestures, belongs on a page of the app's own.
+ * [look], such as the mail list. Behavior, such as gestures or the sidebar, belongs on a page of
+ * the app's own.
  */
 @Composable
 public fun AppearanceSettingsScreen(
