@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Accounts: an account without a sending address no longer crashes Connected accounts. Its avatar
+  shows without a button, and `AvatarButton` takes a null `onClick` for an avatar that does
+  nothing. Callers compiled against the earlier signature must rebuild.
+
 - Add `DependentSettings(enabled)`, for setting rows that only apply while another setting is
   set. Unless enabled, every `SettingRow`, `SettingToggleRow`, and `SettingPageRow` inside stays in
   place, draws its title, icon, value, and switch dimmed, and ignores taps; its description says
