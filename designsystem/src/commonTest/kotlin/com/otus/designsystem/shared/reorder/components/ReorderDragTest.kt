@@ -51,7 +51,8 @@ class ReorderDragTest {
         drag.layout(keys.drop(1), spacing = 10f, ::drop)
         drag.drop()
         assertNull(drag.key)
-        assertEquals(setOf<Any>("second", "third"), drag.heights.keys)
+        // Kotlin/Native compares snapshot key sets by identity, so compare a plain copy.
+        assertEquals(setOf<Any>("second", "third"), drag.heights.keys.toSet())
         assertEquals(emptyList(), drops)
     }
 
