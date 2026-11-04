@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.unit.Dp
 import kotlin.math.roundToInt
 
 /**
@@ -98,6 +99,31 @@ public object Motion {
         require(scale > 0f) { "Motion scale must be positive, was $scale" }
         return (millis / scale).roundToInt()
     }
+
+    /**
+     * How far, in dp per millisecond, a surface that grows or travels by a varying distance moves,
+     * so a short menu opens as fast as a tall one rather than in the same time.
+     */
+    public const val PACE_DP_PER_MILLI: Float = 1.6f
+
+    /**
+     * A tween across [distance] at [PACE_DP_PER_MILLI], kept between [MotionSpeed.Quick] and
+     * [MotionSpeed.Relaxed], with the global [scale] applied.
+     */
+    public fun <T> paced(
+        distance: Dp,
+        curve: MotionCurve = MotionCurve.Standard,
+        scale: Float = 1f,
+    ): TweenSpec<T> {
+        val millis =
+            (distance.value / PACE_DP_PER_MILLI).coerceIn(
+                baseMillis(MotionSpeed.Quick),
+                baseMillis(MotionSpeed.Relaxed),
+            )
+        return TweenSpec(durationMillis = scaled(millis, scale), easing = curve.easing)
+    }
+
+    private fun baseMillis(speed: MotionSpeed): Float = BASE_MILLIS / speed.factor
 
     /** A tween for code outside composition, such as state holders. Pass [scale] from [LocalMotionScale]. */
     public fun <T> tween(

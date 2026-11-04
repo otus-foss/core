@@ -138,7 +138,7 @@ private fun SmoothCornerShape(corner: CornerSize): SmoothCornerShape = SmoothCor
  * lengths follow Figma's corner smoothing: two easing curves around a shorter circular arc, all
  * within [budget], half the shape's shorter side. The arc is drawn as a cubic too.
  */
-private fun Path.smoothCorner(
+internal fun Path.smoothCorner(
     corner: Offset,
     incoming: Offset,
     outgoing: Offset,
