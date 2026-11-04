@@ -20,20 +20,22 @@ import com.otus.designsystem.theme.tokens.people.AvatarTokens
 
 /**
  * Edits one avatar for every address of [edit]'s account. When some addresses already have an
- * avatar of their own, asks which of them the new one replaces.
+ * avatar of their own, asks which of them the new one replaces. Shows nothing for an account
+ * without addresses.
  */
 @Composable
 internal fun AccountAvatarEditor(
     edit: AccountAvatarEdit,
     onDismiss: () -> Unit,
 ) {
-    var asking by remember { mutableStateOf<AccountAvatarChoice?>(null) }
     val emails = edit.emails
+    val first = emails.firstOrNull() ?: return
+    var asking by remember { mutableStateOf<AccountAvatarChoice?>(null) }
     val choice = asking
     if (choice == null) {
         AvatarSheet(
             "All addresses of ${edit.name}",
-            emails.first().substringAfterLast('@'),
+            first.substringAfterLast('@'),
             edit.shown,
             pickPhoto = edit.pickPhoto,
             onSave = { avatar ->

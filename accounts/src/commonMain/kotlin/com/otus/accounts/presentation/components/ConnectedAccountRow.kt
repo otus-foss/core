@@ -23,7 +23,8 @@ import com.otus.designsystem.theme.tokens.rows.EntryTokens
  * One connected account, its sign-in and server, a button that removes it, and a pill for each of
  * its addresses with that address's avatar. Tapping a pill runs [onEditAvatar] with the address.
  * [accountAvatar], its sign-in address's, leads the row, else its initials. Tapping it runs
- * [onEditAll], or [onEditAvatar] when the account has one address.
+ * [onEditAll], or [onEditAvatar] when the account has one address. An account with no addresses,
+ * such as one signed in with a plain username while its server is unreachable, has nothing to edit.
  */
 @Composable
 public fun ConnectedAccountRow(
@@ -40,12 +41,18 @@ public fun ConnectedAccountRow(
             onClick = null,
             description = connectedAccountDetail(account),
             leading = {
-                val single = account.ownAddresses.singleOrNull()
+                val addresses = account.ownAddresses
+                val single = addresses.singleOrNull()
                 AvatarButton(
                     accountAvatar.toChipAvatarOr(account.name, account.username),
                     EntryTokens.avatarSize,
                     if (single != null) "Change the avatar of $single" else "Change the avatar of every address",
-                    onClick = { if (single != null) onEditAvatar(single) else onEditAll() },
+                    onClick =
+                        when {
+                            single != null -> ({ onEditAvatar(single) })
+                            addresses.isEmpty() -> null
+                            else -> onEditAll
+                        },
                 )
             },
         ) { RowButton("Remove", onRemove, accessibilityLabel = "Remove ${account.name}") }

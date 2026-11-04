@@ -9,6 +9,10 @@
 - Add `Motion.paced(distance, curve, scale)` and `Motion.PACE_DP_PER_MILLI`, a tween whose length
   follows the distance it covers, between Quick and Relaxed, so short and tall surfaces grow at
   the same speed.
+- Accounts: an account without a sending address no longer crashes Connected accounts. Its avatar
+  shows without a button, and `AvatarButton` takes a null `onClick` for an avatar that does
+  nothing. Callers compiled against the earlier signature must rebuild.
+
 - Add `DependentSettings(enabled)`, for setting rows that only apply while another setting is
   set. Unless enabled, every `SettingRow`, `SettingToggleRow`, and `SettingPageRow` inside stays in
   place, draws its title, icon, value, and switch dimmed, and ignores taps; its description says
