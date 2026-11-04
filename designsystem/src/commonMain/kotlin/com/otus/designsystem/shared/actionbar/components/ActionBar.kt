@@ -1,19 +1,15 @@
 package com.otus.designsystem.shared.actionbar.components
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.ProvideTextStyle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -23,7 +19,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.findRootCoordinates
@@ -33,13 +28,10 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalDensity
 import com.otus.designsystem.shared.actionbar.elements.BarAddButton
-import com.otus.designsystem.shared.actionbar.elements.BarIconButton
 import com.otus.designsystem.shared.overlays.components.MenuAction
 import com.otus.designsystem.shared.pages.components.PageChrome
 import com.otus.designsystem.shared.pages.components.ReportClearance
 import com.otus.designsystem.shared.pages.components.pinnedChrome
-import com.otus.designsystem.shared.panels.elements.darkSurface
-import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 import kotlin.math.roundToInt
@@ -54,7 +46,8 @@ import kotlin.math.roundToInt
  * see [MinimizedBar] and [BarMinimized]. Inside a [BarMorph], a full bar's group and shell move
  * into the other bar's parts. With [onAdd], a full bar with room ends its group in a
  * [BarAddButton], such as where settings edit the bar. A secondary action with a [BarAction.menu]
- * opens it above its button.
+ * grows the group into it, as one surface with a panel above the group; a drag up on the group
+ * grows it into [allActions] the same way, in step with the finger.
  */
 @Composable
 public fun ActionBar(
@@ -64,6 +57,7 @@ public fun ActionBar(
     context: BarContext? = null,
     minimized: BarMinimized? = null,
     onAdd: (() -> Unit)? = null,
+    allActions: List<MenuAction> = emptyList(),
 ) {
     require(secondary.size <= MAX_SECONDARY) { "An action bar holds at most $MAX_SECONDARY secondary actions" }
     if (minimized != null) {
@@ -76,7 +70,7 @@ public fun ActionBar(
     ProvideTextStyle(panelTextStyle()) {
         Layout(
             listOf(
-                { SecondaryGroup(secondary, onAdd.takeIf { secondary.size < MAX_SECONDARY }, parts.group) },
+                { SecondaryGroup(secondary, onAdd.takeIf { secondary.size < MAX_SECONDARY }, allActions, parts.group) },
                 { PrimaryShell(primary, context, front, entry, parts.primary) },
             ),
             modifier.fillMaxWidth(),
@@ -114,46 +108,6 @@ public class BarMinimized(
 
 /** Most secondary actions an [ActionBar] shows. */
 public const val MAX_SECONDARY: Int = 3
-
-@Composable
-private fun SecondaryGroup(
-    actions: List<BarAction>,
-    onAdd: (() -> Unit)?,
-    modifier: Modifier,
-) {
-    val shape = SmoothCornerShape(ActionBarTokens.radius)
-    // The bar sets the group's width; while it moves in, the icons keep their places and clip.
-    Box(
-        modifier
-            .height(ActionBarTokens.height)
-            .clip(shape)
-            .darkSurface(shape),
-    ) {
-        Row(
-            Modifier
-                .align(Alignment.CenterStart)
-                .wrapContentWidth(Alignment.Start, unbounded = true)
-                .padding(horizontal = ActionBarTokens.groupPadding),
-            horizontalArrangement = Arrangement.spacedBy(ActionBarTokens.slotGap),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            actions.forEach {
-                val menu = rememberBarMenu()
-                Box {
-                    BarIconButton(
-                        it.label,
-                        it.symbol,
-                        menu.click(it),
-                        enabled = it.enabled,
-                        mirrorInRtl = it.mirrorInRtl,
-                    )
-                    menu.Menu(it)
-                }
-            }
-            if (onAdd != null) BarAddButton("Add action", onAdd)
-        }
-    }
-}
 
 /**
  * Places [bar] over the bottom of [content] at [actionBarInset]. [content] receives bottom padding
