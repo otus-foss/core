@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- `LetterIndex` keeps the pressed letter in place: its row opens level with the heading that
+  `letterIndexHandle` or its "Show letters" action opened it from, and the other letters line up
+  above and below it. Near the top or bottom, the column moves only as far as it must to fit.
+  Without a known heading, the column stays centred.
 - `ActionBar` takes `allActions`: a drag up on the secondary group grows it into a menu of them,
   following the finger. A secondary action's `menu` now opens the same way, as one surface with
   a panel above the group, instead of in a `ContextMenu` above its button. The panel keeps the
