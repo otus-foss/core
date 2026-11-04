@@ -1,7 +1,6 @@
 package com.otus.designsystem.shared.contacts.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,8 +13,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.Role
 import com.otus.designsystem.shared.controls.elements.Symbol
+import com.otus.designsystem.shared.controls.elements.optionalButton
 import com.otus.designsystem.shared.settings.elements.ValueButton
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
@@ -45,7 +44,7 @@ public fun ContactValueRow(
             .fillMaxWidth()
             .highlightedValue(highlighted)
             .heightIn(min = ContactTokens.valueRowHeight)
-            .valueAction(onClick)
+            .optionalButton(onClick)
             .padding(horizontal = SheetTokens.inset, vertical = SheetTokens.rowPadding),
         horizontalArrangement = Arrangement.spacedBy(SheetTokens.gap),
         verticalAlignment = Alignment.CenterVertically,
@@ -65,6 +64,3 @@ public fun ContactValueRow(
 
 private fun Modifier.highlightedValue(highlighted: Boolean): Modifier =
     if (highlighted) background(OtusColors.selectedFill) else this
-
-private fun Modifier.valueAction(onClick: (() -> Unit)?): Modifier =
-    onClick?.let { clickable(role = Role.Button, onClick = it) } ?: this
