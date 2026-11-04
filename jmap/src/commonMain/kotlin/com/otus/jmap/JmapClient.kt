@@ -56,6 +56,21 @@ public class JmapClient(
     ): JmapBlob =
         JmapDownloads(http, urls, policy).download(session, auth, accountId, blobId, mediaType, maxBytes, name)
 
+    /**
+     * Streams a blob as [download] does, but without a size limit: each piece goes to [receive] as
+     * it arrives, so a caller can write a large file to disk without holding it in memory. Returns
+     * the media type the server sent. Cancelling the caller's coroutine ends the transfer.
+     */
+    public suspend fun downloadStream(
+        session: JmapSession,
+        auth: JmapAuth,
+        accountId: String,
+        blobId: String,
+        mediaType: String,
+        name: String = DEFAULT_DOWNLOAD_NAME,
+        receive: suspend (ByteArray) -> Unit,
+    ): String = JmapDownloads(http, urls, policy).stream(session, auth, accountId, blobId, mediaType, name, receive)
+
     /** Authenticated blob upload (RFC 8620, section 6.1), within the server's `maxSizeUpload`. */
     public suspend fun upload(
         session: JmapSession,

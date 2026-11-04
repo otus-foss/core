@@ -45,6 +45,15 @@ public class JmapConnection(
         name: String = DEFAULT_DOWNLOAD_NAME,
     ): JmapBlob = withSession { client.download(it, auth, accountId, blobId, mediaType, maxBytes, name) }
 
+    /** Streams through [JmapClient.downloadStream]; [receive] gets each piece as it arrives. */
+    public suspend fun downloadStream(
+        accountId: String,
+        blobId: String,
+        mediaType: String,
+        name: String = DEFAULT_DOWNLOAD_NAME,
+        receive: suspend (ByteArray) -> Unit,
+    ): String = withSession { client.downloadStream(it, auth, accountId, blobId, mediaType, name, receive) }
+
     public suspend fun upload(
         accountId: String,
         bytes: ByteArray,
