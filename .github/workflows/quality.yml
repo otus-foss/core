@@ -12,8 +12,10 @@ on:
 permissions:
   contents: read
 
+# A draft and a ready run go in separate groups. Opening a pull request and marking it ready at
+# once starts both, and the skipped draft run would otherwise cancel the ready one.
 concurrency:
-  group: quality-${{ github.workflow }}-${{ github.ref }}
+  group: quality-${{ github.workflow }}-${{ github.ref }}-${{ github.event.pull_request.draft }}
   cancel-in-progress: true
 
 jobs:
@@ -53,8 +55,8 @@ jobs:
       - run: ./gradlew ${{ matrix.tasks }} --console=plain
 
   ios:
-    # macOS checks are paused; delete this condition to run them again.
-    if: false
+    if: github.event_name == 'workflow_dispatch' || !github.event.pull_request.draft
+    # Ubicloud has no macOS runners, so this job runs on GitHub's.
     runs-on: macos-15
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4

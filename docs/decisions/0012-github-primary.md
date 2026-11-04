@@ -20,4 +20,5 @@ describes, now to GitHub Packages.
 - Push only to GitHub. Do not push new work to Forgejo.
 - Mail resolves Meta from GitHub Packages. Versions 0.3.1 to 0.5.0 exist only in Forgejo Packages
   and are not copied. The first release published to GitHub after the switch is 0.6.0.
-- iOS linking and simulator tests do not run in CI until the macOS jobs are enabled again.
+- iOS linking and simulator tests do not run in CI until the macOS jobs are enabled again. They
+  were enabled again on 2026-11-04, on GitHub's `macos-15` runners.
