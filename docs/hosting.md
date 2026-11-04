@@ -22,6 +22,10 @@ pull request closes no issue, and `issue report` lists each Monday the open issu
 requests name, in an issue called "Open issues with merged work". Dependabot opens one grouped
 pull request a week for GitHub Actions and one for Gradle, leaving the pinned Otus libraries alone.
 
+Pull request workflows run once, when a pull request opens as ready or a draft is marked ready.
+Drafts run nothing. Later pushes run them again only while the pull request has the
+`ci on every push` label, and adding the label runs them at once.
+
 Each `quality` run first lists the changed files: workflow-only and Markdown-only pull requests skip
 the build, and pull requests that change only Android code skip the macOS `ios` job. The
 `pull request` workflow labels each pull request by size (`size:XS` to `size:XL`, tests left
