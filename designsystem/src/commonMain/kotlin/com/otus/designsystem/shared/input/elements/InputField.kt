@@ -12,7 +12,7 @@ import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 
-/** Labelled single-line form input. */
+/** Labelled single-line form input, with a check or ✕ at its end once [valid] is known. */
 @Composable
 public fun InputField(
     label: String,
@@ -22,10 +22,11 @@ public fun InputField(
     placeholder: String = "",
     supportingText: String? = null,
     kind: InputKind = InputKind.Text,
+    valid: Boolean? = null,
 ) {
     Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(PanelTokens.iconGap)) {
         FieldLabel(label)
-        InputBox(value, onValueChange, label, InputLook(placeholder, kind))
+        InputBox(value, onValueChange, label, InputLook(placeholder, kind, valid = valid))
         if (supportingText != null) {
             Text(
                 supportingText,

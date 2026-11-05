@@ -71,6 +71,13 @@ public class JmapAccountRepository(
         }
     }
 
+    override suspend fun checkServer(sessionUrl: String): ConnectFailure? =
+        try {
+            ConnectFailure.NotJmap.takeUnless { client.isJmapServer(sessionUrl) }
+        } catch (error: JmapException) {
+            error.toFailure()
+        }
+
     override suspend fun remove(id: String) {
         beforeRemove(id)
         currentCoroutineContext().ensureActive()

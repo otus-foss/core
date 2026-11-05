@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Accounts: add `AccountRepository.checkServer(sessionUrl)` and `AccountsState.checkServer`,
+  which ask without credentials whether an address answers like a JMAP server. Breaking: every
+  `AccountRepository` must implement it; Mail delegates to `JmapAccountRepository`, so it needs
+  no change. `parseJmapServer` now rejects a bare word, a trailing dot, or an IP address.
+- JMAP: add `JmapClient.isJmapServer(url)`, which follows redirects and accepts a 401 or a session
+  with the core capability.
+- Design system: `InputField` takes `valid`, and shows a check or a cross at its end once it is
+  known.
 - `FeaturedAvatars` shows its faces in one centered row instead of two over the rest. When the
   row is too narrow, the faces share its width evenly.
 - Design system: `Dropdown` takes an optional `header`, such as a `PickerSearch`, that stays at

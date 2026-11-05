@@ -33,6 +33,9 @@ class JmapServerAddressTest {
         assertEquals(JmapServerAddress.Invalid, parseJmapServer("mail example.com"))
         assertEquals(JmapServerAddress.Invalid, parseJmapServer("https://"))
         assertEquals(JmapServerAddress.Invalid, parseJmapServer("-bad-.example.com"))
+        assertEquals(JmapServerAddress.Invalid, parseJmapServer("asdf"))
+        assertEquals(JmapServerAddress.Invalid, parseJmapServer("mail.example."))
+        assertEquals(JmapServerAddress.Invalid, parseJmapServer("192.168.1.5"))
     }
 
     @Test

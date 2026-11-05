@@ -86,6 +86,17 @@ internal class RawResponse(
         if (status !in SUCCESS) throw failure()
     }
 
+    /**
+     * Whether this answers like a session resource: it asks for credentials, as every JMAP server
+     * does without them, or it is a session with the core capability (RFC 8620, section 2).
+     */
+    fun looksLikeSession(): Boolean = status == UNAUTHORIZED || (status in SUCCESS && hasCoreCapability())
+
+    private fun hasCoreCapability(): Boolean =
+        runCatching { JmapJson.parseToJsonElement(text).jsonObject["capabilities"]?.jsonObject }
+            .getOrNull()
+            ?.containsKey(JmapCapability.CORE) == true
+
     private fun failure(): JmapException =
         when (status) {
             UNAUTHORIZED -> JmapException.Unauthorized()
