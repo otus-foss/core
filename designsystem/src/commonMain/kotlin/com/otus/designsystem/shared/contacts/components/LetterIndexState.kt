@@ -48,6 +48,9 @@ public class LetterIndexState {
     /** The top of the [LetterIndex] in the window, so the column can line up with a heading. */
     internal var windowTop by mutableStateOf(0f)
 
+    /** The part of the [LetterIndex] clear of the system bars, in window coordinates, once laid out. */
+    internal var safeArea by mutableStateOf<Rect?>(null)
+
     /** Where each heading on screen sits, in window coordinates. */
     internal val headings = mutableStateMapOf<String, Rect>()
 

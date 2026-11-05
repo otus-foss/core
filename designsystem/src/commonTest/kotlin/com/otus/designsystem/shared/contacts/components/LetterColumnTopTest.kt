@@ -35,11 +35,26 @@ class LetterColumnTopTest {
         assertEquals(-100f, top(anchorCenterY = 100f, anchorIndex = 0, count = 30))
     }
 
+    @Test
+    fun theColumnStaysClearOfTheSystemBars() {
+        val bars = 60f..920f
+
+        assertEquals(60f, top(anchorCenterY = 30f, anchorIndex = 5, band = bars))
+        assertEquals(920f, top(anchorCenterY = 950f, anchorIndex = 2, band = bars) + COUNT * ROW)
+        assertEquals(320f, top(anchorCenterY = 500f, anchorIndex = 4, band = bars))
+    }
+
+    @Test
+    fun withoutAnAnchorTheColumnIsCentredBetweenTheBars() {
+        assertEquals(290f, top(anchorCenterY = null, anchorIndex = 0, band = 80f..900f))
+    }
+
     private fun top(
         anchorCenterY: Float?,
         anchorIndex: Int,
         count: Int = COUNT,
-    ): Float = letterColumnTop(anchorCenterY, anchorIndex, rowHeight = ROW, count = count, containerHeight = BOX)
+        band: ClosedFloatingPointRange<Float> = 0f..BOX,
+    ): Float = letterColumnTop(anchorCenterY, anchorIndex, rowHeight = ROW, count = count, band = band)
 
     private companion object {
         const val ROW = 40f

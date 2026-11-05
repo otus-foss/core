@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -51,9 +52,10 @@ import kotlin.math.roundToInt
  * headings into one column on the same edge, with their counts in a second column; letters
  * whose heading is off screen slide in from that side. The letter whose heading was pressed
  * stays level with that heading, and the others line up above and below it. When the column
- * would run past the top or bottom, it moves just enough to fit; without a known heading it is
- * centred. Tapping a letter, or lifting a finger dragged from a [letterIndexHandle], jumps to it
- * and closes the index. A tap beside the letters or Back closes it without a jump.
+ * would run past the top or bottom, or under the status or navigation bar, it moves just enough
+ * to fit; without a known heading it is centred between the bars. Tapping a letter, or lifting a
+ * finger dragged from a [letterIndexHandle], jumps to it and closes the index. A tap beside the
+ * letters or Back closes it without a jump.
  */
 @Composable
 public fun LetterIndex(
@@ -74,6 +76,7 @@ public fun LetterIndex(
     )
     Box(modifier.onGloballyPositioned { state.windowTop = it.positionInWindow().y }) {
         Box(Modifier.blur(LetterIndexTokens.blur * progress)) { content() }
+        Box(Modifier.matchParentSize().safeArea(state))
         if (progress > 0f) Letters(state, progress)
     }
 }
@@ -94,7 +97,9 @@ private fun Letters(
             .background(OtusColors.scrim)
             .clickable(remember { MutableInteractionSource() }, indication = null, onClick = state::close),
     ) {
-        val rowHeight = minOf(maxHeight / letters.size.coerceAtLeast(1), LetterIndexTokens.rowHeight)
+        val safeHeight = state.safeArea?.height?.takeIf { it > 0f }
+        val available = safeHeight?.let { with(density) { it.toDp() } } ?: maxHeight
+        val rowHeight = minOf(available / letters.size.coerceAtLeast(1), LetterIndexTokens.rowHeight)
         Column(Modifier.fillMaxWidth().anchoredColumn(state, rowHeight, constraints.maxHeight)) {
             letters.forEachIndexed { index, letter ->
                 LetterRow(state, letter, index, rowHeight, start, progress)
@@ -179,9 +184,17 @@ private fun LetterIndexState.originOf(
 }
 
 /**
+ * Reports the part of the index clear of the status and navigation bars and display cutouts, in
+ * window coordinates. It is always laid out, so the open index knows it on its first frame.
+ */
+private fun Modifier.safeArea(state: LetterIndexState): Modifier =
+    safeDrawingPadding().onGloballyPositioned { state.safeArea = it.boundsInWindow() }
+
+/**
  * Places the column of letters, [rowHeight] apart, so the [state]'s anchor sits level with its
- * heading in an index [containerHeight] pixels tall. It reads the state while placing, so a new
- * anchor moves the column without recomposing it, and it is in place on the first frame.
+ * heading in an index [containerHeight] pixels tall, inside the index's safe area. It reads the
+ * state while placing, so a new anchor moves the column without recomposing it, and it is in place
+ * on the first frame.
  */
 private fun Modifier.anchoredColumn(
     state: LetterIndexState,
@@ -195,28 +208,35 @@ private fun Modifier.anchoredColumn(
                 anchorIndex = state.letters.indexOfFirst { it.letter == state.anchor },
                 rowHeight = rowHeight.roundToPx().toFloat(),
                 count = state.letters.size,
-                containerHeight = containerHeight.toFloat(),
+                band = state.safeBand(containerHeight.toFloat()),
             )
         IntOffset(0, top.roundToInt())
     }
 
+/** The safe area's span within an index [containerHeight] pixels tall, in pixels from its top. */
+private fun LetterIndexState.safeBand(containerHeight: Float): ClosedFloatingPointRange<Float> {
+    val safe = safeArea ?: return 0f..containerHeight
+    return (safe.top - windowTop).coerceAtLeast(0f)..(safe.bottom - windowTop).coerceAtMost(containerHeight)
+}
+
 /**
- * Where a column of [count] rows, each [rowHeight] tall, starts in a [containerHeight] tall box so
- * that the row at [anchorIndex] centres on [anchorCenterY], all in pixels from the box's top. The
- * column moves only as far as it must to stay inside the box. Without an anchor, or when the
- * column is at least as tall as the box, it is centred.
+ * Where a column of [count] rows, each [rowHeight] tall, starts so that the row at [anchorIndex]
+ * centres on [anchorCenterY], all in pixels from the top of the index. The column moves only as
+ * far as it must to stay inside [band], the part of the index it may cover. Without an anchor, or
+ * when the column is at least as tall as the band, it is centred on the band.
  */
 internal fun letterColumnTop(
     anchorCenterY: Float?,
     anchorIndex: Int,
     rowHeight: Float,
     count: Int,
-    containerHeight: Float,
+    band: ClosedFloatingPointRange<Float>,
 ): Float {
     val height = rowHeight * count
+    val room = band.endInclusive - band.start
     return when {
-        anchorCenterY == null || anchorIndex < 0 || height >= containerHeight -> (containerHeight - height) / 2
-        else -> (anchorCenterY - (anchorIndex + HALF_ROW) * rowHeight).coerceIn(0f, containerHeight - height)
+        anchorCenterY == null || anchorIndex < 0 || height >= room -> band.start + (room - height) / 2
+        else -> (anchorCenterY - (anchorIndex + HALF_ROW) * rowHeight).coerceIn(band.start, band.endInclusive - height)
     }
 }
 
