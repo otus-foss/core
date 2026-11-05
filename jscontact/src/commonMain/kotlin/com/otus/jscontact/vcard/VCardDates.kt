@@ -4,6 +4,7 @@ import com.otus.jscontact.Anniversary
 import com.otus.jscontact.AnniversaryDate
 import com.otus.jscontact.PartialDate
 import com.otus.jscontact.Timestamp
+import com.otus.jscontact.validation.isCalendarDate
 import com.otus.jscontact.vcard.VCardKey.OMIT_YEAR
 import kotlin.time.Instant
 
@@ -27,10 +28,15 @@ internal fun Anniversary.toDateProperty(): VCardProperty? {
 /**
  * A UTC date and time, such as `19961022T140000Z`, reads as a [Timestamp]. Dates read as a [PartialDate]:
  * `--MMDD`, `--MM-DD`, `YYYYMMDD`, `YYYY-MM-DD`, `YYYY-MM`, and `YYYY` (RFC 6350, section 4.3), with any time
- * of day after `T` ignored.
+ * of day after `T` ignored. A date whose month or day does not exist, such as `19900231`, is null, because
+ * [com.otus.jscontact.Card.validate] would reject it.
  */
 private fun String.toAnniversaryDate(omittedYear: Long?): AnniversaryDate? =
-    toTimestamp() ?: toPartialDate()?.let { date -> date.copy(year = date.year.takeUnless { it == omittedYear }) }
+    toTimestamp() ?: toPartialDate()?.withoutYear(omittedYear)?.takeIf { it.isCalendarDate }
+
+/** This date without its year when that year is [omittedYear], the placeholder Apple writes for an unknown year. */
+private fun PartialDate.withoutYear(omittedYear: Long?): PartialDate =
+    copy(year = year.takeUnless { it == omittedYear })
 
 private fun String.toTimestamp(): Timestamp? =
     TIMESTAMP

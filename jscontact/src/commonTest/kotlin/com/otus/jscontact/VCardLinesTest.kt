@@ -22,4 +22,38 @@ class VCardLinesTest {
         assertEquals(mapOf("n1" to Note("Café" + "aa".repeat(parts) + "end")), parsed.cards.single().notes)
         assertTrue(elapsed < 2.seconds, "Parsing took $elapsed")
     }
+
+    @Test
+    fun aQuotedPrintableSoftBreakKeepsTheSpaceThatStartsTheNextLine() {
+        val parsed =
+            VCard.parse(
+                listOf(
+                    "BEGIN:VCARD",
+                    "VERSION:2.1",
+                    "FN:Jane Doe",
+                    "NOTE;ENCODING=QUOTED-PRINTABLE:Line one=",
+                    " two",
+                    "END:VCARD",
+                ).joinToString("\r\n"),
+            )
+
+        assertEquals(mapOf("n1" to Note("Line one two")), parsed.cards.single().notes)
+    }
+
+    @Test
+    fun aFoldedLineAfterAFinishedQuotedPrintableValueStillUnfolds() {
+        val parsed =
+            VCard.parse(
+                listOf(
+                    "BEGIN:VCARD",
+                    "VERSION:2.1",
+                    "N;ENCODING=QUOTED-PRINTABLE:Doe;Jane",
+                    "NOTE:folded",
+                    "  note",
+                    "END:VCARD",
+                ).joinToString("\n"),
+            )
+
+        assertEquals(mapOf("n1" to Note("folded note")), parsed.cards.single().notes)
+    }
 }

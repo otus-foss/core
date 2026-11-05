@@ -4,6 +4,7 @@ import com.otus.jscontact.vcard.CRLF
 import com.otus.jscontact.vcard.folded
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class VCardWriteTest {
@@ -105,6 +106,16 @@ class VCardWriteTest {
                 ?.single()
                 ?.uri,
         )
+    }
+
+    @Test
+    fun aCarriageReturnInANoteCannotAddAProperty() {
+        val card = Card(name = Name(full = "Jane"), notes = mapOf("n1" to Note("a\rEMAIL:x@evil.example")))
+
+        val read = VCard.parse(VCard.write(listOf(card))).cards.single()
+
+        assertNull(read.emails)
+        assertEquals(mapOf("n1" to Note("a\nEMAIL:x@evil.example")), read.notes)
     }
 
     private companion object {

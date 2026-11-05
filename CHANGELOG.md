@@ -8,6 +8,10 @@
   piece of up to 64 KiB to `receive` as it arrives instead of collecting the body, so a blob larger
   than `maxResponseBytes` can go straight to disk. It returns the media type the server sent. An
   exception from `receive`, or cancelling the caller, ends the transfer.
+- JSContact: `VCard.parse` keeps the space that starts the line after a vCard 2.1 quoted-printable
+  soft line break, so `Line one=` followed by ` two` reads as "Line one two" instead of losing the
+  space. It also drops a BDAY, ANNIVERSARY, or DEATHDATE whose month or day does not exist, such as
+  `19900231` or `--1340`, which `Card.validate` would reject and `ContactCard/set` would refuse.
 - `ActionBar` takes `allActions`: a drag up on the secondary group grows it into a menu of them,
   following the finger. A secondary action's `menu` now opens the same way, as one surface with
   a panel above the group, instead of in a `ContextMenu` above its button. The panel keeps the
