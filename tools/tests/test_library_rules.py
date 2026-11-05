@@ -5,7 +5,8 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from check_architecture import source_code, violations, visual_resource_violations
+from library_rules import violations, visual_resource_violations
+from source_code import source_code
 
 
 def check(module, package, body, source_set="commonMain", ui_modules=frozenset({"designsystem"})):
