@@ -53,9 +53,7 @@ read. Kotlin/Native tests for iOS run only on macOS. On Linux, compile the iOS s
 with `./gradlew :<module>:compileKotlinIosSimulatorArm64`; this does not run them.
 
 The versioned Git hooks are the main gate. `pre-commit` runs the Spotless and Ruff checks on the
-working tree, so stash unrelated changes first. `commit-msg` checks the message and removes AI
-attribution lines, such as `Co-authored-by` trailers that name Claude, Anthropic, or Cursor. No
-hook runs `checkAll`, because a full build on every push is too heavy for a laptop. Run
+working tree, so stash unrelated changes first. `commit-msg` checks the message. No hook runs `checkAll`, because a full build on every push is too heavy for a laptop. Run
 `./gradlew checkAll` before pushing work that needs it, such as a direct push to `main` or a
 release tag. Do not skip the hooks with `--no-verify`.
 
