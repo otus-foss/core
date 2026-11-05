@@ -16,14 +16,23 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Decides whether this run checks anything; see .github/actions/ready-gate.
+  gate:
+    runs-on: ubicloud-standard-2
+    outputs:
+      ready: ${{ steps.gate.outputs.ready }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          sparse-checkout: .github/actions
+          persist-credentials: false
+      - id: gate
+        uses: ./.github/actions/ready-gate
+
   # Counts changed lines outside tests and screenshots, unless the pull request changes only those.
   size:
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      !github.event.pull_request.draft && (
-        github.event.action == 'opened' || github.event.action == 'ready_for_review' ||
-        github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'ci on every push') ||
-        github.event.action == 'labeled' && github.event.label.name == 'ci on every push')
+    needs: gate
+    if: needs.gate.outputs.ready == 'true'
     runs-on: ubicloud-standard-2
     permissions:
       issues: write
@@ -59,12 +68,8 @@ jobs:
   # Shows each screenshot the pull request adds or changes, old beside new, from the commits
   # themselves, so the images stay put after a merge.
   screenshots:
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      !github.event.pull_request.draft && (
-        github.event.action == 'opened' || github.event.action == 'ready_for_review' ||
-        github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'ci on every push') ||
-        github.event.action == 'labeled' && github.event.label.name == 'ci on every push')
+    needs: gate
+    if: needs.gate.outputs.ready == 'true'
     runs-on: ubicloud-standard-2
     permissions:
       pull-requests: write

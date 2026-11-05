@@ -26,14 +26,9 @@ concurrency:
 jobs:
   # Decides which jobs this change needs. Workflow-only and Markdown-only changes skip the build,
   # except a change to this workflow, and changes that touch only Android code skip the macOS job.
-  # A push to main compares it with the commit before. A run started by hand runs everything.
+  # A push to main compares it with the commit before. A run started by hand runs everything. A run
+  # the ready gate stops sets no outputs, so every later job skips.
   changes:
-    if: >-
-      github.event_name == 'workflow_dispatch' || github.event_name == 'push' ||
-      !github.event.pull_request.draft && (
-        github.event.action == 'opened' || github.event.action == 'ready_for_review' ||
-        github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'ci on every push') ||
-        github.event.action == 'labeled' && github.event.label.name == 'ci on every push')
     runs-on: ubicloud-standard-2
     permissions:
       contents: read
@@ -42,7 +37,14 @@ jobs:
       build: ${{ steps.files.outputs.build }}
       ios: ${{ steps.files.outputs.ios }}
     steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          sparse-checkout: .github/actions
+          persist-credentials: false
+      - id: gate
+        uses: ./.github/actions/ready-gate
       - id: files
+        if: steps.gate.outputs.ready == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           PR: ${{ github.event.pull_request.number }}
@@ -83,21 +85,7 @@ jobs:
             tasks: checkLibraries -x qualityCheck
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
-        with:
-          distribution: temurin
-          java-version: "21"
-      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
-        with:
-          python-version: "3.13"
-          cache: pip
-          cache-dependency-path: requirements-quality.txt
-      - uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd # v4.0.4
-        with:
-          packages: platform-tools
-      - uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4
-      - run: sdkmanager 'platforms;android-37.0' 'build-tools;36.0.0'
-      - run: python3 -m pip install -r requirements-quality.txt
+      - uses: ./.github/actions/setup-build
       - run: ./gradlew ${{ matrix.tasks }} --console=plain
 
   # Runs only while the repository variable IOS_CI is "on" (Settings > Secrets and variables >
@@ -111,11 +99,10 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       # Compose Multiplatform links iOS 26 SDK symbols, so iOS tests need Xcode 26.
       - run: sudo xcode-select -s /Applications/Xcode_26.3.app && xcodebuild -version
-      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+      - uses: ./.github/actions/setup-build
         with:
-          distribution: temurin
-          java-version: "21"
-      - uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4
+          android: "false"
+          python: "false"
       - run: ./gradlew iosSimulatorArm64Test --console=plain
       # Gradle's log names a failing test but not its assertion; the report has it.
       - if: failure()

@@ -19,9 +19,16 @@ updates:
     groups:
       gradle:
         patterns: ["*"]
-    # com.otus libraries come from otus-meta's own releases, which the apps pin by hand.
-    ignore:
-      - dependency-name: "com.otus:*"
+    commit-message:
+      prefix: build
+      include: scope
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      pip:
+        patterns: ["*"]
     commit-message:
       prefix: build
       include: scope

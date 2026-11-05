@@ -28,15 +28,24 @@ concurrency:
   cancel-in-progress: ${{ github.event_name != 'push' }}
 
 jobs:
+  # Decides whether this run checks anything; see .github/actions/ready-gate.
+  gate:
+    runs-on: ubicloud-standard-2
+    outputs:
+      ready: ${{ steps.gate.outputs.ready }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          sparse-checkout: .github/actions
+          persist-credentials: false
+      - id: gate
+        uses: ./.github/actions/ready-gate
+
   # Runs the JVM tests once with Kover and writes the summary. A pull request's summary also covers
   # the lines it changes, so the checkout keeps the history back to the base.
   report:
-    if: >-
-      github.event_name == 'workflow_dispatch' || github.event_name == 'push' ||
-      !github.event.pull_request.draft && (
-        github.event.action == 'opened' || github.event.action == 'ready_for_review' ||
-        github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'ci on every push') ||
-        github.event.action == 'labeled' && github.event.label.name == 'ci on every push')
+    needs: gate
+    if: needs.gate.outputs.ready == 'true'
     runs-on: ubicloud-standard-2
     permissions:
       contents: read
@@ -65,18 +74,7 @@ jobs:
           ref: ${{ steps.target.outputs.ref }}
           fetch-depth: 0
           persist-credentials: false
-      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
-        with:
-          distribution: temurin
-          java-version: "21"
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
-        with:
-          python-version: "3.13"
-      - uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407 # v3
-        with:
-          packages: platform-tools
-      - uses: gradle/actions/setup-gradle@48b5f213c81028ace310571dc5ec0fbbca0b2947 # v4
-      - run: sdkmanager 'platforms;android-37.0' 'build-tools;36.0.0'
+      - uses: ./.github/actions/setup-build
       # Each module has one JVM test suite, its Android host tests, so the total reports run each
       # suite once, screenshot tests included.
       - run: ./gradlew koverXmlReport koverHtmlReport --console=plain
