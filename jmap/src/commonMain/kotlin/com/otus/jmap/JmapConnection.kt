@@ -9,9 +9,9 @@ import kotlinx.coroutines.sync.withLock
  * A missing blob or an unapproved origin keeps the session, because a new one would not help.
  */
 public class JmapConnection(
-    private val client: JmapClient,
+    internal val client: JmapClient,
     public val sessionUrl: String,
-    private val auth: JmapAuth,
+    internal val auth: JmapAuth,
     private val trustedOrigins: Set<String> = emptySet(),
 ) {
     private val lock = Mutex()
@@ -62,7 +62,7 @@ public class JmapConnection(
             response
         }
 
-    private suspend fun <T> withSession(block: suspend (JmapSession) -> T): T {
+    internal suspend fun <T> withSession(block: suspend (JmapSession) -> T): T {
         val session = session()
         return try {
             block(session)

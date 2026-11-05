@@ -27,10 +27,10 @@ import kotlinx.serialization.json.jsonObject
  */
 public class JmapClient(
     engine: HttpClientEngine? = null,
-    private val policy: JmapPolicy = JmapPolicy(),
+    internal val policy: JmapPolicy = JmapPolicy(),
 ) : AutoCloseable {
-    private val http = if (engine == null) HttpClient { configure() } else HttpClient(engine) { configure() }
-    private val urls = JmapUrls(policy)
+    internal val http = if (engine == null) HttpClient { configure() } else HttpClient(engine) { configure() }
+    internal val urls = JmapUrls(policy)
 
     /**
      * Stops accepting requests and releases this client's resources when active requests finish.
