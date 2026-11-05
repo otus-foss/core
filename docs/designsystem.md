@@ -355,7 +355,8 @@ The element and component lists below describe UI layers, not flat packages.
   window's width unless given one, and above the element when there is no room below.
   `DropdownRow` marks the selected row with a `bgRegular` fill and no checkmark; `ListCaption`
   heads a group in `text3`. A non-focusable dropdown leaves the keyboard to a field, for
-  suggestions while typing. `OptionsMenu` is the 286 dp menu under a ⋯ button: icon rows that
+  suggestions while typing. A dropdown's optional header, such as a `PickerSearch`, stays at the
+  top while the rows under it scroll. `OptionsMenu` is the 286 dp menu under a ⋯ button: icon rows that
   act, open more with a chevron, or switch an option, with dividers between groups.
 - `ClosableSheet` is a sheet titled at its start with a ✕ at its end and an optional full-width
   `SheetConfirm` button at the bottom; `SheetFrame` shares its surface. `SegmentedToggle` picks one

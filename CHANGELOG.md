@@ -13,6 +13,9 @@
 - Add `LetterIndexScrollGuard(state, scroll)`: while the list it watches scrolls, and for 300 ms
   after, presses on the headings pass through to the list, so stopping a fling does not open the
   index.
+- Design system: `Dropdown` takes an optional `header`, such as a `PickerSearch`, that stays at
+  the top while the rows under it scroll. Breaking: `Dropdown` drops its unused `modifier`
+  parameter; no app passes one, so no app changes.
 - Sidebar: a mailbox count's fill is now as large as the filter button's count, 16 dp with 10 sp
   text, and its ring sits outside the fill instead of inside it. The filter button's count now
   matches the sidebar counts, with an `accentDark` fill and `text1` text instead of `accentLight`
