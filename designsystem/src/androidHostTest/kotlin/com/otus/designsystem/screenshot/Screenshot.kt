@@ -52,9 +52,10 @@ fun ComposeContentTestRule.screenshot(
 fun ComposeContentTestRule.screenScreenshot(
     name: String,
     act: ComposeContentTestRule.() -> Unit = {},
+    palette: OtusPalette = OtusPalette.Otus,
     content: @Composable () -> Unit,
 ) {
-    setContent { OtusTheme(content = content) }
+    setContent { OtusTheme(palette, content = content) }
     act()
     waitForIdle()
     captureScreenRoboImage(shotPath(name))
