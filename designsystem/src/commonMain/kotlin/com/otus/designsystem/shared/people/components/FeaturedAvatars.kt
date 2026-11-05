@@ -19,9 +19,9 @@ import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.tokens.people.AvatarTokens
 
 /**
- * A few [avatars] as large faces with their labels, two over the rest, like the Olympic rings
- * upside down, so the first two stand out. Fewer fill from the top. A label takes up to
- * [labelLines] lines, such as two for an email address.
+ * A few [avatars] as large faces with their labels, in one centered row. When the row is too
+ * narrow, the faces share its width evenly. A label takes up to [labelLines] lines, such as two
+ * for an email address.
  */
 @Composable
 public fun FeaturedAvatars(
@@ -29,16 +29,11 @@ public fun FeaturedAvatars(
     modifier: Modifier = Modifier,
     labelLines: Int = 1,
 ) {
-    Column(
+    Row(
         modifier.fillMaxWidth().padding(vertical = PageTokens.rowGap),
-        verticalArrangement = Arrangement.spacedBy(PageTokens.rowGap),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        horizontalArrangement = Arrangement.spacedBy(SheetTokens.gap, Alignment.CenterHorizontally),
     ) {
-        listOf(avatars.take(TOP_ROW), avatars.drop(TOP_ROW)).filter { it.isNotEmpty() }.forEach { row ->
-            Row(horizontalArrangement = Arrangement.spacedBy(SheetTokens.gap)) {
-                row.forEach { Face(it, labelLines) }
-            }
-        }
+        avatars.forEach { Face(it, labelLines, Modifier.weight(1f, fill = false)) }
     }
 }
 
@@ -46,9 +41,10 @@ public fun FeaturedAvatars(
 private fun Face(
     face: FeaturedAvatar,
     labelLines: Int,
+    modifier: Modifier,
 ) {
     Column(
-        Modifier
+        modifier
             .width(AvatarTokens.featuredWidth)
             .optionalButton(face.onClick),
         verticalArrangement = Arrangement.spacedBy(PageTokens.rowGap),

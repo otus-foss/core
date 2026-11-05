@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- `FeaturedAvatars` shows its faces in one centered row instead of two over the rest. When the
+  row is too narrow, the faces share its width evenly.
 - JMAP: add the extensions `JmapConnection.downloadStream(accountId, blobId, mediaType, name,
   receive)` and `JmapClient.downloadStream(session, auth, …)`, imported from `com.otus.jmap`. Each
   reads a blob through the session's `downloadUrl` with the checks of `download`, but hands each
