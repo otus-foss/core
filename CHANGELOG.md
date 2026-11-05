@@ -13,6 +13,8 @@
 - Add `LetterIndexScrollGuard(state, scroll)`: while the list it watches scrolls, and for 300 ms
   after, presses on the headings pass through to the list, so stopping a fling does not open the
   index.
+- `FeaturedAvatars` shows its faces in one centered row instead of two over the rest. When the
+  row is too narrow, the faces share its width evenly.
 - Design system: `Dropdown` takes an optional `header`, such as a `PickerSearch`, that stays at
   the top while the rows under it scroll. Breaking: `Dropdown` drops its unused `modifier`
   parameter; no app passes one, so no app changes.
