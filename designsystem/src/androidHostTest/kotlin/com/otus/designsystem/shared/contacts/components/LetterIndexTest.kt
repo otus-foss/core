@@ -7,8 +7,9 @@ import androidx.compose.material.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.getOrNull
+import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.getBoundsInRoot
-import androidx.compose.ui.test.hasClickLabel
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -96,4 +97,7 @@ class LetterIndexTest {
     ) {
         assertTrue((expected - actual).value in -1f..1f, "Expected $actual to be within 1 dp of $expected")
     }
+
+    private fun hasClickLabel(label: String): SemanticsMatcher =
+        SemanticsMatcher("has click label $label") { it.config.getOrNull(SemanticsActions.OnClick)?.label == label }
 }
