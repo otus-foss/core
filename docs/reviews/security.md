@@ -54,7 +54,8 @@ Trace each boundary from the threat map to the code that enforces it. Look for:
 
 - Credentials and tokens: storage on both platforms, backup exclusion, logging, crash reports,
   exception messages, `toString()` of data classes, and debug builds. Credentials must reach only
-  the approved JMAP origin, never a redirect target, blob host, avatar host, or push endpoint.
+  the entered origin and origins the user approved, never an unapproved origin, avatar host, or
+  push endpoint.
 - Transport: HTTPS enforcement, redirect handling, cleartext exceptions in the network security
   config, certificate handling, and whether a session URL, `apiUrl`, `downloadUrl`, `uploadUrl`,
   or `eventSourceUrl` can point the client at another host.
