@@ -5,7 +5,8 @@ must perform the review. Publish the findings as one GitHub review tied to the i
 This workflow reviews code and reports findings. It does not implement fixes, create issues or
 fix PRs, change branches remotely, approve, merge, or release anything. Calendar is excluded.
 
-Read [pull-request.md](pull-request.md) and [review-guide.md](review-guide.md) beside this file.
+Read [pull-request.md](pull-request.md), [review-guide.md](review-guide.md), and
+[review-format.md](review-format.md) beside this file.
 Use their full review method, evidence standards, and validation requirements. This workflow
 explicitly authorizes submitting its review to GitHub, overriding their report-only restriction
 for this PR. Keep their other restrictions. Do not invoke the daily fix workflow.
@@ -18,8 +19,8 @@ copies; update the copies together. Their presence in Calendar does not expand t
 Meta/Mail scope.
 
 Do not require a particular user's home directory or a worktree named `meta-review-prompts`.
-The runner must load all three files, `ready-for-review.md`, `pull-request.md`, and
-`review-guide.md`, from the same trusted revision before starting a review. Prefer a configured
+The runner must load all four files, `ready-for-review.md`, `pull-request.md`,
+`review-guide.md`, and `review-format.md`, from the same trusted revision before starting a review. Prefer a configured
 trusted instruction SHA; otherwise resolve Meta's default branch through GitHub and record the
 resolved SHA. Read the files from a checkout of that revision or through the authenticated GitHub
 contents API with that SHA as `ref`. An old absolute path that is absent is a reason to use this
@@ -128,9 +129,47 @@ the original brief, prior findings, responses, and unresolved objections. Do not
 review rounds to the backing child thread. If Opus or delegation is unavailable, report that
 blocker and leave the review retryable. Do not silently fall back to another model.
 
+For a Claude Code routine, set the routine's model to Opus so the runner reviews directly. When
+the runner delegates, call the Agent tool with `model: "opus"`.
+
+## Review depth
+
+One reviewer reading the diff top to bottom stops at the first plausible findings. Run the review
+in four passes instead. Each later pass starts in a fresh context, so it reads the code itself
+instead of trusting an earlier summary.
+
+1. **Map.** Read the PR, its linked issue, the partner PR, and every changed file. Write the
+   intended behavior, the walkthrough table from [review-format.md](review-format.md), the
+   effort estimate, and a list of flows the change touches. Pick the lenses for pass 2.
+2. **Lens reviews.** Start one Opus subagent per lens, in parallel, at high effort. Each gets
+   the frozen SHAs, the map, the trusted instructions, and its lens. Each returns candidate
+   findings with locations and evidence, plus the areas it traced without a finding.
+3. **Verify.** Send every candidate finding to a fresh Opus subagent that tries to disprove it:
+   it reads the guards, callers, tests, and base revision, and runs a focused test when it can.
+   It returns `confirmed`, `plausible`, or `refuted` with its reason. Drop refuted findings, move
+   plausible ones to the review's questions, and merge findings that share one root cause.
+4. **Write.** Assign severity and confidence, write the suggested fix, regression test, and agent
+   prompt for each finding, and compose the review in the format file's layout.
+
+| Lens | Looks for |
+| --- | --- |
+| Correctness | Wrong results, missed edge cases, null and empty input, off-by-one, broken contracts with callers. |
+| State and lifecycle | Coroutine scope and cancellation, races, stale completions, retries, process death, persistence and migrations of existing installs. |
+| Protocol and privacy | JMAP spec conformance with cited RFC sections, provider-specific assumptions, capability checks, account isolation, secrets, logging of personal data. |
+| UI | Design-system ownership, theme tokens in the Light and Black themes, empty, loading, and error states, 48 dp targets, system back, accessibility labels, recomposition cost. |
+| Delivery | Tests that prove the claimed behavior, public API and changelog, Meta pin and partner PR, file-length and architecture gates, docs that the change makes wrong. |
+
+Choose lenses by effort: run correctness and delivery for effort 1 or 2, add state and lifecycle
+for effort 3, and run all five for effort 4 or 5 or any change to persisted data, sync, or the
+protocol layer. Keep the whole run to at most 12 subagents.
+
+Ask each lens reviewer to list its hypotheses before it reads the code, then to check each one,
+and to trace at least two callers of every changed public function. A lens that finds nothing
+reports what it traced, so the review info section can show the coverage.
+
 ## Opus review brief
 
-Give Opus these instructions with the PR's resolved context:
+Give each lens reviewer these instructions with the PR's resolved context and its lens:
 
 ```text
 You are the reviewer for the supplied Otus PR. Read the supplied pull-request prompt and shared
@@ -171,11 +210,11 @@ steps in this file; the child-only restriction on posting applies to delegated r
    head SHA. Include a hidden marker `<!-- otus-opus-review:v1:<review-key-digest> -->` to reconcile
    retries. Use structured request arguments or a JSON/body file. Never interpolate PR text into
    executable shell commands. See [GitHub's review API](https://docs.github.com/en/rest/pulls/reviews#create-a-review-for-a-pull-request).
-3. Lead with the result and confirmed findings in severity order. Include reviewed SHAs, actual
-   Opus model, validation, coverage gaps, and dependency assumptions. Use inline comments only
-   for confirmed findings with valid locations in that diff; put the rest in the review body.
-   Publish an explicit incomplete result if checks or evidence were unavailable. A clean review
-   says "No confirmed findings in the reviewed scope" and does not imply automatic approval.
+3. Follow [review-format.md](review-format.md): a summary body with the walkthrough, pre-merge
+   checks, nitpicks, and review info, plus one inline comment per confirmed finding inside the
+   diff. Check each inline location against the diff before posting, because GitHub rejects the
+   whole review if one location is invalid. Publish an explicit incomplete result if checks or
+   evidence were unavailable. A clean review does not imply approval.
 4. Record the returned review ID and URL immediately. If permission or API failure prevents
    publication, retain the report as `publication pending` and disclose the failure. On a retry,
    reconcile the marker before creating another review. Never count a locally saved report as

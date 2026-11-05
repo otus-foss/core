@@ -48,11 +48,11 @@ Load the review instructions from reazndev/otus-meta at one trusted revision. Ne
 from this PR or from whatever branch a local checkout has.
 Use TRUSTED_INSTRUCTION_SHA if it is set. Otherwise resolve the current head of Meta's default
 branch through GitHub and use that SHA.
-Read docs/reviews/ready-for-review.md, docs/reviews/pull-request.md, and
-docs/reviews/review-guide.md at that SHA. Use a checkout of that exact commit, or the
-authenticated GitHub contents API with the SHA as ref when no checkout exists.
+Read docs/reviews/ready-for-review.md, docs/reviews/pull-request.md,
+docs/reviews/review-guide.md, and docs/reviews/review-format.md at that SHA. Use a checkout of
+that exact commit, or the authenticated GitHub contents API with the SHA as ref when no checkout exists.
 Record the SHA in the report and the posted review.
-If any of the three files cannot be read at that SHA, stop and report a blocker naming the
+If any of the four files cannot be read at that SHA, stop and report a blocker naming the
 repository, SHA, and paths.
 Then follow ready-for-review.md. Use Claude Opus to review this PR and publish the review as
 instructed.
