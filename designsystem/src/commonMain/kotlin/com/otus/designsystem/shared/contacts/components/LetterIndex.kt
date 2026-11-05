@@ -3,17 +3,23 @@ package com.otus.designsystem.shared.contacts.components
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,32 +29,41 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.BlurredEdgeTreatment
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.layout.SidebarTokens
 import com.otus.designsystem.theme.tokens.rows.LetterIndexTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
+import kotlin.math.roundToInt
 
 /**
  * Hosts a jump-to-letter index over [content], such as a whole page with a contact list filed by
  * letter. When the [state] opens, [content] blurs and the letters slide together from their
  * headings into one column on the same edge, with their counts in a second column; letters
- * whose heading is off screen slide in from that side. Tapping a letter, or lifting a finger
- * dragged from a [letterIndexHandle], jumps to it and closes the index. A tap beside the letters
- * or Back closes it without a jump.
+ * whose heading is off screen slide in from that side. The letter whose heading was pressed
+ * stays level with that heading, and the others line up above and below it; without a known
+ * heading the column is centred between the bars. The current letter, under the finger or else
+ * the one pressed, sits on a highlight. Letters past the top or bottom, or under the status or
+ * navigation bar, scroll into view by dragging the column or by holding a dragging finger near the
+ * top or bottom. Tapping a letter, or lifting a finger dragged from a [letterIndexHandle], jumps to it
+ * and closes the index. A tap beside the letters or Back closes it without a jump.
  */
 @Composable
 public fun LetterIndex(
@@ -59,6 +74,9 @@ public fun LetterIndex(
     SideEffect { state.bounds.keys.retainAll(state.letters.map { it.letter }.toSet()) }
     val progress = animateFloatAsState(if (state.open) 1f else 0f, motionTween(MotionSpeed.Relaxed)).value
     val haptics = LocalHapticFeedback.current
+    LaunchedEffect(state.open) {
+        if (state.open) haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+    }
     LaunchedEffect(state.active) {
         if (state.active != null) haptics.performHapticFeedback(HapticFeedbackType.SegmentTick)
     }
@@ -67,8 +85,9 @@ public fun LetterIndex(
         isBackEnabled = state.open,
         onBackCompleted = state::close,
     )
-    Box(modifier) {
+    Box(modifier.onGloballyPositioned { state.windowTop = it.positionInWindow().y }) {
         Box(Modifier.blur(LetterIndexTokens.blur * progress)) { content() }
+        Box(Modifier.matchParentSize().safeArea(state))
         if (progress > 0f) Letters(state, progress)
     }
 }
@@ -89,10 +108,22 @@ private fun Letters(
             .background(OtusColors.scrim)
             .clickable(remember { MutableInteractionSource() }, indication = null, onClick = state::close),
     ) {
-        val rowHeight = minOf(maxHeight / letters.size.coerceAtLeast(1), LetterIndexTokens.rowHeight)
-        Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
-            letters.forEachIndexed { index, letter ->
-                LetterRow(state, letter, index, rowHeight, start, progress)
+        val rowHeight = LetterIndexTokens.rowHeight
+        val rowPixels = with(density) { rowHeight.toPx() }
+        val containerHeight = constraints.maxHeight
+        LaunchedEffect(state.dragging, rowPixels) { state.scrollAtEdges(rowPixels) }
+        Box(Modifier.fillMaxSize().clipToSafeArea(state)) {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .anchoredColumn(state, rowHeight, containerHeight)
+                    .wrapContentHeight(Alignment.Top, unbounded = true)
+                    .draggable(rememberDraggableState(state::shiftBy), Orientation.Vertical)
+                    .scrollSemantics(state),
+            ) {
+                letters.forEachIndexed { index, letter ->
+                    LetterRow(state, letter, index, rowHeight, start, progress)
+                }
             }
         }
     }
@@ -111,7 +142,7 @@ private fun LetterRow(
     start: Dp,
     progress: Float,
 ) {
-    val active = letter.letter == state.active
+    val current = letter.letter == state.highlighted
     val moving = MOVE_PEAK * progress * (1f - progress)
     Box(
         Modifier
@@ -124,11 +155,16 @@ private fun LetterRow(
         Row(
             Modifier
                 .padding(start = start)
+                .padding(vertical = LetterIndexTokens.highlightInset)
+                .fillMaxHeight()
                 .graphicsLayer { translationY = (state.originOf(letter.letter, index) ?: 0f) * (1f - progress) }
                 .blur(
                     LetterIndexTokens.motionBlur * moving * LetterIndexTokens.SIDEWAYS_BLUR,
                     LetterIndexTokens.motionBlur * moving,
                     BlurredEdgeTreatment.Unbounded,
+                ).background(
+                    if (current) OtusColors.selectedFill else Color.Transparent,
+                    SmoothCornerShape(SidebarTokens.entryRadius),
                 ).padding(horizontal = SidebarTokens.entryPadding),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -136,7 +172,7 @@ private fun LetterRow(
                 letter.letter,
                 Modifier.width(LetterIndexTokens.letterColumn),
                 style = panelTextStyle(),
-                color = if (active) OtusColors.text1 else OtusColors.text2,
+                color = if (current) OtusColors.text1 else OtusColors.text2,
                 fontSize = SidebarTokens.detailSize,
                 fontWeight = FontWeight.SemiBold,
                 maxLines = 1,
@@ -173,5 +209,82 @@ private fun LetterIndexState.originOf(
     }
 }
 
+/**
+ * Reports the part of the index clear of the status and navigation bars and display cutouts, in
+ * window coordinates. It is always laid out, so the open index knows it on its first frame.
+ */
+private fun Modifier.safeArea(state: LetterIndexState): Modifier =
+    safeDrawingPadding().onGloballyPositioned { state.safeArea = it.boundsInWindow() }
+
+/**
+ * Places the column of letters, [rowHeight] apart, so the [state]'s anchor sits level with its
+ * heading in an index [containerHeight] pixels tall, inside the index's safe area. It reads the
+ * state while placing, so a new anchor moves the column without recomposing it, and it is in place
+ * on the first frame.
+ */
+private fun Modifier.anchoredColumn(
+    state: LetterIndexState,
+    rowHeight: Dp,
+    containerHeight: Int,
+): Modifier =
+    offset {
+        val row = rowHeight.roundToPx().toFloat()
+        val band = state.safeBand(containerHeight.toFloat())
+        val top =
+            letterColumnTop(
+                anchorCenterY = state.anchorY?.minus(state.windowTop),
+                anchorIndex = state.letters.indexOfFirst { it.letter == state.anchor },
+                rowHeight = row,
+                count = state.letters.size,
+                band = band,
+            )
+        val reach = scrollReach(top, row * state.letters.size, band)
+        state.shiftLimits = (reach.start - top)..(reach.endInclusive - top)
+        IntOffset(0, (top + state.shift.coerceIn(state.shiftLimits)).roundToInt())
+    }
+
+/** The safe area's span within an index [containerHeight] pixels tall, in pixels from its top. */
+private fun LetterIndexState.safeBand(containerHeight: Float): ClosedFloatingPointRange<Float> {
+    val safe = safeArea ?: return 0f..containerHeight
+    return (safe.top - windowTop).coerceAtLeast(0f)..(safe.bottom - windowTop).coerceAtMost(containerHeight)
+}
+
+/**
+ * Where a column of [count] rows, each [rowHeight] tall, starts so that the row at [anchorIndex]
+ * centres on [anchorCenterY], all in pixels from the top of the index. The anchor never moves,
+ * even when rows then lie past [band], the part of the index the column may show; [scrollReach]
+ * brings them into view. Without an anchor, a column that fits is centred on the band and a
+ * taller one starts at its top.
+ */
+internal fun letterColumnTop(
+    anchorCenterY: Float?,
+    anchorIndex: Int,
+    rowHeight: Float,
+    count: Int,
+    band: ClosedFloatingPointRange<Float>,
+): Float {
+    val height = rowHeight * count
+    val room = band.endInclusive - band.start
+    return when {
+        anchorCenterY != null && anchorIndex >= 0 -> anchorCenterY - (anchorIndex + HALF_ROW) * rowHeight
+        height < room -> band.start + (room - height) / 2
+        else -> band.start
+    }
+}
+
+/**
+ * The tops a column [height] pixels tall, placed at [top], may scroll to: far enough that its first
+ * row reaches the start of [band] and its last row reaches the end, and no further than where it
+ * already is.
+ */
+internal fun scrollReach(
+    top: Float,
+    height: Float,
+    band: ClosedFloatingPointRange<Float>,
+): ClosedFloatingPointRange<Float> = minOf(top, band.endInclusive - height)..maxOf(top, band.start)
+
 /** `progress * (1 - progress)` peaks at a quarter, so this scales a letter's move to peak at 1. */
 private const val MOVE_PEAK = 4f
+
+/** A row's centre lies half a row below its top. */
+private const val HALF_ROW = 0.5f

@@ -60,5 +60,3 @@ private fun Face(
         )
     }
 }
-
-private const val TOP_ROW = 2
