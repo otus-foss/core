@@ -2,8 +2,9 @@
 
 ## Versions
 
-All modules share one version and are released together from one tag. An app pins a single
-`otus-meta` version for every module it uses, so modules never mix versions inside an app.
+All modules share one version and are released together from one tag. The apps do not consume
+releases: they build Meta from source, see [consuming](consuming.md). A release gives a fixed
+version to anyone outside the suite who needs one.
 
 Use semantic versioning. While the version is below 1.0.0, a minor release (`0.2.0`) may break
 public API and a patch release (`0.1.1`) may not. From 1.0.0, only a major release may break
@@ -41,8 +42,6 @@ Publishing works like this:
    that every `com.otus` dependency in each POM and Gradle module file names the release version.
 4. Only after the `build` job passes does the `publish` job upload every module to GitHub
    Packages with Gradle.
-5. Open a pull request in each app that bumps `otus-meta` in its version catalog when the app
-   needs the release. Apps may stay on an older version.
 
 Published versions are immutable. Fix a bad release with a new patch version.
 
@@ -59,14 +58,14 @@ version tag starts an upload. A tag runs the workflow file from its own commit, 
 from before the switch to GitHub starts that older workflow.
 
 The current modules cross-compile their iOS Kotlin libraries on Linux. Final iOS binaries and
-simulator tests require macOS and remain in the separate quality workflow, where `if: false`
-currently pauses them. Linux publication does not establish iOS runtime validation. Record unrun
+simulator tests require macOS and remain in the separate quality workflow's `ios` job, which runs
+only while the `IOS_CI` repository variable is `on`. Linux publication does not establish iOS runtime validation. Record unrun
 checks when releasing. A future custom cinterop or CocoaPods dependency may require a Mac to
 build a complete publication; the artifact check must fail rather than allow an incomplete
 release. See [decision 0011](decisions/0011-linux-library-publication.md).
 
 ## Compatibility checks
 
-Before releasing a breaking change, build both apps against the release candidate through the
-composite build described in [consuming.md](consuming.md). Record which app versions were checked
-in the pull request.
+Both apps build against Meta's source, so a breaking change lands with the matching app changes:
+open them on branches with the same name and merge Meta's first; see
+[consuming.md](consuming.md).

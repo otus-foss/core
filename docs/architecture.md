@@ -40,8 +40,8 @@ sets. Keep this build structure and organize responsibilities beneath the module
 The first modules move existing code. `jmap` moved in version 0.1.0; `designsystem`, `dateformat`,
 and `avatar` moved from Mail in 0.2.0. Version 0.3.0 added `accounts` and `settings`,
 plus the historical date-range picker and avatar-stack pill in `designsystem`. Mail consumes all
-nine modules. Calendar consumes `avatar`, `dateformat`, `designsystem`, and `settings`, pinned
-independently of Mail. Both apps support an opt-in composite build for development.
+nine modules. Calendar consumes `avatar`, `dateformat`, `designsystem`, and `settings`. Both
+apps build Meta from source; see [consuming](consuming.md).
 
 | Order | Module | Source | Notes |
 | --- | --- | --- | --- |
@@ -97,8 +97,8 @@ Every module enables Kotlin explicit API mode and treats warnings as errors. Pub
 are the contract with both apps, so changing them follows [the release rules](releasing.md).
 
 Libraries use Ktor, kotlinx.serialization, kotlinx.coroutines, and kotlinx-datetime at the versions
-pinned in `gradle/libs.versions.toml`. Keep that catalog aligned with the apps. A consuming app
-must compile with a Kotlin version at least as new as the one used to publish the library.
+pinned in `gradle/libs.versions.toml`, which the apps load as their catalog too, so one version
+serves all three repositories.
 
 ## What else lives here
 
@@ -106,8 +106,10 @@ must compile with a Kotlin version at least as new as the one used to publish th
   unversioned parent workspace. App repositories link here rather than keeping copies.
 - `docs/decisions/` holds decisions that apply to the whole suite, starting with the file-length,
   Gradle-entry-point, portable-import, and commit-message rules that both apps already follow.
-- `tools/` is the reference copy of the quality checkers. The apps keep their own copies so that
-  each clone builds alone. Change the reference copy first, then update the apps.
+- `build-logic/`, `tools/`, and `config/` hold the convention plugins, checkers, and detekt
+  configuration every repository runs; see [the quality guide](quality.md#build-logic).
+- `.github/actions/` holds the CI steps the apps use from their otus-meta checkout; see
+  [hosting and CI](hosting.md#shared-actions).
 
 ## Shared feature modules
 

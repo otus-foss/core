@@ -86,7 +86,7 @@ sequenceDiagram
 | Linked issue | ✅ | <issue link, and whether the PR does what it asks> |
 | Out of scope | ✅ | <changes the title and description do not mention> |
 | Changelog | ✅ | <Meta only: public API or behavior changes listed under "Unreleased"> |
-| Meta pin | ❔ | <Mail only: the pinned Meta version contains the API this PR uses> |
+| Meta partner | ❔ | <Mail only: the Meta branch it builds against has the API this PR uses, and merges first> |
 
 </details>
 

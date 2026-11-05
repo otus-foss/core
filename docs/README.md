@@ -2,7 +2,8 @@
 
 ## Suite
 
-- [Hosting and CI](hosting.md): GitHub repositories, runners, and packages.
+- [Hosting and CI](hosting.md): GitHub repositories, the workflows and shared actions of all three
+  repositories, runners, and packages.
 - [Review prompts](reviews/README.md): PR/repository reviews, Opus reviews when PRs become ready, and daily fixes for Meta and Mail.
 
 - [Product goals](suite/product-goals.md): purpose, protocol scope, and current state of both apps.
@@ -23,9 +24,10 @@
 - [Shared features](shared-features.md): settings and JMAP account setup modules.
 - [Design system](designsystem.md): the `designsystem` module's contents, resources, and tests.
 - [UI package migration](ui-package-migration.md): the domain layout and declaration moves in 0.10.0.
-- [Using the libraries from an app](consuming.md): GitHub Packages, credentials, and local builds.
+- [Using Meta from an app](consuming.md): how Mail and Calendar build Meta from source.
 - [Releasing](releasing.md): versions, changelog, and publishing.
-- [Quality gate](quality.md): commands, checks, and file-length exceptions.
+- [Quality gate](quality.md): commands, convention plugins, shared tools, and checks for all three
+  repositories.
 
 ## Decisions
 

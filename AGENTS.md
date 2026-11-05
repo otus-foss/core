@@ -57,8 +57,10 @@ compiling for iOS. Read [the suite product goals](docs/suite/product-goals.md) a
   Domain code uses no UI, platform, networking, or database APIs.
 - Keep JMAP wire types separate from portable domain models. Check the JMAP specifications and
   advertised server capabilities before implementing protocol behavior.
-- Keep `gradle/libs.versions.toml` aligned with the apps. Do not publish with a Kotlin version
-  newer than the one the apps use.
+- `gradle/libs.versions.toml` is the catalog of all three repositories: the apps load it as `libs`
+  and keep only app-only versions in their own `gradle/app.versions.toml`. Change a shared
+  version here. `build-logic/`, `tools/`, `config/detekt.yml`, and `.github/actions/` serve the
+  apps too; check both apps when changing them.
 - Write fluent Kotlin when it reads better than the alternative. Express transformations as
   collection or sequence chains, such as `filter`, `map`, `associateBy`, and `firstNotNullOfOrNull`,
   or as builder lambdas such as `buildList`, `buildMap`, and `buildJsonObject`, instead of mutable
@@ -212,6 +214,8 @@ Inspect existing patterns first. Make focused changes, run the relevant checks, 
 environment blockers precisely. Add behavior tests for new logic and regression tests for fixes.
 Update `docs/architecture.md` when modules or boundaries change.
 
-Mail, Calendar, and this repository are separate Git repositories. Never assume a sibling checkout
-in CI. When a change here needs app changes, release it first, then update each app in its own
-repository. Do not publish a release, push tags, or change package access without a concrete task.
+Mail, Calendar, and this repository are separate Git repositories. The apps build Meta from
+source, from a sibling checkout or `otus.meta.path`, and their CI checks Meta out beside them.
+When a change here needs app changes, use the same branch name in each repository and merge Meta's
+pull request first; see `docs/consuming.md`. Do not publish a release, push tags, or change
+package access without a concrete task.

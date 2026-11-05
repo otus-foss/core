@@ -5,6 +5,15 @@ Status: accepted by the user on 2026-10-08.
 Hosting is amended by [decision 0012](0012-github-primary.md). GitHub hosts the repositories
 and GitHub Packages is the registry. Decision 0011 replaces the macOS publishing requirement.
 
+**Amended on 2026-11-06 by the user:** the apps no longer pin released versions. Mail and Calendar
+build Meta from source as a composite build of a sibling checkout, or of the checkout the
+`otus.meta.path` property names, and take Meta's convention plugins and version catalog from it.
+CI checks out otus-meta beside the app, on the branch with the app's branch name or on `main`.
+Publishing was paused, Mail already built every CI job against Meta's source, and Calendar was
+stuck on 0.7.0. The "composite builds only" alternative below is now the rule: each app reads
+otus-meta in CI with the read-only `OTUS_META_DEPLOY_KEY` deploy key. The rest of this decision
+stands. See [consuming.md](../consuming.md).
+
 ## Decision
 
 Shared code for Otus Mail and Otus Calendar lives in a third repository, `reazndev/otus-meta`.
