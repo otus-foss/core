@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Design system: `Dropdown` takes an optional `header`, such as a `PickerSearch`, that stays at
+  the top while the rows under it scroll. Breaking: `Dropdown` drops its unused `modifier`
+  parameter; no app passes one, so no app changes.
 - JMAP: add the extensions `JmapConnection.downloadStream(accountId, blobId, mediaType, name,
   receive)` and `JmapClient.downloadStream(session, auth, …)`, imported from `com.otus.jmap`. Each
   reads a blob through the session's `downloadUrl` with the checks of `download`, but hands each

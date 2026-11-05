@@ -3,6 +3,7 @@ package com.otus.designsystem.shared.selection.components
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -54,16 +55,17 @@ import com.otus.designsystem.theme.typography.panelTextStyle
  * the menu edge. A tap outside or Back runs [onDismiss]. A dropdown that must leave the keyboard
  * to a field, such as suggestions while typing, is not [focusable]: it stays open while the user
  * types, and the field closes it. It [unrolls] as it opens, unless a ⋯ button opens it, and its
- * height animates as its rows change.
+ * height animates as its rows change. A [header], such as a search field, stays at the top while
+ * the rows under it scroll.
  */
 @Composable
 public fun Dropdown(
     onDismiss: () -> Unit,
-    modifier: Modifier = Modifier,
     alignEnd: Boolean = false,
     width: Dp? = null,
     focusable: Boolean = true,
     unrolls: Boolean = true,
+    header: (@Composable () -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val density = LocalDensity.current
@@ -76,16 +78,26 @@ public fun Dropdown(
     val window = with(density) { windowWidth.toDp() }
     MenuPopup(position, onDismiss, focusable, unrolls) {
         Column(
-            modifier
+            Modifier
                 .width(width ?: (window - MenuTokens.edge * 2))
                 .heightIn(max = minOf(MenuTokens.dropdownMaxHeight, room))
                 .animateContentSize(motionTween(MotionSpeed.Fast))
-                .menuSurface()
-                .verticalScroll(rememberScrollState())
-                .selectableGroup()
-                .padding(MenuTokens.inset),
-            content = content,
-        )
+                .menuSurface(),
+        ) {
+            header?.let {
+                Box(
+                    Modifier.padding(start = MenuTokens.inset, top = MenuTokens.inset, end = MenuTokens.inset),
+                ) { it() }
+            }
+            Column(
+                Modifier
+                    .weight(1f, fill = false)
+                    .verticalScroll(rememberScrollState())
+                    .selectableGroup()
+                    .padding(MenuTokens.inset),
+                content = content,
+            )
+        }
     }
 }
 
