@@ -118,7 +118,8 @@ private fun Letters(
                     .fillMaxWidth()
                     .anchoredColumn(state, rowHeight, containerHeight)
                     .wrapContentHeight(Alignment.Top, unbounded = true)
-                    .draggable(rememberDraggableState(state::shiftBy), Orientation.Vertical),
+                    .draggable(rememberDraggableState(state::shiftBy), Orientation.Vertical)
+                    .scrollSemantics(state),
             ) {
                 letters.forEachIndexed { index, letter ->
                     LetterRow(state, letter, index, rowHeight, start, progress)
@@ -141,7 +142,7 @@ private fun LetterRow(
     start: Dp,
     progress: Float,
 ) {
-    val current = letter.letter == (state.active ?: state.anchor)
+    val current = letter.letter == state.highlighted
     val moving = MOVE_PEAK * progress * (1f - progress)
     Box(
         Modifier

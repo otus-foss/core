@@ -10,6 +10,10 @@ import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.drawscope.clipRect
+import androidx.compose.ui.semantics.ScrollAxisRange
+import androidx.compose.ui.semantics.scrollBy
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.verticalScrollAxisRange
 import com.otus.designsystem.theme.tokens.rows.LetterIndexTokens
 import kotlinx.coroutines.flow.drop
 import kotlin.time.Duration.Companion.milliseconds
@@ -106,3 +110,20 @@ internal fun Modifier.clipToSafeArea(state: LetterIndexState): Modifier =
     }
 
 private const val NANOS_PER_SECOND = 1_000_000_000f
+
+/**
+ * Lets screen readers scroll the [state]'s column, so letters past the top or bottom stay
+ * reachable without dragging. The range runs from the column's top letter to its bottom one.
+ */
+internal fun Modifier.scrollSemantics(state: LetterIndexState): Modifier =
+    semantics {
+        verticalScrollAxisRange =
+            ScrollAxisRange(
+                value = { state.shiftLimits.endInclusive - state.shift.coerceIn(state.shiftLimits) },
+                maxValue = { state.shiftLimits.endInclusive - state.shiftLimits.start },
+            )
+        scrollBy { _, y ->
+            state.shiftBy(-y)
+            true
+        }
+    }

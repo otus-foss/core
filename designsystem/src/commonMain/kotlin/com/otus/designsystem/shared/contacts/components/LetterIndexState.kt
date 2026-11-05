@@ -21,8 +21,10 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.toSize
 import com.otus.designsystem.theme.tokens.rows.LetterIndexTokens
 
@@ -45,6 +47,10 @@ public class LetterIndexState {
 
     /** The letter whose heading opened the index, which keeps its place on screen. */
     internal var anchor by mutableStateOf<String?>(null)
+
+    /** The letter last picked, which keeps the highlight while the index fades out. */
+    internal var picked by mutableStateOf<String?>(null)
+        private set
 
     /** The vertical centre of the [anchor]'s heading when the index opened, in window coordinates. */
     internal var anchorY by mutableStateOf<Float?>(null)
@@ -111,12 +117,14 @@ public class LetterIndexState {
         this.letters = letters
         this.onPick = onPick
         this.anchor = anchor
+        picked = null
         anchorY = anchor?.let(headings::get)?.center?.y
         shift = 0f
         open = true
     }
 
     internal fun pick(letter: String) {
+        picked = letter
         close()
         onPick(letter)
     }
@@ -127,6 +135,10 @@ public class LetterIndexState {
         endDrag()
     }
 }
+
+/** The letter on the highlight: under the finger, else the one just picked, else the pressed one. */
+internal val LetterIndexState.highlighted: String?
+    get() = active ?: picked ?: anchor
 
 @Composable
 public fun rememberLetterIndexState(): LetterIndexState = remember { LetterIndexState() }
@@ -162,6 +174,7 @@ public fun Modifier.letterIndexHandle(
     val currentLetters by rememberUpdatedState(letters)
     val currentPick by rememberUpdatedState(onPick)
     val currentLetter by rememberUpdatedState(letter)
+    val rtl by rememberUpdatedState(LocalLayoutDirection.current == LayoutDirection.Rtl)
     // Written on layout but never read while composing, so it causes no recomposition.
     val coordinates = remember { mutableStateOf<LayoutCoordinates?>(null) }
     DisposableEffect(state, letter) { onDispose { state.headings.remove(letter) } }
@@ -177,18 +190,23 @@ public fun Modifier.letterIndexHandle(
         awaitEachGesture {
             val down = awaitFirstDown()
             if (state.scrolling()) return@awaitEachGesture
-            if (down.position.x > LetterIndexTokens.handleWidth.toPx() && !awaitLongPress(down)) return@awaitEachGesture
+            val fromStart = if (rtl) size.width - down.position.x else down.position.x
+            if (fromStart > LetterIndexTokens.handleWidth.toPx() && !awaitLongPress(down)) return@awaitEachGesture
             down.consume()
             state.open(currentLetters, currentPick, currentLetter)
             var dragging = false
-            do {
-                val change = awaitPointerEvent().changes.firstOrNull { it.id == down.id } ?: break
-                if ((change.position - down.position).getDistance() > viewConfiguration.touchSlop) dragging = true
-                val layout = coordinates.value
-                if (dragging && layout != null) state.drag(layout.localToWindow(change.position))
-                change.consume()
-            } while (change.pressed)
-            state.endDrag()
+            // A heading removed mid-drag cancels this without an up event, so the drag ends here.
+            try {
+                do {
+                    val change = awaitPointerEvent().changes.firstOrNull { it.id == down.id } ?: break
+                    if ((change.position - down.position).getDistance() > viewConfiguration.touchSlop) dragging = true
+                    val layout = coordinates.value
+                    if (dragging && layout != null) state.drag(layout.localToWindow(change.position))
+                    change.consume()
+                } while (change.pressed)
+            } finally {
+                state.endDrag()
+            }
             if (dragging) {
                 val active = state.active
                 if (active != null) state.pick(active) else state.close()

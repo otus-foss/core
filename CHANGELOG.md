@@ -7,9 +7,10 @@
   above and below it. Rows keep `LetterIndexTokens.rowHeight` instead of shrinking to fit. Letters
   past the top or bottom, or under the status and navigation bars, scroll into view by dragging the
   column, or by holding a dragging finger near either end. The current letter sits on a
-  `selectedFill` highlight. Without a known heading, the column is centred between the bars.
-- `letterIndexHandle` opens the index on a press within 64 dp of the heading's start edge, or on a
-  long press anywhere on it. Other presses scroll the list.
+  `selectedFill` highlight, which stays on a picked letter while the index closes. Screen readers
+  can scroll the column. Without a known heading, the column is centred between the bars.
+- `letterIndexHandle` opens the index on a press within 64 dp of the heading's start edge, the
+  right one in right-to-left layouts, or on a long press anywhere on it. Other presses scroll the list.
 - Add `LetterIndexScrollGuard(state, scroll)`: while the list it watches scrolls, and for 300 ms
   after, presses on the headings pass through to the list, so stopping a fling does not open the
   index.
