@@ -27,10 +27,10 @@ import kotlinx.serialization.json.jsonObject
  */
 public class JmapClient(
     engine: HttpClientEngine? = null,
-    private val policy: JmapPolicy = JmapPolicy(),
+    internal val policy: JmapPolicy = JmapPolicy(),
 ) : AutoCloseable {
-    private val http = if (engine == null) HttpClient { configure() } else HttpClient(engine) { configure() }
-    private val urls = JmapUrls(policy)
+    internal val http = if (engine == null) HttpClient { configure() } else HttpClient(engine) { configure() }
+    internal val urls = JmapUrls(policy)
 
     /**
      * Stops accepting requests and releases this client's resources when active requests finish.
@@ -55,21 +55,6 @@ public class JmapClient(
         name: String = DEFAULT_DOWNLOAD_NAME,
     ): JmapBlob =
         JmapDownloads(http, urls, policy).download(session, auth, accountId, blobId, mediaType, maxBytes, name)
-
-    /**
-     * Streams a blob as [download] does, but without a size limit: each piece goes to [receive] as
-     * it arrives, so a caller can write a large file to disk without holding it in memory. Returns
-     * the media type the server sent. Cancelling the caller's coroutine ends the transfer.
-     */
-    public suspend fun downloadStream(
-        session: JmapSession,
-        auth: JmapAuth,
-        accountId: String,
-        blobId: String,
-        mediaType: String,
-        name: String = DEFAULT_DOWNLOAD_NAME,
-        receive: suspend (ByteArray) -> Unit,
-    ): String = JmapDownloads(http, urls, policy).stream(session, auth, accountId, blobId, mediaType, name, receive)
 
     /** Authenticated blob upload (RFC 8620, section 6.1), within the server's `maxSizeUpload`. */
     public suspend fun upload(

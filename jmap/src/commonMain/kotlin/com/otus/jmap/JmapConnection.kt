@@ -9,9 +9,9 @@ import kotlinx.coroutines.sync.withLock
  * A missing blob or an unapproved origin keeps the session, because a new one would not help.
  */
 public class JmapConnection(
-    private val client: JmapClient,
+    internal val client: JmapClient,
     public val sessionUrl: String,
-    private val auth: JmapAuth,
+    internal val auth: JmapAuth,
     private val trustedOrigins: Set<String> = emptySet(),
 ) {
     private val lock = Mutex()
@@ -45,15 +45,6 @@ public class JmapConnection(
         name: String = DEFAULT_DOWNLOAD_NAME,
     ): JmapBlob = withSession { client.download(it, auth, accountId, blobId, mediaType, maxBytes, name) }
 
-    /** Streams through [JmapClient.downloadStream]; [receive] gets each piece as it arrives. */
-    public suspend fun downloadStream(
-        accountId: String,
-        blobId: String,
-        mediaType: String,
-        name: String = DEFAULT_DOWNLOAD_NAME,
-        receive: suspend (ByteArray) -> Unit,
-    ): String = withSession { client.downloadStream(it, auth, accountId, blobId, mediaType, name, receive) }
-
     public suspend fun upload(
         accountId: String,
         bytes: ByteArray,
@@ -71,7 +62,7 @@ public class JmapConnection(
             response
         }
 
-    private suspend fun <T> withSession(block: suspend (JmapSession) -> T): T {
+    internal suspend fun <T> withSession(block: suspend (JmapSession) -> T): T {
         val session = session()
         return try {
             block(session)
