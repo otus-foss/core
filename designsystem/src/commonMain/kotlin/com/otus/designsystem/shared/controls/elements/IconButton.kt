@@ -25,7 +25,7 @@ import com.otus.designsystem.theme.tokens.selection.FilterTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
- * A round button around a symbol. A [badgeCount] above zero puts a small `accentLight` count on its
+ * A round button around a symbol. A [badgeCount] above zero puts a small `accentDark` count on its
  * top end, such as the number of active filters on the filter button; the badge sits outside the
  * circle's clip, so it is never cut off. [look] sets what is behind the symbol.
  */
@@ -79,13 +79,12 @@ private fun CountDot(
     Box(
         modifier
             .sizeIn(minWidth = FilterTokens.badgeSize, minHeight = FilterTokens.badgeSize)
-            .background(OtusColors.accentLight, CircleShape),
+            .background(OtusColors.accentDark, CircleShape),
         contentAlignment = Alignment.Center,
     ) {
         Text(
             count.toString(),
             style = panelTextStyle(),
-            color = OtusColors.bgDark,
             fontSize = FilterTokens.badgeTextSize,
             lineHeight = FilterTokens.badgeTextSize,
             fontWeight = FontWeight.SemiBold,
