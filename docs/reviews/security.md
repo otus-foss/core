@@ -38,7 +38,8 @@ never the user's checkout, so uncommitted work stays out of scope. Calendar is a
    - Mail senders, who control message content but not the server.
    - Push services and the push bridge, which see endpoints and ciphertext.
    - Other apps on the device, through intents, content URIs, shared files, and the clipboard.
-   - Public avatar, icon, and BIMI hosts, which learn which addresses the user looks up.
+   - Website-icon hosts, icon proxies, and linked contact-photo hosts, which learn the device IP,
+     the requested domain or URL, and when it was requested.
    - The update channel that installs nightly builds.
 3. Read Meta's `docs/jmap.md` security table, `docs/push.md`, `docs/avatar.md`, and the accepted
    decisions that set trust rules. Earlier review fixes, such as the blob origin checks from the
