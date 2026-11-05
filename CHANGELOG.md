@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Avatars: the module bundles the Public Suffix List, and `PublicSuffixDomainResolver()` reads it
+  by default, so apps no longer ship their own copy. A custom loader still works.
 - `LetterIndex` keeps the pressed letter in place: its row opens level with the heading that
   `letterIndexHandle` or its "Show letters" action opened it from, and the other letters line up
   above and below it. Rows keep `LetterIndexTokens.rowHeight` instead of shrinking to fit. Letters

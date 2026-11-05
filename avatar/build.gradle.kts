@@ -1,11 +1,13 @@
 // Account-scoped avatar lookup: JMAP contact photos, optional domain icons, and bounded caches.
-// No UI; apps decode images and supply public-suffix data. Published as com.otus:avatar.
+// No UI; apps decode images. Published as com.otus:avatar. Compose resources only package the
+// bundled Public Suffix List, so the code reads it without importing any Compose API.
 plugins {
-    id("otus.kmp-library")
+    id("otus.kmp-compose-library")
     alias(libs.plugins.kotlinSerialization)
 }
 
 kotlin {
+    compilerOptions { optIn.add("org.jetbrains.compose.resources.ExperimentalResourceApi") }
     sourceSets {
         commonMain.dependencies {
             api(projects.jmap)
@@ -14,6 +16,9 @@ kotlin {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.io)
             implementation(libs.kotlinx.serialization.json)
+            // The Compose compiler, which the resources plugin needs, requires the runtime.
+            implementation(libs.compose.runtime)
+            implementation(libs.compose.resources)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
@@ -23,3 +28,5 @@ kotlin {
         getByName("androidHostTest").dependencies { implementation(libs.robolectric) }
     }
 }
+
+compose.resources { packageOfResClass = "com.otus.avatar.resources" }

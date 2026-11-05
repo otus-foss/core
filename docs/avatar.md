@@ -117,11 +117,11 @@ day when it has none or does not answer, which is why `domainIcons` is off by de
 may keep it off. An icon proxy's misses are retried after five minutes, because the proxy, not the
 sender's website, sees those requests.
 
-`PublicSuffixDomainResolver` accepts an injected suspend loader for the rules. Mail wiring reads
-`files/public_suffix_list.dat` from packaged Compose resources. The parser is common Kotlin,
-loads once off the UI thread, and never downloads rules at runtime. Without an injected resolver,
-the service treats the whole hostname as the website domain. Calendar includes the same parser and resource
-in its own older copy until it adopts this module. IDNs require an ASCII hostname supplied by the caller.
+`PublicSuffixDomainResolver()` reads the list this module bundles as a Compose resource,
+`files/public_suffix_list.dat`; tests pass their own loader. The parser is common Kotlin, loads
+once off the UI thread, and never downloads rules at runtime. Without a resolver, the service
+treats the whole hostname as the website domain. IDNs require an ASCII hostname supplied by the
+caller.
 
 The list snapshot is `2026-10-01_23-02-52_UTC`, upstream commit
 `6cd82aff889e3d64e5e03bc5c1f43da1934a960a`, from
@@ -129,7 +129,8 @@ The list snapshot is `2026-10-01_23-02-52_UTC`, upstream commit
 `e0fe072d26b0536525badea237953ff451c9f8e64c9d02c6daa81a4491d2fc66`.
 Rules are lowercased and converted label by label to ASCII IDNA while retaining wildcard and
 exception markers. Original comments and the MPL 2.0 notice remain; the license ships as
-`public_suffix_list_MPL-2.0.txt`. Each app bundles the list and supplies it to the resolver; refresh both apps' copies together.
+`public_suffix_list_MPL-2.0.txt` beside it in `avatar/src/commonMain/composeResources/files`.
+Refresh the list there; the apps carry no copy.
 ICO display depends on the platform decoder; Android tests cover PNG and bitmap-encoded entries.
 
 The public loader follows at most three redirects, checking each target for HTTPS, a public
@@ -169,10 +170,9 @@ in each platform's HTTP engine, which the module does not have yet.
 ## Use in the apps
 
 Each app creates one `AvatarService` per process and passes its own login IDs as `accountKey`.
-The app chooses which remote requests to allow through `AvatarOptions`, supplies the Public Suffix
-List bytes, and names any `IconProxy`. `JmapContactAvatarSource` uses the app's
-`JmapConnections` and `LoginStore`, so contact lookups never cross apps. Calendar still carries an
-older copy of this code until it adopts the module.
+The app chooses which remote requests to allow through `AvatarOptions` and names any `IconProxy`.
+`JmapContactAvatarSource` uses the app's `JmapConnections` and `LoginStore`, so contact lookups
+never cross apps. Calendar depends on the module but does not wire it yet.
 
 Contact queries ask for `id`, `addressBookIds`, `emails`, `media`, and `vCard`. Stalwart returns a
 card's extra vCard properties, where the style lives, only when `vCard` is asked for by name; a
