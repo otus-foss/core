@@ -112,6 +112,10 @@ Developed and checked against Stalwart. It moved here from otus-mail at version 
   server reports in `Content-Disposition`, and defaults to `download`. Template values are
   percent-encoded, including slashes. A 404 throws `BlobNotFound`, because the server does not
   have that blob; other failure statuses map as for API requests.
+- `downloadStream(accountId, blobId, mediaType, name, receive)` reads a blob the same way without a
+  size limit, handing each piece of up to 64 KiB to `receive` as it arrives, so an app can write a
+  large attachment to disk without holding it. The caller bounds what it accepts, such as by the
+  part's size; an exception from `receive` or a cancel ends the transfer.
 - `upload(accountId, bytes, mediaType)` stores a blob through the session's `uploadUrl` (section 6.1)
   with the same https and trusted-origin checks as downloads. Redirects are not followed. A blob over
   the advertised `maxSizeUpload` throws `UploadTooLarge` before anything is sent.
@@ -137,7 +141,7 @@ Developed and checked against Stalwart. It moved here from otus-mail at version 
 | --- | --- |
 | Credentials sent in clear | Every URL must be https: the session URL, each redirect, `apiUrl`, and each expanded blob URL. `JmapPolicy.allowInsecureHttp` exists only for local test servers. |
 | Credentials leaked by a redirect | Authorization headers go only to the origin the user entered and origins the user approved. Discovery can probe another origin without authorization, then raises `RedirectedElsewhere`; Mail asks the user and stores the approval. RFC 3986 resolution prevents the old query and URL credentials from being copied to the new host. RFC 8620 allows `downloadUrl` and `uploadUrl` on another host. With `requireTrustedBlobOrigins`, which the `accounts` sign-in passes, discovery checks their origins, with every template variable filled by a placeholder, and raises `RedirectedElsewhere` for one the user has not approved, so the user approves blob hosts before the login is saved. Without it, as when a saved connection rediscovers its session, an unapproved blob host fails only blob calls. The API and blob endpoints require a trusted origin before each request, checked on the expanded URL. |
-| Hostile or broken responses | Responses are capped at 16 MiB. Envelope invocations are checked, and decoding failures become `NotJmap`. Custom decoders must use serializers, checked JSON accessors, or `require`; serialization, argument, cast, and missing-key errors are normalized. Cancellation and other programming errors propagate. |
+| Hostile or broken responses | Responses are capped at 16 MiB, except a streamed blob, which the caller bounds as it receives it. Envelope invocations are checked, and decoding failures become `NotJmap`. Custom decoders must use serializers, checked JSON accessors, or `require`; serialization, argument, cast, and missing-key errors are normalized. Cancellation and other programming errors propagate. |
 | Secrets in logs or crash reports | `JmapAuth`, `LoginSecret`, and drafts print `***`. Secrets are not readable through public API; only headers are built from them. |
 | Secrets at rest (Android) | AES-256-GCM with a non-exportable Android Keystore key; fresh IV per value; one synchronous commit per change; app backup disabled. |
 | Secrets at rest (iOS) | Keychain, `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly`; replacement uses `SecItemUpdate`, and deletion errors preserve account metadata. |
@@ -163,7 +167,7 @@ only), OAuth, and sharing logins between the two installed apps.
 | 5.6 | `/queryChanges` with the cached filter and sort, `maxChanges`, and `extra`; `added` in index order | `JmapQueryChangesTest` |
 | 2 | Blob endpoints on another origin are approved at sign-in and fail only blob calls until then | `JmapDiscoveryTest`, `JmapBlobRecoveryTest`, `JmapAccountRepositoryTest` in `accounts` |
 | 6.1 | Authenticated uploads through the advertised URI template, within `maxSizeUpload`, without a whole-call time limit | `JmapUploadTest`, `JmapTimeoutTest` |
-| 6.2 | Bounded authenticated blob downloads through the advertised URI template, with trusted-origin checks, `BlobNotFound` for a 404, and no whole-call time limit | `JmapDownloadTest`, `JmapBlobRecoveryTest`, `JmapTimeoutTest` |
+| 6.2 | Bounded authenticated blob downloads through the advertised URI template, with trusted-origin checks, `BlobNotFound` for a 404, and no whole-call time limit; streamed downloads with the same checks | `JmapDownloadTest`, `JmapDownloadStreamTest`, `JmapBlobRecoveryTest`, `JmapTimeoutTest` |
 | RFC 7617 | Basic credentials; a colon in the username is rejected | `JmapLoginTest` |
 | 1.3, 5.5 | Query counters support the full unsigned 53-bit range | `JmapDecodingTest` |
 | 1.4 | UTCDate written in its `Z` form without trailing fraction zeros; any RFC 3339 offset, a leap second, and a fraction longer than nine digits read; years outside 0000 to 9999 refused | `UtcDateSerializerTest` |
