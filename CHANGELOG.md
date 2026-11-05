@@ -4,9 +4,15 @@
 
 - `LetterIndex` keeps the pressed letter in place: its row opens level with the heading that
   `letterIndexHandle` or its "Show letters" action opened it from, and the other letters line up
-  above and below it. Near the top or bottom, the column moves only as far as it must to fit,
-  and it stays clear of the status and navigation bars. Without a known heading, the column is
-  centred between them.
+  above and below it. Rows keep `LetterIndexTokens.rowHeight` instead of shrinking to fit. Letters
+  past the top or bottom, or under the status and navigation bars, scroll into view by dragging the
+  column, or by holding a dragging finger near either end. The current letter sits on a
+  `selectedFill` highlight. Without a known heading, the column is centred between the bars.
+- `letterIndexHandle` opens the index on a press within 64 dp of the heading's start edge, or on a
+  long press anywhere on it. Other presses scroll the list.
+- Add `LetterIndexScrollGuard(state, scroll)`: while the list it watches scrolls, and for 300 ms
+  after, presses on the headings pass through to the list, so stopping a fling does not open the
+  index.
 - JMAP: add the extensions `JmapConnection.downloadStream(accountId, blobId, mediaType, name,
   receive)` and `JmapClient.downloadStream(session, auth, …)`, imported from `com.otus.jmap`. Each
   reads a blob through the session's `downloadUrl` with the checks of `download`, but hands each

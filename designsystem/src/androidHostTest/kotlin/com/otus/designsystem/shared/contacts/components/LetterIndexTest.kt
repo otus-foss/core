@@ -13,7 +13,6 @@ import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.unit.Dp
@@ -54,21 +53,24 @@ class LetterIndexTest {
 
     @Test
     fun thePressedLetterStaysLevelWithItsHeading() {
-        openFrom(letter = "B", bottomGap = 120.dp)
-
-        val heading = compose.onNode(hasClickLabel("Show letters") and hasText("B")).getBoundsInRoot()
-        val row = compose.onNode(hasClickLabel("Jump to B")).getBoundsInRoot()
-
-        assertNear((heading.top + heading.bottom) / 2, (row.top + row.bottom) / 2)
+        assertLevelAfterOpening(letter = "B", bottomGap = 120.dp)
     }
 
     @Test
-    fun aLetterNearTheBottomMovesUpOnlyUntilTheColumnFits() {
-        openFrom(letter = "C", bottomGap = 0.dp)
+    fun aLetterAtTheBottomStaysLevelWithItsHeading() {
+        assertLevelAfterOpening(letter = "C", bottomGap = 0.dp)
+    }
 
-        val row = compose.onNode(hasClickLabel("Jump to C")).getBoundsInRoot()
+    private fun assertLevelAfterOpening(
+        letter: String,
+        bottomGap: Dp,
+    ) {
+        openFrom(letter, bottomGap)
 
-        assertNear(compose.onRoot().getBoundsInRoot().bottom, row.bottom)
+        val heading = compose.onNode(hasClickLabel("Show letters") and hasText(letter)).getBoundsInRoot()
+        val row = compose.onNode(hasClickLabel("Jump to $letter")).getBoundsInRoot()
+
+        assertNear((heading.top + heading.bottom) / 2, (row.top + row.bottom) / 2)
     }
 
     private fun openFrom(
