@@ -1,9 +1,14 @@
+# The one catalog for every Otus repository. Mail and Calendar load this file as `libs`, so each
+# version here is the suite's version; an app keeps only what no other repository uses in its own
+# gradle/app.versions.toml.
 [versions]
 agp = "9.1.1"
 kotlin = "2.4.10"
 compose-multiplatform = "1.11.1"
 android-compileSdk = "37"
+android-targetSdk = "37"
 android-minSdk = "24"
+androidx-activity = "1.13.0"
 
 robolectric = "4.17"
 roborazzi = "1.76.0"
@@ -17,6 +22,11 @@ kotlinx-coroutines = "1.11.0"
 kotlinx-io = "0.9.1"
 richeditor = "1.1.0"
 kover = "0.9.9"
+
+# Quality tools, run by build-logic's otus.quality plugin.
+spotless = "8.10.3"
+ktlint = "1.8.0"
+detekt = "1.23.8"
 
 [libraries]
 richeditor = { module = "com.mohamedrejeb.richeditor:richeditor-compose", version.ref = "richeditor" }
@@ -43,11 +53,29 @@ androidx-compose-ui-test = { module = "androidx.compose.ui:ui-test-junit4", vers
 androidx-compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "androidx-compose-test" }
 
 navigation-event-compose = { module = "org.jetbrains.androidx.navigationevent:navigationevent-compose", version.ref = "navigation-event" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
+detekt-cli = { module = "io.gitlab.arturbosch.detekt:detekt-cli", version.ref = "detekt" }
 
+# Meta's modules as the apps see them. The apps build Meta from source, so Gradle substitutes each
+# with the matching project of the included otus-meta build; Meta itself uses project accessors.
+otus-jmap = { module = "com.otus:jmap" }
+otus-avatar = { module = "com.otus:avatar" }
+otus-dateformat = { module = "com.otus:dateformat" }
+otus-designsystem = { module = "com.otus:designsystem" }
+otus-settings = { module = "com.otus:settings" }
+otus-accounts = { module = "com.otus:accounts" }
+otus-jmap-push = { module = "com.otus:jmap-push" }
+otus-jscontact = { module = "com.otus:jscontact" }
+otus-jmap-contacts = { module = "com.otus:jmap-contacts" }
+
+# Gradle plugins that build-logic's convention plugins apply.
+android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
+kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+compose-compilerGradlePlugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
+compose-gradlePlugin = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "compose-multiplatform" }
+kover-gradlePlugin = { module = "org.jetbrains.kotlinx:kover-gradle-plugin", version.ref = "kover" }
+spotless-gradlePlugin = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless" }
+
+# Plugins that modules apply themselves. build-logic's convention plugins apply the rest.
 [plugins]
-androidMultiplatformLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
-composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
-kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }

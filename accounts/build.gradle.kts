@@ -1,35 +1,10 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 // JMAP account setup shared by the apps: verification, saved logins, and the setup page. Each app
 // passes the JMAP service it needs. Published as com.otus:accounts.
 plugins {
-    `maven-publish`
-    alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidMultiplatformLibrary)
-    alias(libs.plugins.composeMultiplatform)
-    alias(libs.plugins.composeCompiler)
+    id("otus.kmp-compose-library")
 }
 
 kotlin {
-    explicitApi()
-    compilerOptions { allWarningsAsErrors.set(true) }
-    iosArm64()
-    iosSimulatorArm64()
-    android {
-        namespace = "com.otus.accounts"
-        compileSdk =
-            libs.versions.android.compileSdk
-                .get()
-                .toInt()
-        minSdk =
-            libs.versions.android.minSdk
-                .get()
-                .toInt()
-        compilerOptions { jvmTarget = JvmTarget.JVM_11 }
-        androidResources { enable = true }
-        withHostTest { isIncludeAndroidResources = true }
-        lint { ignoreTestSources = true }
-    }
     sourceSets {
         commonMain.dependencies {
             api(projects.jmap)
