@@ -6,37 +6,52 @@ import com.otus.jscontact.vcard.VCardKey.QUOTED_PRINTABLE
 internal const val CRLF = "\r\n"
 
 /**
- * The logical lines of vCard text. Line breaks may be CRLF, LF, or CR. A break followed by a space or a tab
- * folds a line and is removed (RFC 6350, section 3.2). A quoted-printable line that ends in `=` continues
- * on the next line, as vCard 2.1 writes soft line breaks. Blank lines are dropped.
+ * The logical lines of vCard text. Line breaks may be CRLF, LF, or CR. A quoted-printable line that ends in `=`
+ * continues on the next line, as vCard 2.1 writes soft line breaks, and that line is kept whole, a leading space
+ * included. Otherwise a line that starts with a space or a tab continues the previous one without that character
+ * (RFC 6350, section 3.2). Blank lines are dropped.
  */
 internal fun String.vCardLines(): List<String> {
-    val physical =
-        removePrefix(BYTE_ORDER_MARK)
-            .replace(LINE_BREAK, "\n")
-            .replace(FOLD, "")
-            .split('\n')
-    return buildList {
-        // A quoted-printable line that is still continuing, joined in place so that each part is copied once.
-        val continued = StringBuilder()
-        for (line in physical) {
-            if (continued.isNotEmpty()) {
-                continued.deleteAt(continued.lastIndex).append(line)
-                if (continued.endsWith('=')) continue
-                add(continued.toString())
-                continued.clear()
-            } else if (line.continuesQuotedPrintable()) {
-                continued.append(line)
-            } else if (line.isNotBlank()) {
-                add(line)
-            }
-        }
-        if (continued.isNotEmpty()) add(continued.toString())
-    }
+    val joiner = LineJoiner()
+    val physical = removePrefix(BYTE_ORDER_MARK).split(LINE_BREAK)
+    return (physical.mapNotNull(joiner::read) + joiner.finish()).filter { it.isNotBlank() }
 }
 
-private fun String.continuesQuotedPrintable(): Boolean =
-    endsWith('=') && substringBefore(':').contains(QUOTED_PRINTABLE, ignoreCase = true)
+/** Joins physical lines into logical lines, copying each part once so that long values join in linear time. */
+private class LineJoiner {
+    private val line = StringBuilder()
+
+    /** Whether the line's parameters name quoted-printable, or null until its colon has been read. */
+    private var quoted: Boolean? = null
+
+    /** Adds [physical] to the current line, and returns the finished line when [physical] starts a new one. */
+    fun read(physical: String): String? {
+        val softBreak = quoted == true && line.endsWith('=')
+        val folded = !softBreak && (physical.startsWith(' ') || physical.startsWith('\t'))
+        val finished = if (softBreak || folded) null else finish()
+        if (softBreak) line.deleteAt(line.lastIndex)
+        append(physical, from = if (folded) 1 else 0)
+        return finished
+    }
+
+    /** The current line, after which the next part starts a new one. */
+    fun finish(): String {
+        val finished = line.toString()
+        line.clear()
+        quoted = null
+        return finished
+    }
+
+    private fun append(
+        part: String,
+        from: Int,
+    ) {
+        line.appendRange(part, from, part.length)
+        if (quoted == null && part.indexOf(':', from) >= 0) {
+            quoted = line.substring(0, line.indexOf(':')).contains(QUOTED_PRINTABLE, ignoreCase = true)
+        }
+    }
+}
 
 /**
  * This content line folded so that no line is longer than 75 octets of UTF-8, not counting the line break
@@ -153,8 +168,7 @@ private const val QUOTED_BYTE_LENGTH = 3
 private const val HEX = 16
 private const val LATIN_1 = "ISO-8859-1"
 
-private val LINE_BREAK = Regex("\r\n?")
-private val FOLD = Regex("\n[ \t]")
+private val LINE_BREAK = Regex("\r\n?|\n")
 private val QUOTED_BYTES = Regex("(?:=[0-9A-Fa-f]{2})+")
 private val CARET = Regex("""\^([n'^])""")
 

@@ -48,6 +48,10 @@ private fun ValidationScope.checkPartialDate(date: PartialDate) {
     enumValue(date.calendarScale, emptySet(), "calendarScale")
 }
 
+/** Whether this date's month, if any, is from 1 to 12, and its day, if any, exists in that month. */
+internal val PartialDate.isCalendarDate: Boolean
+    get() = (month == null || month in 1..MONTHS) && (day == null || day in 1..daysIn(month, year))
+
 /** The days of [month] in [year], with February 29 when the year is unknown or the month is. */
 private fun daysIn(
     month: Long?,
