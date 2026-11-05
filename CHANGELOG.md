@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Sidebar: a mailbox count's fill is now as large as the filter button's count, 16 dp with 10 sp
+  text, and its ring sits outside the fill instead of inside it. The filter button's count uses
+  `text1` instead of `bgDark` for its text, like the sidebar counts.
 - JMAP: add the extensions `JmapConnection.downloadStream(accountId, blobId, mediaType, name,
   receive)` and `JmapClient.downloadStream(session, auth, …)`, imported from `com.otus.jmap`. Each
   reads a blob through the session's `downloadUrl` with the checks of `download`, but hands each

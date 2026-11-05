@@ -85,7 +85,6 @@ private fun CountDot(
         Text(
             count.toString(),
             style = panelTextStyle(),
-            color = OtusColors.bgDark,
             fontSize = FilterTokens.badgeTextSize,
             lineHeight = FilterTokens.badgeTextSize,
             fontWeight = FontWeight.SemiBold,
