@@ -62,7 +62,10 @@ release tag. Do not skip the hooks with `--no-verify`.
 **CI runs once per pull request,** on Ubicloud runners. The `quality` workflow starts when a pull
 request that is not a draft opens, or when a draft is marked ready for review. Later pushes do not
 start it again, so open pull requests as drafts and mark them ready once every commit is pushed.
-Start it by hand from GitHub Actions to check again.
+Start it by hand from GitHub Actions to check again. Every push to `main`, which includes each
+merged pull request, runs it again to check `main` itself, and those runs never cancel each other.
+The macOS `ios` job runs only while the repository variable `IOS_CI` is `on`. Leave it unset to
+save macOS minutes; set it to `on` under Settings › Secrets and variables › Actions to turn it back on.
 
 The CI `quality` workflow runs only on pull requests that change more than Markdown. The `check`
 job runs `checkAll` as three parallel jobs: `qualityCheck`, `checkDesignSystem`, and
@@ -85,15 +88,56 @@ Tests run without coverage instrumentation unless the Gradle command names a Kov
 `checkAll` does not pay for it.
 
 ```sh
-./gradlew koverHtmlReport
+./gradlew koverXmlReport koverHtmlReport
 ./gradlew koverLog
+python3 tools/coverage_report.py build/reports/kover/report.xml --base origin/main
 ```
 
 `koverHtmlReport` writes one report for all modules to `build/reports/kover/html/` and one per
-module to `<module>/build/reports/kover/html/`. `koverLog` prints line coverage for each module.
+module to `<module>/build/reports/kover/html/`; `koverXmlReport` writes
+`build/reports/kover/report.xml`. `koverLog` prints line coverage for each module.
 
 Kover counts only the code that runs on the JVM, through the common and Android host tests.
 Kotlin/Native tests for iOS do not count, and neither does code in `iosMain`.
+
+The `coverage` workflow runs these tasks on the same events as `quality`: a ready pull request,
+later pushes while it has the `ci on every push` label, pushes to `main`, and runs by hand. It
+writes the summary to the run page, uploads the HTML and XML reports as the `coverage-report`
+artifact, and on a pull request keeps one comment up to date. A separate job with only
+`pull-requests: write` posts that comment. Low coverage never fails the run; a failing test does,
+and then there is no report.
+
+To report on another open pull request without running `quality` again, run `coverage` by hand
+and enter the pull request's number as `pr`. The run checks out that pull request's merge commit,
+diffs it against its base, and posts or updates the comment on that pull request. The merge commit
+runs its own `tools/coverage_report.py`, so merge `main` into an older pull request first. Leave `pr`
+empty to report on the branch the run starts from, without a comment.
+
+`tools/coverage_report.py` writes the summary. Mail uses the same script. It counts only
+handwritten main Kotlin sources, so generated code such as Compose resources is left out.
+
+- **Totals**: covered and total lines, branches, instructions, methods, and classes.
+- **This pull request**: coverage of the lines the pull request adds or changes in main Kotlin
+  sources, from `git diff -U0` against the merge base. Lines with no bytecode, such as comments,
+  blank lines, and most declarations, do not count. A table lists each touched file with its
+  uncovered changed lines, and a list names touched composables that no test renders.
+- **UI**: how many public composables in the design system's `elements` and `components`, and in
+  `presentation/screens` and `presentation/components`, a test renders. A composable counts as
+  rendered when any code in its compiled function ran. Private helpers and previews do not count.
+  Screens that no test renders are listed.
+- **By module** and **By layer**: line coverage per module, for the design system's elements and
+  components, and for each module's `domain`, `data`, and `presentation` screens and components.
+- **Least-covered files**: the 15 files with the most uncovered lines.
+
+Limits:
+
+- Only code that runs on the JVM counts, as above.
+- Composables are matched to compiled methods by name, allowing for the suffixes Kotlin adds for
+  value-class parameters and default arguments. Code inside composable and inline lambdas
+  compiles to separate methods, so it counts toward lines but not toward whether a composable
+  rendered. Inlined code counts where it is called.
+- A composable whose name the scanner cannot find in the bytecode is reported as not found
+  rather than as unrendered.
 
 Measured on 2026-10-16, after the design system screenshot tests. The `jmap-push` module was
 named `push` at the time:
