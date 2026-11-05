@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- `IconPill` takes a `fill`, `bgRegular` by default, so it can match the pills beside it.
+  `DetailsTable` now sits on a raised `darkSurface` card with the images banner's radius and inset.
 - `FeaturedAvatars` shows its faces in one centered row instead of two over the rest. When the
   row is too narrow, the faces share its width evenly.
 - Design system: `Dropdown` takes an optional `header`, such as a `PickerSearch`, that stays at
