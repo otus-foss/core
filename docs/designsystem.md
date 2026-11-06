@@ -53,7 +53,7 @@ dependency rules.
 | `mail/attachments` | Attachment chips and strips |
 | `mail/brand` | Mail's app icon |
 | `mail/compose` | Compose fields, rich text, the formatting and image bars, and the From pill |
-| `mail/folders` | Folder rows, rules, hints, and destination pills |
+| `mail/folders` | Folder rows, rules, hints, destination pills, and folder symbols |
 | `mail/inbox` | The compact conversation row |
 | `mail/launch` | Mail's launch animation and its art |
 | `mail/quickview` | The quick view's modules |
