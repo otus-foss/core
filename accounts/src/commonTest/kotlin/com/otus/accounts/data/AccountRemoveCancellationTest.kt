@@ -1,6 +1,7 @@
 package com.otus.accounts.data
 
-import com.otus.accounts.domain.AccountService
+import com.otus.accounts.testing.MailService
+import com.otus.accounts.testing.TestLifecycle
 import com.otus.accounts.testing.stalwartLike
 import com.otus.jmap.JmapClient
 import com.otus.jmap.JmapConnections
@@ -41,8 +42,8 @@ class AccountRemoveCancellationTest {
                     client,
                     connections,
                     store,
-                    AccountService.Mail,
-                    onAccountChanged = { changed += it },
+                    MailService,
+                    listOf(TestLifecycle(onRemoved = { changed += it })),
                 )
 
             removing = launch { repository.remove(login.id) }
@@ -65,12 +66,16 @@ class AccountRemoveCancellationTest {
                     client,
                     connections,
                     saved,
-                    AccountService.Mail,
-                    onAccountChanged = {
-                        removing.cancel()
-                        yield()
-                        cleaned = true
-                    },
+                    MailService,
+                    listOf(
+                        TestLifecycle(
+                            onRemoved = {
+                                removing.cancel()
+                                yield()
+                                cleaned = true
+                            },
+                        ),
+                    ),
                 )
 
             removing = launch { repository.remove(login.id) }
@@ -86,14 +91,20 @@ class AccountRemoveCancellationTest {
     fun cancellationBeforeTheCommitLeavesTheLoginAvailable() =
         runTest {
             var changed = false
+            val failed = mutableListOf<String>()
             val repository =
                 JmapAccountRepository(
                     client,
                     JmapConnections(client, saved),
                     saved,
-                    AccountService.Mail,
-                    beforeRemove = { removing.cancel() },
-                    onAccountChanged = { changed = true },
+                    MailService,
+                    listOf(
+                        TestLifecycle(
+                            onRemoving = { removing.cancel() },
+                            onRemoveFailed = { failed += it },
+                            onRemoved = { changed = true },
+                        ),
+                    ),
                 )
 
             removing = launch { repository.remove(login.id) }
@@ -102,5 +113,28 @@ class AccountRemoveCancellationTest {
             assertTrue(removing.isCancelled)
             assertEquals(listOf(login), saved.logins())
             assertEquals(false, changed)
+            assertEquals(listOf(login.id), failed)
+        }
+
+    @Test
+    fun aFailingRemovalStepKeepsTheLoginAndReportsTheStop() =
+        runTest {
+            val failed = mutableListOf<String>()
+            val repository =
+                JmapAccountRepository(
+                    client,
+                    JmapConnections(client, saved),
+                    saved,
+                    MailService,
+                    listOf(
+                        TestLifecycle(onRemoveFailed = { failed += it }),
+                        TestLifecycle(onRemoving = { error("cleanup failed") }),
+                    ),
+                )
+
+            assertFailsWith<IllegalStateException> { repository.remove(login.id) }
+
+            assertEquals(listOf(login), saved.logins())
+            assertEquals(listOf(login.id), failed)
         }
 }

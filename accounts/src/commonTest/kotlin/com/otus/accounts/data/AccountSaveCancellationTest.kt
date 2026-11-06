@@ -1,7 +1,8 @@
 package com.otus.accounts.data
 
-import com.otus.accounts.domain.AccountService
 import com.otus.accounts.domain.JmapAccountDraft
+import com.otus.accounts.testing.MailService
+import com.otus.accounts.testing.TestLifecycle
 import com.otus.accounts.testing.stalwartLike
 import com.otus.jmap.JmapClient
 import com.otus.jmap.JmapConnections
@@ -33,9 +34,8 @@ class AccountSaveCancellationTest {
                     mailboxes
                 },
             )
-        return JmapAccountRepository(client, JmapConnections(client, store), store, AccountService.Mail) {
-            changed += it
-        }
+        val lifecycle = TestLifecycle(onConnected = { changed += it })
+        return JmapAccountRepository(client, JmapConnections(client, store), store, MailService, listOf(lifecycle))
     }
 
     @Test

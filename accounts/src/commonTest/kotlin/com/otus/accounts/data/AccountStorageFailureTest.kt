@@ -1,10 +1,10 @@
 package com.otus.accounts.data
 
-import com.otus.accounts.domain.AccountService
 import com.otus.accounts.domain.AccountStorageException
 import com.otus.accounts.domain.ConnectFailure
 import com.otus.accounts.domain.ConnectOutcome
 import com.otus.accounts.domain.JmapAccountDraft
+import com.otus.accounts.testing.MailService
 import com.otus.accounts.testing.stalwartLike
 import com.otus.jmap.JmapClient
 import com.otus.jmap.JmapConnections
@@ -26,7 +26,7 @@ class AccountStorageFailureTest {
             },
         )
     private val connections = JmapConnections(client, store)
-    private val repository = JmapAccountRepository(client, connections, store, AccountService.Mail)
+    private val repository = JmapAccountRepository(client, connections, store, MailService)
 
     @Test
     fun accountReadsAndRemovalsExposeDomainErrors() =

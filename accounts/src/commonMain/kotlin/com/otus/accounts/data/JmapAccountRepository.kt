@@ -16,6 +16,7 @@ import com.otus.jmap.JmapException
 import com.otus.jmap.JmapSession
 import com.otus.jmap.JmapType
 import com.otus.jmap.login.JmapLogin
+import com.otus.jmap.login.LoginLifecycle
 import com.otus.jmap.login.LoginStore
 import com.otus.jmap.login.LoginStoreException
 import io.ktor.http.Url
@@ -32,16 +33,14 @@ import kotlinx.serialization.json.JsonObject
 
 /**
  * Verifies a server, credentials, and the app's [service], then saves the login. Nothing is saved
- * when verification fails.
+ * when verification fails. Each of [lifecycles] follows every login that is saved and removed.
  */
 public class JmapAccountRepository(
     private val client: JmapClient,
     private val connections: JmapConnections,
     private val logins: LoginStore,
     private val service: AccountService,
-    /** Runs while the login's credentials still exist, such as to delete its server-side state. */
-    private val beforeRemove: suspend (String) -> Unit = {},
-    private val onAccountChanged: suspend (String) -> Unit = {},
+    private val lifecycles: List<LoginLifecycle> = emptyList(),
 ) : AccountRepository {
     /** Asks every login's server at once, so the list waits for the slowest server, not for each in turn. */
     override suspend fun accounts(): List<ConnectedAccount> =
@@ -72,14 +71,34 @@ public class JmapAccountRepository(
     }
 
     override suspend fun remove(id: String) {
-        beforeRemove(id)
-        currentCoroutineContext().ensureActive()
-        // Credential deletion commits the removal, so its local cleanup must finish too.
-        withContext(NonCancellable) {
-            storage { logins.remove(id) }
-            connections.forget(id)
-            onAccountChanged(id)
+        var committed = false
+        try {
+            lifecycles.forEach { it.removing(id) }
+            currentCoroutineContext().ensureActive()
+            // Credential deletion commits the removal, so its local cleanup must finish too.
+            withContext(NonCancellable) {
+                storage { logins.remove(id) }
+                committed = true
+                connections.forget(id)
+                lifecycles.forEach { it.removed(id) }
+            }
+        } finally {
+            if (!committed) withContext(NonCancellable) { stopRemoving(id) }
         }
+    }
+
+    /** Tells every lifecycle that the removal stopped, unless the login cannot be confirmed saved. */
+    private suspend fun stopRemoving(id: String) {
+        val saved =
+            withContext(Dispatchers.IO) {
+                try {
+                    logins.logins().any { it.id == id }
+                } catch (expected: LoginStoreException) {
+                    // Keep what removal blocked while the credentials are unknown.
+                    false
+                }
+            }
+        if (saved) lifecycles.forEach { it.removeFailed(id) }
     }
 
     private suspend fun <T> storage(read: () -> T): T =
@@ -114,7 +133,7 @@ public class JmapAccountRepository(
         return withContext(NonCancellable) {
             val login = withContext(Dispatchers.IO) { saveLogin(draft, session) }
             connections.forget(login.id)
-            onAccountChanged(login.id)
+            lifecycles.forEach { it.connected(login.id) }
             ConnectOutcome.Connected(login.toConnected())
         }
     }

@@ -3,6 +3,7 @@ package com.otus.accounts.data
 import com.otus.accounts.domain.AccountService
 import com.otus.accounts.domain.ConnectOutcome
 import com.otus.accounts.domain.JmapAccountDraft
+import com.otus.accounts.testing.MailService
 import com.otus.accounts.testing.STALWART_SESSION
 import com.otus.accounts.testing.stalwartLike
 import com.otus.jmap.JmapCapability
@@ -36,7 +37,7 @@ class JmapIdentityAddressesTest {
 
     private fun repository(
         engine: MockEngine,
-        service: AccountService = AccountService.Mail,
+        service: AccountService = MailService,
     ): JmapAccountRepository {
         store.save(login, "secret")
         val client = JmapClient(engine)
@@ -102,7 +103,7 @@ class JmapIdentityAddressesTest {
         }
 
     @Test
-    fun nonMailServicesDoNotDiscoverMailIdentities() =
+    fun aServiceWithoutItsAccountDiscoversNoIdentities() =
         runTest {
             val repository = repository(stalwartLike(session), AccountService("tasks", "urn:example:tasks", "TaskList"))
             assertEquals(emptyList(), repository.accounts().single().emailAddresses)

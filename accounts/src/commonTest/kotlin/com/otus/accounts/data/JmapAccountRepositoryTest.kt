@@ -4,7 +4,9 @@ import com.otus.accounts.domain.AccountService
 import com.otus.accounts.domain.ConnectFailure
 import com.otus.accounts.domain.ConnectOutcome
 import com.otus.accounts.domain.JmapAccountDraft
+import com.otus.accounts.testing.MailService
 import com.otus.accounts.testing.STALWART_SESSION
+import com.otus.accounts.testing.TestLifecycle
 import com.otus.accounts.testing.stalwartLike
 import com.otus.jmap.JmapClient
 import com.otus.jmap.JmapConnections
@@ -34,7 +36,7 @@ class JmapAccountRepositoryTest {
 
     private fun repository(engine: MockEngine): JmapAccountRepository {
         val client = JmapClient(engine)
-        return JmapAccountRepository(client, JmapConnections(client, store), store, AccountService.Mail)
+        return JmapAccountRepository(client, JmapConnections(client, store), store, MailService)
     }
 
     @Test
@@ -103,8 +105,8 @@ class JmapAccountRepositoryTest {
                 client,
                 JmapConnections(client, store),
                 store,
-                AccountService.Mail,
-                beforeRemove = { secretAtHook = store.secret(it) },
+                MailService,
+                listOf(TestLifecycle(onRemoving = { secretAtHook = store.secret(it) })),
             ).remove("ada")
             assertIs<LoginSecret.Found>(secretAtHook)
             assertTrue(store.logins().isEmpty())

@@ -9,9 +9,4 @@ public data class AccountService(
     val name: String,
     val capability: String,
     val probeType: String,
-) {
-    public companion object {
-        /** JMAP Mail (RFC 8621), checked with `Mailbox/get`. */
-        public val Mail: AccountService = AccountService("mail", "urn:ietf:params:jmap:mail", "Mailbox")
-    }
-}
+)
