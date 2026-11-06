@@ -20,12 +20,15 @@ setup screens receive app-owned state and callbacks.
 
 | Module | Artifact | Contents |
 | --- | --- | --- |
-| [`jmap`](docs/jmap.md) | `com.otus:jmap` | JMAP client (RFC 8620), sharing types (RFC 9670), and protected login storage |
-| [`jscontact`](docs/contacts.md) | `com.otus:jscontact` | JSContact cards (RFC 9553), not released yet and not used by an app |
-| [`jmap-contacts`](docs/contacts.md) | `com.otus:jmap-contacts` | JMAP for Contacts (RFC 9610), not released yet and not used by an app |
+| [`json-types`](docs/jmap.md) | `com.otus:json-types` | RFC 3339 dates and PatchObject paths that JMAP and JSContact share, not released yet |
+| [`storage`](docs/shared-features.md#stored-choices) | `com.otus:storage` | Key-value and string-map stores, stored choices, and stored names, not released yet |
+| [`jmap`](docs/jmap.md) | `com.otus:jmap` | JMAP client (RFC 8620), account lookup, login lifecycle, and protected login storage |
+| [`jscontact`](docs/contacts.md) | `com.otus:jscontact` | JSContact cards (RFC 9553), not released yet |
+| [`jmap-contacts`](docs/contacts.md) | `com.otus:jmap-contacts` | JMAP for Contacts (RFC 9610), not released yet |
 | [`jmap-push`](docs/push.md) | `com.otus:jmap-push` | JMAP push subscriptions, not released yet |
-| [`dateformat`](docs/dateformat.md) | `com.otus:dateformat` | Date display and the date-format preference |
+| [`dateformat`](docs/dateformat.md) | `com.otus:dateformat` | Date display, with day, month, and time names |
 | [`avatar`](docs/avatar.md) | `com.otus:avatar` | Contact photos, website icons, and generated initials |
+| [`avatar-ui`](docs/avatar.md#avatar-ui) | `com.otus:avatar-ui` | Avatar looks on the design system and the own-avatar editor, not released yet |
 | [`designsystem`](docs/designsystem.md) | `com.otus:designsystem` | Theme, elements, and components |
 | [`settings`](docs/shared-features.md) | `com.otus:settings` | Settings and appearance pages, added in 0.3.0 |
 | [`accounts`](docs/shared-features.md) | `com.otus:accounts` | JMAP account setup, added in 0.3.0 |
