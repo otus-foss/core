@@ -31,6 +31,16 @@ class AppRuleTests(unittest.TestCase):
         errors = check("feature.inbox.domain", "import com.otus.mail.feature.inbox.data.Messages")
         self.assertIn("domain cannot depend on data/presentation", errors)
 
+    def test_core_slices_keep_feature_layers(self):
+        errors = check(
+            "core.messages.domain", "import com.otus.mail.core.messages.presentation.MailEdits"
+        )
+        self.assertIn("domain cannot depend on data/presentation", errors)
+        errors = check(
+            "core.messages.presentation", "import com.otus.mail.core.messages.data.JmapEmailWriter"
+        )
+        self.assertIn("presentation cannot depend on data implementations", errors)
+
     def test_domain_cannot_access_network(self):
         errors = check("feature.inbox.domain", "import io.ktor.client.HttpClient")
         self.assertIn("domain contains UI/platform/network/database dependencies", errors)

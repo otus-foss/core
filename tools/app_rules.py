@@ -88,12 +88,14 @@ def reference_violations(location: list[str], suffix: str, code: str, base: str)
             errors.append("core cannot depend on app/features")
         if "components" in location and "screens" in target:
             errors.append("components cannot depend on screens")
-        if location[:1] != ["feature"]:
+        if location[:1] not in (["feature"], ["core"]):
             continue
-        if target[0] == "app":
+        in_feature = location[:1] == ["feature"]
+        if in_feature and target[0] == "app":
             errors.append("features cannot depend on app wiring")
-        if target[0] == "feature" and len(target) > 1 and target[1] != location[1]:
+        if in_feature and target[:1] == ["feature"] and target[1:2] != location[1:2]:
             errors.append("features cannot import other features directly")
+        # Shared slices of core, such as core/messages, keep the same layers as a feature.
         if "domain" in location and any(x in target for x in ("data", "presentation")):
             errors.append("domain cannot depend on data/presentation")
         if "presentation" in location and "data" in target:
