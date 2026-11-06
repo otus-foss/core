@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -19,9 +18,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
-import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntRect
@@ -33,14 +29,10 @@ import com.otus.designsystem.shared.overlays.components.menuSurface
 import com.otus.designsystem.shared.overlays.elements.PopupAlign
 import com.otus.designsystem.shared.overlays.elements.keptInside
 import com.otus.designsystem.shared.overlays.elements.popupStart
-import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
-import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.MenuTokens
-import com.otus.designsystem.theme.typography.TypeScale
-import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
  * A list that opens under the element it is called from, such as the addresses under a Send-from
@@ -94,23 +86,6 @@ public fun Dropdown(
             )
         }
     }
-}
-
-/** A small `text3` heading over a group of rows in a dropdown or a list, such as an account's name. */
-@Composable
-public fun ListCaption(text: String) {
-    Text(
-        text,
-        Modifier
-            .padding(horizontal = MenuTokens.rowPadding - MenuTokens.inset)
-            .padding(top = MenuTokens.rowPadding - MenuTokens.inset, bottom = Spacing.iconGap)
-            .semantics { heading() },
-        style = panelTextStyle(),
-        color = OtusColors.text3,
-        fontSize = TypeScale.detail,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-    )
 }
 
 /**

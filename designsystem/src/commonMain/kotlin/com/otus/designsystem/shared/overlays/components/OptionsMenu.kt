@@ -24,8 +24,9 @@ import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_chevron_right
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.ToggleSwitch
+import com.otus.designsystem.shared.rows.elements.Caption
+import com.otus.designsystem.shared.rows.elements.listCaptionInset
 import com.otus.designsystem.shared.selection.components.Dropdown
-import com.otus.designsystem.shared.selection.components.ListCaption
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.core.Sizes
@@ -64,7 +65,7 @@ public fun OptionsList(
             when (item) {
                 is OptionsItem.Action -> ActionOption(item, onDone)
                 is OptionsItem.Toggle -> ToggleOption(item)
-                is OptionsItem.Caption -> ListCaption(item.text)
+                is OptionsItem.Caption -> Caption(item.text, Modifier.listCaptionInset())
                 OptionsItem.Divider -> OptionsDivider()
             }
         }
