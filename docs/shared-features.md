@@ -16,8 +16,17 @@ content. A query of several words also finds a setting that holds every word in 
 "swipe archive" finds the swipe whose option is Archive. Settings and pages that their page shows
 disabled go inside `unavailable(reason) { ... }`, and their results show the reason in place of
 their section. Opening a result calls the page's callback with the setting's title, and the app
-provides it as `LocalFoundSetting` so the row flashes. `appearanceIndex` lists the Appearance
-page's settings for the app's index.
+provides it as `LocalFoundSetting` so the row flashes. A setting with no icon of its own shows
+its page's icon. `appearanceIndex` lists the Appearance page's settings for the app's index.
+
+A page can declare its searchable rows once, so its screen and the index cannot drift apart. It
+builds a list of `SettingsSectionSpec`s from its state, each with a heading (or none) and rows:
+`ToggleRowSpec` for a switch, `ChoiceRowSpec` for a value that opens a sheet, and `PageRowSpec`
+for a row that opens a page, whose `content` lists that page's rows for search. Each row holds its
+title, icon, description, keywords, and `unavailable` reason with its action. The screen shows the
+list with `SettingSections`, or one row with `SettingSpecRow`, and the index walks the same list
+with `sections(...)` or `row(...)`. Previews, editors, and other custom parts stay in the screen
+around the list.
 
 `DependentSettings(enabled) { ... }` holds rows that only apply while another setting is set.
 Unless enabled, each `SettingRow`, `SettingToggleRow`, and `SettingPageRow` inside stays where it

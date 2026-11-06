@@ -130,6 +130,8 @@ account as an `OwnAccount` value, so it does not depend on `accounts`.
 `settings` owns the settings list and its search, Appearance screen, date-format state, and
 examples. The app builds a `settingsIndex` of its pages and settings, each page with a callback
 that opens it on a found setting, and supplies the `StoredChoice` of each choice and navigation.
+A page's rows can be declared once as `SettingsSectionSpec` values that both its screen
+(`SettingSections`) and the index (`sections`) read.
 Shared settings do not embed Mail folder or rule destinations.
 
 Both modules retain `domain`, `data`, and `presentation` boundaries where used. Their screens

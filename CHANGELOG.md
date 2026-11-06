@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Settings: add `SettingsSectionSpec` with `ToggleRowSpec`, `ChoiceRowSpec`, and `PageRowSpec`,
+  which `SettingSections` and `SettingSpecRow` show and `sections` and `row` add to the settings
+  index, so a page declares each searchable row once. A null `icon` in the index DSL now means the
+  page's icon.
 - Design system: add the core scales `Spacing`, `Sizes`, and `TypeScale` and the token objects
   `ControlTokens`, `StripTokens`, `FolderTokens`, `PersonPillTokens`, and `PickTokens`. Breaking:
   `PanelTokens` keeps only the control panel's values; read the touch target, icon, border, chip,
