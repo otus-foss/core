@@ -20,4 +20,7 @@ public object EntryTokens {
     public val paddingStart: Dp = 14.dp
     public val paddingEnd: Dp = 12.dp
     public val paddingVertical: Dp = 10.dp
+
+    /** Rounding of a selected flat row's tint, matching the panels. */
+    public val selectionRadius: Dp = PanelTokens.panelRadius
 }

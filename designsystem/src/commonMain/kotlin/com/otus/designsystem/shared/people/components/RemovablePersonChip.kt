@@ -24,7 +24,8 @@ import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_close
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.selection.FilterTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 
@@ -45,7 +46,7 @@ public fun RemovablePersonChip(
         shape = CircleShape,
         color = OtusColors.selectedFill,
         contentColor = OtusColors.text1,
-        border = BorderStroke(PanelTokens.borderWidth, OtusColors.selectedFill),
+        border = BorderStroke(Sizes.borderWidth, OtusColors.selectedFill),
     ) {
         Row(
             Modifier.padding(start = FilterTokens.chipIconGap),
@@ -67,7 +68,7 @@ public fun RemovablePersonChip(
                     .fillMaxHeight()
                     .clickable(role = Role.Button, onClick = onRemove)
                     .semantics { contentDescription = "Remove ${person.name}" }
-                    .padding(start = PanelTokens.iconGap, end = FilterTokens.chipStartWithIcon),
+                    .padding(start = Spacing.iconGap, end = FilterTokens.chipStartWithIcon),
                 contentAlignment = Alignment.Center,
             ) { Symbol(Res.drawable.symbol_close, size = FilterTokens.chipIconSize) }
         }

@@ -2,6 +2,7 @@ package com.otus.designsystem.theme.tokens.overlays
 
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.layout.CornerTokens
 
 internal object ChoiceSheetTokens {
@@ -11,7 +12,7 @@ internal object ChoiceSheetTokens {
     val headerHeight = 64.dp
     val titleSize = 18.sp
     val optionMinHeight = 56.dp
-    val optionPadding = 16.dp
+    val optionPadding = Spacing.gutter
     val optionGap = 12.dp
 
     /** An `IconChoice`'s padding around its icon and label, and the gap between them. */

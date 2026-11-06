@@ -30,7 +30,7 @@ import com.otus.designsystem.mail.sidebar.elements.TileResizeHandle
 import com.otus.designsystem.shared.reorder.components.detectLongPressDrag
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.layout.SidebarTokens
 
 /**
@@ -76,7 +76,7 @@ internal fun EditorTile(
             modifier = Modifier.align(Alignment.BottomEnd).resizeOnDrag(towardEnd, { latestWidth }) { latest },
         )
         // Centered just inside the tile's corner, like Control Center's minus.
-        val pull = (PanelTokens.touchTarget - SidebarTokens.removeBadge) / 2 + SidebarTokens.inset
+        val pull = (Sizes.touchTarget - SidebarTokens.removeBadge) / 2 + SidebarTokens.inset
         TileRemoveBadge(edits.label, { latest.onRemove() }, Modifier.offset(-pull, -pull))
     }
 }

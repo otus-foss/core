@@ -30,7 +30,8 @@ import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.shapes.strokeBorder
 import com.otus.designsystem.theme.tokens.content.ThreadTokens
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.controls.ControlTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 
@@ -54,7 +55,7 @@ public fun ThreadStrip(
             .fillMaxWidth()
             .clip(shape)
             .background(OtusColors.bgDark)
-            .strokeBorder(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape)
+            .strokeBorder(Sizes.borderWidth, OtusColors.strokeBgDark, shape)
             .clickable(onClickLabel = "Show the thread", role = Role.Button, onClick = onOpen),
     ) {
         if (entries.size > ThreadTokens.ROW_LIMIT) {
@@ -62,7 +63,7 @@ public fun ThreadStrip(
         } else {
             entries.forEachIndexed { index, entry ->
                 if (index > 0) {
-                    Box(Modifier.fillMaxWidth().height(PanelTokens.borderWidth).background(OtusColors.bgLight))
+                    Box(Modifier.fillMaxWidth().height(Sizes.borderWidth).background(OtusColors.bgLight))
                 }
                 ThreadRow(entry)
             }
@@ -141,7 +142,10 @@ public fun ThreadMessageRow(
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier.fillMaxWidth().padding(horizontal = ActionBarTokens.contextInset, vertical = PanelTokens.chipPadding),
+        modifier.fillMaxWidth().padding(
+            horizontal = ActionBarTokens.contextInset,
+            vertical = ControlTokens.chipPadding,
+        ),
         horizontalArrangement = Arrangement.spacedBy(ActionBarTokens.contextInset),
         verticalAlignment = Alignment.CenterVertically,
     ) {

@@ -8,7 +8,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
@@ -17,7 +17,7 @@ import org.jetbrains.compose.resources.painterResource
 public fun Symbol(
     resource: DrawableResource,
     mirrorInRtl: Boolean = false,
-    size: Dp = PanelTokens.iconSize,
+    size: Dp = Sizes.iconSize,
 ) {
     val mirrored = mirrorInRtl && LocalLayoutDirection.current == LayoutDirection.Rtl
     Icon(

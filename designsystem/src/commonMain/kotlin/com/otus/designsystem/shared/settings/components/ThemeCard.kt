@@ -44,7 +44,8 @@ import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.colors.OtusPalette
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.shapes.strokeBorder
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.settings.ThemeTokens
 
 /**
@@ -83,7 +84,7 @@ public fun ThemeCard(
                 ).controlPressFeedback(interactions, shape)
                 .background(OtusColors.bgDark, shape)
                 .strokeBorder(
-                    if (selected) PanelTokens.borderWidth * 2 else PanelTokens.borderWidth,
+                    if (selected) Sizes.borderWidth * 2 else Sizes.borderWidth,
                     if (selected) OtusColors.text1 else OtusColors.strokeBgDark,
                     shape,
                 ).padding(ThemeTokens.cardPadding),
@@ -106,8 +107,8 @@ private fun CardLabel(
     onMenu: (() -> Unit)?,
 ) {
     Row(
-        Modifier.padding(horizontal = PanelTokens.iconGap).padding(bottom = PanelTokens.iconGap),
-        horizontalArrangement = Arrangement.spacedBy(PanelTokens.chipGap),
+        Modifier.padding(horizontal = Spacing.iconGap).padding(bottom = Spacing.iconGap),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.inlineGap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(Modifier.weight(1f)) {
@@ -144,11 +145,11 @@ private fun MoreButton(
     title: String,
     onClick: () -> Unit,
 ) {
-    Box(Modifier.size(PanelTokens.iconSize), contentAlignment = Alignment.Center) {
+    Box(Modifier.size(Sizes.iconSize), contentAlignment = Alignment.Center) {
         IconButton(
             "Actions for $title",
             onClick,
-            Modifier.requiredSize(PanelTokens.touchTarget),
+            Modifier.requiredSize(Sizes.touchTarget),
             look = IconButtonLook.Plain,
         ) {
             Symbol(Res.drawable.symbol_more_horiz)
@@ -165,7 +166,7 @@ private fun ThemeSketch(sketch: OtusPalette) {
             .fillMaxWidth()
             .height(ThemeTokens.sketchHeight)
             .background(sketch.bgRegular, shape)
-            .strokeBorder(PanelTokens.borderWidth, sketch.strokeBgDark, shape)
+            .strokeBorder(Sizes.borderWidth, sketch.strokeBgDark, shape)
             .padding(ThemeTokens.sketchPadding),
         verticalArrangement = Arrangement.spacedBy(ThemeTokens.sketchGap),
     ) {
@@ -175,7 +176,7 @@ private fun ThemeSketch(sketch: OtusPalette) {
                 .fillMaxWidth()
                 .height(ThemeTokens.sketchBarHeight)
                 .background(sketch.bgDark, bar)
-                .strokeBorder(PanelTokens.borderWidth, sketch.strokeBgDark, bar),
+                .strokeBorder(Sizes.borderWidth, sketch.strokeBgDark, bar),
         )
         SketchLine(sketch.bgLight, sketch.text2, ThemeTokens.SKETCH_LONG_LINE)
         SketchLine(sketch.accentLight, sketch.text1, ThemeTokens.SKETCH_SHORT_LINE)

@@ -16,6 +16,7 @@ import com.otus.designsystem.resources.symbol_chevron_left
 import com.otus.designsystem.resources.symbol_close
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 
 /**
@@ -33,7 +34,7 @@ public fun PanelNavigation(
     val interactions = remember { MutableInteractionSource() }
     Box(
         modifier
-            .size(PanelTokens.touchTarget)
+            .size(Sizes.touchTarget)
             .semantics { contentDescription = description }
             .clickable(interactions, indication = null, role = Role.Button, onClick = onClick),
         contentAlignment = Alignment.CenterStart,

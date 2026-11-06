@@ -4,6 +4,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.otus.designsystem.theme.tokens.editing.ComposeTokens
 import com.otus.designsystem.theme.tokens.layout.CornerTokens
 import com.otus.designsystem.theme.tokens.layout.PageTokens
 
@@ -52,4 +53,5 @@ public object ActionBarTokens {
 
     /** Share of the width animation after which the context fades in, and before which the label fades out. */
     public const val CONTEXT_FADE_START: Float = 0.4f
+    internal val formatBarRadius: Dp = ComposeTokens.formatBarHeight / 2
 }

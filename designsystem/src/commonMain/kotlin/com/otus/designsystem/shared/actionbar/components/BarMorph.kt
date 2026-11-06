@@ -31,7 +31,6 @@ import com.otus.designsystem.theme.motion.Motion
 import com.otus.designsystem.theme.motion.MotionCurve
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
-import com.otus.designsystem.theme.tokens.editing.ComposeTokens
 import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 import kotlin.math.PI
 import kotlin.math.roundToInt
@@ -94,7 +93,7 @@ private fun SharedTransitionScope.part(
             val radius = BLUR_RADIUS.toPx() * morph.blurShare(if (arriving) shown else 1f - shown)
             renderEffect = if (radius > 0f) BlurEffect(radius, radius, TileMode.Clamp) else null
             // The rounder bar's corners lie inside the less round clip, so neither bar loses an edge.
-            shape = SmoothCornerShape(minOf(ComposeTokens.formatBarRadius, ActionBarTokens.radius))
+            shape = SmoothCornerShape(minOf(ActionBarTokens.formatBarRadius, ActionBarTokens.radius))
             clip = true
         }
 }

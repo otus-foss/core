@@ -17,6 +17,8 @@ import androidx.compose.ui.unit.TextUnit
 import com.otus.designsystem.shared.folders.elements.FolderPath
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.content.ReadTokens
+import com.otus.designsystem.theme.tokens.rows.FolderTokens
+import com.otus.designsystem.theme.tokens.rows.StripTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
@@ -52,7 +54,7 @@ private fun SubcomposeMeasureScope.hintLayout(
         slot: String,
         text: String,
     ): Placeable = measured.getOrPut(slot) { subcompose(slot) { HintText(text, fontSize) }.first().measure(loose) }
-    val gap = ReadTokens.glyphGap.roundToPx()
+    val gap = StripTokens.glyphGap.roundToPx()
     val start = prefix?.let { hint("prefix", it) }
     val startWidth = start?.let { it.width + gap } ?: 0
     val full =
@@ -129,10 +131,10 @@ private fun Name(
     fontSize: TextUnit,
 ) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(ReadTokens.glyphGap),
+        horizontalArrangement = Arrangement.spacedBy(StripTokens.glyphGap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        FolderNameGlyph(name, ReadTokens.folderGlyphSize)
+        FolderNameGlyph(name, FolderTokens.glyphSize)
         FolderPath(name.path, fontSize = fontSize)
     }
 }

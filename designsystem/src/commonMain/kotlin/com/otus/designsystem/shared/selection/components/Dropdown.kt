@@ -42,9 +42,11 @@ import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
-import com.otus.designsystem.theme.tokens.editing.ComposeTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.MenuTokens
+import com.otus.designsystem.theme.typography.TypeScale
 import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
@@ -120,10 +122,10 @@ public fun DropdownRow(
     Row(
         modifier
             .fillMaxWidth()
-            .heightIn(min = PanelTokens.touchTarget)
+            .heightIn(min = Sizes.touchTarget)
             .background(if (selected) OtusColors.bgRegular else OtusColors.bgDark, shape)
             .selectable(selected, onClick = onClick)
-            .padding(horizontal = MenuTokens.rowPadding - MenuTokens.inset, vertical = PanelTokens.iconGap),
+            .padding(horizontal = MenuTokens.rowPadding - MenuTokens.inset, vertical = Spacing.iconGap),
         horizontalArrangement = Arrangement.spacedBy(MenuTokens.rowPadding - MenuTokens.inset),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -135,7 +137,7 @@ public fun DropdownRow(
                     subtitle,
                     style = panelTextStyle(),
                     color = OtusColors.text3,
-                    fontSize = ComposeTokens.detailSize,
+                    fontSize = TypeScale.detail,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -147,7 +149,7 @@ public fun DropdownRow(
                 Modifier.widthIn(max = MenuTokens.detailMaxWidth),
                 style = panelTextStyle(),
                 color = OtusColors.text3,
-                fontSize = ComposeTokens.detailSize,
+                fontSize = TypeScale.detail,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -162,11 +164,11 @@ public fun ListCaption(text: String) {
         text,
         Modifier
             .padding(horizontal = MenuTokens.rowPadding - MenuTokens.inset)
-            .padding(top = MenuTokens.rowPadding - MenuTokens.inset, bottom = PanelTokens.iconGap)
+            .padding(top = MenuTokens.rowPadding - MenuTokens.inset, bottom = Spacing.iconGap)
             .semantics { heading() },
         style = panelTextStyle(),
         color = OtusColors.text3,
-        fontSize = ComposeTokens.detailSize,
+        fontSize = TypeScale.detail,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
     )

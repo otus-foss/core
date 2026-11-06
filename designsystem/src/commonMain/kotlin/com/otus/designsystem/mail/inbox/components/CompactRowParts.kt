@@ -22,6 +22,7 @@ import com.otus.designsystem.resources.symbol_reply
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.folders.elements.FolderGlyph
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.rows.FolderTokens
 import com.otus.designsystem.theme.tokens.rows.InboxTokens
 import org.jetbrains.compose.resources.DrawableResource
 
@@ -56,7 +57,7 @@ internal fun RowLineText(
     }
 }
 
-/** The marks, folder glyphs, and "+N" at the end of line 2, each [InboxTokens.markSize] wide. */
+/** The marks, folder glyphs, and "+N" at the end of line 2, each [FolderTokens.markSize] wide. */
 @Composable
 internal fun RowEndIcons(text: CompactRowText) {
     text.marks.forEach { mark ->
@@ -85,5 +86,5 @@ private fun MarkSymbol(
     resource: DrawableResource,
     color: Color,
 ) {
-    CompositionLocalProvider(LocalContentColor provides color) { Symbol(resource, size = InboxTokens.markSize) }
+    CompositionLocalProvider(LocalContentColor provides color) { Symbol(resource, size = FolderTokens.markSize) }
 }

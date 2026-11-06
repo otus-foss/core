@@ -25,6 +25,7 @@ import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.colors.ThemeBase
 import com.otus.designsystem.theme.colors.ThemeChoice
 import com.otus.designsystem.theme.tokens.content.ReadTokens
+import com.otus.designsystem.theme.tokens.rows.StripTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 import org.junit.Rule
 import org.junit.runner.RunWith
@@ -169,7 +170,7 @@ private fun FolderSlot() {
 @Composable
 private fun SlotRow(content: @Composable () -> Unit) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(ReadTokens.glyphGap),
+        horizontalArrangement = Arrangement.spacedBy(StripTokens.glyphGap),
         verticalAlignment = Alignment.CenterVertically,
     ) { content() }
 }

@@ -21,7 +21,9 @@ import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.shared.panels.elements.darkSurface
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.controls.ControlTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 import org.jetbrains.compose.resources.DrawableResource
@@ -71,16 +73,16 @@ private fun NoticeButton(
     val shape = SmoothCornerShape(ActionBarTokens.radius - buttonInset)
     Box(
         Modifier
-            .heightIn(min = PanelTokens.touchTarget)
+            .heightIn(min = Sizes.touchTarget)
             .clickable(interactions, indication = null, role = Role.Button, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
         Box(
             Modifier
-                .heightIn(min = PanelTokens.chipHeight)
+                .heightIn(min = Sizes.chipHeight)
                 .background(OtusColors.bgRegular, shape)
                 .controlPressFeedback(interactions, shape)
-                .padding(horizontal = PanelTokens.chipPadding + PanelTokens.iconGap),
+                .padding(horizontal = ControlTokens.chipPadding + Spacing.iconGap),
             contentAlignment = Alignment.Center,
         ) { Text(label, style = panelTextStyle(), fontSize = ActionBarTokens.subtitleSize) }
     }
@@ -90,4 +92,4 @@ private fun NoticeButton(
  * The gap around the notice's button on every side: its pill sits centered in a 48 dp touch area
  * that fills the notice's height, so the end padding matches the space above and below.
  */
-private val buttonInset = (PanelTokens.touchTarget - PanelTokens.chipHeight) / 2
+private val buttonInset = (Sizes.touchTarget - Sizes.chipHeight) / 2

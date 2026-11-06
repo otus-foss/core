@@ -46,6 +46,8 @@ import com.otus.designsystem.shared.rows.components.Collapsible
 import com.otus.designsystem.shared.sidebar.components.sidebarOpenZone
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.motionTween
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.layout.QuickViewTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
@@ -123,7 +125,7 @@ private fun PanelRail(
     Collapsible(shown) {
         Row(
             Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(PanelTokens.iconGap),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.iconGap),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             PanelChipRail(Modifier.weight(1f), geometry, scroll) { scope.chips() }
@@ -239,7 +241,7 @@ internal fun PanelHeader(
             Box(
                 Modifier
                     .weight(1f)
-                    .heightIn(min = PanelTokens.touchTarget),
+                    .heightIn(min = Sizes.touchTarget),
                 contentAlignment = Alignment.CenterStart,
             ) { ProvideTextStyle(panelTextStyle()) { content() } }
             if (actions != null) Row(verticalAlignment = Alignment.CenterVertically, content = actions)

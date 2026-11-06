@@ -7,7 +7,7 @@ import com.otus.designsystem.shared.controls.elements.ChipFrame
 import com.otus.designsystem.shared.controls.elements.ChipText
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.typography.TypeScale
 import com.otus.designsystem.theme.typography.panelTextStyle
 import org.jetbrains.compose.resources.DrawableResource
 
@@ -33,7 +33,7 @@ public fun SidebarPill(
                 count,
                 style = panelTextStyle(),
                 color = OtusColors.text2,
-                fontSize = PanelTokens.countSize,
+                fontSize = TypeScale.label,
                 maxLines = 1,
             )
         }

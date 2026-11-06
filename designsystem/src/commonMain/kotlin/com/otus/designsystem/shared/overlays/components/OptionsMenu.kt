@@ -28,8 +28,8 @@ import com.otus.designsystem.shared.selection.components.Dropdown
 import com.otus.designsystem.shared.selection.components.ListCaption
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
-import com.otus.designsystem.theme.tokens.editing.ComposeTokens
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.overlays.MenuTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 import org.jetbrains.compose.resources.DrawableResource
@@ -44,7 +44,7 @@ public fun OptionsMenu(
     items: List<OptionsItem>,
     onDismiss: () -> Unit,
 ) {
-    Dropdown(onDismiss, alignEnd = true, width = ComposeTokens.optionsMenuWidth, unrolls = false) {
+    Dropdown(onDismiss, alignEnd = true, width = MenuTokens.optionsMenuWidth, unrolls = false) {
         OptionsList(items, onDismiss)
     }
 }
@@ -114,9 +114,9 @@ private fun Modifier.currentChoice(current: Boolean): Modifier =
 internal fun OptionsDivider() {
     Box(
         Modifier
-            .padding(horizontal = MenuTokens.rowPadding - MenuTokens.inset, vertical = PanelTokens.iconGap)
+            .padding(horizontal = MenuTokens.rowPadding - MenuTokens.inset, vertical = Spacing.iconGap)
             .fillMaxWidth()
-            .height(PanelTokens.borderWidth)
+            .height(Sizes.borderWidth)
             .background(OtusColors.bgLight),
     )
 }
@@ -132,7 +132,7 @@ private fun OptionsRow(
     Row(
         modifier
             .fillMaxWidth()
-            .heightIn(min = PanelTokens.touchTarget + MenuTokens.inset * 2)
+            .heightIn(min = Sizes.touchTarget + MenuTokens.inset * 2)
             .padding(horizontal = MenuTokens.rowPadding - MenuTokens.inset),
         horizontalArrangement = Arrangement.spacedBy(MenuTokens.rowPadding),
         verticalAlignment = Alignment.CenterVertically,

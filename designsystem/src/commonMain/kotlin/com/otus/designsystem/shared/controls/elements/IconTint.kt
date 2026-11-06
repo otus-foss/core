@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.Dp
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_folder
 import com.otus.designsystem.resources.symbol_folder_fill
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import org.jetbrains.compose.resources.DrawableResource
 
 /**
@@ -28,7 +28,7 @@ public val LocalIconTint: ProvidableCompositionLocal<Color?> = compositionLocalO
 @Composable
 internal fun LeadingSymbol(
     resource: DrawableResource,
-    size: Dp = PanelTokens.iconSize,
+    size: Dp = Sizes.iconSize,
     enabled: Boolean = true,
 ) {
     val tint = LocalIconTint.current.takeIf { enabled }

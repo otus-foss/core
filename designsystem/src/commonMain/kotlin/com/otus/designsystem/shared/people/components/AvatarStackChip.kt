@@ -10,11 +10,13 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import com.otus.designsystem.shared.controls.elements.Chip
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.controls.ControlTokens
+import com.otus.designsystem.theme.tokens.core.Spacing
+import com.otus.designsystem.theme.typography.TypeScale
 import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
- * A selected pill showing up to [PanelTokens.CHIP_AVATAR_LIMIT] overlapping avatars. The caller
+ * A selected pill showing up to [ControlTokens.CHIP_AVATAR_LIMIT] overlapping avatars. The caller
  * chooses the [label], such as a first name or a "+3" count, the spoken [description], and an
  * optional [detail] shown after a divider line. A small `text2` [prefix], such as "To", comes
  * before the avatars, so pills of different people filters never look alike.
@@ -37,11 +39,11 @@ public fun AvatarStackChip(
         detail = detail,
     ) {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(PanelTokens.iconGap),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.iconGap),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             if (prefix != null) {
-                Text(prefix, style = panelTextStyle(), color = OtusColors.text2, fontSize = PanelTokens.countSize)
+                Text(prefix, style = panelTextStyle(), color = OtusColors.text2, fontSize = TypeScale.label)
             }
             AvatarStack(avatars, ring = OtusColors.selectedFill)
         }

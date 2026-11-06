@@ -35,8 +35,8 @@ import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.shapes.strokeBorder
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.feedback.ToastTokens
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
@@ -66,7 +66,7 @@ public fun Toast(
             .heightIn(min = ToastTokens.height)
             .height(IntrinsicSize.Min)
             .background(fill, shape)
-            .strokeBorder(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape)
+            .strokeBorder(Sizes.borderWidth, OtusColors.strokeBgDark, shape)
             .padding(start = ToastTokens.textInset, end = if (action == null) ToastTokens.textInset else 0.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

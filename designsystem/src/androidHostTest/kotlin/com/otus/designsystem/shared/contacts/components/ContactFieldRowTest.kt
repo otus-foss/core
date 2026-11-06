@@ -9,7 +9,7 @@ import androidx.compose.ui.unit.DpRect
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.height
 import androidx.compose.ui.unit.width
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -42,8 +42,8 @@ class ContactFieldRowTest {
             }
 
         targets.forEach { bounds ->
-            assertTrue(bounds.width >= PanelTokens.touchTarget, "$bounds is narrower than a touch target")
-            assertTrue(bounds.height >= PanelTokens.touchTarget, "$bounds is shorter than a touch target")
+            assertTrue(bounds.width >= Sizes.touchTarget, "$bounds is narrower than a touch target")
+            assertTrue(bounds.height >= Sizes.touchTarget, "$bounds is shorter than a touch target")
         }
         targets.zipWithNext().forEach { (first, second) ->
             assertTrue(!first.overlaps(second), "$first overlaps $second")

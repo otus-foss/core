@@ -17,7 +17,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
-import com.otus.designsystem.theme.tokens.content.ReadTokens
+import com.otus.designsystem.theme.tokens.rows.StripTokens
 import kotlin.math.floor
 import kotlin.math.roundToInt
 
@@ -52,7 +52,7 @@ public fun SlidingPositionStrip(
 }
 
 /**
- * [count] pages side by side, each as wide as the track and [ReadTokens.stripStart] apart, moved
+ * [count] pages side by side, each as wide as the track and [StripTokens.start] apart, moved
  * by [position] and cut off at the track's edges. Only the page at or before [position] and the
  * one after it are composed.
  */
@@ -68,7 +68,7 @@ private fun PageTrack(
     val inView by remember(count) {
         derivedStateOf { floor(position()).toInt().let { listOf(it, it + 1) }.filter { it in 0 until count } }
     }
-    val gap = with(LocalDensity.current) { ReadTokens.stripStart.roundToPx() }
+    val gap = with(LocalDensity.current) { StripTokens.start.roundToPx() }
     BoxWithConstraints(modifier.clipToBounds(), contentAlignment = Alignment.CenterStart) {
         val step = constraints.maxWidth + gap
         inView.forEach { index ->

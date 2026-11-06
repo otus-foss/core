@@ -41,7 +41,7 @@ import com.otus.designsystem.theme.motion.MotionCurve
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 import com.otus.designsystem.theme.tokens.overlays.MenuTokens
 
@@ -100,7 +100,7 @@ private fun GroupRow(
         content()
         Box(
             Modifier
-                .size(PanelTokens.touchTarget)
+                .size(Sizes.touchTarget)
                 .semantics {
                     contentDescription = moreLabel
                     selected = open
@@ -109,7 +109,7 @@ private fun GroupRow(
         ) {
             Box(
                 Modifier
-                    .size(PanelTokens.chipHeight)
+                    .size(Sizes.chipHeight)
                     .background(if (open) OtusColors.bgLight else Color.Transparent, CircleShape),
                 contentAlignment = Alignment.Center,
             ) { Symbol(Res.drawable.symbol_more_horiz) }

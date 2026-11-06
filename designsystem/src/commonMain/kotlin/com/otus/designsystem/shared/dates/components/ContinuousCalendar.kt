@@ -20,7 +20,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import kotlinx.datetime.LocalDate
 
@@ -75,7 +75,7 @@ private fun VisibleMonthHeading(
 private fun CalendarWeekdays() {
     Row(Modifier.fillMaxWidth().semantics { contentDescription = "Calendar weekdays" }) {
         listOf("M", "T", "W", "T", "F", "S", "S").forEach { day ->
-            Box(Modifier.weight(1f).heightIn(min = PanelTokens.touchTarget), contentAlignment = Alignment.Center) {
+            Box(Modifier.weight(1f).heightIn(min = Sizes.touchTarget), contentAlignment = Alignment.Center) {
                 Text(day, color = OtusColors.text2)
             }
         }

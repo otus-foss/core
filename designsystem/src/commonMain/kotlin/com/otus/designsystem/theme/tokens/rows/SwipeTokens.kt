@@ -1,13 +1,14 @@
 package com.otus.designsystem.theme.tokens.rows
 
 import androidx.compose.ui.unit.dp
+import com.otus.designsystem.theme.tokens.core.Spacing
 
 internal object SwipeTokens {
     /** Drag distance past which releasing runs the revealed action. The same drag is needed every time. */
     val threshold = 96.dp
 
     /** Space between the row edge and the revealed icon, and between the icon and its label. */
-    val inset = 16.dp
+    val inset = Spacing.gutter
     val gap = 8.dp
 
     /** How far the icon slides in from the edge while it grows to full size at the threshold. */

@@ -2,7 +2,11 @@ package com.otus.designsystem.mail.read.html
 
 import com.otus.designsystem.theme.colors.OtusPalette
 import com.otus.designsystem.theme.tokens.content.ReadTokens
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.controls.ControlTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.core.Spacing
+import com.otus.designsystem.theme.tokens.people.PersonPillTokens
+import com.otus.designsystem.theme.tokens.rows.StripTokens
 
 /**
  * The fold for [quote] after the body: a header pill with the author's initials and name and the
@@ -59,7 +63,7 @@ private fun foldStyle(
             className("label"),
             "display:flex",
             "align-items:center",
-            "min-height:${PanelTokens.touchTarget.css()}",
+            "min-height:${Sizes.touchTarget.css()}",
             "list-style:none",
             "color:${palette.text2.css()}",
             "-webkit-tap-highlight-color:transparent",
@@ -98,13 +102,13 @@ private fun headerStyle(
             className("pill"),
             "display:inline-flex",
             "align-items:center",
-            "gap:${ReadTokens.glyphGap.css()}",
-            "height:${ReadTokens.quotePillHeight.css()}",
+            "gap:${StripTokens.glyphGap.css()}",
+            "height:${PersonPillTokens.quoteHeight.css()}",
             "box-sizing:border-box",
-            "padding:0 ${PanelTokens.chipPadding.css()} 0 ${ReadTokens.quotePillStart.css()}",
-            "border-radius:${(ReadTokens.quotePillHeight / 2).css()}",
+            "padding:0 ${ControlTokens.chipPadding.css()} 0 ${PersonPillTokens.quoteStart.css()}",
+            "border-radius:${(PersonPillTokens.quoteHeight / 2).css()}",
             "background:${palette.bgDark.css()}",
-            "border:${PanelTokens.borderWidth.css()} solid ${palette.bgLight.css()}",
+            "border:${Sizes.borderWidth.css()} solid ${palette.bgLight.css()}",
             "color:${palette.text2.css()}",
             // One line, like the Compose pill: a long date ends in an ellipsis instead of wrapping.
             "white-space:nowrap",
@@ -116,9 +120,9 @@ private fun headerStyle(
             "display:inline-flex",
             "align-items:center",
             "justify-content:center",
-            "width:${ReadTokens.quoteAvatarSize.css()}",
-            "height:${ReadTokens.quoteAvatarSize.css()}",
-            "border-radius:${(ReadTokens.quoteAvatarSize / 2).css()}",
+            "width:${PersonPillTokens.quoteAvatarSize.css()}",
+            "height:${PersonPillTokens.quoteAvatarSize.css()}",
+            "border-radius:${(PersonPillTokens.quoteAvatarSize / 2).css()}",
             "background:${palette.bgLight.css()}",
             "color:${palette.text1.css()}",
             "font-size:${ReadTokens.quoteInitialsSize.css()}",
@@ -128,9 +132,9 @@ private fun headerStyle(
         cssRule(
             className("divider"),
             "display:inline-block",
-            "width:${PanelTokens.borderWidth.css()}",
-            "height:${PanelTokens.chipDividerHeight.css()}",
-            "margin:0 ${PanelTokens.iconGap.css()}",
+            "width:${Sizes.borderWidth.css()}",
+            "height:${ControlTokens.chipDividerHeight.css()}",
+            "margin:0 ${Spacing.iconGap.css()}",
             "background:${palette.bgLight.css()}",
         ),
         cssRule(

@@ -5,29 +5,16 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.core.Spacing
+import com.otus.designsystem.theme.typography.TypeScale
 
 public object PanelTokens {
-    public val touchTarget: Dp = 48.dp
-
-    /**
-     * One row of a folder list: in the sidebar, the move sheet, and settings. Rows follow each
-     * other without gaps, so they are shorter than [touchTarget] to fit more folders on screen.
-     */
-    public val compactRowHeight: Dp = 36.dp
-    public val chipHeight: Dp = 36.dp
-    public val iconSize: Dp = 20.dp
-    public val chipAvatarOverlap: Dp = 6.dp
-    public const val CHIP_AVATAR_LIMIT: Int = 4
     public val navigationIconSize: Dp = 32.dp
     public val closeIconSize: Dp = 24.dp
-    public val chipPadding: Dp = 10.dp
-    public val chipDividerHeight: Dp = 14.dp
-    public val iconGap: Dp = 4.dp
-    public val chipGap: Dp = 6.dp
     public val panelInset: Dp = 8.dp
-    public val headerHeight: Dp = touchTarget + panelInset * 2
+    public val headerHeight: Dp = Sizes.touchTarget + panelInset * 2
     public val panelRadius: Dp = CornerTokens.panel
     public val detachedGap: Dp = 0.dp
 
@@ -35,7 +22,7 @@ public object PanelTokens {
     public val headerRowHeight: Dp = 56.dp
 
     /** Space above and below the header's 48 dp content, which centers one line in [headerRowHeight]. */
-    public val headerContentPadding: Dp = (headerRowHeight - touchTarget) / 2
+    public val headerContentPadding: Dp = (headerRowHeight - Sizes.touchTarget) / 2
 
     /** The control panel runs edge to edge from the top, so only its bottom corners round. */
     public val bottomRadius: Dp = CornerTokens.surface
@@ -65,7 +52,7 @@ public object PanelTokens {
     public val navigationContentStart: Dp = 40.dp
 
     /** The header's inset from a screen edge that has no chevron. */
-    public val headerInset: Dp = 16.dp
+    public val headerInset: Dp = Spacing.gutter
 
     /** The gap between header content and the account stack. */
     public val headerGap: Dp = 6.dp
@@ -103,12 +90,12 @@ public object PanelTokens {
     /** The "+N" badge on a folded stack: its offset past the avatar, padding, text, and starting scale. */
     public val badgeOffset: Dp = 8.dp
     public val badgePadding: Dp = 4.dp
-    public val badgeTextSize: TextUnit = 11.sp
+    public val badgeTextSize: TextUnit = TypeScale.badge
     public const val BADGE_START_SCALE: Float = 0.6f
 
     /** A page title beside the chevron. */
-    public val titleSize: TextUnit = 20.sp
-    public val titleLineHeight: TextUnit = 26.sp
+    public val titleSize: TextUnit = TypeScale.title
+    public val titleLineHeight: TextUnit = TypeScale.titleLineHeight
 
     /** The title's start after the chevron, and how far it slides away as a search field grows over it. */
     public val titleStart: Dp = 4.dp
@@ -132,18 +119,4 @@ public object PanelTokens {
     /** The page-colored ring that cuts each pill out of the panel. */
     public val pillRing: Dp = 4.dp
     public val cutoutGap: Dp = 2.dp
-    public val borderWidth: Dp = 1.dp
-
-    /** The primary pill's share of a button pair's width; the secondary label gets the rest. */
-    public const val PAIR_PRIMARY_SHARE: Float = 0.62f
-
-    /** A progress ring beside a label, such as while a count is still loading. */
-    public val progressSize: Dp = 16.dp
-    public val progressStroke: Dp = 2.dp
-    public val fadeWidth: Dp = 24.dp
-    public val textSize: TextUnit = 16.sp
-    public val lineHeight: TextUnit = 20.sp
-
-    /** A count beside a label, such as unread mail in a chip. */
-    public val countSize: TextUnit = 14.sp
 }

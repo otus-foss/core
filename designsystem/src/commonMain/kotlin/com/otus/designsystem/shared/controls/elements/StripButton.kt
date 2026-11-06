@@ -22,8 +22,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.content.ReadTokens
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.rows.StripTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 import org.jetbrains.compose.resources.DrawableResource
 
@@ -43,7 +43,7 @@ internal fun StripButton(
     val interactions = remember { MutableInteractionSource() }
     Box(
         modifier
-            .sizeIn(minWidth = PanelTokens.touchTarget, minHeight = PanelTokens.touchTarget)
+            .sizeIn(minWidth = Sizes.touchTarget, minHeight = Sizes.touchTarget)
             .clickable(interactions, indication = null, role = Role.Button, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
@@ -52,19 +52,19 @@ internal fun StripButton(
             shape = CircleShape,
             color = OtusColors.bgRegular,
             contentColor = OtusColors.text1,
-            border = BorderStroke(PanelTokens.borderWidth, OtusColors.bgLight),
+            border = BorderStroke(Sizes.borderWidth, OtusColors.bgLight),
         ) {
             Row(
-                Modifier.height(height).padding(horizontal = ReadTokens.stripButtonPadding),
-                horizontalArrangement = Arrangement.spacedBy(ReadTokens.glyphGap),
+                Modifier.height(height).padding(horizontal = StripTokens.buttonPadding),
+                horizontalArrangement = Arrangement.spacedBy(StripTokens.glyphGap),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                if (icon != null) Symbol(icon, size = ReadTokens.buttonIconSize)
+                if (icon != null) Symbol(icon, size = StripTokens.buttonIconSize)
                 Text(
                     label,
-                    Modifier.widthIn(max = ReadTokens.stripButtonLabelMaxWidth),
+                    Modifier.widthIn(max = StripTokens.buttonLabelMaxWidth),
                     style = panelTextStyle(),
-                    fontSize = ReadTokens.buttonTextSize,
+                    fontSize = StripTokens.buttonTextSize,
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,

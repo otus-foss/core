@@ -4,6 +4,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.layout.CornerTokens
 
 /** Sizes of the filter panel that opens out of the inbox's control panel, and of its chips. */
@@ -31,11 +32,10 @@ public object FilterTokens {
     public val titleSize: TextUnit = 17.sp
     public val bodyInset: Dp = 12.dp
     public val footerPadding: Dp = 12.dp
-    public val segmentHeight: Dp = 40.dp
     public val searchHeight: Dp = 48.dp
     public val searchRadius: Dp = CornerTokens.button
     public val folderRowHeight: Dp = 48.dp
-    public val folderIndent: Dp = 16.dp
+    public val folderIndent: Dp = Spacing.indent
 
     /** How many levels a folder tree indents; deeper folders line up with the last level. */
     public const val FOLDER_MAX_DEPTH: Int = 5
@@ -58,9 +58,6 @@ public object FilterTokens {
     public val personChipNameMaxWidth: Dp = 160.dp
     public val cardRadius: Dp = CornerTokens.panel
 
-    /** A date range calendar shown inline on a filter page: its heading, weekdays, and about four weeks. */
-    public val rangeCalendarHeight: Dp = 360.dp
-
     /** A small note under a filter page's choices, such as which folders are left out. */
     public val noteSize: TextUnit = 12.sp
 
@@ -69,8 +66,5 @@ public object FilterTokens {
     public const val FOLDER_STACK_LIMIT: Int = 3
 
     /** How far the panel keeps from the window's top and bottom edges. */
-    public val screenInset: Dp = 16.dp
-
-    public val badgeSize: Dp = 16.dp
-    public val badgeTextSize: TextUnit = 10.sp
+    public val screenInset: Dp = Spacing.gutter
 }

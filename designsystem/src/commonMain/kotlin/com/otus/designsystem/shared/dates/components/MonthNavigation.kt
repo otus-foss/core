@@ -24,7 +24,7 @@ import com.otus.designsystem.shared.controls.elements.IconButton
 import com.otus.designsystem.shared.controls.elements.IconButtonLook
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.tokens.selection.CalendarTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
@@ -44,7 +44,7 @@ public fun MonthNavigation(
         modifier = Modifier.fillMaxWidth(),
         shape = CircleShape,
         color = OtusColors.bgDark,
-        border = BorderStroke(PanelTokens.borderWidth, OtusColors.strokeBgDark),
+        border = BorderStroke(Sizes.borderWidth, OtusColors.strokeBgDark),
     ) {
         // The shared surface supplies the overlapped portions of the Figma arrow segments.
         // Keep hit targets adjacent so the center button never steals an arrow press.

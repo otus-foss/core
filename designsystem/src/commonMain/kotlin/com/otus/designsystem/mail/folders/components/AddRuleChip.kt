@@ -31,7 +31,7 @@ import com.otus.designsystem.shared.settings.elements.outlineDash
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.shapes.toPath
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.selection.RuleChipTokens
 
 /**
@@ -75,7 +75,7 @@ public fun AddRuleChip(
 /** A dashed [color] outline inside the bounds, with a rule chip's corners. */
 private fun Modifier.dashedOutline(color: Color): Modifier =
     drawBehind {
-        val width = PanelTokens.borderWidth.toPx()
+        val width = Sizes.borderWidth.toPx()
         drawPath(
             SmoothCornerShape(RuleChipTokens.radius).toPath(
                 Rect(width / 2, width / 2, size.width - width / 2, size.height - width / 2),

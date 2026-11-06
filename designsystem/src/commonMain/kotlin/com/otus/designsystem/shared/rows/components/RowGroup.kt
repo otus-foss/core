@@ -25,7 +25,7 @@ import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.shapes.strokeBorder
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 import org.jetbrains.compose.resources.DrawableResource
@@ -50,7 +50,7 @@ public fun RowGroup(
             .raisedOutline(raised, shape),
     ) {
         rows.forEachIndexed { index, row ->
-            if (index > 0) Box(Modifier.fillMaxWidth().height(PanelTokens.borderWidth).background(line))
+            if (index > 0) Box(Modifier.fillMaxWidth().height(Sizes.borderWidth).background(line))
             row()
         }
     }
@@ -92,4 +92,4 @@ public fun GroupRow(
 private fun Modifier.raisedOutline(
     raised: Boolean,
     shape: Shape,
-): Modifier = if (raised) strokeBorder(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape) else this
+): Modifier = if (raised) strokeBorder(Sizes.borderWidth, OtusColors.strokeBgDark, shape) else this

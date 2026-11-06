@@ -28,7 +28,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.graphicsLayer
@@ -53,6 +52,7 @@ import com.otus.designsystem.theme.motion.MotionCurve
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
 import com.otus.designsystem.theme.shapes.toPath
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import kotlinx.coroutines.CoroutineScope
@@ -241,7 +241,7 @@ private class SheetLift(
  */
 internal fun Modifier.panelEdge(): Modifier =
     clip(PanelTokens.bottomShape).drawBehind {
-        val border = PanelTokens.borderWidth.toPx()
+        val border = Sizes.borderWidth.toPx()
         val edge = Rect(-border, -border, size.width + border, size.height - border / 2)
         drawRect(OtusColors.bgDark)
         // Drawn past the top and sides, which the clip cuts away, so only the bottom stroke shows.

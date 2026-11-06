@@ -18,6 +18,7 @@ import com.otus.designsystem.shared.panels.elements.darkSurface
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.content.ReadTokens
+import com.otus.designsystem.theme.tokens.rows.StripTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 import org.jetbrains.compose.resources.DrawableResource
 
@@ -40,7 +41,7 @@ public fun ImageBanner(
             .heightIn(min = ReadTokens.bannerHeight)
             .darkSurface(shape)
             .padding(start = ReadTokens.bannerStart, end = ReadTokens.bannerEnd),
-        horizontalArrangement = Arrangement.spacedBy(ReadTokens.stripGap),
+        horizontalArrangement = Arrangement.spacedBy(StripTokens.gap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         CompositionLocalProvider(LocalContentColor provides OtusColors.text3) { Symbol(icon) }

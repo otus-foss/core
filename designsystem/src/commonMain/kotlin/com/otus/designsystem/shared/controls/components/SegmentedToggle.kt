@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.TextUnit
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
-import com.otus.designsystem.theme.tokens.editing.SignatureTokens
+import com.otus.designsystem.theme.tokens.controls.ControlTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
@@ -31,7 +31,7 @@ import com.otus.designsystem.theme.typography.panelTextStyle
  * Copy from and Copy to; none while [selected] is -1. Each label stays on one line at [fontSize],
  * in a segment as wide as its share of the labels' length, so a longer label gets more room.
  * [height] is the track's, such as
- * [com.otus.designsystem.theme.tokens.selection.FilterTokens.segmentHeight] in a filter panel.
+ * [com.otus.designsystem.theme.tokens.controls.ControlTokens.segmentHeight] in a filter panel.
  */
 @Composable
 public fun SegmentedToggle(
@@ -40,7 +40,7 @@ public fun SegmentedToggle(
     onSelect: (Int) -> Unit,
     modifier: Modifier = Modifier,
     fontSize: TextUnit = TextUnit.Unspecified,
-    height: Dp = SignatureTokens.toggleHeight,
+    height: Dp = ControlTokens.toggleHeight,
 ) {
     Row(
         modifier
@@ -48,7 +48,7 @@ public fun SegmentedToggle(
             .height(height)
             .clip(CircleShape)
             .background(OtusColors.bgRegular)
-            .padding(SignatureTokens.toggleInset)
+            .padding(ControlTokens.toggleInset)
             .selectableGroup(),
     ) {
         options.forEachIndexed { index, option ->

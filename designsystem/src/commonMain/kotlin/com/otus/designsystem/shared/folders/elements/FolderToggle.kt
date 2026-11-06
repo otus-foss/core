@@ -18,7 +18,7 @@ import com.otus.designsystem.resources.symbol_folder_open_fill
 import com.otus.designsystem.shared.controls.elements.LeadingSymbol
 import com.otus.designsystem.shared.controls.elements.LocalIconTint
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.layout.SidebarTokens
 import org.jetbrains.compose.resources.DrawableResource
 
@@ -43,7 +43,7 @@ internal fun FolderToggle(
                 .toggleable(it, interactions, indication = null, role = Role.Button, onValueChange = onExpandedChange)
         } ?: Modifier
     Box(
-        Modifier.size(PanelTokens.touchTarget, PanelTokens.compactRowHeight).then(toggle),
+        Modifier.size(Sizes.touchTarget, Sizes.compactRowHeight).then(toggle),
         contentAlignment = Alignment.Center,
     ) {
         Box(

@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.Dp
 import com.otus.designsystem.shared.controls.elements.optionalButton
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 
 /**
  * [avatar] at [size] as a button in a 48 dp target, which screen readers announce as [label]. A null
@@ -25,7 +25,7 @@ public fun AvatarButton(
 ) {
     Box(
         modifier
-            .size(maxOf(size, PanelTokens.touchTarget))
+            .size(maxOf(size, Sizes.touchTarget))
             .clip(CircleShape)
             .optionalButton(onClick, label),
         contentAlignment = Alignment.Center,

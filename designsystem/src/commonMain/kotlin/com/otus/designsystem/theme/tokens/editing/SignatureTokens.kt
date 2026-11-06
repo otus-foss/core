@@ -24,13 +24,4 @@ public object SignatureTokens {
 
     /** The list of preset sizes under a selected image. */
     public val sizeListWidth: Dp = 220.dp
-
-    /** The two-option toggle at the top of the Copy signature sheet. */
-    public val toggleHeight: Dp = 48.dp
-    public val toggleInset: Dp = 4.dp
-
-    /** The radio and checkbox marks in a pick list. */
-    public val markSize: Dp = 22.dp
-    public val markStroke: Dp = 2.dp
-    public val markDot: Dp = 10.dp
 }

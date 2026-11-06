@@ -32,7 +32,7 @@ import com.otus.designsystem.theme.colors.hslColor
 import com.otus.designsystem.theme.colors.parseHexColor
 import com.otus.designsystem.theme.colors.toHex
 import com.otus.designsystem.theme.colors.toHsl
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.tokens.settings.ThemeTokens
 
@@ -120,7 +120,7 @@ private fun HexRow(
             Modifier
                 .size(ThemeTokens.customColorSize)
                 .background(color, CircleShape)
-                .border(PanelTokens.borderWidth, OtusColors.bgLight, CircleShape),
+                .border(Sizes.borderWidth, OtusColors.bgLight, CircleShape),
         )
         InputField("Hex", hex, onHexChange, Modifier.weight(1f), placeholder = "#5A7EA4")
     }

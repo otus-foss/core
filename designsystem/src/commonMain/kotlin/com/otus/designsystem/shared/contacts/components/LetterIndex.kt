@@ -48,8 +48,8 @@ import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
-import com.otus.designsystem.theme.tokens.layout.SidebarTokens
 import com.otus.designsystem.theme.tokens.rows.LetterIndexTokens
+import com.otus.designsystem.theme.typography.TypeScale
 import com.otus.designsystem.theme.typography.panelTextStyle
 import kotlin.math.roundToInt
 
@@ -164,8 +164,8 @@ private fun LetterRow(
                     BlurredEdgeTreatment.Unbounded,
                 ).background(
                     if (current) OtusColors.selectedFill else Color.Transparent,
-                    SmoothCornerShape(SidebarTokens.entryRadius),
-                ).padding(horizontal = SidebarTokens.entryPadding),
+                    SmoothCornerShape(LetterIndexTokens.highlightRadius),
+                ).padding(horizontal = LetterIndexTokens.rowPadding),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
@@ -173,7 +173,7 @@ private fun LetterRow(
                 Modifier.width(LetterIndexTokens.letterColumn),
                 style = panelTextStyle(),
                 color = if (current) OtusColors.text1 else OtusColors.text2,
-                fontSize = SidebarTokens.detailSize,
+                fontSize = TypeScale.detail,
                 fontWeight = FontWeight.SemiBold,
                 maxLines = 1,
             )
@@ -181,7 +181,7 @@ private fun LetterRow(
                 letter.count.toString(),
                 style = panelTextStyle(),
                 color = OtusColors.text3,
-                fontSize = SidebarTokens.detailSize,
+                fontSize = TypeScale.detail,
                 maxLines = 1,
             )
         }

@@ -37,6 +37,7 @@ import com.otus.designsystem.shared.input.elements.SearchField
 import com.otus.designsystem.shared.panels.elements.PanelTitle
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.MotionCurve
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import kotlin.math.roundToInt
 
@@ -84,7 +85,7 @@ public fun ExpandingSearch(
                 onOpenChange(false)
             }
         },
-        modifier = Modifier.height(PanelTokens.touchTarget),
+        modifier = Modifier.height(Sizes.touchTarget),
         measurePolicy = SearchMeasurePolicy(progress),
     )
 }
@@ -172,7 +173,7 @@ private class SearchMeasurePolicy(
     ): MeasureResult {
         val grown = SearchSteps.grow(progress())
         val width = constraints.maxWidth
-        val target = PanelTokens.touchTarget.roundToPx()
+        val target = Sizes.touchTarget.roundToPx()
         val fieldWidth = lerp(target.toFloat(), (width - PanelTokens.searchFieldStart.roundToPx()).toFloat(), grown)
         val fieldLeft = width - fieldWidth.roundToInt()
         val iconLeft = fieldLeft + (PanelTokens.searchIconShift.toPx() * grown).roundToInt()

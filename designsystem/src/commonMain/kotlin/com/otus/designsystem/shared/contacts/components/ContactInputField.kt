@@ -16,7 +16,7 @@ import com.otus.designsystem.shared.input.elements.InputIcon
 import com.otus.designsystem.shared.input.elements.InputLook
 import com.otus.designsystem.shared.input.elements.RemoveFieldButton
 import com.otus.designsystem.shared.input.elements.inputFrame
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.typography.panelTextStyle
 import org.jetbrains.compose.resources.DrawableResource
 
@@ -33,7 +33,7 @@ public fun ContactInputField(
     onRemove: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(PanelTokens.iconGap)) {
+    Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Spacing.iconGap)) {
         FieldLabel(label)
         InputBox(value, onValueChange, label, InputLook(icon = icon), onRemove = onRemove)
     }
@@ -53,7 +53,7 @@ public fun ContactPickerField(
     onRemove: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(PanelTokens.iconGap)) {
+    Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Spacing.iconGap)) {
         FieldLabel(label)
         Row(
             Modifier.clickable(role = Role.Button, onClick = onClick).inputFrame(endsWithButton = true),

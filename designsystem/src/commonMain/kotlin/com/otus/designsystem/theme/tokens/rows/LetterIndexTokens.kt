@@ -2,6 +2,7 @@ package com.otus.designsystem.theme.tokens.rows
 
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.otus.designsystem.theme.tokens.layout.CornerTokens
 
 /** Sizes of the jump-to-letter index; see LetterIndex. */
 internal object LetterIndexTokens {
@@ -16,6 +17,10 @@ internal object LetterIndexTokens {
 
     /** A letter's row; with more letters than fit, the column scrolls instead of shrinking them. */
     val rowHeight: Dp = 48.dp
+
+    /** The current letter's highlight corner, and the letter and count's inset from the row's ends. */
+    val highlightRadius: Dp = CornerTokens.row
+    val rowPadding: Dp = 12.dp
 
     /** The gap above and below the highlight behind the current letter, inside its row. */
     val highlightInset: Dp = 4.dp

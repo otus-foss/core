@@ -2,7 +2,9 @@ package com.otus.designsystem.theme.tokens.layout
 
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.otus.designsystem.theme.tokens.selection.FilterTokens
+import com.otus.designsystem.theme.tokens.controls.ControlTokens
+import com.otus.designsystem.theme.tokens.core.Spacing
+import com.otus.designsystem.theme.typography.TypeScale
 
 internal object SidebarTokens {
     /** The page stays visible beyond it. */
@@ -19,11 +21,11 @@ internal object SidebarTokens {
     val headingChevron = 16.dp
 
     /** Headings, counts, and the subtitle under the title. */
-    val detailSize = 14.sp
+    val detailSize = TypeScale.detail
     val detailLineHeight = 18.sp
 
     /** Each nesting level moves an entry's icon and name this far toward the trailing edge. */
-    val nestIndent = 16.dp
+    val nestIndent = Spacing.indent
     const val SCRIM_ALPHA = 0.65f
 
     /** The avatars before the header's title. */
@@ -44,9 +46,9 @@ internal object SidebarTokens {
      * The ring sits outside a fill the size of the filter button's count, so both counts read alike.
      */
     val badgeRing = 2.dp
-    val badgeHeight = FilterTokens.badgeSize + badgeRing * 2
+    val badgeHeight = ControlTokens.badgeSize + badgeRing * 2
     val badgePadding = 4.dp + badgeRing
-    val badgeSize = FilterTokens.badgeTextSize
+    val badgeSize = ControlTokens.badgeTextSize
 
     /** The gap between mailbox tiles. */
     val tileGap = 8.dp
@@ -83,7 +85,4 @@ internal object SidebarTokens {
 
     /** A swipe released faster than this, per second, opens or closes the sidebar regardless of position. */
     val flingVelocity = 400.dp
-
-    /** How far a section or folder chevron turns when it opens. */
-    const val CHEVRON_OPEN_DEGREES = 90f
 }

@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.content.LabelTokens
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 
 /**
  * A small outlined capsule with a count, such as the mails in a conversation. It is decoration:
@@ -27,7 +27,7 @@ public fun CountPill(
         modifier
             .clearAndSetSemantics {}
             .height(LabelTokens.countHeight)
-            .border(PanelTokens.borderWidth, OtusColors.bgLight, CircleShape)
+            .border(Sizes.borderWidth, OtusColors.bgLight, CircleShape)
             .padding(horizontal = LabelTokens.countPadding),
         contentAlignment = Alignment.Center,
     ) {

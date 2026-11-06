@@ -42,7 +42,7 @@ import com.otus.designsystem.theme.motion.MotionCurve
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.animateScrollToItem
 import com.otus.designsystem.theme.motion.motionTween
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.selection.WheelTokens
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
@@ -77,7 +77,7 @@ internal fun WheelPicker(
     }
     BoxWithConstraints(modifier.fillMaxWidth()) {
         val density = LocalDensity.current
-        val rowHeight = maxOf(PanelTokens.touchTarget, with(density) { WheelTokens.lineHeight.toDp() })
+        val rowHeight = maxOf(Sizes.touchTarget, with(density) { WheelTokens.lineHeight.toDp() })
         val padding = ((maxHeight - rowHeight) / 2).coerceAtLeast(0.dp)
         LazyColumn(
             Modifier
@@ -183,7 +183,7 @@ private fun Modifier.wheelGuides(rowHeight: Float): Modifier =
                 OtusColors.bgLight,
                 Offset(0f, y),
                 Offset(size.width, y),
-                strokeWidth = PanelTokens.borderWidth.toPx(),
+                strokeWidth = Sizes.borderWidth.toPx(),
             )
         }
     }

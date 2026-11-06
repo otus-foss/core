@@ -27,7 +27,9 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.controls.ControlTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
@@ -74,7 +76,7 @@ internal fun ChipFrame(
     val interactions = remember { MutableInteractionSource() }
     Box(
         modifier
-            .sizeIn(minWidth = PanelTokens.touchTarget, minHeight = PanelTokens.touchTarget)
+            .sizeIn(minWidth = Sizes.touchTarget, minHeight = Sizes.touchTarget)
             .chipAction(interactions, selected, enabled, onClick),
         contentAlignment = Alignment.Center,
     ) {
@@ -89,7 +91,7 @@ internal fun ChipFrame(
             contentColor = if (enabled) OtusColors.text1 else OtusColors.text3,
             border =
                 BorderStroke(
-                    PanelTokens.borderWidth,
+                    Sizes.borderWidth,
                     if (selected == true) OtusColors.selectedFill else OtusColors.strokeBgDark,
                 ),
         ) {
@@ -113,8 +115,8 @@ internal fun ChipText(text: String) {
 internal fun ChipDivider(selected: Boolean) {
     Box(
         Modifier
-            .padding(horizontal = PanelTokens.iconGap)
-            .size(PanelTokens.borderWidth, PanelTokens.chipDividerHeight)
+            .padding(horizontal = Spacing.iconGap)
+            .size(Sizes.borderWidth, ControlTokens.chipDividerHeight)
             .background(if (selected) OtusColors.text3 else OtusColors.bgLight),
     )
 }
@@ -126,9 +128,9 @@ internal fun ChipDivider(selected: Boolean) {
 internal data class ChipLayout(
     val width: ChipWidth = ChipWidth.Content,
     val avatarFirst: Boolean = false,
-    val height: Dp = PanelTokens.chipHeight,
-    val start: Dp = PanelTokens.chipPadding,
-    val end: Dp = PanelTokens.chipPadding,
+    val height: Dp = Sizes.chipHeight,
+    val start: Dp = ControlTokens.chipPadding,
+    val end: Dp = ControlTokens.chipPadding,
 )
 
 private fun ChipLayout.fillModifier(): Modifier = if (width == ChipWidth.Fill) Modifier.fillMaxWidth() else Modifier
@@ -141,15 +143,15 @@ private fun ChipLayout.contentModifier(): Modifier =
         fillModifier()
             .heightIn(min = height)
             .padding(
-                start = if (avatarFirst) PanelTokens.iconGap else start,
+                start = if (avatarFirst) Spacing.iconGap else start,
                 end = end,
-                top = PanelTokens.iconGap,
-                bottom = PanelTokens.iconGap,
+                top = Spacing.iconGap,
+                bottom = Spacing.iconGap,
             )
     }
 
 private fun ChipLayout.arrangement(): Arrangement.Horizontal =
-    if (width == ChipWidth.Fill) LastAtEnd else Arrangement.spacedBy(PanelTokens.iconGap, Alignment.CenterHorizontally)
+    if (width == ChipWidth.Fill) LastAtEnd else Arrangement.spacedBy(Spacing.iconGap, Alignment.CenterHorizontally)
 
 /** How wide a [ChipFrame] is. */
 internal enum class ChipWidth {
@@ -163,9 +165,9 @@ internal enum class ChipWidth {
     Fill,
 }
 
-/** Packs items from the start [PanelTokens.iconGap] apart, except the last, which sits at the end. */
+/** Packs items from the start [Spacing.iconGap] apart, except the last, which sits at the end. */
 private object LastAtEnd : Arrangement.Horizontal {
-    override val spacing = PanelTokens.iconGap
+    override val spacing = Spacing.iconGap
 
     override fun Density.arrange(
         totalSize: Int,

@@ -4,6 +4,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.layout.CornerTokens
 
 /** Flat settings rows: a title and description beside a control, separated by hairlines. */
@@ -22,11 +24,11 @@ internal object SettingTokens {
     /** An avatar before a section title, and the space between them. */
     val sectionAvatar: Dp = 28.dp
     val sectionLeadingGap: Dp = 12.dp
-    val rowPadding: Dp = 16.dp
+    val rowPadding: Dp = Spacing.gutter
 
     /**
      * One 22 sp line between these paddings fills
-     * [PanelTokens.compactRowHeight][com.otus.designsystem.theme.tokens.layout.PanelTokens.compactRowHeight].
+     * [Sizes.compactRowHeight][com.otus.designsystem.theme.tokens.core.Sizes.compactRowHeight].
      */
     val compactRowPadding: Dp = 7.dp
     val rowGap: Dp = 16.dp

@@ -26,8 +26,8 @@ import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.shared.rows.components.topHairline
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.layout.PageTokens
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.tokens.settings.SettingTokens
 import org.jetbrains.compose.resources.DrawableResource
@@ -52,7 +52,7 @@ public fun SettingsGroupHeader(
                 .fillMaxWidth()
                 .topHairline(OtusColors.bgLight, PageTokens.textInset) { divided }
                 .padding(top = SettingTokens.groupGap)
-                .heightIn(min = PanelTokens.touchTarget)
+                .heightIn(min = Sizes.touchTarget)
                 .clickable(interactions, indication = null, role = Role.Button, onClick = onOpen)
                 .controlPressFeedback(interactions, RoundedCornerShape(SheetTokens.rowRadius))
                 .padding(horizontal = PageTokens.textInset)

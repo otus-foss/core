@@ -18,6 +18,7 @@ import com.otus.designsystem.shared.filters.elements.FilterChipRole
 import com.otus.designsystem.shared.folders.elements.FolderGlyph
 import com.otus.designsystem.shared.overlays.components.WithBackDispatcher
 import com.otus.designsystem.theme.colors.FolderColor
+import com.otus.designsystem.theme.tokens.controls.ControlTokens
 import com.otus.designsystem.theme.tokens.selection.FilterTokens
 import org.junit.Rule
 import org.junit.runner.RunWith
@@ -130,7 +131,7 @@ private fun Sections() {
             0,
             {},
             Modifier.padding(top = FilterTokens.sectionGap),
-            height = FilterTokens.segmentHeight,
+            height = ControlTokens.segmentHeight,
         )
     }
 }

@@ -22,7 +22,7 @@ import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.shared.settings.elements.outlineDash
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 
 /**
@@ -40,7 +40,7 @@ public fun BarAddButton(
     val outline = OtusColors.text3
     Box(
         modifier
-            .size(PanelTokens.touchTarget)
+            .size(Sizes.touchTarget)
             .semantics { contentDescription = label }
             .clickable(interactions, indication = null, role = Role.Button, onClick = onClick)
             .controlPressFeedback(interactions, CircleShape),
@@ -48,7 +48,7 @@ public fun BarAddButton(
     ) {
         Box(
             Modifier.size(ActionBarTokens.addSlotSize).drawBehind {
-                val width = PanelTokens.borderWidth.toPx()
+                val width = Sizes.borderWidth.toPx()
                 drawCircle(
                     outline,
                     radius = (size.minDimension - width) / 2,

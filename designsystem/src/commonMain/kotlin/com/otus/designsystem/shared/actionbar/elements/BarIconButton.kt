@@ -28,6 +28,9 @@ import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
+import com.otus.designsystem.theme.tokens.controls.ControlTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.layout.PageTokens
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
@@ -56,7 +59,7 @@ public fun BarIconButton(
     ) {
         Box(
             Modifier
-                .size(PanelTokens.touchTarget)
+                .size(Sizes.touchTarget)
                 .semantics { contentDescription = label }
                 .clickable(interactions, indication = null, enabled = enabled, role = Role.Button, onClick = onClick)
                 .controlPressFeedback(interactions),
@@ -75,7 +78,7 @@ private fun BarTooltip(label: String) {
         label,
         Modifier
             .background(OtusColors.bgLight, SmoothCornerShape(PanelTokens.panelRadius))
-            .padding(horizontal = PanelTokens.chipPadding, vertical = PanelTokens.iconGap),
+            .padding(horizontal = ControlTokens.chipPadding, vertical = Spacing.iconGap),
         fontSize = PageTokens.captionSize,
     )
 }

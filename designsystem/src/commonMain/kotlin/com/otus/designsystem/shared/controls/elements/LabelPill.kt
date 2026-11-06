@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.content.LabelTokens
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import org.jetbrains.compose.resources.DrawableResource
 
 /**
@@ -33,7 +33,7 @@ public fun LabelPill(
     Row(
         modifier
             .height(LabelTokens.height)
-            .border(PanelTokens.borderWidth, if (highlighted) OtusColors.text3 else OtusColors.bgLight, CircleShape)
+            .border(Sizes.borderWidth, if (highlighted) OtusColors.text3 else OtusColors.bgLight, CircleShape)
             .padding(horizontal = LabelTokens.horizontalPadding),
         horizontalArrangement = Arrangement.spacedBy(LabelTokens.iconGap),
         verticalAlignment = Alignment.CenterVertically,

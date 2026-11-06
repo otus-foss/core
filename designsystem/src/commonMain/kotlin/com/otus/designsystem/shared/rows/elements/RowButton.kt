@@ -17,7 +17,7 @@ import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.shapes.strokeBorder
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.settings.SettingTokens
 
 /**
@@ -35,7 +35,7 @@ public fun RowButton(
     val shape = SmoothCornerShape(SettingTokens.valueRadius)
     Box(
         modifier
-            .heightIn(min = PanelTokens.touchTarget)
+            .heightIn(min = Sizes.touchTarget)
             .semantics { if (accessibilityLabel != null) contentDescription = accessibilityLabel }
             .clickable(interactions, indication = null, role = Role.Button, onClick = onClick),
         contentAlignment = Alignment.Center,
@@ -43,7 +43,7 @@ public fun RowButton(
         Text(
             label,
             Modifier
-                .strokeBorder(PanelTokens.borderWidth, OtusColors.bgLight, shape)
+                .strokeBorder(Sizes.borderWidth, OtusColors.bgLight, shape)
                 .controlPressFeedback(interactions, shape)
                 .padding(
                     horizontal = SettingTokens.valuePaddingHorizontal,

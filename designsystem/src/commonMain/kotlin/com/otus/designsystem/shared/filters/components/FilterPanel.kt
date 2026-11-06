@@ -33,12 +33,13 @@ import com.otus.designsystem.shared.panels.components.PanelSheet
 import com.otus.designsystem.shared.panels.components.PanelSheetHeader
 import com.otus.designsystem.shared.panels.elements.PanelNavigation
 import com.otus.designsystem.shared.panels.elements.PanelTitle
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 
 /**
  * Filters in the control panel, unfolded as a [PanelSheet] [collapsedHeight] tall at rest. The
  * [header], usually a [FilterPanelTitle], stays in the panel's header row. The [body] scrolls under
- * the [footer], which floats at the bottom, and fades out over [PanelTokens.fadeWidth] just above
+ * the [footer], which floats at the bottom, and fades out over [Sizes.edgeFade] just above
  * it. Back, a tap on the scrim, and an upward swipe call [onDismiss]. The panel takes all of its
  * room even when the body is short, so pages of different lengths keep one height and leave space
  * above the footer.
@@ -99,14 +100,14 @@ private fun FloatingFooter(
 
 /**
  * Hides the content behind the last [height], where the footer floats, and fades it out over
- * [PanelTokens.fadeWidth] above that, as the pill rail fades its pills before its edge.
+ * [Sizes.edgeFade] above that, as the pill rail fades its pills before its edge.
  */
 private fun Modifier.fadeBottom(height: Dp): Modifier =
     graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
         .drawWithContent {
             drawContent()
             val end = size.height - height.toPx()
-            val start = end - PanelTokens.fadeWidth.toPx()
+            val start = end - Sizes.edgeFade.toPx()
             // The gradient clamps to transparent below its end, so the footer's band stays clear.
             drawRect(
                 Brush.verticalGradient(listOf(Color.Black, Color.Transparent), startY = start, endY = end),

@@ -29,7 +29,7 @@ import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.shared.rows.elements.nestIndent
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.layout.SidebarTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 import org.jetbrains.compose.resources.DrawableResource
@@ -37,7 +37,7 @@ import org.jetbrains.compose.resources.DrawableResource
 /**
  * One destination row: icon, then name, then [trailing], such as a [SidebarCount] or a
  * [SidebarExpandButton]. Nested entries are indented by [depth]. The current destination is
- * highlighted. Rows are [PanelTokens.compactRowHeight] tall and follow each other without gaps.
+ * highlighted. Rows are [Sizes.compactRowHeight] tall and follow each other without gaps.
  */
 @Composable
 public fun SidebarEntry(
@@ -54,7 +54,7 @@ public fun SidebarEntry(
     Row(
         modifier
             .fillMaxWidth()
-            .heightIn(min = PanelTokens.compactRowHeight)
+            .heightIn(min = Sizes.compactRowHeight)
             .selectable(selected, interactions, indication = null, role = Role.Tab, onClick = onClick)
             .clip(shape)
             .background(if (selected) OtusColors.selectedFill else Color.Transparent)
@@ -83,7 +83,7 @@ public fun SidebarCount(text: String) {
 
 /**
  * Shows or hides the nested entries of the [SidebarEntry] named [label]. Its touch area is 48 dp
- * wide and as tall as a [PanelTokens.compactRowHeight] row, so it never makes a row taller.
+ * wide and as tall as a [Sizes.compactRowHeight] row, so it never makes a row taller.
  */
 @Composable
 public fun SidebarExpandButton(
@@ -95,7 +95,7 @@ public fun SidebarExpandButton(
     val interactions = remember { MutableInteractionSource() }
     Box(
         modifier
-            .size(PanelTokens.touchTarget, PanelTokens.compactRowHeight)
+            .size(Sizes.touchTarget, Sizes.compactRowHeight)
             .semantics { contentDescription = if (expanded) "Collapse $label" else "Expand $label" }
             .toggleable(
                 expanded,

@@ -12,20 +12,20 @@ import androidx.compose.ui.unit.LayoutDirection
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_chevron_right
 import com.otus.designsystem.theme.motion.motionTween
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
-import com.otus.designsystem.theme.tokens.layout.SidebarTokens
+import com.otus.designsystem.theme.tokens.controls.ControlTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 
 /** A chevron that points along the line while collapsed and turns down once [expanded]. */
 @Composable
 internal fun ExpandChevron(
     expanded: Boolean,
     modifier: Modifier = Modifier,
-    size: Dp = PanelTokens.iconSize,
+    size: Dp = Sizes.iconSize,
 ) {
     // A chevron mirrored for right-to-left turns the other way to point down.
     val turn = if (LocalLayoutDirection.current == LayoutDirection.Rtl) -1f else 1f
     val degrees by animateFloatAsState(
-        if (expanded) SidebarTokens.CHEVRON_OPEN_DEGREES * turn else 0f,
+        if (expanded) ControlTokens.CHEVRON_OPEN_DEGREES * turn else 0f,
         motionTween(),
         label = "Expand chevron",
     )

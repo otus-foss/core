@@ -25,8 +25,8 @@ import com.otus.designsystem.resources.symbol_help
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.overlays.components.ClosableSheet
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.feedback.InfoTipTokens
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 
 /**
@@ -42,7 +42,7 @@ public fun InfoTip(
     // No circle behind it: only the question mark shows, inside a full touch target.
     Box(
         modifier
-            .size(PanelTokens.touchTarget)
+            .size(Sizes.touchTarget)
             .clickable(role = Role.Button, onClickLabel = "Open") { open = true }
             .semantics { contentDescription = "About ${info.title}" },
         contentAlignment = Alignment.Center,

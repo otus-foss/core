@@ -15,6 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 
 /**
@@ -30,7 +32,7 @@ public fun PillRow(
     val scroll = rememberScrollState()
     Row(
         modifier.fillMaxWidth().padding(end = PanelTokens.panelInset),
-        horizontalArrangement = Arrangement.spacedBy(PanelTokens.iconGap),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.iconGap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(Modifier.weight(1f).scrollFade(scroll)) {
@@ -38,7 +40,7 @@ public fun PillRow(
                 Modifier
                     .horizontalScroll(scroll, overscrollEffect = null)
                     .padding(start = PanelTokens.panelInset),
-                horizontalArrangement = Arrangement.spacedBy(PanelTokens.chipGap),
+                horizontalArrangement = Arrangement.spacedBy(Spacing.inlineGap),
                 verticalAlignment = Alignment.CenterVertically,
                 content = pills,
             )
@@ -52,7 +54,7 @@ internal fun Modifier.scrollFade(scroll: ScrollState): Modifier =
     graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
         .drawWithContent {
             drawContent()
-            val fade = PanelTokens.fadeWidth.toPx().coerceAtMost(size.width / 2)
+            val fade = Sizes.edgeFade.toPx().coerceAtMost(size.width / 2)
             drawEdgeFade((scroll.value / fade).coerceIn(0f, 1f), fade, atEnd = false)
             drawEdgeFade(((scroll.maxValue - scroll.value) / fade).coerceIn(0f, 1f), fade, atEnd = true)
         }

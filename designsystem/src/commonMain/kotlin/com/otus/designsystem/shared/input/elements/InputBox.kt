@@ -23,7 +23,8 @@ import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.panels.elements.darkSurface
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 import org.jetbrains.compose.resources.DrawableResource
@@ -36,9 +37,9 @@ import org.jetbrains.compose.resources.DrawableResource
 internal fun Modifier.inputFrame(endsWithButton: Boolean): Modifier {
     val shape = SmoothCornerShape(SheetTokens.rowRadius)
     return fillMaxWidth()
-        .heightIn(min = PanelTokens.touchTarget)
+        .heightIn(min = Sizes.touchTarget)
         .darkSurface(shape)
-        .padding(start = SheetTokens.gap, end = if (endsWithButton) PanelTokens.iconGap else SheetTokens.gap)
+        .padding(start = SheetTokens.gap, end = if (endsWithButton) Spacing.iconGap else SheetTokens.gap)
 }
 
 /** A field's `text2` icon before its text, such as a note's. */

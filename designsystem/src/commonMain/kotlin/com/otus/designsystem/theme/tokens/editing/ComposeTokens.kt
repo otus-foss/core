@@ -3,8 +3,8 @@ package com.otus.designsystem.theme.tokens.editing
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.otus.designsystem.theme.tokens.layout.CornerTokens
+import com.otus.designsystem.theme.typography.TypeScale
 
 /** The page for writing a message, from the "Write" boards. */
 public object ComposeTokens {
@@ -17,10 +17,7 @@ public object ComposeTokens {
     /** The `bgLight` line under each header field. */
     public val hairlineWidth: Dp = 1.dp
 
-    /** A recipient chip: its avatar, corner radius, height, and the gaps between wrapped chips. */
-    public val recipientAvatarSize: Dp = 22.dp
     public val recipientRadius: Dp = CornerTokens.chip
-    public val recipientHeight: Dp = 32.dp
     public val recipientGap: Dp = 6.dp
 
     /** The panel's Send-from pill: its avatar, and the width past which its address ends in an ellipsis. */
@@ -29,19 +26,15 @@ public object ComposeTokens {
 
     /** A row in a dropdown of addresses: its avatar and the smaller line under the address. */
     public val dropdownAvatarSize: Dp = 32.dp
-    public val detailSize: TextUnit = 13.sp
+    public val detailSize: TextUnit = TypeScale.detail
 
     /** The formatting row docked above the keyboard. */
     public val formatBarHeight: Dp = 56.dp
-    internal val formatBarRadius: Dp = formatBarHeight / 2
     public val formatBarInset: Dp = 4.dp
     public val formatButtonSize: Dp = 40.dp
     public val formatButtonRadius: Dp = formatButtonSize / 2
     public val formatIconSize: Dp = 24.dp
     public val formatDividerHeight: Dp = 24.dp
-
-    /** The more-options menu under the panel's ⋯ button. */
-    public val optionsMenuWidth: Dp = 286.dp
 
     /** An image in the message body: the box shown while it loads, its narrowest size, and its presets. */
     public val inlineImageLoadingHeight: Dp = 160.dp

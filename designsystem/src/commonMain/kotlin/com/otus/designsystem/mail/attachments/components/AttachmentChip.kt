@@ -35,8 +35,10 @@ import com.otus.designsystem.shared.overlays.components.MenuAction
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.shapes.strokeBorder
+import com.otus.designsystem.theme.tokens.controls.ControlTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.editing.ComposeTokens
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
@@ -63,14 +65,14 @@ public fun AttachmentChip(
         }
     Row(
         modifier
-            .heightIn(min = PanelTokens.touchTarget)
+            .heightIn(min = Sizes.touchTarget)
             .widthIn(max = ComposeTokens.attachmentMaxWidth)
             .onSizeChanged { height = it.height }
-            .strokeBorder(PanelTokens.borderWidth, OtusColors.bgLight, shape)
+            .strokeBorder(Sizes.borderWidth, OtusColors.bgLight, shape)
             .then(opensMenu)
             .semantics(mergeDescendants = true) { contentDescription = "$name, $detail" }
-            .padding(start = PanelTokens.chipPadding),
-        horizontalArrangement = Arrangement.spacedBy(PanelTokens.chipGap),
+            .padding(start = ControlTokens.chipPadding),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.inlineGap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         CompositionLocalProvider(LocalContentColor provides OtusColors.text2) {
@@ -87,7 +89,7 @@ public fun AttachmentChip(
             )
         }
         IconButton("Remove $name", onRemove, look = IconButtonLook.Plain) {
-            Symbol(Res.drawable.symbol_close, size = PanelTokens.iconSize)
+            Symbol(Res.drawable.symbol_close, size = Sizes.iconSize)
         }
         if (open) ContextMenu(actions, Offset(0f, height.toFloat())) { open = false }
     }

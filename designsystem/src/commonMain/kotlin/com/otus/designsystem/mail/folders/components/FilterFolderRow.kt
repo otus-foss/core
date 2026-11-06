@@ -31,7 +31,8 @@ import com.otus.designsystem.shared.filters.components.FilterPickMark
 import com.otus.designsystem.shared.filters.elements.ChipLabel
 import com.otus.designsystem.shared.filters.elements.annotated
 import com.otus.designsystem.theme.colors.OtusAlpha
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.selection.FilterTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 
@@ -75,7 +76,7 @@ public fun FilterFolderRow(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
-        Spacer(Modifier.width(PanelTokens.iconGap))
+        Spacer(Modifier.width(Spacing.iconGap))
         Box(Modifier.alpha(if (enabled) 1f else OtusAlpha.DISABLED)) {
             FilterPickMark(selected = check != FolderCheck.Off)
         }
@@ -128,11 +129,11 @@ private fun FolderExpandButton(
     expanded: Boolean?,
     onExpandedChange: (Boolean) -> Unit,
 ) {
-    Box(Modifier.size(PanelTokens.touchTarget), contentAlignment = Alignment.Center) {
+    Box(Modifier.size(Sizes.touchTarget), contentAlignment = Alignment.Center) {
         if (expanded != null) {
             Box(
                 Modifier
-                    .size(PanelTokens.touchTarget)
+                    .size(Sizes.touchTarget)
                     .clearAndSetSemantics {}
                     .clickable { onExpandedChange(!expanded) },
                 contentAlignment = Alignment.Center,

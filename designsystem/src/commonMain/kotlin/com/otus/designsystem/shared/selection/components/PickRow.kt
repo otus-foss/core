@@ -26,11 +26,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import com.otus.designsystem.shared.rows.components.RowDensity
 import com.otus.designsystem.theme.colors.OtusAlpha
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.editing.ComposeTokens
-import com.otus.designsystem.theme.tokens.editing.SignatureTokens
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
+import com.otus.designsystem.theme.tokens.selection.PickTokens
 import com.otus.designsystem.theme.tokens.settings.SettingTokens
+import com.otus.designsystem.theme.typography.TypeScale
 import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
@@ -69,7 +70,7 @@ internal fun PickRowText(
             subtitle,
             style = panelTextStyle(),
             color = OtusColors.text2,
-            fontSize = ComposeTokens.detailSize,
+            fontSize = TypeScale.detail,
             maxLines = subtitleLines,
             overflow = TextOverflow.Ellipsis,
         )
@@ -104,7 +105,7 @@ internal fun PickRowFrame(
             .fillMaxWidth()
             .then(choose)
             .alpha(if (enabled) 1f else OtusAlpha.DISABLED)
-            .padding(horizontal = SheetTokens.inset, vertical = PanelTokens.iconGap),
+            .padding(horizontal = SheetTokens.inset, vertical = Spacing.iconGap),
         horizontalArrangement = Arrangement.spacedBy(SheetTokens.gap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -124,8 +125,8 @@ internal fun PickRowFrame(
  */
 @Composable
 public fun PickMarkView(mark: PickMark) {
-    Canvas(Modifier.size(SignatureTokens.markSize)) {
-        val stroke = SignatureTokens.markStroke.toPx()
+    Canvas(Modifier.size(PickTokens.markSize)) {
+        val stroke = PickTokens.markStroke.toPx()
         val inset = Offset(stroke / 2, stroke / 2)
         val inner = size.copy(size.width - stroke, size.height - stroke)
         // Unchosen marks keep a quiet text3 outline, so the text1 of a chosen one stands out.
@@ -145,7 +146,7 @@ public fun PickMarkView(mark: PickMark) {
             drawRoundRect(outline, inset, inner, corner, Stroke(stroke))
         } else {
             drawCircle(outline, radius = size.minDimension / 2 - stroke / 2, style = Stroke(stroke))
-            if (mark.selected) drawCircle(OtusColors.text1, radius = SignatureTokens.markDot.toPx() / 2)
+            if (mark.selected) drawCircle(OtusColors.text1, radius = PickTokens.markDot.toPx() / 2)
         }
     }
 }
@@ -159,7 +160,7 @@ private const val CHECK_END_Y = 0.32f
 
 /** A pick row's least height: a full row, or a touch target for long lists of short choices. */
 private val RowDensity.pickRowHeight
-    get() = if (this == RowDensity.Compact) PanelTokens.touchTarget else SheetTokens.rowHeight
+    get() = if (this == RowDensity.Compact) Sizes.touchTarget else SheetTokens.rowHeight
 
 /**
  * How a [PickRow] is laid out: a [RowDensity.Compact] row is only a touch target tall, for long

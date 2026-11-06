@@ -27,6 +27,7 @@ import com.otus.designsystem.shared.people.components.PersonAvatar
 import com.otus.designsystem.shared.rows.components.StripCard
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.content.ReadTokens
+import com.otus.designsystem.theme.tokens.rows.StripTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
@@ -96,7 +97,7 @@ internal fun PositionCard(
         Row(
             Modifier
                 .fillMaxWidth()
-                .heightIn(min = ReadTokens.positionHeight)
+                .heightIn(min = StripTokens.height)
                 .clickable(role = Role.Button, onClick = onClick)
                 .clearAndSetSemantics {
                     contentDescription = spoken
@@ -105,8 +106,8 @@ internal fun PositionCard(
                         onClick()
                         true
                     }
-                }.padding(start = ReadTokens.stripStart, end = ReadTokens.stripEnd),
-            horizontalArrangement = Arrangement.spacedBy(ReadTokens.stripGap),
+                }.padding(start = StripTokens.start, end = StripTokens.end),
+            horizontalArrangement = Arrangement.spacedBy(StripTokens.gap),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             content()
@@ -125,7 +126,7 @@ internal fun PositionInfo(
 ) {
     Row(
         modifier,
-        horizontalArrangement = Arrangement.spacedBy(ReadTokens.stripGap),
+        horizontalArrangement = Arrangement.spacedBy(StripTokens.gap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         PersonAvatar(heading.avatar, ReadTokens.stripAvatarSize)
@@ -150,7 +151,7 @@ private fun PositionText(
             { DotsLine(position) },
             {
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(ReadTokens.glyphGap),
+                    horizontalArrangement = Arrangement.spacedBy(StripTokens.glyphGap),
                     verticalAlignment = Alignment.CenterVertically,
                     content = trailing,
                 )
@@ -159,7 +160,7 @@ private fun PositionText(
         modifier,
     ) { (titles, lines, slots), constraints ->
         val width = constraints.maxWidth
-        val gap = ReadTokens.stripGap.roundToPx()
+        val gap = StripTokens.gap.roundToPx()
         val line = lines.single().measure(Constraints(maxWidth = width))
         val slot = slots.single().measure(Constraints(maxWidth = (width - line.width - gap).coerceAtLeast(0)))
         val textWidth = if (slot.width == 0) width else width - slot.width - gap
@@ -179,7 +180,7 @@ private fun StripTitle(title: String) {
     Text(
         title,
         style = panelTextStyle(),
-        fontSize = ReadTokens.titleSize,
+        fontSize = StripTokens.titleSize,
         fontWeight = FontWeight.SemiBold,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,

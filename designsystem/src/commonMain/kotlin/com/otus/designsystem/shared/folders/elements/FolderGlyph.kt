@@ -13,7 +13,7 @@ import com.otus.designsystem.resources.symbol_inbox
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.theme.colors.FolderColor
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.rows.InboxTokens
+import com.otus.designsystem.theme.tokens.rows.FolderTokens
 import org.jetbrains.compose.resources.DrawableResource
 
 /**
@@ -28,7 +28,7 @@ public fun FolderGlyph(
     modifier: Modifier = Modifier,
     kind: FolderGlyphKind = FolderGlyphKind.Folder,
     icon: DrawableResource = Res.drawable.symbol_folder,
-    size: Dp = InboxTokens.markSize,
+    size: Dp = FolderTokens.markSize,
 ) {
     val tint = color?.tint.takeIf { kind == FolderGlyphKind.Folder }
     val symbol =

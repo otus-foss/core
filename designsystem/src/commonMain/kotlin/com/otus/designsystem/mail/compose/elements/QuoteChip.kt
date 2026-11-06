@@ -19,9 +19,10 @@ import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.shapes.strokeBorder
+import com.otus.designsystem.theme.tokens.controls.ControlTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.editing.ComposeTokens
 import com.otus.designsystem.theme.tokens.layout.PageTokens
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
@@ -38,11 +39,11 @@ public fun QuoteChip(
     Row(
         modifier
             .padding(horizontal = PageTokens.textInset)
-            .heightIn(min = PanelTokens.touchTarget)
-            .strokeBorder(PanelTokens.borderWidth, OtusColors.bgLight, shape)
+            .heightIn(min = Sizes.touchTarget)
+            .strokeBorder(Sizes.borderWidth, OtusColors.bgLight, shape)
             .clickable(onClickLabel = "Show quoted text", role = Role.Button, onClick = onExpand)
-            .padding(horizontal = PanelTokens.chipPadding),
-        horizontalArrangement = Arrangement.spacedBy(PanelTokens.chipPadding),
+            .padding(horizontal = ControlTokens.chipPadding),
+        horizontalArrangement = Arrangement.spacedBy(ControlTokens.chipPadding),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         CompositionLocalProvider(LocalContentColor provides OtusColors.text2) {

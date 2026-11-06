@@ -29,7 +29,7 @@ import com.otus.designsystem.shared.controls.elements.chipAction
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.shared.controls.elements.reportControlVisualBounds
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.selection.FilterTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 
@@ -74,7 +74,7 @@ public fun FilterChip(
             shape = CircleShape,
             color = if (on) OtusColors.selectedFill else OtusColors.bgRegular,
             contentColor = OtusColors.text1,
-            border = BorderStroke(PanelTokens.borderWidth, if (on) OtusColors.selectedFill else OtusColors.bgLight),
+            border = BorderStroke(Sizes.borderWidth, if (on) OtusColors.selectedFill else OtusColors.bgLight),
         ) {
             Row(
                 Modifier

@@ -27,7 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.overlays.ChoiceSheetTokens
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 
@@ -139,7 +139,7 @@ public fun SheetHeaderAction(
     val interactions = remember { MutableInteractionSource() }
     Box(
         modifier
-            .heightIn(min = PanelTokens.touchTarget)
+            .heightIn(min = Sizes.touchTarget)
             .clickable(interactions, indication = null, enabled = enabled, role = Role.Button, onClick = onClick)
             .controlPressFeedback(interactions, SmoothCornerShape(SheetTokens.rowRadius))
             .padding(horizontal = SheetTokens.inset),

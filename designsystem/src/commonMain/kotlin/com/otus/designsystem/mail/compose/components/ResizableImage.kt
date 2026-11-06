@@ -42,9 +42,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.controls.ControlTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.editing.ComposeTokens
 import com.otus.designsystem.theme.tokens.editing.SignatureTokens
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -132,9 +134,9 @@ private fun ImageStatus(
     Text(
         text,
         modifier
-            .padding(PanelTokens.iconGap)
+            .padding(Spacing.iconGap)
             .background(OtusColors.bgDark, CircleShape)
-            .padding(horizontal = PanelTokens.chipPadding, vertical = PanelTokens.iconGap),
+            .padding(horizontal = ControlTokens.chipPadding, vertical = Spacing.iconGap),
         style = panelTextStyle(),
         color = OtusColors.text2,
     )
@@ -155,11 +157,11 @@ private fun ResizeHandle(
         dragged = null
         dragging.value = false
     }
-    val half = PanelTokens.touchTarget / 2
+    val half = Sizes.touchTarget / 2
     Box(
         modifier
             .offset(x = half, y = half)
-            .size(PanelTokens.touchTarget)
+            .size(Sizes.touchTarget)
             .semantics { contentDescription = "Resize image" }
             .pointerInput(Unit) {
                 detectDragGestures(
@@ -183,7 +185,7 @@ private fun ResizeHandle(
             Modifier
                 .size(SignatureTokens.handleSize)
                 .background(OtusColors.text1, CircleShape)
-                .border(PanelTokens.borderWidth, OtusColors.bgDark, CircleShape),
+                .border(Sizes.borderWidth, OtusColors.bgDark, CircleShape),
         )
     }
 }
@@ -202,13 +204,13 @@ private fun SizeLabel(
     val label =
         sizing.presets.firstOrNull { it.width == sizing.width }?.name
             ?: "${sizing.width.value.roundToInt()} × ${height.value.roundToInt()} px"
-    val drop = if (below) ComposeTokens.guideReach + PanelTokens.iconGap else 0.dp
+    val drop = if (below) ComposeTokens.guideReach + Spacing.iconGap else 0.dp
     Text(
         label,
         modifier
-            .offset(x = PanelTokens.touchTarget / 2, y = PanelTokens.touchTarget + drop)
+            .offset(x = Sizes.touchTarget / 2, y = Sizes.touchTarget + drop)
             .background(OtusColors.text1, CircleShape)
-            .padding(horizontal = PanelTokens.chipPadding, vertical = PanelTokens.iconGap),
+            .padding(horizontal = ControlTokens.chipPadding, vertical = Spacing.iconGap),
         style = panelTextStyle(),
         color = OtusColors.bgDark,
     )
@@ -239,7 +241,7 @@ private fun Modifier.sizeGuides(
                 color,
                 Offset(x, -reach),
                 Offset(x, size.height + reach),
-                PanelTokens.borderWidth.toPx(),
+                Sizes.borderWidth.toPx(),
                 pathEffect = dash,
             )
             val weight = if (chosen) FontWeight.Bold else null

@@ -50,7 +50,7 @@ import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.shapes.strokeBorder
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 import kotlin.math.roundToInt
 
@@ -82,7 +82,7 @@ internal fun PrimaryShell(
             .primaryButton(primary, context, menu, shape),
     ) {
         // Drawn before the action, so the action's accent border covers it where the two meet.
-        Box(Modifier.matchParentSize().strokeBorder(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape))
+        Box(Modifier.matchParentSize().strokeBorder(Sizes.borderWidth, OtusColors.strokeBgDark, shape))
         CompositionLocalProvider(
             LocalContentColor provides if (primary.enabled) OtusColors.text1 else OtusColors.text3,
         ) {
@@ -198,7 +198,7 @@ private fun Action(
                 .background(if (primary.enabled) OtusColors.accentDark else OtusColors.bgDark, shape)
                 // A disabled action loses its accent entirely, so it reads as part of the shell.
                 .strokeBorder(
-                    PanelTokens.borderWidth,
+                    Sizes.borderWidth,
                     if (primary.enabled) OtusColors.accentRegular else OtusColors.strokeBgDark,
                     shape,
                 ),

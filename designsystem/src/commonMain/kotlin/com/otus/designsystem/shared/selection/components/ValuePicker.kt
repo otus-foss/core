@@ -24,7 +24,7 @@ import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.shared.people.components.ChipAvatar
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.settings.SettingTokens
 import org.jetbrains.compose.resources.DrawableResource
 
@@ -49,7 +49,7 @@ public fun ValuePicker(
     val label = valuePickerLabel(value, keyword)
     BoxWithConstraints(
         modifier
-            .heightIn(min = PanelTokens.touchTarget)
+            .heightIn(min = Sizes.touchTarget)
             .clickable(interactions, indication = null, enabled = enabled, role = Role.Button, onClick = onClick)
             .clearAndSetSemantics { contentDescription = label },
         contentAlignment = Alignment.Center,
@@ -63,7 +63,7 @@ public fun ValuePicker(
                     .controlPressFeedback(interactions, SmoothCornerShape(SettingTokens.valueRadius)),
             ) {
                 ValueLabel(value, keyword, avatar, icon, enabled, fill)
-                Box(Modifier.size(PanelTokens.borderWidth, PanelTokens.iconSize).background(OtusColors.bgLight))
+                Box(Modifier.size(Sizes.borderWidth, Sizes.iconSize).background(OtusColors.bgLight))
                 Symbol(Res.drawable.symbol_expand_more)
             }
         }

@@ -24,7 +24,7 @@ import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_remove
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.layout.SidebarTokens
 
 /** The minus that removes the tile [label] in a tile editor, with a full touch target around it. */
@@ -36,7 +36,7 @@ internal fun TileRemoveBadge(
 ) {
     Box(
         modifier
-            .size(PanelTokens.touchTarget)
+            .size(Sizes.touchTarget)
             .clickable(role = Role.Button, onClick = onClick)
             .semantics { contentDescription = "Remove $label" },
         contentAlignment = Alignment.Center,
@@ -66,7 +66,7 @@ internal fun TileResizeHandle(
     val mirrored = LocalLayoutDirection.current == LayoutDirection.Rtl
     Canvas(
         modifier
-            .size(PanelTokens.touchTarget)
+            .size(Sizes.touchTarget)
             .semantics { contentDescription = "Resize $label" },
     ) {
         val radius = SidebarTokens.resizeArc.toPx()

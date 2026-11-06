@@ -29,7 +29,8 @@ import com.otus.designsystem.shared.people.components.PersonAvatar
 import com.otus.designsystem.shared.rows.components.topHairline
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.content.ReadTokens
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.rows.StripTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
@@ -55,14 +56,14 @@ public fun ThreadList(
                 .fillMaxWidth()
                 .heightIn(min = ReadTokens.listHeaderHeight)
                 .clickable(onClickLabel = "Fold", role = Role.Button, onClick = onFold)
-                .padding(start = ReadTokens.stripStart + ReadTokens.stripGap / 2, end = ReadTokens.stripEnd),
+                .padding(start = StripTokens.start + StripTokens.gap / 2, end = StripTokens.end),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 title,
                 Modifier.weight(1f),
                 style = panelTextStyle(),
-                fontSize = ReadTokens.titleSize,
+                fontSize = StripTokens.titleSize,
                 fontWeight = FontWeight.SemiBold,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -93,9 +94,9 @@ private fun ThreadListRow(
             .background(if (current) OtusColors.bgRegular else Color.Transparent)
             .topHairline(OtusColors.strokeBgDark)
             .selectable(current, role = Role.Button, onClick = onClick)
-            .heightIn(min = PanelTokens.touchTarget)
-            .padding(start = ReadTokens.stripStart, end = ReadTokens.stripStart),
-        horizontalArrangement = Arrangement.spacedBy(ReadTokens.stripGap),
+            .heightIn(min = Sizes.touchTarget)
+            .padding(start = StripTokens.start, end = StripTokens.start),
+        horizontalArrangement = Arrangement.spacedBy(StripTokens.gap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         PersonAvatar(entry.avatar, ReadTokens.listAvatarSize)
@@ -110,7 +111,7 @@ private fun ThreadListRow(
             },
             Modifier.weight(1f),
             style = panelTextStyle(),
-            fontSize = ReadTokens.titleSize,
+            fontSize = StripTokens.titleSize,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )

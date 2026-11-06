@@ -20,8 +20,8 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
-import com.otus.designsystem.theme.tokens.selection.FilterTokens
+import com.otus.designsystem.theme.tokens.controls.ControlTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
@@ -42,16 +42,16 @@ public fun IconButton(
     val interactions = remember { MutableInteractionSource() }
     Box(
         modifier
-            .size(PanelTokens.touchTarget)
+            .size(Sizes.touchTarget)
             .semantics { contentDescription = description }
             .clickable(interactions, indication = null, enabled = enabled, role = Role.Button, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
-        Box(Modifier.size(PanelTokens.chipHeight)) {
+        Box(Modifier.size(Sizes.chipHeight)) {
             Surface(
                 modifier =
                     Modifier
-                        .size(PanelTokens.chipHeight)
+                        .size(Sizes.chipHeight)
                         .reportControlVisualBounds()
                         .controlPressFeedback(interactions),
                 shape = CircleShape,
@@ -59,7 +59,7 @@ public fun IconButton(
                 contentColor = if (enabled) OtusColors.text1 else OtusColors.text3,
                 border =
                     if (look == IconButtonLook.Outlined) {
-                        BorderStroke(PanelTokens.borderWidth, OtusColors.strokeBgDark)
+                        BorderStroke(Sizes.borderWidth, OtusColors.strokeBgDark)
                     } else {
                         null
                     },
@@ -78,15 +78,15 @@ private fun CountDot(
 ) {
     Box(
         modifier
-            .sizeIn(minWidth = FilterTokens.badgeSize, minHeight = FilterTokens.badgeSize)
+            .sizeIn(minWidth = ControlTokens.badgeSize, minHeight = ControlTokens.badgeSize)
             .background(OtusColors.accentDark, CircleShape),
         contentAlignment = Alignment.Center,
     ) {
         Text(
             count.toString(),
             style = panelTextStyle(),
-            fontSize = FilterTokens.badgeTextSize,
-            lineHeight = FilterTokens.badgeTextSize,
+            fontSize = ControlTokens.badgeTextSize,
+            lineHeight = ControlTokens.badgeTextSize,
             fontWeight = FontWeight.SemiBold,
             maxLines = 1,
         )

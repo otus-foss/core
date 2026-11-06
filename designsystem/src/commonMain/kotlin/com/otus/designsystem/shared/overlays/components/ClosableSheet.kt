@@ -20,7 +20,7 @@ import com.otus.designsystem.shared.controls.elements.IconButton
 import com.otus.designsystem.shared.controls.elements.IconButtonLook
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 
 /**
@@ -53,7 +53,7 @@ private fun ClosableHeader(
             Modifier.fillMaxWidth().padding(
                 start = SheetTokens.inset,
                 top = SheetTokens.gap,
-                end = PanelTokens.iconGap,
+                end = Spacing.iconGap,
             ),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -82,7 +82,7 @@ private fun ConfirmButton(
         enabled = confirm.enabled && !closing,
     ) {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(PanelTokens.iconGap * 2),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.iconGap * 2),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             val icon = confirm.icon

@@ -13,8 +13,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.content.ReadTokens
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.rows.StripTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 import org.jetbrains.compose.resources.DrawableResource
 
@@ -31,20 +31,20 @@ public fun PlainAction(
 ) {
     Row(
         modifier
-            .heightIn(min = PanelTokens.touchTarget)
+            .heightIn(min = Sizes.touchTarget)
             .clickable(role = Role.Button, onClick = onClick)
-            .padding(horizontal = ReadTokens.plainPadding),
-        horizontalArrangement = Arrangement.spacedBy(ReadTokens.glyphGap),
+            .padding(horizontal = StripTokens.plainPadding),
+        horizontalArrangement = Arrangement.spacedBy(StripTokens.glyphGap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         CompositionLocalProvider(LocalContentColor provides OtusColors.text2) {
-            Symbol(icon, size = ReadTokens.plainIconSize)
+            Symbol(icon, size = StripTokens.plainIconSize)
         }
         Text(
             label,
             style = panelTextStyle(),
             color = OtusColors.text2,
-            fontSize = ReadTokens.plainTextSize,
+            fontSize = StripTokens.plainTextSize,
             maxLines = 1,
         )
     }

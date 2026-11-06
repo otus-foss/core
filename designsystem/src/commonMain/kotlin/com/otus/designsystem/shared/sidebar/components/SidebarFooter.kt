@@ -37,7 +37,7 @@ import com.otus.designsystem.shared.sidebar.elements.SidebarDetail
 import com.otus.designsystem.shared.sidebar.elements.SidebarOwl
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.layout.SidebarTokens
 
 /**
@@ -76,7 +76,7 @@ private fun FooterVersion(
 ) {
     Row(
         Modifier
-            .heightIn(min = PanelTokens.touchTarget)
+            .heightIn(min = Sizes.touchTarget)
             .updateButton(version, onUpdate)
             .padding(horizontal = SidebarTokens.entryPadding),
         verticalAlignment = Alignment.CenterVertically,

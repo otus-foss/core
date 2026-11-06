@@ -2,6 +2,7 @@ package com.otus.designsystem.mail.read.html
 
 import com.otus.designsystem.theme.colors.OtusPalette
 import com.otus.designsystem.theme.tokens.content.ReadTokens
+import com.otus.designsystem.theme.tokens.rows.StripTokens
 
 /**
  * Plain [text] as HTML: escaped, with its line breaks kept, and its links as links, as the body
@@ -72,7 +73,7 @@ internal fun dateToggleStyle(
             className("when-label"),
             "display:inline-flex",
             "align-items:center",
-            "gap:${ReadTokens.glyphGap.css()}",
+            "gap:${StripTokens.glyphGap.css()}",
             "list-style:none",
             "cursor:pointer",
             // No browser tap box or focus ring; the date and chevron changing are the feedback.

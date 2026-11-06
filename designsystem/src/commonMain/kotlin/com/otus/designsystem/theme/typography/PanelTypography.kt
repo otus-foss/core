@@ -11,7 +11,6 @@ import com.otus.designsystem.resources.figtree_black
 import com.otus.designsystem.resources.figtree_bold
 import com.otus.designsystem.resources.figtree_semibold
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import org.jetbrains.compose.resources.Font
 
 /**
@@ -31,8 +30,8 @@ public fun panelTextStyle(): TextStyle {
     return remember(regular, semiBold, bold, black, color) {
         TextStyle(
             fontFamily = FontFamily(regular, semiBold, bold, black),
-            fontSize = PanelTokens.textSize,
-            lineHeight = PanelTokens.lineHeight,
+            fontSize = TypeScale.body,
+            lineHeight = TypeScale.bodyLineHeight,
             color = color,
         )
     }

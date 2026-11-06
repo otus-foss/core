@@ -15,7 +15,7 @@ import androidx.compose.ui.text.style.TextAlign
 import com.otus.designsystem.shared.controls.elements.ButtonPill
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.rows.InboxTokens
+import com.otus.designsystem.theme.tokens.feedback.EmptyStateTokens
 import org.jetbrains.compose.resources.DrawableResource
 
 /** Centered, scrollable empty content with an optional action. */
@@ -27,14 +27,14 @@ public fun EmptyState(
     actionLabel: String? = null,
     onAction: () -> Unit = {},
 ) {
-    Box(Modifier.fillMaxSize().padding(InboxTokens.contentInset), contentAlignment = Alignment.Center) {
+    Box(Modifier.fillMaxSize().padding(EmptyStateTokens.inset), contentAlignment = Alignment.Center) {
         Column(
             modifier = Modifier.verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(InboxTokens.itemGap),
+            verticalArrangement = Arrangement.spacedBy(EmptyStateTokens.itemGap),
         ) {
-            Symbol(icon, size = InboxTokens.emptyIconSize)
-            Text(title, fontSize = InboxTokens.subjectSize, textAlign = TextAlign.Center)
+            Symbol(icon, size = EmptyStateTokens.iconSize)
+            Text(title, fontSize = EmptyStateTokens.titleSize, textAlign = TextAlign.Center)
             if (description != null) Text(description, color = OtusColors.text2, textAlign = TextAlign.Center)
             if (actionLabel != null) ButtonPill(actionLabel, onAction, fill = OtusColors.bgLight)
         }

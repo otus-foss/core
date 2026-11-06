@@ -48,7 +48,9 @@ import com.otus.designsystem.shared.rows.components.TrailingIcons
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.shapes.strokeBorder
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.controls.ControlTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.tokens.people.ContactTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
@@ -103,7 +105,7 @@ public fun ContactFieldRow(
         if (look.error != null && !focused) {
             Text(
                 look.error,
-                Modifier.padding(start = SheetTokens.inset, top = PanelTokens.iconGap),
+                Modifier.padding(start = SheetTokens.inset, top = Spacing.iconGap),
                 style = panelTextStyle(),
                 color = OtusColors.text2,
                 fontSize = ContactTokens.detailSize,
@@ -126,13 +128,13 @@ private fun FieldFrame(
             .heightIn(min = ContactTokens.fieldHeight)
             .background(if (highlighted) OtusColors.selectedFill else OtusColors.bgDark, shape)
             .strokeBorder(
-                PanelTokens.borderWidth,
+                Sizes.borderWidth,
                 if (highlighted) OtusColors.selectedFill else OtusColors.strokeBgDark,
                 shape,
             )
             // A trailing button's touch target spaces it from the edge; without one, the label needs the inset.
-            .padding(start = SheetTokens.inset, end = if (endsWithButton) PanelTokens.iconGap else SheetTokens.inset),
-        horizontalArrangement = Arrangement.spacedBy(PanelTokens.iconGap),
+            .padding(start = SheetTokens.inset, end = if (endsWithButton) Spacing.iconGap else SheetTokens.inset),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.iconGap),
         verticalAlignment = Alignment.CenterVertically,
         content = content,
     )
@@ -204,7 +206,7 @@ private fun LabelButton(
     val interactions = remember { MutableInteractionSource() }
     Box(
         Modifier
-            .sizeIn(minWidth = PanelTokens.touchTarget, minHeight = PanelTokens.touchTarget)
+            .sizeIn(minWidth = Sizes.touchTarget, minHeight = Sizes.touchTarget)
             .clickable(interactionSource = interactions, indication = null, role = Role.Button) { open = true }
             .semantics { contentDescription = "$field label: $label. Change" },
         contentAlignment = Alignment.Center,
@@ -212,14 +214,14 @@ private fun LabelButton(
         Row(
             Modifier
                 .height(ContactTokens.labelChipHeight)
-                .border(PanelTokens.borderWidth, OtusColors.bgLight, CircleShape)
+                .border(Sizes.borderWidth, OtusColors.bgLight, CircleShape)
                 .controlPressFeedback(interactions)
-                .padding(start = PanelTokens.chipPadding, end = PanelTokens.iconGap),
+                .padding(start = ControlTokens.chipPadding, end = Spacing.iconGap),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(label, style = panelTextStyle(), color = OtusColors.text2, fontSize = ContactTokens.detailSize)
             CompositionLocalProvider(LocalContentColor provides OtusColors.text2) {
-                Symbol(Res.drawable.symbol_unfold_more, size = PanelTokens.iconSize * 0.8f)
+                Symbol(Res.drawable.symbol_unfold_more, size = Sizes.iconSize * 0.8f)
             }
         }
         if (open) OptionsMenu(choices) { open = false }
@@ -230,6 +232,6 @@ private fun LabelButton(
 private fun FieldIcon(icon: DrawableResource?) {
     if (icon == null) return
     CompositionLocalProvider(LocalContentColor provides OtusColors.text2) {
-        Box(Modifier.padding(end = SheetTokens.gap - PanelTokens.iconGap)) { Symbol(icon) }
+        Box(Modifier.padding(end = SheetTokens.gap - Spacing.iconGap)) { Symbol(icon) }
     }
 }

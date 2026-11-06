@@ -38,7 +38,7 @@ import com.otus.designsystem.shared.rows.components.topHairline
 import com.otus.designsystem.theme.colors.FolderColor
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.overlays.ChoiceSheetTokens
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.tokens.people.SummaryTokens
@@ -146,7 +146,7 @@ private fun ChoiceOption(
             }
         }
         // Every row keeps room for the check, so moving it never rewraps a long label.
-        Box(Modifier.size(PanelTokens.iconSize)) { if (selected) Symbol(Res.drawable.symbol_check) }
+        Box(Modifier.size(Sizes.iconSize)) { if (selected) Symbol(Res.drawable.symbol_check) }
     }
 }
 

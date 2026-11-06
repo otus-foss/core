@@ -30,7 +30,7 @@ import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.MotionCurve
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 
 /**
@@ -127,7 +127,7 @@ private fun Circle(
             .size(ActionBarTokens.height)
             .background(if (enabled) OtusColors.accentDark else OtusColors.bgDark, CircleShape)
             .border(
-                PanelTokens.borderWidth,
+                Sizes.borderWidth,
                 if (enabled) OtusColors.accentLight else OtusColors.strokeBgDark,
                 CircleShape,
             ),

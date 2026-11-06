@@ -26,7 +26,8 @@ import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.MotionCurve
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 
 /**
@@ -45,12 +46,12 @@ public fun PickerSearch(
         modifier,
         shape = CircleShape,
         color = OtusColors.bgRegular,
-        border = BorderStroke(PanelTokens.borderWidth, OtusColors.strokeBgDark),
+        border = BorderStroke(Sizes.borderWidth, OtusColors.strokeBgDark),
     ) {
         Row(
             Modifier
-                .heightIn(min = PanelTokens.touchTarget)
-                .padding(start = SheetTokens.inset, end = PanelTokens.iconGap),
+                .heightIn(min = Sizes.touchTarget)
+                .padding(start = SheetTokens.inset, end = Spacing.iconGap),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Symbol(Res.drawable.symbol_search)

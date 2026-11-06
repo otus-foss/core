@@ -19,6 +19,7 @@ import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.rows.components.StripCard
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.content.ReadTokens
+import com.otus.designsystem.theme.tokens.rows.StripTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 import org.jetbrains.compose.resources.DrawableResource
 
@@ -39,16 +40,16 @@ public fun InfoStrip(
         Row(
             Modifier
                 .fillMaxWidth()
-                .heightIn(min = ReadTokens.positionHeight)
-                .padding(start = ReadTokens.stripStart + ReadTokens.stripGap / 2, end = ReadTokens.stripEnd),
-            horizontalArrangement = Arrangement.spacedBy(ReadTokens.stripGap),
+                .heightIn(min = StripTokens.height)
+                .padding(start = StripTokens.start + StripTokens.gap / 2, end = StripTokens.end),
+            horizontalArrangement = Arrangement.spacedBy(StripTokens.gap),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             CompositionLocalProvider(LocalContentColor provides OtusColors.text2) {
-                Symbol(icon, size = ReadTokens.infoIconSize)
+                Symbol(icon, size = StripTokens.iconSize)
             }
             StripText(title, subtitle, Modifier.weight(1f))
-            if (action != null) StripButton(action.label, action.icon, ReadTokens.stripButtonHeight, action.onClick)
+            if (action != null) StripButton(action.label, action.icon, StripTokens.buttonHeight, action.onClick)
         }
     }
 }
@@ -63,7 +64,7 @@ private fun StripText(
         Text(
             title,
             style = panelTextStyle(),
-            fontSize = ReadTokens.titleSize,
+            fontSize = StripTokens.titleSize,
             fontWeight = FontWeight.SemiBold,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,

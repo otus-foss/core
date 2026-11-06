@@ -39,8 +39,10 @@ import com.otus.designsystem.shared.people.components.Recipient
 import com.otus.designsystem.shared.people.components.RecipientChip
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.strokeBorder
+import com.otus.designsystem.theme.tokens.controls.ControlTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.editing.ComposeTokens
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.people.PersonPillTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
@@ -66,7 +68,7 @@ public fun RecipientLine(
     ComposeLine(label, modifier, topAligned = true) {
         FlowRow(
             // Centers a single row of chips in the 48 dp line, beside the label.
-            Modifier.weight(1f).padding(vertical = (PanelTokens.touchTarget - ComposeTokens.recipientHeight) / 2),
+            Modifier.weight(1f).padding(vertical = (Sizes.touchTarget - PersonPillTokens.recipientHeight) / 2),
             horizontalArrangement = Arrangement.spacedBy(ComposeTokens.recipientGap),
             verticalArrangement = Arrangement.spacedBy(ComposeTokens.recipientGap),
             itemVerticalAlignment = Alignment.CenterVertically,
@@ -91,10 +93,10 @@ private fun MoreChip(
     val shape = CircleShape
     Box(
         Modifier
-            .height(ComposeTokens.recipientHeight)
-            .strokeBorder(PanelTokens.borderWidth, OtusColors.bgLight, shape)
+            .height(PersonPillTokens.recipientHeight)
+            .strokeBorder(Sizes.borderWidth, OtusColors.bgLight, shape)
             .clickable(onClickLabel = "Show everyone", role = Role.Button, onClick = onClick)
-            .padding(horizontal = PanelTokens.chipPadding),
+            .padding(horizontal = ControlTokens.chipPadding),
         contentAlignment = Alignment.Center,
     ) { Text("+$hidden more", style = panelTextStyle(), color = OtusColors.text2, fontSize = ComposeTokens.detailSize) }
 }
@@ -112,7 +114,7 @@ private fun AddressField(
         modifier =
             modifier
                 .widthIn(min = ComposeTokens.labelWidth)
-                .heightIn(min = ComposeTokens.recipientHeight)
+                .heightIn(min = PersonPillTokens.recipientHeight)
                 .semantics { contentDescription = label }
                 .onFocusChanged { if (!it.isFocused) input.onCommit() }
                 .onPreviewKeyEvent { event ->

@@ -32,4 +32,7 @@ public object CalendarTokens {
     /** How far a range's end days step from the range's `selectedFill` toward `text1`. */
     public const val ENDPOINT_STEP: Float = 0.25f
     public const val HALF_TURN: Float = 180f
+
+    /** A date range calendar shown inline on a filter page: its heading, weekdays, and about four weeks. */
+    public val rangeCalendarHeight: Dp = 360.dp
 }

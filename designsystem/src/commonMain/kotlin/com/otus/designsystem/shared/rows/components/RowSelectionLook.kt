@@ -21,7 +21,7 @@ import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.motionTween
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
-import com.otus.designsystem.theme.tokens.rows.InboxTokens
+import com.otus.designsystem.theme.tokens.rows.EntryTokens
 
 /**
  * The tint behind a selected row. Corners square off where [RowSelection.joinedAbove] or
@@ -29,8 +29,8 @@ import com.otus.designsystem.theme.tokens.rows.InboxTokens
  */
 @Composable
 internal fun Modifier.selectionTint(selection: RowSelection?): Modifier {
-    val top = joinedCorner(selection?.joinedAbove == true, InboxTokens.selectionRadius)
-    val bottom = joinedCorner(selection?.joinedBelow == true, InboxTokens.selectionRadius)
+    val top = joinedCorner(selection?.joinedAbove == true, EntryTokens.selectionRadius)
+    val bottom = joinedCorner(selection?.joinedBelow == true, EntryTokens.selectionRadius)
     val tint =
         animateColorAsState(
             if (selection?.selected == true) OtusColors.accentDark else Color.Transparent,

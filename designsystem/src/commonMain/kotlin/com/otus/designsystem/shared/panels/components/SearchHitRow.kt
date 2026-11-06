@@ -19,6 +19,7 @@ import com.otus.designsystem.resources.symbol_mail
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.typography.TypeScale
 import com.otus.designsystem.theme.typography.panelTextStyle
 
 /** One message a search found, as a mail symbol, its [title], and its [detail], such as the date, at the end. */
@@ -40,6 +41,6 @@ public fun SearchHitRow(
     ) {
         CompositionLocalProvider(LocalContentColor provides OtusColors.text2) { Symbol(Res.drawable.symbol_mail) }
         Text(title, Modifier.weight(1f), style = panelTextStyle(), maxLines = 1, overflow = TextOverflow.Ellipsis)
-        Text(detail, style = panelTextStyle(), color = OtusColors.text2, fontSize = PanelTokens.countSize, maxLines = 1)
+        Text(detail, style = panelTextStyle(), color = OtusColors.text2, fontSize = TypeScale.label, maxLines = 1)
     }
 }

@@ -34,7 +34,9 @@ import androidx.compose.ui.unit.Constraints
 import com.otus.designsystem.shared.controls.elements.ActionButton
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.controls.ControlTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 import kotlin.math.roundToInt
@@ -87,7 +89,7 @@ internal fun pairPrimaryWidth(
     secondaryNeeds: Int,
     primaryNeeds: Int,
 ): Int {
-    val share = (width * PanelTokens.PAIR_PRIMARY_SHARE).roundToInt()
+    val share = (width * ControlTokens.PAIR_PRIMARY_SHARE).roundToInt()
     return if (secondaryNeeds + primaryNeeds <= width) {
         share.coerceIn(primaryNeeds, width - secondaryNeeds)
     } else {
@@ -98,7 +100,7 @@ internal fun pairPrimaryWidth(
 /** The track's fill and outline, drawn under its buttons, where `Modifier.border` would draw over them. */
 private fun Modifier.pairTrack(): Modifier =
     drawBehind {
-        val stroke = PanelTokens.borderWidth.toPx()
+        val stroke = Sizes.borderWidth.toPx()
         drawRoundRect(OtusColors.bgDark, cornerRadius = CornerRadius(size.height / 2))
         drawRoundRect(
             OtusColors.strokeBgDark,
@@ -118,7 +120,7 @@ internal fun PrimaryLabel(
 ) {
     val color = if (enabled) OtusColors.text1 else OtusColors.text3
     Row(
-        horizontalArrangement = Arrangement.spacedBy(PanelTokens.chipGap),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.inlineGap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -131,9 +133,9 @@ internal fun PrimaryLabel(
         )
         if (busy) {
             CircularProgressIndicator(
-                Modifier.size(PanelTokens.progressSize),
+                Modifier.size(ControlTokens.progressSize),
                 color = color,
-                strokeWidth = PanelTokens.progressStroke,
+                strokeWidth = ControlTokens.progressStroke,
             )
         }
     }
@@ -152,7 +154,7 @@ private fun SecondaryHalf(button: PairButton) {
                 role = Role.Button,
                 onClick = button.onClick,
             ).controlPressFeedback(interactions, UnderPrimary)
-            .padding(horizontal = SheetTokens.inset, vertical = PanelTokens.iconGap),
+            .padding(horizontal = SheetTokens.inset, vertical = Spacing.iconGap),
         contentAlignment = Alignment.Center,
     ) {
         Text(

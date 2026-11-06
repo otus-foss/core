@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.content.ReadTokens
+import com.otus.designsystem.theme.tokens.rows.DetailsTableTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
@@ -27,15 +27,15 @@ public fun DetailsTable(
     rows: List<DetailLine>,
     modifier: Modifier = Modifier,
 ) {
-    val labelWidth = ReadTokens.detailsLabelWidth * LocalDensity.current.fontScale
+    val labelWidth = DetailsTableTokens.labelWidth * LocalDensity.current.fontScale
     Column(modifier.fillMaxWidth()) {
         rows.forEachIndexed { index, row ->
             Row(
                 Modifier
                     .fillMaxWidth()
                     .topHairline(OtusColors.strokeBgDark) { index > 0 }
-                    .padding(vertical = ReadTokens.detailsPadding),
-                horizontalArrangement = Arrangement.spacedBy(ReadTokens.detailsPadding),
+                    .padding(vertical = DetailsTableTokens.padding),
+                horizontalArrangement = Arrangement.spacedBy(DetailsTableTokens.padding),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
@@ -43,7 +43,7 @@ public fun DetailsTable(
                     Modifier.width(labelWidth),
                     style = panelTextStyle(),
                     color = OtusColors.text3,
-                    fontSize = ReadTokens.detailsLabelSize,
+                    fontSize = DetailsTableTokens.labelSize,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
