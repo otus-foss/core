@@ -47,7 +47,7 @@ public fun BadgedAvatar(
  * cuts it out of the avatar under it. It is decoration: the row's description names the account.
  */
 @Composable
-public fun AvatarBadge(
+internal fun AvatarBadge(
     initials: String,
     colorIndex: Int,
     modifier: Modifier = Modifier,

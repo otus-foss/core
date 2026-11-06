@@ -49,7 +49,7 @@ import com.otus.designsystem.theme.tokens.rows.EntryTokens
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-public fun EntryCard(
+internal fun EntryCard(
     taps: EntryTaps,
     leading: @Composable () -> Unit,
     modifier: Modifier = Modifier,

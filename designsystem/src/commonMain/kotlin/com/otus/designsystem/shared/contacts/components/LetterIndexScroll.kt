@@ -26,7 +26,7 @@ import kotlin.time.TimeSource
  * the list instead.
  */
 @Composable
-public fun LetterIndexScrollGuard(
+internal fun LetterIndexScrollGuard(
     state: LetterIndexState,
     scroll: ScrollableState,
 ) {

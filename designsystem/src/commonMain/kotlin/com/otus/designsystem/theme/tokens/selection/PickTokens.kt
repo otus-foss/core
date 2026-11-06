@@ -4,7 +4,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 /** Pick rows: the radio and checkbox marks, and the height of a row with a check or check circle. */
-public object PickTokens {
+internal object PickTokens {
     public val markSize: Dp = 22.dp
     public val markStroke: Dp = 2.dp
     public val markDot: Dp = 10.dp

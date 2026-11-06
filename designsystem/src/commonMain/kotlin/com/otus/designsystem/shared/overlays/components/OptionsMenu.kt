@@ -56,7 +56,7 @@ public fun OptionsMenu(
  * An action runs [onDone] before its own click, to close what holds it.
  */
 @Composable
-public fun OptionsList(
+internal fun OptionsList(
     items: List<OptionsItem>,
     onDone: () -> Unit,
 ) {

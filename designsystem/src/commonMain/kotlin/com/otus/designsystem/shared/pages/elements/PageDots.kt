@@ -29,7 +29,7 @@ import com.otus.designsystem.theme.tokens.layout.PageTokens
  * It has no semantics; the text beside it says the position.
  */
 @Composable
-public fun PageDots(
+internal fun PageDots(
     count: Int,
     current: Int,
     modifier: Modifier = Modifier,

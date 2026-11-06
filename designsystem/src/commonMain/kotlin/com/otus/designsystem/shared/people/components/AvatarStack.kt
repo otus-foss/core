@@ -28,7 +28,7 @@ import com.otus.designsystem.theme.typography.panelTextStyle
  * avatars of [size] overlap in proportion.
  */
 @Composable
-public fun AvatarStack(
+internal fun AvatarStack(
     avatars: List<ChipAvatar>,
     modifier: Modifier = Modifier,
     label: String? = null,

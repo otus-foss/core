@@ -18,7 +18,7 @@ import com.otus.designsystem.theme.tokens.feedback.ControlFeedbackTokens
 
 /** Share the touch target's interactions, but paint feedback only on the visible control. */
 @Composable
-public fun Modifier.controlPressFeedback(
+internal fun Modifier.controlPressFeedback(
     interactions: InteractionSource,
     shape: Shape = CircleShape,
 ): Modifier {

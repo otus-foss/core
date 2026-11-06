@@ -6,7 +6,7 @@ import androidx.compose.ui.unit.dp
 import com.otus.designsystem.theme.typography.TypeScale
 
 /** Person pills: a recipient in a field, and the person in a quote header with its date toggle. */
-public object PersonPillTokens {
+internal object PersonPillTokens {
     /** The person pill in a quote header, its avatar, and the fold toggle's symbol. */
     public val quoteHeight: Dp = 26.dp
     public val quoteAvatarSize: Dp = 20.dp

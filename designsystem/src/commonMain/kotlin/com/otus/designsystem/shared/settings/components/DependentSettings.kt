@@ -6,7 +6,7 @@ import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
 
 /** Whether the setting rows here take taps; [DependentSettings] turns it off. */
-public val LocalSettingsEnabled: ProvidableCompositionLocal<Boolean> = compositionLocalOf { true }
+internal val LocalSettingsEnabled: ProvidableCompositionLocal<Boolean> = compositionLocalOf { true }
 
 /**
  * Setting rows that only apply while another setting is set, such as a sender's order while the

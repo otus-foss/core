@@ -23,7 +23,7 @@ public class PageSearch(
  * retraces the opening frame for frame.
  */
 @Composable
-public fun rememberSearchExpansion(open: Boolean): () -> Float {
+internal fun rememberSearchExpansion(open: Boolean): () -> Float {
     val progress = remember { Animatable(if (open) 1f else 0f) }
     val scale = LocalMotionScale.current
     LaunchedEffect(open, scale) {

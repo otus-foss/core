@@ -75,7 +75,7 @@ public fun DateRangePicker(
  * scrolling page. Taps pick the start and then the end, and a hold and drag picks a range.
  */
 @Composable
-public fun DateRangeCalendar(
+internal fun DateRangeCalendar(
     start: String?,
     end: String?,
     onChange: (String?, String?) -> Unit,

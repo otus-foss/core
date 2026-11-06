@@ -48,7 +48,7 @@ import org.jetbrains.compose.resources.painterResource
  * from its height.
  */
 @Composable
-public fun SidebarOwl(modifier: Modifier = Modifier) {
+internal fun SidebarOwl(modifier: Modifier = Modifier) {
     val motionScale = LocalMotionScale.current
     val playback = remember { OwlPlayback() }
     var smiles by remember { mutableIntStateOf(0) }

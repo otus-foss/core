@@ -7,7 +7,7 @@ import androidx.compose.ui.semantics.Role
 
 /** A person's avatar and name in an outlined pill; tapping it edits or removes them. */
 @Composable
-public fun RecipientChip(
+internal fun RecipientChip(
     recipient: Recipient,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,

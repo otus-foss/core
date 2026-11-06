@@ -4,7 +4,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 /** Sizes for brand marks. Their colors come from the theme. */
-public object BrandTokens {
+internal object BrandTokens {
     public val launchMarkSize: Dp = 192.dp
 
     /** A launcher icon's preview, such as in the App icon setting. */

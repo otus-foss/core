@@ -21,7 +21,7 @@ public data class AccentShades(
  * more. A light theme gets a pale fill under its dark text. Otus blue on [ThemeBase.Otus] keeps
  * the original hand-tuned shades.
  */
-public fun ThemeBase.accentShades(accent: Color): AccentShades = accentShades(accent, page, raised, text1)
+internal fun ThemeBase.accentShades(accent: Color): AccentShades = accentShades(accent, page, raised, text1)
 
 /** [ThemeBase.accentShades] on surfaces the user may have changed. */
 internal fun accentShades(

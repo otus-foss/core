@@ -19,7 +19,7 @@ import com.otus.designsystem.theme.tokens.core.Sizes
  * the row it sits in says the count in its description.
  */
 @Composable
-public fun CountPill(
+internal fun CountPill(
     text: String,
     modifier: Modifier = Modifier,
 ) {

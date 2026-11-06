@@ -49,7 +49,7 @@ import kotlin.math.roundToInt
  * reads [progress] from [rememberSearchExpansion], which the caller also uses to dim the page.
  */
 @Composable
-public fun ExpandingSearch(
+internal fun ExpandingSearch(
     title: String,
     search: PageSearch,
     open: Boolean,

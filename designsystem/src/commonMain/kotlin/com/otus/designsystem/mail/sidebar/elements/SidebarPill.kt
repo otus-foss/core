@@ -17,7 +17,7 @@ import org.jetbrains.compose.resources.DrawableResource
  * label in smaller `text2`.
  */
 @Composable
-public fun SidebarPill(
+internal fun SidebarPill(
     label: String,
     icon: DrawableResource,
     selected: Boolean,

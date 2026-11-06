@@ -40,7 +40,7 @@ import com.otus.designsystem.theme.typography.panelTextStyle
  * "<title>, message x of n, <detail>".
  */
 @Composable
-public fun PositionStrip(
+internal fun PositionStrip(
     heading: NamedAvatar,
     count: Int,
     current: Int,
@@ -60,7 +60,7 @@ public fun PositionStrip(
  * then names what [trailing] shows too, such as the sender, the date, and the folders.
  */
 @Composable
-public fun PositionStrip(
+internal fun PositionStrip(
     heading: NamedAvatar,
     count: Int,
     current: Int,

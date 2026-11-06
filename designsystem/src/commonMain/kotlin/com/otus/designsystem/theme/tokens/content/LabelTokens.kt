@@ -6,7 +6,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 /** Read-only label pills, such as the folders a message row names. */
-public object LabelTokens {
+internal object LabelTokens {
     public val height: Dp = 20.dp
     public val horizontalPadding: Dp = 8.dp
     public val iconSize: Dp = 14.dp

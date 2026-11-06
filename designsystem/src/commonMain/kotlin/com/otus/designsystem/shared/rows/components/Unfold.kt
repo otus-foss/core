@@ -157,14 +157,14 @@ internal val Unfold.fadeIn: Float
  * The open form of a strip as [unfold] grows it out of the folded form: it fades in, staying sharp
  * so its rows and lines never smear into the card's edge.
  */
-public fun Modifier.unfoldedForm(unfold: Unfold): Modifier = graphicsLayer { alpha = unfold.fadeIn }
+internal fun Modifier.unfoldedForm(unfold: Unfold): Modifier = graphicsLayer { alpha = unfold.fadeIn }
 
 /**
  * The folded form of a strip, which blurs lightly and fades away as [unfold] grows the open form
  * over it, as the leaving part of a [BarMorph][com.otus.designsystem.shared.actionbar.components.BarMorph] does, so
  * the two never show sharp text together.
  */
-public fun Modifier.foldedForm(unfold: Unfold): Modifier =
+internal fun Modifier.foldedForm(unfold: Unfold): Modifier =
     graphicsLayer {
         val gone = unfold.fadeIn
         alpha = 1f - gone

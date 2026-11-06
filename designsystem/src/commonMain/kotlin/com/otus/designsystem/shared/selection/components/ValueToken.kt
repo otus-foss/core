@@ -29,7 +29,7 @@ import org.jetbrains.compose.resources.DrawableResource
  * values end in an ellipsis. It only shows the value; [ValuePicker] lets the user change it.
  */
 @Composable
-public fun ValueToken(
+internal fun ValueToken(
     value: String,
     modifier: Modifier = Modifier,
     keyword: String? = null,

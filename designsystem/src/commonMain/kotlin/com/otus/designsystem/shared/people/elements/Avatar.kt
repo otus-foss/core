@@ -57,7 +57,7 @@ public fun Avatar(
  * `bgDark`, or one a step toward `text3`. A list of people stays neutral instead of taking the
  * accent, and every fill shows on the raised cards rows sit on.
  */
-public fun avatarFill(colorIndex: Int): Color =
+internal fun avatarFill(colorIndex: Int): Color =
     when (colorIndex) {
         1 -> OtusColors.bgLight
         2 -> lerp(OtusColors.bgLight, OtusColors.text3, AvatarTokens.FILL_STEP)

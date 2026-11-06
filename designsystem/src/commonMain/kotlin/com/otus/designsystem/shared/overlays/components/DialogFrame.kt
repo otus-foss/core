@@ -42,7 +42,7 @@ import com.otus.designsystem.theme.typography.panelTextStyle
  * Without [closeButton], the popup's own buttons, such as Cancel, are the way out besides the scrim.
  */
 @Composable
-public fun DialogFrame(
+internal fun DialogFrame(
     title: String,
     onDismiss: () -> Unit,
     closeButton: Boolean = true,

@@ -7,7 +7,7 @@ import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.typography.TypeScale
 
 /** An empty state: its inset from the page edge, its symbol, the gap between its parts, and its title. */
-public object EmptyStateTokens {
+internal object EmptyStateTokens {
     public val inset: Dp = Spacing.gutter
     public val iconSize: Dp = 64.dp
     public val itemGap: Dp = Spacing.l

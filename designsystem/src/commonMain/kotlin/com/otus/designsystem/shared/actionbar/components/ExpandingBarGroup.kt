@@ -52,7 +52,7 @@ import com.otus.designsystem.theme.tokens.overlays.MenuTokens
  * a [BarMorph], the group is the bar's group part.
  */
 @Composable
-public fun ExpandingBarGroup(
+internal fun ExpandingBarGroup(
     moreLabel: String,
     panel: @Composable (close: () -> Unit) -> Unit,
     modifier: Modifier = Modifier,

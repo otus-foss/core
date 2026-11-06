@@ -8,7 +8,7 @@ import androidx.compose.ui.unit.sp
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.layout.CornerTokens
 
-public object CalendarTokens {
+internal object CalendarTokens {
     public const val MONTH_COLUMN_WEIGHT: Float = 2f
     public const val YEAR_COLUMN_WEIGHT: Float = 1.25f
     public const val CONTROLS_HEIGHT_FRACTION: Float = 0.35f

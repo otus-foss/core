@@ -9,7 +9,7 @@ import androidx.compose.foundation.lazy.LazyListState
  * animation speed, where Compose's own `animateScrollToItem` always runs its own spring. An item
  * out of view is reached by an estimate from the items in view, then placed exactly.
  */
-public suspend fun LazyListState.animateScrollToItem(
+internal suspend fun LazyListState.animateScrollToItem(
     index: Int,
     animationSpec: AnimationSpec<Float>,
 ) {

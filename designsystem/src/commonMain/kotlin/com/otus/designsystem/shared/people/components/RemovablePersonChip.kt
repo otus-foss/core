@@ -37,7 +37,7 @@ import com.otus.designsystem.theme.typography.panelTextStyle
  * on the rest reaches the line; screen readers hear it as "Remove Grace Hopper".
  */
 @Composable
-public fun RemovablePersonChip(
+internal fun RemovablePersonChip(
     person: Recipient,
     onRemove: () -> Unit,
     modifier: Modifier = Modifier,

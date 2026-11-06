@@ -70,7 +70,7 @@ internal fun ReportClearance(height: Dp) {
  * edge is hidden, as if behind the bar. Use it on a part aligned to the window's bottom.
  */
 @Composable
-public fun Modifier.aboveBottomBars(): Modifier {
+internal fun Modifier.aboveBottomBars(): Modifier {
     val bars by animateDpAsState(
         LocalBottomClearance.current?.height ?: 0.dp,
         motionTween(MotionSpeed.Normal),

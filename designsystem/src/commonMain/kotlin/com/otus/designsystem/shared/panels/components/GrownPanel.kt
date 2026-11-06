@@ -75,7 +75,7 @@ public fun rememberLastStopShows(expansion: PanelExpansion): Boolean {
  * started in it keeps it under the finger and ends where the panel settles.
  */
 @Composable
-public fun rememberShownWhileMoving(
+internal fun rememberShownWhileMoving(
     expansion: PanelExpansion,
     open: Boolean,
 ): Boolean {

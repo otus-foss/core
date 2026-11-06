@@ -31,7 +31,7 @@ import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
  * another action rather than as one. [label] names it for screen readers.
  */
 @Composable
-public fun BarAddButton(
+internal fun BarAddButton(
     label: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,

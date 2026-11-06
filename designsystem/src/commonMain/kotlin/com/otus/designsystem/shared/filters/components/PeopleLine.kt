@@ -37,7 +37,7 @@ import com.otus.designsystem.theme.typography.panelTextStyle
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-public fun PeopleLine(
+internal fun PeopleLine(
     label: String,
     people: List<Recipient>,
     placeholder: String,

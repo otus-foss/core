@@ -26,7 +26,7 @@ import com.otus.designsystem.theme.tokens.rows.StripTokens
  * [UnfoldingStripCard] instead, since a second animation would trail behind the finger.
  */
 @Composable
-public fun StripCard(
+internal fun StripCard(
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit,
 ) {

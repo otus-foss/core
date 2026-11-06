@@ -151,7 +151,7 @@ public fun ActionBarHost(
  * and keyboard, and as far from the sides as it sits from the bottom of the screen.
  */
 @Composable
-public fun Modifier.actionBarInset(): Modifier {
+internal fun Modifier.actionBarInset(): Modifier {
     val navigation = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
     return windowInsetsPadding(WindowInsets.navigationBars.union(WindowInsets.ime))
         .padding(ActionBarTokens.barInset)

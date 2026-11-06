@@ -7,7 +7,7 @@ import androidx.compose.ui.unit.sp
 import com.otus.designsystem.theme.typography.TypeScale
 
 /** The earlier messages of a thread above a reply's action bar, and the sheet that lists them. */
-public object ThreadTokens {
+internal object ThreadTokens {
     /** Up to this many messages show as rows; more fold into one summary row. */
     public const val ROW_LIMIT: Int = 3
 

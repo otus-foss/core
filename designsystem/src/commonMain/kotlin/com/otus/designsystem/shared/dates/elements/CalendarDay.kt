@@ -35,7 +35,7 @@ import com.otus.designsystem.theme.typography.panelTextStyle
 
 /** Plain calendar cell with a rectangular range band and softly squared endpoints. */
 @Composable
-public fun CalendarDay(
+internal fun CalendarDay(
     label: String,
     description: String,
     selection: CalendarDaySelection,
@@ -103,7 +103,7 @@ private fun CalendarMonthLabel(
     )
 }
 
-public data class CalendarDaySelection(
+internal data class CalendarDaySelection(
     val inRange: Boolean,
     val endpoint: Boolean,
     val connectsPrevious: Boolean = false,

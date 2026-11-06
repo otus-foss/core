@@ -23,7 +23,7 @@ import org.jetbrains.compose.resources.DrawableResource
  * the one label that matters most `text1` and a `text3` outline; others stay quiet.
  */
 @Composable
-public fun LabelPill(
+internal fun LabelPill(
     text: String,
     modifier: Modifier = Modifier,
     icon: DrawableResource? = null,

@@ -52,7 +52,7 @@ import com.otus.designsystem.theme.typography.panelTextStyle
  * left of the point when it would not fit, and a tap outside it or Back runs [onDismiss].
  */
 @Composable
-public fun ContextMenu(
+internal fun ContextMenu(
     actions: List<UiAction>,
     at: Offset,
     onDismiss: () -> Unit,
