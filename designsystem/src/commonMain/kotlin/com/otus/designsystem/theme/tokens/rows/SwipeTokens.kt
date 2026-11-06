@@ -19,4 +19,7 @@ internal object SwipeTokens {
 
     /** Opacity of the text-colored flash over the accent when a release commits. */
     const val FLASH_ALPHA = 0.24f
+
+    /** How long a dismissed row that its list keeps may stay revealed, measured from the end of its slide. */
+    const val DISMISS_RESTORE_MILLIS = 1_000L
 }

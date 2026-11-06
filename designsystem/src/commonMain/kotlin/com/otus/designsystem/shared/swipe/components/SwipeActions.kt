@@ -40,6 +40,7 @@ import com.otus.designsystem.theme.motion.Motion
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.tokens.rows.SwipeTokens
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlin.math.abs
@@ -54,9 +55,10 @@ import kotlin.math.roundToInt
  * Releasing past it flashes and runs the action once; shorter drags spring back. The row stops
  * once its action is fully revealed, and drags cannot move it again until it is still. A null
  * action leaves that direction still, and a horizontal drag never reaches the row as a tap.
- * A dismissing action leaves the row at its revealed width for the list to remove; a row that
- * stays returns to rest when [settledBy], such as the row's own data, changes. Accessibility
- * services offer both actions as custom actions.
+ * A dismissing action leaves the row at its revealed width for the list to remove. A row that
+ * stays returns to rest when [settledBy], such as the row's own data, changes, or after
+ * [SwipeTokens.DISMISS_RESTORE_MILLIS] when nothing changes, such as an action that opens a sheet
+ * the user cancels. Accessibility services offer both actions as custom actions.
  */
 @Composable
 public fun SwipeActions(
@@ -91,6 +93,7 @@ public fun SwipeActions(
                     } finally {
                         running = null
                     }
+                    if (action.dismisses) state.returnUnlessRemoved(motionScale)
                 }
                 true
             }
@@ -164,7 +167,7 @@ private class RunningSwipe(
 /**
  * Runs [action] after a release toward [side]. The row slides to that side's anchor while the
  * action flashes. A dismissing action runs after its flash and leaves the row at the anchor for its
- * list to remove, or for [returnToRest] once its state changes. Any other action runs at once and
+ * list to remove, or for [returnToRest] once its state changes or [returnUnlessRemoved] times out. Any other action runs at once and
  * the row returns to rest.
  * The slides outrank user drags, so a touch cannot stop the row halfway and release it past the
  * threshold a second time.
@@ -187,6 +190,15 @@ internal suspend fun runSwipe(
         slideTo(state.requireOffset(), anchors.positionOf(side), motionScale)
         if (!action.dismisses) slideTo(state.requireOffset(), anchors.positionOf(SwipeAnchor.Settled), motionScale)
     }
+}
+
+/**
+ * Returns a dismissed row to rest if it is still composed and away from rest after
+ * [SwipeTokens.DISMISS_RESTORE_MILLIS]. A removed row leaves composition, which cancels the wait.
+ */
+internal suspend fun AnchoredDraggableState<SwipeAnchor>.returnUnlessRemoved(motionScale: Float) {
+    delay(SwipeTokens.DISMISS_RESTORE_MILLIS)
+    if (settledValue != SwipeAnchor.Settled) returnToRest(motionScale)
 }
 
 /** Slides a row left at a dismissing action's anchor back to rest, ahead of any drag. */
