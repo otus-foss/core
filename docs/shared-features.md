@@ -69,8 +69,8 @@ supplied.
 
 `LoginLifecycle` (in `jmap`) has four steps, each a no-op unless overridden: `connected` after a
 login is saved, `removing` while its credentials still exist, `removeFailed` when a removal stopped
-and the login is still saved, and `removed` once it is gone. A `removing` that throws stops the
-removal. Mail registers its cache, waiting changes, attachments, device data and push, and the
+and the login is still saved, and `removed` once it is gone. A `removing` that throws
+`LoginLifecycleException` stops the removal, and `AccountsState` shows it as a storage failure. Mail registers its cache, waiting changes, attachments, device data and push, and the
 avatar service, so no wrapper repository has to undo a failed removal.
 
 `AccountSetupScreen` takes the avatars it shows as an `AccountAvatars` and the avatar editor as a

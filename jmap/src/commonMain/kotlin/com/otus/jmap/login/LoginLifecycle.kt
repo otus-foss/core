@@ -11,7 +11,8 @@ public interface LoginLifecycle {
 
     /**
      * The login is about to go, and its credentials still exist, so server-side state can be
-     * deleted. Throwing stops the removal, and then every lifecycle gets [removeFailed].
+     * deleted. Throwing [LoginLifecycleException] stops the removal, and then every lifecycle gets
+     * [removeFailed].
      */
     public suspend fun removing(loginId: String) {}
 
@@ -21,3 +22,8 @@ public interface LoginLifecycle {
     /** The login and its credentials are gone. */
     public suspend fun removed(loginId: String) {}
 }
+
+/** A lifecycle step could not finish, such as a cache that could not be cleared, so the removal stops. */
+public class LoginLifecycleException(
+    cause: Throwable,
+) : Exception("A login's local state could not be changed.", cause)

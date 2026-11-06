@@ -17,6 +17,7 @@ import com.otus.jmap.JmapSession
 import com.otus.jmap.JmapType
 import com.otus.jmap.login.JmapLogin
 import com.otus.jmap.login.LoginLifecycle
+import com.otus.jmap.login.LoginLifecycleException
 import com.otus.jmap.login.LoginStore
 import com.otus.jmap.login.LoginStoreException
 import io.ktor.http.Url
@@ -73,7 +74,11 @@ public class JmapAccountRepository(
     override suspend fun remove(id: String) {
         var committed = false
         try {
-            lifecycles.forEach { it.removing(id) }
+            try {
+                lifecycles.forEach { it.removing(id) }
+            } catch (error: LoginLifecycleException) {
+                throw AccountStorageException(error)
+            }
             currentCoroutineContext().ensureActive()
             // Credential deletion commits the removal, so its local cleanup must finish too.
             withContext(NonCancellable) {
