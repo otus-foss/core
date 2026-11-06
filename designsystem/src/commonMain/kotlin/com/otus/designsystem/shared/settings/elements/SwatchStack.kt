@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.settings.ThemeTokens
@@ -23,12 +24,13 @@ import com.otus.designsystem.theme.tokens.settings.ThemeTokens
 public fun SwatchStack(
     colors: List<Color>,
     modifier: Modifier = Modifier,
+    size: Dp = ThemeTokens.stackSwatch,
 ) {
     Row(modifier, horizontalArrangement = Arrangement.spacedBy(-ThemeTokens.stackOverlap)) {
         colors.forEach {
             Box(
                 Modifier
-                    .size(ThemeTokens.stackSwatch)
+                    .size(size)
                     .background(it, CircleShape)
                     .border(PanelTokens.borderWidth, OtusColors.bgLight, CircleShape),
             )

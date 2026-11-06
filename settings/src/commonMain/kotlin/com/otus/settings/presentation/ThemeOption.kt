@@ -5,12 +5,11 @@ import com.otus.designsystem.theme.colors.ThemeBase
 import com.otus.designsystem.theme.colors.ThemeChoice
 
 /**
- * A theme on the theme page: its name, a description, and the [choice] that selects it. [custom]
- * is the custom theme it shows, null for a built-in one.
+ * A theme on the theme page: its name and the [choice] that selects it. [custom] is the custom
+ * theme it shows, null for a built-in one.
  */
 internal class ThemeOption(
     val title: String,
-    val description: String,
     val choice: ThemeChoice,
     val selected: Boolean,
     val custom: CustomTheme? = null,
@@ -21,10 +20,10 @@ internal val ThemeChoice.options: List<ThemeOption>
     get() = ThemeBase.entries.map { builtInOption(it) } + customThemes.map { customOption(it) }
 
 private fun ThemeChoice.builtInOption(theme: ThemeBase): ThemeOption =
-    ThemeOption(theme.title, theme.description, withBase(theme), customId == null && theme == base)
+    ThemeOption(theme.title, withBase(theme), customId == null && theme == base)
 
 private fun ThemeChoice.customOption(theme: CustomTheme): ThemeOption =
-    ThemeOption(theme.title, "Made from ${theme.base.title}", withCustomTheme(theme.id), theme.id == customId, theme)
+    ThemeOption(theme.title, withCustomTheme(theme.id), theme.id == customId, theme)
 
 /** Why [name] cannot name [renaming], or a new theme while it is null; null if it can. */
 internal fun ThemeChoice.nameProblem(

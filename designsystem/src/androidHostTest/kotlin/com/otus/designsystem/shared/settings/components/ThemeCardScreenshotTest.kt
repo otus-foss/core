@@ -31,8 +31,8 @@ class ThemeCardScreenshotTest {
     fun selectedAndUnselected() =
         compose.screenshot("theme_card_selection") {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                ThemeCard("Otus", "Soft dark", OtusPalette.Otus, selected = true, {}, card)
-                ThemeCard("Light", "Bright pages", palette(ThemeBase.Light), selected = false, {}, card)
+                ThemeCard("Otus", OtusPalette.Otus, selected = true, {}, card)
+                ThemeCard("Light", palette(ThemeBase.Light), selected = false, {}, card)
             }
         }
 
@@ -41,8 +41,8 @@ class ThemeCardScreenshotTest {
         compose.screenshot("theme_card_actions") {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 val actions = listOf(MenuAction("Rename") {}, MenuAction("Delete") {})
-                ThemeCard("My ink", "Custom", palette(ThemeBase.Ink), selected = true, {}, card, actions)
-                ThemeCard("Black", "True black", palette(ThemeBase.Black), selected = false, {}, card, actions)
+                ThemeCard("My ink", palette(ThemeBase.Ink), selected = true, {}, card, actions)
+                ThemeCard("Black", palette(ThemeBase.Black), selected = false, {}, card, actions)
             }
         }
 

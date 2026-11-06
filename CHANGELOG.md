@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+- Theme page: the preview is now a phone, `ThemePhonePreview(palette, expansion)`, drawn from any
+  `OtusPalette`, so colors can be tried before they apply. It runs edge to edge under the control
+  panel with a frame and bezel. A tap or drag down grows it with a `PhoneExpansion`
+  (`rememberPhoneExpansion()`), and `ThemePhonePanel` fades the page's panel into the phone's; a
+  tap, drag up, or back shrinks it. Breaking: `ThemeSettingsScreen` takes `preview: OtusPalette`
+  and a `controls` slot instead of a `preview` composable; Mail passes the colors its hue picker
+  is trying.
+- `Subpage` takes a `PageBackdrop`: content that runs edge to edge under the panel's rounded
+  corners, and a `panelOverlay` drawn over the panel at its size.
+- `SwatchStack` takes a `size`.
+- Theme cards show only the theme's name, without a description.
+
 - `LetterIndex` keeps the pressed letter in place: its row opens level with the heading that
   `letterIndexHandle` or its "Show letters" action opened it from, and the other letters line up
   above and below it. Rows keep `LetterIndexTokens.rowHeight` instead of shrinking to fit. Letters

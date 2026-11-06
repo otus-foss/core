@@ -48,15 +48,14 @@ import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.settings.ThemeTokens
 
 /**
- * A theme to pick: a small sketch of a page drawn in [sketch]'s colors above [title] and
- * [description]. The selected card has an accent ring and a check; the card is one radio button.
+ * A theme to pick: a small sketch of a page drawn in [sketch]'s colors above [title]. The
+ * selected card has an accent ring and a check; the card is one radio button.
  * With [actions], a long press opens them in a [ContextMenu] where the finger is, and the selected
  * card shows a more button that opens them in place of the check.
  */
 @Composable
 public fun ThemeCard(
     title: String,
-    description: String,
     sketch: OtusPalette,
     selected: Boolean,
     onClick: () -> Unit,
@@ -90,18 +89,17 @@ public fun ThemeCard(
             verticalArrangement = Arrangement.spacedBy(ThemeTokens.cardGap),
         ) {
             ThemeSketch(sketch)
-            CardLabel(title, description, selected, openMenu)
+            CardLabel(title, selected, openMenu)
         }
         val menuPosition = menuAt
         if (menuPosition != null) ContextMenu(actions, menuPosition) { menuAt = null }
     }
 }
 
-/** The title and description, then the check or, with [onMenu], the more button on a selected card. */
+/** The title, then the check or, with [onMenu], the more button on a selected card. */
 @Composable
 private fun CardLabel(
     title: String,
-    description: String,
     selected: Boolean,
     onMenu: (() -> Unit)?,
 ) {
@@ -110,22 +108,15 @@ private fun CardLabel(
         horizontalArrangement = Arrangement.spacedBy(PanelTokens.chipGap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Column(Modifier.weight(1f)) {
-            Text(
-                title,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                fontSize = ThemeTokens.cardTitleSize,
-                lineHeight = ThemeTokens.cardTitleLineHeight,
-                fontWeight = FontWeight.SemiBold,
-            )
-            Text(
-                description,
-                color = OtusColors.text2,
-                fontSize = ThemeTokens.cardDetailSize,
-                lineHeight = ThemeTokens.cardDetailLineHeight,
-            )
-        }
+        Text(
+            title,
+            Modifier.weight(1f),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            fontSize = ThemeTokens.cardTitleSize,
+            lineHeight = ThemeTokens.cardTitleLineHeight,
+            fontWeight = FontWeight.SemiBold,
+        )
         when {
             selected && onMenu != null -> MoreButton(title, onMenu)
             selected -> SelectedCheck()
