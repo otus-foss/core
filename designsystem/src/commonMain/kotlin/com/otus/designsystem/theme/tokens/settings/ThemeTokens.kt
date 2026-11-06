@@ -15,8 +15,6 @@ public object ThemeTokens {
     public val cardGap: Dp = 8.dp
     public val cardTitleSize: TextUnit = 15.sp
     public val cardTitleLineHeight: TextUnit = 20.sp
-    public val cardDetailSize: TextUnit = 12.sp
-    public val cardDetailLineHeight: TextUnit = 16.sp
     public val sketchHeight: Dp = 64.dp
     public val sketchRadius: Dp = cardRadius - cardPadding
     public val sketchPadding: Dp = 8.dp
