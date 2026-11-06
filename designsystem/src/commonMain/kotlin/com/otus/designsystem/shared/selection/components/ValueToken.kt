@@ -56,8 +56,7 @@ internal fun ValueOutline(
 }
 
 /**
- * The `bgLight` stroke around a [ValueToken], [ValuePicker], or
- * [RuleChip][com.otus.designsystem.shared.filters.components.RuleChip].
+ * The `bgLight` stroke around a [ValueToken], a [ValuePicker], or a rule chip.
  */
 internal fun Modifier.valueOutline(shape: Shape): Modifier =
     strokeBorder(PanelTokens.borderWidth, OtusColors.bgLight, shape)

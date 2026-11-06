@@ -10,7 +10,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.otus.designsystem.mail.brand.elements.MailAppIcon
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_owl
 import com.otus.designsystem.shared.overlays.components.SheetFrame
@@ -23,10 +22,14 @@ import com.otus.settings.presentation.AppIconSettingsState
 
 /**
  * The App icon row and its sheet, a grid of the icons as the launcher shows them, for an app that
- * can switch its launcher icon. It goes in the appearance page's Look section.
+ * can switch its launcher icon. [icon] draws the app's icon in each style. It goes in the
+ * appearance page's Look section.
  */
 @Composable
-public fun AppIconSetting(appIcon: AppIconSettingsState) {
+public fun AppIconSetting(
+    appIcon: AppIconSettingsState,
+    icon: @Composable (AppIconStyle) -> Unit,
+) {
     var choosing by rememberSaveable { mutableStateOf(false) }
     SettingRow(
         "App icon",
@@ -45,7 +48,7 @@ public fun AppIconSetting(appIcon: AppIconSettingsState) {
                 columns = ICON_COLUMNS,
             ) { style, modifier ->
                 IconChoice(style.label, style == appIcon.style, { appIcon.select(style) }, modifier) {
-                    MailAppIcon(style)
+                    icon(style)
                 }
             }
         }

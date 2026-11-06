@@ -13,8 +13,7 @@ public interface ReorderableScope {
     public fun DragHandle(label: String)
 
     /**
-     * Lets a long press anywhere on this row drag it, for rows without a visible handle, such as a
-     * [FolderSettingRow][com.otus.designsystem.mail.folders.components.FolderSettingRow]. A tap still
+     * Lets a long press anywhere on this row drag it, for rows without a visible handle. A tap still
      * reaches the row's own click. Accessibility services get Move up and Move down actions on the row.
      */
     public fun Modifier.dragOnLongPress(): Modifier

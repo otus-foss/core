@@ -26,6 +26,8 @@ NAMESPACE = "com.otus"
 # Libraries are consumed by the apps; they must never reach back into app code.
 APP_NAMESPACES = ("com.otus.mail", "com.otus.calendar")
 UI_LAYERS = frozenset({"elements", "components"})
+# Plain Kotlin beside a group's UI, such as the HTML sanitizer of mail/read; no composables.
+PLAIN_LAYERS = frozenset({"html"})
 UI_SCOPES = frozenset({"shared", "mail", "calendar"})
 PACKAGE_SEGMENT = r"[A-Za-z_]\w*"
 FEATURE_LAYERS = {"domain", "data", "presentation"}
@@ -52,13 +54,13 @@ def scoped_ui_location(location: list[str]) -> bool:
         len(location) == 3
         and location[0] in UI_SCOPES
         and bool(re.fullmatch(PACKAGE_SEGMENT, location[1]))
-        and location[1] not in UI_LAYERS | {"theme", "resources"}
-        and location[2] in UI_LAYERS
+        and location[1] not in UI_LAYERS | PLAIN_LAYERS | {"theme", "resources"}
+        and location[2] in UI_LAYERS | PLAIN_LAYERS
     )
 
 
 def ui_layer(location: list[str]) -> list[str]:
-    """`["elements"]` or `["components"]` for scoped UI code, else empty."""
+    """`["elements"]`, `["components"]`, or `["html"]` for scoped code, else empty."""
     return location[2:3] if scoped_ui_location(location) else []
 
 
@@ -225,6 +227,8 @@ def ui_violations(
     layer = ui_layer(location)
     if layer in (["elements"], ["components"]) and re.search(SERVICE_TYPES, code):
         errors.append("elements/components take values and callbacks, not services or navigation")
+    if layer and layer[0] in PLAIN_LAYERS and re.search(COMPOSABLE, code):
+        errors.append("plain Kotlin packages such as html declare no composables")
     allowed = [module_namespace(module) for module in ui_modules | UI_ALLOWED_MODULES]
     for namespace in references:
         if not any(namespace == name or namespace.startswith(name + ".") for name in allowed):

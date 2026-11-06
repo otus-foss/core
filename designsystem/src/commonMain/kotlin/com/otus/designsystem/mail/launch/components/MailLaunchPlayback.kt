@@ -7,7 +7,6 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.otus.designsystem.theme.brand.MailLaunchTimeline
 import com.otus.designsystem.theme.motion.Motion
 
 /** Where the launch animation is: the intro once, then the loop for as long as [play] runs. */

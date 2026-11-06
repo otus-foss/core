@@ -6,6 +6,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.unit.dp
+import com.otus.designsystem.mail.folders.components.FilterFolderRow
+import com.otus.designsystem.mail.folders.components.FolderCheck
+import com.otus.designsystem.mail.folders.components.TreeFolder
 import com.otus.designsystem.screenshot.screenScreenshot
 import com.otus.designsystem.screenshot.screenshot
 import com.otus.designsystem.shared.controls.components.SegmentedToggle
@@ -55,7 +58,6 @@ class FilterPanelScreenshotTest {
                     header = { FilterPanelTitle("Inbox", {}) },
                     footer = { FilterPanelFooter("Show 30 conversations", {}) },
                 ) {
-                    FilterPanelHeader("Metadata", onBack = {})
                     FilterSection("Type", Modifier.padding(horizontal = FilterTokens.bodyInset)) {
                         FilterChip("Newsletters", selected = false, onClick = {})
                         FilterChip("Calendar invites", selected = true, onClick = {})

@@ -16,6 +16,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
+import com.otus.designsystem.mail.read.html.HtmlQuote
+import com.otus.designsystem.mail.read.html.RenderKey
+import com.otus.designsystem.mail.read.html.isShowImagesLink
+import com.otus.designsystem.mail.read.html.newRenderKey
 import com.otus.designsystem.theme.colors.OtusColors
 
 @Composable

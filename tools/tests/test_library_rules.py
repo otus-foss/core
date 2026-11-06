@@ -402,6 +402,12 @@ class ScopedDesignSystemTests(unittest.TestCase):
             with self.subTest(package=package):
                 self.assertEqual(check("designsystem", package, "@Composable fun Row() {}"), [])
 
+    def test_plain_kotlin_packages_hold_no_composables(self):
+        plain = "fun sealedHtml(html: String) = html"
+        self.assertEqual(check("designsystem", "mail.read.html", plain), [])
+        errors = check("designsystem", "mail.read.html", "@Composable fun Row() {}")
+        self.assertTrue(any("declare no composables" in error for error in errors))
+
     def test_flat_and_malformed_production_paths_are_rejected(self):
         for package in (
             "elements",

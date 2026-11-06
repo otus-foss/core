@@ -39,7 +39,7 @@ public fun FilterPickRow(
     ) { PickRowText(title, subtitle) }
 }
 
-/** The check circle of a [FilterPickRow] and a [FilterFolderRow]. */
+/** The check circle of a [FilterPickRow] and the filter panel's folder rows. */
 @Composable
 internal fun FilterPickMark(selected: Boolean) {
     CompositionLocalProvider(LocalContentColor provides if (selected) OtusColors.text1 else OtusColors.text3) {

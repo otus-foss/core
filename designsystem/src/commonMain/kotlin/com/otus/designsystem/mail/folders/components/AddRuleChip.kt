@@ -35,7 +35,7 @@ import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.selection.RuleChipTokens
 
 /**
- * A dashed [RuleChip][com.otus.designsystem.shared.filters.components.RuleChip]-sized button that
+ * A dashed [RuleChip][com.otus.designsystem.mail.folders.components.RuleChip]-sized button that
  * adds a rule, such as "Add rule". Its plus sits in the avatar column and [label] in the value
  * column, so both line up with the chips above it.
  */

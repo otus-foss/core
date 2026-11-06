@@ -28,8 +28,6 @@ import com.otus.designsystem.resources.symbol_folder
 import com.otus.designsystem.resources.symbol_settings
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
-import com.otus.designsystem.shared.filters.components.RuleChip
-import com.otus.designsystem.shared.filters.components.RuleChipLine
 import com.otus.designsystem.shared.folders.elements.FolderToggle
 import com.otus.designsystem.shared.overlays.components.onPressDown
 import com.otus.designsystem.shared.people.components.AvatarStack

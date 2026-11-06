@@ -38,9 +38,8 @@ import kotlin.math.roundToInt
 import kotlin.math.sin
 
 /**
- * Shows the bar [content] draws for [shown], such as a
- * [FormattingBar][com.otus.designsystem.mail.compose.components.FormattingBar], a full [ActionBar],
- * or an [ImageBar][com.otus.designsystem.mail.compose.components.ImageBar], and morphs from one to
+ * Shows the bar [content] draws for [shown], such as a formatting row or a full [ActionBar], and
+ * morphs from one to
  * the next when [shown] changes. Each part first takes its match's height, then its width, so a
  * row splits into a group and shell, or they merge into a row. While the width changes, the
  * parts' content blurs and the arriving content fades in over the leaving one. A bar without a

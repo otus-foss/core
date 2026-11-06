@@ -4,13 +4,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import com.otus.designsystem.mail.folders.elements.DestinationPill
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_archive
 import com.otus.designsystem.resources.symbol_auto_filter
 import com.otus.designsystem.resources.symbol_inbox
 import com.otus.designsystem.screenshot.screenshot
 import com.otus.designsystem.shared.controls.elements.IconPill
-import com.otus.designsystem.shared.folders.elements.DestinationPill
 import com.otus.designsystem.theme.tokens.content.ReadTokens
 import com.otus.designsystem.theme.tokens.selection.MoveTokens
 import org.junit.Rule

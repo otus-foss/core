@@ -1,6 +1,6 @@
 package com.otus.designsystem.mail.compose.elements
 
-import com.otus.designsystem.mail.read.elements.scanHtml
+import com.otus.designsystem.mail.read.html.scanHtml
 
 /**
  * An `<img>` start tag in a [RichText]'s HTML, from [start] to [end], past its `>`, with its

@@ -57,9 +57,7 @@ public fun Chip(
 }
 
 /**
- * The pill and its 48 dp touch target, shared by [Chip],
- * [SidebarPill][com.otus.designsystem.shared.sidebar.elements.SidebarPill], [IconPill], and the
- * button pills; [fill] fills it while unselected. [layout] sets how wide the pill is and where
+ * The pill and its 48 dp touch target, shared by [Chip], [IconPill], and the other pills; [fill] fills it while unselected. [layout] sets how wide the pill is and where
  * its content starts. A chip with a [selected] state reads as a checkbox; one without, a null, is
  * a button.
  */

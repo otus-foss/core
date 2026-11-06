@@ -5,11 +5,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.LayoutDirection
+import com.otus.designsystem.mail.read.html.HtmlQuote
+import com.otus.designsystem.mail.read.html.HtmlScan
+import com.otus.designsystem.mail.read.html.RenderKey
+import com.otus.designsystem.mail.read.html.css
+import com.otus.designsystem.mail.read.html.placeholderStyle
+import com.otus.designsystem.mail.read.html.quoteFold
+import com.otus.designsystem.mail.read.html.scanHtml
+import com.otus.designsystem.mail.read.html.sealedHtml
+import com.otus.designsystem.mail.read.html.withImagePlaceholders
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.colors.OtusPalette
-import com.otus.designsystem.theme.colors.toHex
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.math.roundToInt
@@ -172,8 +179,6 @@ private val CSS_BACKGROUND = Regex("""(?i)(?:^|[\s;{])background(?:-color|-image
 
 private val COLOR_ATTRIBUTES = setOf("color", "bgcolor")
 private val CSS_COLOR = Regex("""(?i)(?:^|[\s;{])(?:color|background(?:-color)?)\s*:""")
-
-internal fun Color.css(): String = toHex().lowercase()
 
 /** An HTML `<link>` start tag: the tag name ends at whitespace, `/`, or `>`, in any case. */
 private val LINK_TAG = Regex("<link(?=[\\s/>])", RegexOption.IGNORE_CASE)

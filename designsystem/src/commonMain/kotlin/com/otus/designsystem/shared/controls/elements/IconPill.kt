@@ -10,10 +10,8 @@ import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import org.jetbrains.compose.resources.DrawableResource
 
 /**
- * A round pill that shows only [icon] and turns an option on or off, to sit beside
- * [SidebarPill][com.otus.designsystem.shared.sidebar.elements.SidebarPill]s.
- * Screen readers read [description] as its name. [size] matches it to smaller pills beside it,
- * such as [DestinationPill][com.otus.designsystem.shared.folders.elements.DestinationPill]s.
+ * A round pill that shows only [icon] and turns an option on or off, to sit beside other pills.
+ * Screen readers read [description] as its name. [size] matches it to smaller pills beside it.
  */
 @Composable
 public fun IconPill(
