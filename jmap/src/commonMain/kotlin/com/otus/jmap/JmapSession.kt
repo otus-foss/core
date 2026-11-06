@@ -1,6 +1,8 @@
 package com.otus.jmap
 
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -74,6 +76,23 @@ public data class JmapSession(
     public val vapidPublicKey: String?
         get() =
             capabilityObjects[JmapCapability.WEBPUSH_VAPID]?.string("applicationServerKey")?.takeIf { it.isNotEmpty() }
+
+    /**
+     * [accountId]'s object for [capability] read as [serializer]; null when the account does not
+     * offer it or its object does not read. The server still enforces what it advertises.
+     */
+    public fun <T> accountCapability(
+        accountId: String,
+        capability: String,
+        serializer: KSerializer<T>,
+    ): T? {
+        val advertised = accounts[accountId]?.capabilityObjects?.get(capability) ?: return null
+        return try {
+            JmapJson.decodeFromJsonElement(serializer, advertised)
+        } catch (expected: SerializationException) {
+            null
+        }
+    }
 
     /** The primary account for [capability], else the first account offering it, else null. */
     public fun accountFor(capability: String): String? =

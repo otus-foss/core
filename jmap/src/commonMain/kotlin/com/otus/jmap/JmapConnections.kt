@@ -9,6 +9,7 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.KSerializer
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -73,4 +74,10 @@ public class JmapLoginAccount(
     public val connection: JmapConnection,
     public val session: JmapSession,
     public val id: String,
-)
+) {
+    /** This account's object for [capability] read as [serializer]; see [JmapSession.accountCapability]. */
+    public fun <T> capability(
+        capability: String,
+        serializer: KSerializer<T>,
+    ): T? = session.accountCapability(id, capability, serializer)
+}
