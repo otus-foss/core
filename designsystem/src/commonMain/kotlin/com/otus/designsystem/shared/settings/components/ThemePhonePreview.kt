@@ -101,7 +101,12 @@ public fun ThemePhonePreview(
                 SketchPill("Date", Res.drawable.symbol_calendar_add_on, palette, selected = false)
             }
             Column(Modifier.growingRows(expansion)) {
-                sampleMessages.forEachIndexed { index, it -> SketchMessage(it, palette, selected = index == 0) }
+                sampleMessages.forEachIndexed {
+                    index,
+                    message,
+                    ->
+                    SketchMessage(message, palette, selected = index == 0)
+                }
             }
             SketchBar(palette)
         }

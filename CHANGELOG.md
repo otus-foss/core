@@ -9,8 +9,8 @@
   tap, drag up, or back shrinks it. Breaking: `ThemeSettingsScreen` takes `preview: OtusPalette`
   and a `controls` slot instead of a `preview` composable; Mail passes the colors its hue picker
   is trying.
-- `PageScaffold` and `Subpage` take a `backdrop`, which runs edge to edge under the panel's
-  rounded corners, and a `panelOverlay` drawn over the panel at its size.
+- `Subpage` takes a `PageBackdrop`: content that runs edge to edge under the panel's rounded
+  corners, and a `panelOverlay` drawn over the panel at its size.
 - `SwatchStack` takes a `size`.
 - Theme cards show only the theme's name, without a description.
 

@@ -39,7 +39,7 @@ internal fun Modifier.phoneSides(palette: OtusPalette): Modifier =
         .padding(horizontal = ThemeTokens.phoneBezelWidth)
         .background(palette.bgRegular)
 
-/** One ring of the phone: [color] in a shape rounded at the bottom by [radius], [width] thick at the sides and bottom. */
+/** One ring of the phone: [color], rounded at the bottom by [radius], [width] thick at the sides and bottom. */
 private fun Modifier.phoneLayer(
     color: Color,
     radius: Dp,

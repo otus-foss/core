@@ -9,6 +9,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.otus.designsystem.shared.controls.elements.ActionButton
+import com.otus.designsystem.shared.pages.components.PageBackdrop
 import com.otus.designsystem.shared.pages.components.PageSection
 import com.otus.designsystem.shared.pages.components.Subpage
 import com.otus.designsystem.shared.settings.components.ColorSheet
@@ -53,8 +54,11 @@ public fun ThemeSettingsScreen(
     Subpage(
         "Theme",
         onBack,
-        backdrop = { ThemePhonePreview(preview, phone) },
-        panelOverlay = { ThemePhonePanel(preview, phone, Modifier.matchParentSize()) },
+        backdrop =
+            PageBackdrop(
+                content = { ThemePhonePreview(preview, phone) },
+                panelOverlay = { ThemePhonePanel(preview, phone, Modifier.matchParentSize()) },
+            ),
     ) {
         controls()
         PageSection("Theme") {

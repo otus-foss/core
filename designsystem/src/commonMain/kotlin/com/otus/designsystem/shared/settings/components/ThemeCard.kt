@@ -48,7 +48,8 @@ import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.settings.ThemeTokens
 
 /**
- * A theme to pick: a small sketch of a page drawn in [sketch]'s colors above [title]. The selected card has an accent ring and a check; the card is one radio button.
+ * A theme to pick: a small sketch of a page drawn in [sketch]'s colors above [title]. The
+ * selected card has an accent ring and a check; the card is one radio button.
  * With [actions], a long press opens them in a [ContextMenu] where the finger is, and the selected
  * card shows a more button that opens them in place of the check.
  */
