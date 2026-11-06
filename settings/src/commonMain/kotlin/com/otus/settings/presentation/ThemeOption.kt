@@ -6,21 +6,27 @@ import com.otus.designsystem.theme.colors.ThemeChoice
 
 /**
  * A theme on the theme page: its name and the [choice] that selects it. [custom] is the custom
- * theme it shows, null for a built-in one.
+ * theme it shows, null for a built-in one; [system] marks the device's own colors.
  */
 internal class ThemeOption(
     val title: String,
     val choice: ThemeChoice,
     val selected: Boolean,
     val custom: CustomTheme? = null,
+    val system: Boolean = false,
 )
 
-/** The built-in themes, then the user's custom themes. */
+/** The built-in themes, the device's colors where it has them, then the user's custom themes. */
 internal val ThemeChoice.options: List<ThemeOption>
-    get() = ThemeBase.entries.map { builtInOption(it) } + customThemes.map { customOption(it) }
+    get() =
+        ThemeBase.entries.map { builtInOption(it) } + listOfNotNull(systemOption) +
+            customThemes.map { customOption(it) }
 
 private fun ThemeChoice.builtInOption(theme: ThemeBase): ThemeOption =
-    ThemeOption(theme.title, withBase(theme), customId == null && theme == base)
+    ThemeOption(theme.title, withBase(theme), customId == null && activeSystem == null && theme == base)
+
+private val ThemeChoice.systemOption: ThemeOption?
+    get() = system?.let { ThemeOption("System", withSystem(), activeSystem != null, system = true) }
 
 private fun ThemeChoice.customOption(theme: CustomTheme): ThemeOption =
     ThemeOption(theme.title, withCustomTheme(theme.id), theme.id == customId, theme)
