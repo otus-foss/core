@@ -10,7 +10,6 @@ import com.otus.designsystem.shared.controls.elements.UiAction
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -25,15 +24,16 @@ class SwipeRunTest {
         }
 
     @Test
-    fun aDismissedRowThatIsNotRemovedReturnsToRest() =
+    fun aDismissedRowWaitsAtItsAnchorUntilItReturnsToRest() =
         runTest {
             val state = AnchoredDraggableState(SwipeAnchor.Settled, anchors)
             var runs = 0
             val archive = SwipeAction(UiAction("Archive", Res.drawable.symbol_archive) { runs++ }, dismisses = true)
             launch(FrameClock()) { runSwipe(state, SwipeAnchor.StartToEnd, archive, Animatable(0f), motionScale = 1f) }
-            advanceTimeBy(PARKED_MILLIS)
+            advanceUntilIdle()
             assertEquals(1, runs)
             assertEquals(ROW_WIDTH, state.requireOffset())
+            launch(FrameClock()) { state.returnToRest(motionScale = 1f) }
             advanceUntilIdle()
             assertEquals(1, runs)
             assertEquals(0f, state.requireOffset())
@@ -53,7 +53,6 @@ class SwipeRunTest {
 
     private companion object {
         const val ROW_WIDTH = 320f
-        const val PARKED_MILLIS = 800L
         const val FRAME_MILLIS = 16L
         const val NANOS_PER_MILLI = 1_000_000L
     }

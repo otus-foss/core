@@ -23,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.onSizeChanged
@@ -39,7 +40,7 @@ import com.otus.designsystem.theme.motion.Motion
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.tokens.rows.SwipeTokens
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -53,13 +54,16 @@ import kotlin.math.roundToInt
  * Releasing past it flashes and runs the action once; shorter drags spring back. The row stops
  * once its action is fully revealed, and drags cannot move it again until it is still. A null
  * action leaves that direction still, and a horizontal drag never reaches the row as a tap.
- * Accessibility services offer both actions as custom actions.
+ * A dismissing action leaves the row at its revealed width for the list to remove; a row that
+ * stays returns to rest when [settledBy], such as the row's own data, changes. Accessibility
+ * services offer both actions as custom actions.
  */
 @Composable
 public fun SwipeActions(
     startToEnd: SwipeAction?,
     endToStart: SwipeAction?,
     modifier: Modifier = Modifier,
+    settledBy: Any? = null,
     content: @Composable () -> Unit,
 ) {
     val threshold = with(LocalDensity.current) { SwipeTokens.threshold.toPx() }
@@ -91,6 +95,10 @@ public fun SwipeActions(
                 true
             }
         }
+    LaunchedEffect(settledBy) {
+        snapshotFlow { running }.first { it == null }
+        if (state.settledValue != SwipeAnchor.Settled) state.returnToRest(motionScale)
+    }
     val revealWidths = remember { mutableStateMapOf<SwipeAnchor, Float>() }
     val offset = state.requireOffset()
     val dragSide = directionOf(offset)
@@ -155,9 +163,9 @@ private class RunningSwipe(
 
 /**
  * Runs [action] after a release toward [side]. The row slides to that side's anchor while the
- * action flashes. A dismissing action runs after its flash and leaves the row for its list to
- * remove; if the row is still there after [SwipeTokens.DISMISS_RESTORE_MILLIS], for example because
- * removal failed, it returns to rest. Any other action runs at once and the row returns to rest.
+ * action flashes. A dismissing action runs after its flash and leaves the row at the anchor for its
+ * list to remove, or for [returnToRest] once its state changes. Any other action runs at once and
+ * the row returns to rest.
  * The slides outrank user drags, so a touch cannot stop the row halfway and release it past the
  * threshold a second time.
  */
@@ -179,13 +187,13 @@ internal suspend fun runSwipe(
         slideTo(state.requireOffset(), anchors.positionOf(side), motionScale)
         if (!action.dismisses) slideTo(state.requireOffset(), anchors.positionOf(SwipeAnchor.Settled), motionScale)
     }
-    if (action.dismisses) {
-        delay(SwipeTokens.DISMISS_RESTORE_MILLIS)
-        state.anchoredDrag(MutatePriority.PreventUserInput) { anchors ->
-            slideTo(state.requireOffset(), anchors.positionOf(SwipeAnchor.Settled), motionScale)
-        }
-    }
 }
+
+/** Slides a row left at a dismissing action's anchor back to rest, ahead of any drag. */
+internal suspend fun AnchoredDraggableState<SwipeAnchor>.returnToRest(motionScale: Float) =
+    anchoredDrag(MutatePriority.PreventUserInput) { anchors ->
+        slideTo(requireOffset(), anchors.positionOf(SwipeAnchor.Settled), motionScale)
+    }
 
 private suspend fun AnchoredDragScope.slideTo(
     from: Float,
