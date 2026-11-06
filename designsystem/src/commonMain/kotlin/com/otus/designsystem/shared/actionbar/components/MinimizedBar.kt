@@ -35,10 +35,8 @@ import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 
 /**
  * A minimized [ActionBar]: [RoundPrimary] at the bar's end, as far from the screen's end edge as
- * from its bottom edge. It stays in place while the keyboard moves. It fades and scales out like
- * [PickerSearch][com.otus.designsystem.shared.selection.components.PickerSearch]'s clear button
- * once [hidden] or when the keyboard starts opening, and back in once the closing keyboard drops
- * below it. A new primary's icon swaps in place; see [rememberFrontBar].
+ * from its bottom edge. It stays in place while the keyboard moves. It fades and scales out once
+ * [hidden] or when the keyboard starts opening, and back in once the closing keyboard drops below it. A new primary's icon swaps in place; see [rememberFrontBar].
  * With [more], a [BarMoreButton] at the bar's start opens them; it scales in when they arrive.
  */
 @Composable
@@ -80,9 +78,8 @@ internal fun MinimizedBar(
 }
 
 /**
- * Fades and scales [content] in and out like
- * [PickerSearch][com.otus.designsystem.shared.selection.components.PickerSearch]'s clear button.
- * With [scaleInFirst] it also scales in when it first appears, such as when a selection's bar replaces the list's.
+ * Fades and scales [content] in and out. With [scaleInFirst] it also scales in when it first
+ * appears, such as when a selection's bar replaces the list's.
  */
 @Composable
 private fun Appearing(

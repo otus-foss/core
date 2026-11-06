@@ -42,6 +42,5 @@ public sealed interface OptionsItem {
         public val text: String,
     ) : OptionsItem
 
-    /** A line between groups of items. */
     public data object Divider : OptionsItem
 }
