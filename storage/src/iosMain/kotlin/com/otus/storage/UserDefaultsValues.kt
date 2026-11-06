@@ -15,22 +15,22 @@ public class UserDefaultsValues(
 
     override fun int(key: String): Int? = saved(key)?.let { defaults.integerForKey(prefix + key).toInt() }
 
-    override fun edit(changes: KeyValueEditor.() -> Unit) = changes()
+    override fun edit(changes: KeyValueEditor.() -> Unit): Unit = changes()
 
     override fun put(
         key: String,
         value: String,
-    ) = defaults.setObject(value, forKey = prefix + key)
+    ): Unit = defaults.setObject(value, forKey = prefix + key)
 
     override fun put(
         key: String,
         value: Boolean,
-    ) = defaults.setBool(value, forKey = prefix + key)
+    ): Unit = defaults.setBool(value, forKey = prefix + key)
 
     override fun put(
         key: String,
         value: Int,
-    ) = defaults.setInteger(value.toLong(), forKey = prefix + key)
+    ): Unit = defaults.setInteger(value.toLong(), forKey = prefix + key)
 
     private fun saved(key: String): Any? = defaults.objectForKey(prefix + key)
 }
