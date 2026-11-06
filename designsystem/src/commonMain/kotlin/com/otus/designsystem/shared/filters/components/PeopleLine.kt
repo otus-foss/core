@@ -22,8 +22,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import com.otus.designsystem.shared.people.components.Recipient
 import com.otus.designsystem.shared.people.components.RemovablePersonChip
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.tokens.selection.FilterTokens
+import com.otus.designsystem.theme.typography.TypeScale
 import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
@@ -54,7 +56,7 @@ public fun PeopleLine(
     ) {
         // At least the column's width, and wider with large text, so the label never runs into the chips.
         LineSlot(Modifier.widthIn(min = FilterTokens.peopleLabelWidth).padding(end = FilterTokens.chipGap)) {
-            Text(label, style = panelTextStyle(), color = OtusColors.text3, fontSize = FilterTokens.chipTextSize)
+            Text(label, style = panelTextStyle(), color = OtusColors.text3, fontSize = TypeScale.label)
         }
         FlowRow(
             Modifier.weight(1f),
@@ -68,7 +70,7 @@ public fun PeopleLine(
                     placeholder,
                     style = panelTextStyle(),
                     color = OtusColors.text3,
-                    fontSize = FilterTokens.chipTextSize,
+                    fontSize = TypeScale.label,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -84,7 +86,7 @@ private fun LineSlot(
     content: @Composable () -> Unit,
 ) {
     Box(
-        modifier.heightIn(min = FilterTokens.chipHeight).clearAndSetSemantics {},
+        modifier.heightIn(min = Sizes.chipHeight).clearAndSetSemantics {},
         contentAlignment = Alignment.CenterStart,
     ) { content() }
 }

@@ -26,13 +26,14 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.semantics.toggleableState
 import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.style.TextOverflow
+import com.otus.designsystem.shared.controls.elements.ChipLabel
 import com.otus.designsystem.shared.controls.elements.ExpandChevron
-import com.otus.designsystem.shared.filters.elements.ChipLabel
-import com.otus.designsystem.shared.filters.elements.annotated
+import com.otus.designsystem.shared.controls.elements.annotated
 import com.otus.designsystem.shared.selection.components.PickMark
 import com.otus.designsystem.shared.selection.components.PickMarkView
 import com.otus.designsystem.shared.selection.components.PickStyle
 import com.otus.designsystem.theme.colors.OtusAlpha
+import com.otus.designsystem.theme.tokens.controls.ControlTokens
 import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.selection.FilterTokens
@@ -67,7 +68,7 @@ public fun FilterFolderRow(
                 end = FilterTokens.bodyInset,
             ),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(FilterTokens.chipIconGap),
+        horizontalArrangement = Arrangement.spacedBy(ControlTokens.chipIconGap),
     ) {
         FolderExpandButton(expanded, onExpandedChange)
         glyph()

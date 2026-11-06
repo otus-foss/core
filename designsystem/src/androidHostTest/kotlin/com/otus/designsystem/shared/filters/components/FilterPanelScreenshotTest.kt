@@ -12,9 +12,10 @@ import com.otus.designsystem.mail.folders.components.TreeFolder
 import com.otus.designsystem.screenshot.screenScreenshot
 import com.otus.designsystem.screenshot.screenshot
 import com.otus.designsystem.shared.controls.components.SegmentedToggle
-import com.otus.designsystem.shared.filters.elements.ChipLabel
-import com.otus.designsystem.shared.filters.elements.FilterChip
-import com.otus.designsystem.shared.filters.elements.FilterChipRole
+import com.otus.designsystem.shared.controls.elements.Chip
+import com.otus.designsystem.shared.controls.elements.ChipLabel
+import com.otus.designsystem.shared.controls.elements.ChipLook
+import com.otus.designsystem.shared.controls.elements.ChipRole
 import com.otus.designsystem.shared.folders.elements.FolderGlyph
 import com.otus.designsystem.shared.overlays.components.WithBackDispatcher
 import com.otus.designsystem.theme.colors.FolderColor
@@ -60,8 +61,8 @@ class FilterPanelScreenshotTest {
                     footer = { FilterPanelFooter("Show 30 conversations", {}) },
                 ) {
                     FilterSection("Type", Modifier.padding(horizontal = FilterTokens.bodyInset)) {
-                        FilterChip("Newsletters", selected = false, onClick = {})
-                        FilterChip("Calendar invites", selected = true, onClick = {})
+                        Chip("Newsletters", {}, selected = false, look = ChipLook.Raised)
+                        Chip("Calendar invites", {}, selected = true, look = ChipLook.Raised)
                     }
                 }
             }
@@ -96,17 +97,17 @@ class FilterPanelScreenshotTest {
                     FolderCheck.On,
                     {},
                     expanded = true,
-                ) { FolderGlyph(FolderColor.Blue, size = FilterTokens.chipIconSize) }
+                ) { FolderGlyph(FolderColor.Blue, size = ControlTokens.chipIconSize) }
                 FilterFolderRow(
                     TreeFolder("Acme", depth = 1),
                     FolderCheck.Included,
                     {},
-                ) { FolderGlyph(FolderColor.Default, size = FilterTokens.chipIconSize) }
+                ) { FolderGlyph(FolderColor.Default, size = ControlTokens.chipIconSize) }
                 FilterFolderRow(
                     TreeFolder("Invoices", path = "Finance"),
                     FolderCheck.Off,
                     {},
-                ) { FolderGlyph(FolderColor.Yellow, size = FilterTokens.chipIconSize) }
+                ) { FolderGlyph(FolderColor.Yellow, size = ControlTokens.chipIconSize) }
             }
         }
 }
@@ -115,15 +116,20 @@ class FilterPanelScreenshotTest {
 private fun Sections() {
     Column(Modifier.padding(horizontal = FilterTokens.bodyInset)) {
         FilterSection("Show") {
-            FilterChip("Unread", selected = true, onClick = {})
-            FilterChip("Flagged", selected = false, onClick = {})
-            FilterChip("Waiting for reply", selected = false, onClick = {})
+            Chip("Unread", {}, selected = true, look = ChipLook.Raised)
+            Chip("Flagged", {}, selected = false, look = ChipLook.Raised)
+            Chip("Waiting for reply", {}, selected = false, look = ChipLook.Raised)
         }
         FilterSection("In folder", Modifier.padding(top = FilterTokens.sectionGap)) {
-            FilterChip(ChipLabel("Acme", "Clients"), selected = true, onClick = {
-            }) { FolderGlyph(FolderColor.Blue, size = FilterTokens.chipIconSize) }
-            FilterChip("All folders…", selected = false, onClick = {}, role = FilterChipRole.Button) {
-                FolderGlyph(FolderColor.Default, size = FilterTokens.chipIconSize)
+            Chip(ChipLabel("Acme", "Clients"), {
+            }, selected = true, look = ChipLook.Raised) {
+                FolderGlyph(
+                    FolderColor.Blue,
+                    size = ControlTokens.chipIconSize,
+                )
+            }
+            Chip("All folders…", {}, role = ChipRole.Button, selected = false, look = ChipLook.Raised) {
+                FolderGlyph(FolderColor.Default, size = ControlTokens.chipIconSize)
             }
         }
         SegmentedToggle(

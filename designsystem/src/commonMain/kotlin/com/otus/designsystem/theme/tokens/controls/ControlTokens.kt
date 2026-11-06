@@ -30,4 +30,12 @@ public object ControlTokens {
 
     /** How far a section or folder chevron turns when it opens. */
     public const val CHEVRON_OPEN_DEGREES: Float = 90f
+
+    /** A chip's leading symbol, the avatar before an address in a chip, and the gap after a removable chip's avatar. */
+    public val chipIconSize: Dp = 18.dp
+    public val chipAvatarSize: Dp = 22.dp
+    public val chipIconGap: Dp = 6.dp
+
+    /** A picked person's name in a chip ends in an ellipsis past this width. */
+    public val chipNameMaxWidth: Dp = 160.dp
 }

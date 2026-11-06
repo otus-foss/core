@@ -1,4 +1,4 @@
-package com.otus.designsystem.shared.filters.elements
+package com.otus.designsystem.shared.controls.elements
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
@@ -6,13 +6,11 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_mark_email_unread
 import com.otus.designsystem.screenshot.screenshot
-import com.otus.designsystem.shared.controls.elements.IconButton
-import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.folders.elements.FolderGlyph
 import com.otus.designsystem.theme.colors.FolderColor
 import com.otus.designsystem.theme.colors.ThemeBase
 import com.otus.designsystem.theme.colors.ThemeChoice
-import com.otus.designsystem.theme.tokens.selection.FilterTokens
+import com.otus.designsystem.theme.tokens.controls.ControlTokens
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -23,7 +21,7 @@ import kotlin.test.Test
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35], qualifiers = "w360dp-h640dp-xhdpi")
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
-class FilterChipScreenshotTest {
+class RaisedChipScreenshotTest {
     @get:Rule
     val compose = createComposeRule()
 
@@ -43,14 +41,19 @@ class FilterChipScreenshotTest {
 @Composable
 private fun Chips() {
     Column {
-        FilterChip("Unread", selected = true, onClick = {}) {
-            Symbol(Res.drawable.symbol_mark_email_unread, size = FilterTokens.chipIconSize)
+        Chip("Unread", {}, selected = true, look = ChipLook.Raised) {
+            Symbol(Res.drawable.symbol_mark_email_unread, size = ControlTokens.chipIconSize)
         }
-        FilterChip("Last 7 days", selected = false, onClick = {}, role = FilterChipRole.Radio)
-        FilterChip(ChipLabel("Invoices", "Finance"), selected = true, onClick = {
-        }) { FolderGlyph(FolderColor.Yellow, size = FilterTokens.chipIconSize) }
-        FilterChip("All folders…", selected = false, onClick = {}, role = FilterChipRole.Button) {
-            FolderGlyph(FolderColor.Default, size = FilterTokens.chipIconSize)
+        Chip("Last 7 days", {}, role = ChipRole.Radio, look = ChipLook.Raised)
+        Chip(ChipLabel("Invoices", "Finance"), {
+        }, selected = true, look = ChipLook.Raised) {
+            FolderGlyph(
+                FolderColor.Yellow,
+                size = ControlTokens.chipIconSize,
+            )
+        }
+        Chip("All folders…", {}, role = ChipRole.Button, look = ChipLook.Raised) {
+            FolderGlyph(FolderColor.Default, size = ControlTokens.chipIconSize)
         }
     }
 }

@@ -24,9 +24,10 @@ import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_close
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.controls.ControlTokens
 import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.core.Spacing
-import com.otus.designsystem.theme.tokens.selection.FilterTokens
+import com.otus.designsystem.theme.typography.TypeScale
 import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
@@ -42,23 +43,23 @@ public fun RemovablePersonChip(
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        modifier.height(FilterTokens.chipHeight),
+        modifier.height(Sizes.chipHeight),
         shape = CircleShape,
         color = OtusColors.selectedFill,
         contentColor = OtusColors.text1,
         border = BorderStroke(Sizes.borderWidth, OtusColors.selectedFill),
     ) {
         Row(
-            Modifier.padding(start = FilterTokens.chipIconGap),
-            horizontalArrangement = Arrangement.spacedBy(FilterTokens.chipIconGap),
+            Modifier.padding(start = ControlTokens.chipIconGap),
+            horizontalArrangement = Arrangement.spacedBy(ControlTokens.chipIconGap),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Box(Modifier.clearAndSetSemantics {}) { PersonAvatar(person.avatar, FilterTokens.chipAvatarSize) }
+            Box(Modifier.clearAndSetSemantics {}) { PersonAvatar(person.avatar, ControlTokens.chipAvatarSize) }
             Text(
                 person.name,
-                Modifier.widthIn(max = FilterTokens.personChipNameMaxWidth).clearAndSetSemantics {},
+                Modifier.widthIn(max = ControlTokens.chipNameMaxWidth).clearAndSetSemantics {},
                 style = panelTextStyle(),
-                fontSize = FilterTokens.chipTextSize,
+                fontSize = TypeScale.label,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -68,9 +69,9 @@ public fun RemovablePersonChip(
                     .fillMaxHeight()
                     .clickable(role = Role.Button, onClick = onRemove)
                     .semantics { contentDescription = "Remove ${person.name}" }
-                    .padding(start = Spacing.iconGap, end = FilterTokens.chipStartWithIcon),
+                    .padding(start = Spacing.iconGap, end = ControlTokens.chipPadding),
                 contentAlignment = Alignment.Center,
-            ) { Symbol(Res.drawable.symbol_close, size = FilterTokens.chipIconSize) }
+            ) { Symbol(Res.drawable.symbol_close, size = ControlTokens.chipIconSize) }
         }
     }
 }

@@ -10,8 +10,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import com.otus.designsystem.shared.controls.elements.Chip
-import com.otus.designsystem.shared.filters.elements.ChipLabel
-import com.otus.designsystem.shared.filters.elements.annotated
+import com.otus.designsystem.shared.controls.elements.ChipLabel
+import com.otus.designsystem.shared.controls.elements.annotated
 import com.otus.designsystem.shared.folders.elements.FolderGlyph
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.core.Sizes

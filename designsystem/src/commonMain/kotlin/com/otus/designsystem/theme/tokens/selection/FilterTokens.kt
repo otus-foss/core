@@ -7,19 +7,9 @@ import androidx.compose.ui.unit.sp
 import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.layout.CornerTokens
 
-/** Sizes of the filter panel that opens out of the inbox's control panel, and of its chips. */
+/** Sizes of the filter panel that opens out of the inbox's control panel. */
 public object FilterTokens {
-    public val chipHeight: Dp = 36.dp
-    public val chipIconSize: Dp = 18.dp
-
-    /** The avatar before an address in a chip. */
-    public val chipAvatarSize: Dp = 22.dp
     public val chipGap: Dp = 8.dp
-    public val chipStartWithIcon: Dp = 10.dp
-    public val chipStart: Dp = 14.dp
-    public val chipEnd: Dp = 14.dp
-    public val chipIconGap: Dp = 6.dp
-    public val chipTextSize: TextUnit = 14.sp
     public val sectionGap: Dp = 16.dp
 
     /** Between a section's label and its chips. */
@@ -52,8 +42,6 @@ public object FilterTokens {
     /** The least room the placeholder after picked people keeps, such as "Add people…". */
     public val placeholderMinWidth: Dp = 80.dp
 
-    /** A picked person's name in a chip ends in an ellipsis past this width. */
-    public val personChipNameMaxWidth: Dp = 160.dp
     public val cardRadius: Dp = CornerTokens.panel
 
     /** A small note under a filter page's choices, such as which folders are left out. */

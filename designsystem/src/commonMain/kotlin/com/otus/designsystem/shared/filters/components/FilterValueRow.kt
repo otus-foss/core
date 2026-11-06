@@ -25,6 +25,7 @@ import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.tokens.selection.FilterTokens
+import com.otus.designsystem.theme.typography.TypeScale
 import com.otus.designsystem.theme.typography.panelTextStyle
 import org.jetbrains.compose.resources.DrawableResource
 
@@ -67,7 +68,7 @@ public fun FilterValueRow(
             Modifier.weight(1f),
             style = panelTextStyle(),
             color = if (set) OtusColors.text2 else OtusColors.text3,
-            fontSize = FilterTokens.chipTextSize,
+            fontSize = TypeScale.label,
             textAlign = TextAlign.End,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
