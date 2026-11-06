@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Add a System theme: `SystemTheme` holds the device's colors, `ThemeChoice.withSystem()` selects
+  them, and `ThemeSettingsState(store, system)` takes the current ones each launch. On Android,
+  `Context.systemTheme()` reads the Material You colors in the device's light or dark mode, or
+  null before Android 12. The theme page shows a System card where the device has colors, and
+  hides the accent and Colors while it is selected. A saved choice adds a `system` part.
+- `SegmentedToggle` slides one pill to the new segment, easing in and out at the user's animation
+  speed, and takes a `track` color for the track and unselected segments.
+
 - Theme page: the preview is now a phone, `ThemePhonePreview(palette, expansion)`, drawn from any
   `OtusPalette`, so colors can be tried before they apply. It runs edge to edge under the control
   panel with a frame and bezel. A tap or drag down grows it with a `PhoneExpansion`

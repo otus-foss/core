@@ -5,6 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.otus.designsystem.theme.colors.OtusPalette
+import com.otus.designsystem.theme.colors.SystemTheme
 import com.otus.designsystem.theme.colors.ThemeChoice
 
 /** Keeps the encoded [ThemeChoice] between launches, such as in platform preferences. */
@@ -16,11 +17,13 @@ public interface ThemePreferenceStore {
 
 /**
  * The user's theme and accent. Pass [palette] to `OtusTheme` so every screen follows it; the
- * theme page calls [select].
+ * theme page calls [select]. [system] holds the device's own colors, such as Android's Material
+ * You colors, where it has them; they are never stored, so pass the current ones each launch.
  */
 public class ThemeSettingsState(
     private val store: ThemePreferenceStore? = null,
-    initialChoice: ThemeChoice = store?.read()?.let(::decodeThemeChoice) ?: ThemeChoice(),
+    system: SystemTheme? = null,
+    initialChoice: ThemeChoice = (store?.read()?.let(::decodeThemeChoice) ?: ThemeChoice()).copy(system = system),
 ) {
     public var choice: ThemeChoice by mutableStateOf(initialChoice)
         private set

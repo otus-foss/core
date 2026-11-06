@@ -3,6 +3,7 @@ package com.otus.settings.presentation
 import androidx.compose.ui.graphics.Color
 import com.otus.designsystem.theme.colors.AccentPreset
 import com.otus.designsystem.theme.colors.CustomTheme
+import com.otus.designsystem.theme.colors.SystemTheme
 import com.otus.designsystem.theme.colors.ThemeBase
 import com.otus.designsystem.theme.colors.ThemeChoice
 import com.otus.designsystem.theme.colors.ThemeColor
@@ -36,6 +37,16 @@ class ThemeSettingsStateTest {
     }
 
     @Test
+    fun theSystemThemeIsRestoredWithTheDevicesCurrentColors() {
+        val store = MemoryPreferenceStore()
+        ThemeSettingsState(store, deviceColors).select(ThemeChoice(ThemeBase.Light, system = deviceColors).withSystem())
+        val restored = ThemeSettingsState(store, deviceColors).choice
+        assertEquals(deviceColors.page, restored.palette.bgRegular)
+        // A device without its own colors falls back to the stored built-in theme.
+        assertEquals(ThemeBase.Light.page, ThemeSettingsState(store).choice.palette.bgRegular)
+    }
+
+    @Test
     fun withoutASavedChoiceTheDefaultApplies() {
         assertEquals(ThemeChoice(), ThemeSettingsState(MemoryPreferenceStore()).choice)
     }
@@ -60,4 +71,16 @@ class ThemeSettingsStateTest {
     fun aSavedEarlierOtusBlueBecomesTodaysPreset() {
         assertEquals(ThemeChoice(), decodeThemeChoice("otus #4D6F92"))
     }
+
+    private val deviceColors =
+        SystemTheme(
+            page = Color(0xFF1B1B1F),
+            raised = Color(0xFF121216),
+            controls = Color(0xFF303034),
+            borders = Color(0xFF26262A),
+            text = Color(0xFFE4E1E6),
+            secondaryText = Color(0xFFC6C5D0),
+            mutedText = Color(0xFF908F9A),
+            accent = Color(0xFF6750A4),
+        )
 }

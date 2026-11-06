@@ -33,7 +33,8 @@ import com.otus.settings.presentation.title
 
 /**
  * Picks the theme and accent the whole app uses. Changing a single color makes a custom theme,
- * which stays until the user deletes it; a theme's actions duplicate, rename, or delete it. A
+ * which stays until the user deletes it; a theme's actions duplicate, rename, or delete it. The
+ * System theme hides the accent and colors, which come from the device. A
  * choice applies at once. A phone at the top shows the app in [preview], the current colors
  * unless [controls], shown below it, are trying others; a tap or drag down grows it and turns the
  * page's panel into the phone's.
@@ -64,15 +65,18 @@ public fun ThemeSettingsScreen(
         PageSection("Theme") {
             ThemeCards(choice, state::select) { themeActions(it, choice, state::select) { next -> dialog = next } }
         }
-        PageSection("Accent color") {
-            AccentPicker(
-                choice.accent,
-                onSelect = { state.select(choice.withAccent(it)) },
-                onCustom = { customizing = true },
-            )
-        }
-        PageSection("Colors") {
-            ThemeColorRows(choice, colorsShown, { colorsShown = !colorsShown }, { editing = it })
+        // The device's colors bring their own accent and stay as the device sets them.
+        if (choice.activeSystem == null) {
+            PageSection("Accent color") {
+                AccentPicker(
+                    choice.accent,
+                    onSelect = { state.select(choice.withAccent(it)) },
+                    onCustom = { customizing = true },
+                )
+            }
+            PageSection("Colors") {
+                ThemeColorRows(choice, colorsShown, { colorsShown = !colorsShown }, { editing = it })
+            }
         }
         ActionButton(
             "Reset to Otus",
