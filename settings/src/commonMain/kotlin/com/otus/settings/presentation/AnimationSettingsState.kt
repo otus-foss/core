@@ -1,28 +1,19 @@
 package com.otus.settings.presentation
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import com.otus.designsystem.theme.motion.AnimationSpeed
-import com.otus.settings.domain.AnimationPreferenceStore
+import com.otus.storage.StoredChoice
 
 /**
  * The user's animation speed. Provide its [speed]'s scale as `LocalMotionScale` so every animation
- * follows it; the appearance page calls [select].
+ * follows it; the appearance page calls [select]. An unknown saved name reads as Regular.
  */
 public class AnimationSettingsState(
-    private val store: AnimationPreferenceStore? = null,
-    initialSpeed: AnimationSpeed = store?.read()?.let(::decodeAnimationSpeed) ?: AnimationSpeed.Regular,
-) {
-    public var speed: AnimationSpeed by mutableStateOf(initialSpeed)
-        private set
-
-    public fun select(speed: AnimationSpeed) {
-        store?.write(speed.name.lowercase())
-        this.speed = speed
-    }
+    store: StoredChoice,
+) : StoredChoiceState<AnimationSpeed>(
+        store,
+        AnimationSpeed.Regular,
+        { entryNamed<AnimationSpeed>(it.trim()) },
+        { it.name.lowercase() },
+    ) {
+    public val speed: AnimationSpeed get() = value
 }
-
-/** An unknown name reads as [AnimationSpeed.Regular]. */
-internal fun decodeAnimationSpeed(value: String): AnimationSpeed =
-    entryNamed<AnimationSpeed>(value.trim()) ?: AnimationSpeed.Regular

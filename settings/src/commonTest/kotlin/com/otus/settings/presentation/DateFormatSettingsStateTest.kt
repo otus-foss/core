@@ -1,7 +1,11 @@
 package com.otus.settings.presentation
 
 import com.otus.dateformat.DateFormatPreference
-import com.otus.dateformat.DateFormatPreferenceStore
+import com.otus.storage.InMemoryKeyValueStore
+import com.otus.storage.KeyValueEditor
+import com.otus.storage.KeyValueStore
+import com.otus.storage.StoredChoice
+import com.otus.storage.inMemoryChoice
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -9,7 +13,7 @@ import kotlin.test.assertFailsWith
 class DateFormatSettingsStateTest {
     @Test
     fun selectingAFormatUpdatesStateAndRestoresItForTheNextSession() {
-        val store = TestDateFormatStore()
+        val store = inMemoryChoice()
         val state = DateFormatSettingsState(store)
         state.select(DateFormatPreference.DayMonthYearSlashes)
         assertEquals(DateFormatPreference.DayMonthYearSlashes, state.preference)
@@ -20,32 +24,23 @@ class DateFormatSettingsStateTest {
 
     @Test
     fun appInstancesKeepTheirOwnPreferences() {
-        val mailStore = TestDateFormatStore()
-        val calendarStore = TestDateFormatStore()
-        DateFormatSettingsState(mailStore).select(DateFormatPreference.MonthDayYearDots)
-        assertEquals(DateFormatPreference.DeviceLocale, DateFormatSettingsState(calendarStore).preference)
+        DateFormatSettingsState(inMemoryChoice()).select(DateFormatPreference.MonthDayYearDots)
+        assertEquals(DateFormatPreference.DeviceLocale, DateFormatSettingsState(inMemoryChoice()).preference)
+    }
+
+    @Test
+    fun anUnknownSavedValueFollowsTheDevice() {
+        assertEquals(DateFormatPreference.DeviceLocale, DateFormatSettingsState(inMemoryChoice("unknown")).preference)
     }
 
     @Test
     fun persistenceFailureDoesNotReportAnUnsavedSelectionAsActive() {
-        val store =
-            object : DateFormatPreferenceStore {
-                override fun read() = DateFormatPreference.DeviceLocale
-
-                override fun write(preference: DateFormatPreference) = error("Storage unavailable")
+        val failing =
+            object : KeyValueStore by InMemoryKeyValueStore() {
+                override fun edit(changes: KeyValueEditor.() -> Unit) = error("Storage unavailable")
             }
-        val state = DateFormatSettingsState(store)
+        val state = DateFormatSettingsState(StoredChoice(failing, "date_format"))
         assertFailsWith<IllegalStateException> { state.select(DateFormatPreference.DayMonthYearDots) }
         assertEquals(DateFormatPreference.DeviceLocale, state.preference)
-    }
-}
-
-private class TestDateFormatStore : DateFormatPreferenceStore {
-    private var value = DateFormatPreference.DeviceLocale
-
-    override fun read(): DateFormatPreference = value
-
-    override fun write(preference: DateFormatPreference) {
-        value = preference
     }
 }

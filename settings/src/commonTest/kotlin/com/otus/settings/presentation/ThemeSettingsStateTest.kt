@@ -6,13 +6,14 @@ import com.otus.designsystem.theme.colors.CustomTheme
 import com.otus.designsystem.theme.colors.ThemeBase
 import com.otus.designsystem.theme.colors.ThemeChoice
 import com.otus.designsystem.theme.colors.ThemeColor
+import com.otus.storage.inMemoryChoice
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ThemeSettingsStateTest {
     @Test
     fun aChoiceIsAppliedAndRestoredForTheNextSession() {
-        val store = MemoryPreferenceStore()
+        val store = inMemoryChoice()
         val state = ThemeSettingsState(store)
         val choice = ThemeChoice(ThemeBase.Black, Color(0xFFC75E38))
         state.select(choice)
@@ -23,7 +24,7 @@ class ThemeSettingsStateTest {
 
     @Test
     fun changedColorsOfEveryThemeAreRestored() {
-        val store = MemoryPreferenceStore()
+        val store = inMemoryChoice()
         val choice =
             ThemeChoice(ThemeBase.Ink)
                 .withColor(ThemeColor.Page, Color(0xFF101011))
@@ -37,7 +38,7 @@ class ThemeSettingsStateTest {
 
     @Test
     fun withoutASavedChoiceTheDefaultApplies() {
-        assertEquals(ThemeChoice(), ThemeSettingsState(MemoryPreferenceStore()).choice)
+        assertEquals(ThemeChoice(), ThemeSettingsState(inMemoryChoice()).choice)
     }
 
     @Test

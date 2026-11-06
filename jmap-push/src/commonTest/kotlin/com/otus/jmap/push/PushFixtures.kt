@@ -7,6 +7,7 @@ import com.otus.jmap.PushMessage
 import com.otus.jmap.login.InMemoryLoginStore
 import com.otus.jmap.login.JmapLogin
 import com.otus.jmap.login.LoginStore
+import com.otus.storage.StringMapStore
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.http.HttpHeaders
@@ -21,13 +22,13 @@ internal val login = JmapLogin("ada", "https://mail.example.org/jmap/session", "
 internal val endpoint = PushEndpoint("https://ntfy.example.net/upA", PushKeys("BKey", "c2Vj"))
 internal val now = Instant.parse("2026-10-14T08:00:00Z")
 
-internal class Store : PushStateStore {
+internal class Store : StringMapStore {
     var records: Map<String, String> = emptyMap()
 
     override fun read() = records
 
-    override fun write(records: Map<String, String>) {
-        this.records = records
+    override fun write(values: Map<String, String>) {
+        records = values
     }
 }
 

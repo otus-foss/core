@@ -59,6 +59,7 @@ detekt-cli = { module = "io.gitlab.arturbosch.detekt:detekt-cli", version.ref = 
 # Meta's modules as the apps see them. The apps build Meta from source, so Gradle substitutes each
 # with the matching project of the included otus-meta build; Meta itself uses project accessors.
 otus-json-types = { module = "com.otus:json-types" }
+otus-storage = { module = "com.otus:storage" }
 otus-jmap = { module = "com.otus:jmap" }
 otus-avatar = { module = "com.otus:avatar" }
 otus-avatar-ui = { module = "com.otus:avatar-ui" }

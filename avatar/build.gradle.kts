@@ -12,6 +12,7 @@ kotlin {
         commonMain.dependencies {
             api(projects.jmap)
             implementation(projects.jmapContacts)
+            implementation(projects.storage)
             api(libs.ktor.client.core)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.io)

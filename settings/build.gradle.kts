@@ -9,6 +9,7 @@ kotlin {
         commonMain.dependencies {
             api(projects.designsystem)
             api(projects.dateformat)
+            api(projects.storage)
             implementation(libs.compose.resources)
         }
         commonTest.dependencies {

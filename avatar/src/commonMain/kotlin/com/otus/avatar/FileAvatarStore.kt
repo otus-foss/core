@@ -1,5 +1,6 @@
 package com.otus.avatar
 
+import com.otus.storage.storedName
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.sync.Mutex
@@ -97,7 +98,7 @@ public class FileAvatarStore(
 
     override suspend fun removeAccount(account: String) {
         access {
-            val prefix = "${avatarCacheDigest(account)}-"
+            val prefix = "${storedName(account)}-"
             records().filter { it.name.startsWith(prefix) }.forEach { record ->
                 files.delete(record)
                 index?.remove(record.name)
@@ -106,8 +107,8 @@ public class FileAvatarStore(
     }
 
     private fun path(key: AvatarCacheKey): Path {
-        val partition = key.account?.let(::avatarCacheDigest) ?: "public"
-        return Path(directory, "$partition-${avatarCacheDigest(key.value)}.avatar")
+        val partition = key.account?.let(::storedName) ?: "public"
+        return Path(directory, "$partition-${storedName(key.value)}.avatar")
     }
 
     private fun records(): List<Path> =
@@ -146,5 +147,3 @@ public class FileAvatarStore(
         const val DEFAULT_MAX_BYTES = 32L * 1024 * 1024
     }
 }
-
-internal expect fun avatarCacheDigest(value: String): String

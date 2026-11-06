@@ -9,6 +9,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(projects.jmap)
+            api(projects.storage)
             implementation(libs.kotlinx.coroutines.core)
         }
         commonTest.dependencies {

@@ -2,6 +2,7 @@ package com.otus.jmap.push
 
 import com.otus.jmap.JmapJson
 import com.otus.jmap.PushKeys
+import com.otus.storage.StringMapStore
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 
@@ -28,18 +29,6 @@ public enum class PushStatus {
      * only through periodic checks.
      */
     Refused,
-}
-
-/**
- * Each login's push record as text, keyed by login id. It holds no account credentials, but it
- * does hold each endpoint's Web Push keys, including the `auth` secret, with which anyone who
- * knows the endpoint URL can send pushes the app accepts. Apps keep it in app-private storage
- * that is excluded from backups.
- */
-public interface PushStateStore {
-    public fun read(): Map<String, String>
-
-    public fun write(records: Map<String, String>)
 }
 
 /** What the app wants ([endpoint]) and what the server has ([subscribed]) for one login. */
@@ -70,7 +59,7 @@ internal data class PushRecord(
 }
 
 /** Records that cannot be read are dropped; the next sync starts those logins again. */
-internal fun PushStateStore.records(): Map<String, PushRecord> =
+internal fun StringMapStore.records(): Map<String, PushRecord> =
     read().mapNotNull { (login, text) -> decode(text)?.let { login to it } }.toMap()
 
 private fun decode(text: String): PushRecord? =
@@ -82,5 +71,5 @@ private fun decode(text: String): PushRecord? =
         null
     }
 
-internal fun PushStateStore.save(records: Map<String, PushRecord>) =
+internal fun StringMapStore.save(records: Map<String, PushRecord>) =
     write(records.mapValues { JmapJson.encodeToString(PushRecord.serializer(), it.value) })
