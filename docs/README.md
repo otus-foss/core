@@ -3,6 +3,7 @@
 ## Suite
 
 - [Hosting and CI](hosting.md): GitHub repositories, runners, and packages.
+- [Landing pull requests](landing.md): the `ready to land` label, partner pull requests, and setup.
 - [Review prompts](reviews/README.md): PR/repository reviews, Opus reviews when PRs become ready, and daily fixes for Meta and Mail.
 
 - [Product goals](suite/product-goals.md): purpose, protocol scope, and current state of both apps.
@@ -47,5 +48,6 @@
 - [0016: JMAP contacts modules](decisions/0016-contacts-modules.md)
 - [0017: Apple push through an APNs bridge](decisions/0017-apple-push.md)
 - [0018: UI domain packages](decisions/0018-ui-domain-packages.md)
+- [0019: Landing partner pull requests together](decisions/0019-linked-landing.md), proposed
 
 Decisions 0001 to 0004 were made in the app repositories and apply to every Otus repository.
