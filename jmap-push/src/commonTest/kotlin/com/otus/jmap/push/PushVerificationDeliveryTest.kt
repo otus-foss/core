@@ -27,7 +27,6 @@ class PushVerificationDeliveryTest {
             val subscriptions =
                 PushSubscriptions(
                     JmapConnections(JmapClient(server.engine), logins),
-                    logins,
                     Store(),
                     "device",
                     listOf("EmailDelivery"),

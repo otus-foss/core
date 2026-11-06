@@ -4,7 +4,6 @@ import com.otus.jmap.JmapConnections
 import com.otus.jmap.JmapException
 import com.otus.jmap.PushMessage
 import com.otus.jmap.login.JmapLogin
-import com.otus.jmap.login.LoginStore
 import com.otus.jmap.login.LoginStoreException
 import com.otus.storage.StringMapStore
 import kotlinx.coroutines.CancellationException
@@ -37,7 +36,6 @@ import kotlin.time.Duration.Companion.seconds
  */
 public class PushSubscriptions(
     private val connections: JmapConnections,
-    private val logins: LoginStore,
     private val store: StringMapStore,
     private val deviceClientId: String,
     private val types: List<String>,
@@ -143,12 +141,10 @@ public class PushSubscriptions(
 
     /** Null when storage cannot be read, so neither a sync nor removing an account fails here. */
     private suspend fun savedLogins(): List<JmapLogin>? =
-        withContext(Dispatchers.IO) {
-            try {
-                logins.logins()
-            } catch (_: LoginStoreException) {
-                null
-            }
+        try {
+            connections.savedLogins()
+        } catch (_: LoginStoreException) {
+            null
         }
 
     private suspend fun change(

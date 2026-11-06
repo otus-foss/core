@@ -63,7 +63,6 @@ internal fun subscriptions(
         }
     return PushSubscriptions(
         JmapConnections(JmapClient(server.engine), logins),
-        logins,
         store,
         deviceClientId = "otus-mail-device",
         types = types,

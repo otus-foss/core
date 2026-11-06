@@ -17,7 +17,7 @@ storage keys, and platform delivery services keep their formats and identities.
 
 ## API
 
-- `PushSubscriptions(connections, logins, store, deviceClientId, types, beforeCreate = { ... })`: create one per process,
+- `PushSubscriptions(connections, store, deviceClientId, types, beforeCreate = { ... })`: create one per process,
   so its lock covers every caller.
   - `setEndpoint(loginId, PushEndpoint(url, keys))` and `clearEndpoint(loginId)` save what the
     push service reported.
