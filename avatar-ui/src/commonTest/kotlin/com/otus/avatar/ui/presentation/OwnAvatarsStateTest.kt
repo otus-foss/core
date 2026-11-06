@@ -1,6 +1,5 @@
-package com.otus.accounts.presentation
+package com.otus.avatar.ui.presentation
 
-import com.otus.accounts.domain.ConnectedAccount
 import com.otus.avatar.AvatarMark
 import com.otus.avatar.AvatarStyle
 import com.otus.avatar.ContactAvatar
@@ -19,7 +18,7 @@ import kotlin.test.assertNotNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class OwnAvatarsStateTest {
-    private val account = ConnectedAccount("ada", "Ada", "ada@example.org", "mail.example.org")
+    private val account = OwnAccount("ada", "Ada", listOf("ada@example.org"))
     private val first = styled("AL")
     private val second = styled("AD")
 

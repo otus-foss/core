@@ -1,4 +1,4 @@
-package com.otus.accounts.presentation.components
+package com.otus.avatar.ui.presentation.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,12 +10,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.otus.accounts.presentation.AvatarColors
-import com.otus.accounts.presentation.AvatarDraft
-import com.otus.accounts.presentation.AvatarKind
-import com.otus.accounts.presentation.PhotoSource
+import com.otus.avatar.AvatarColor
 import com.otus.avatar.MAX_AVATAR_LETTERS
 import com.otus.avatar.avatarLetters
+import com.otus.avatar.ui.presentation.AvatarDraft
+import com.otus.avatar.ui.presentation.AvatarKind
+import com.otus.avatar.ui.presentation.PhotoSource
+import com.otus.avatar.ui.presentation.folderColor
 import com.otus.designsystem.shared.controls.elements.SymbolSwatch
 import com.otus.designsystem.shared.input.elements.InputField
 import com.otus.designsystem.shared.people.elements.AvatarSymbols
@@ -24,7 +25,6 @@ import com.otus.designsystem.shared.selection.components.PickRow
 import com.otus.designsystem.shared.settings.components.ColorSheet
 import com.otus.designsystem.shared.settings.elements.AddSwatch
 import com.otus.designsystem.shared.settings.elements.ColorSwatch
-import com.otus.designsystem.theme.colors.FolderColor
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.colors.parseHexColor
 import com.otus.designsystem.theme.colors.toHex
@@ -99,7 +99,7 @@ private fun PhotoSources(
     }
 }
 
-/** The folder colors, the custom [color] when it is one, and a swatch that picks a custom color. */
+/** The preset colors, the custom [color] when it is one, and a swatch that picks a custom color. */
 @Composable
 private fun ColorChoices(
     color: String,
@@ -108,9 +108,10 @@ private fun ColorChoices(
     var custom by remember { mutableStateOf(false) }
     val customColor = parseHexColor(color)
     FlowRow(Modifier.selectableGroup(), horizontalArrangement = Arrangement.spacedBy(ThemeTokens.swatchGap)) {
-        AvatarColors.forEach { preset ->
-            val tint = preset.tint ?: return@forEach
-            ColorSwatch(tint, preset.label, preset.name == color, { onPick(preset.name) })
+        AvatarColor.entries.forEach { preset ->
+            val folderColor = preset.folderColor
+            val tint = folderColor.tint ?: return@forEach
+            ColorSwatch(tint, folderColor.label, preset.id == color, { onPick(preset.id) })
         }
         if (customColor != null) {
             ColorSwatch(customColor, "Custom color $color", selected = true, onClick = { custom = true })
@@ -118,7 +119,7 @@ private fun ColorChoices(
         AddSwatch("Custom color", { custom = true })
     }
     if (custom) {
-        val start = customColor ?: FolderColor.named(color).tint ?: OtusColors.accentRegular
+        val start = customColor ?: AvatarColor.of(color)?.folderColor?.tint ?: OtusColors.accentRegular
         ColorSheet("Custom color", start, { onPick(it.toHex()) }, { custom = false })
     }
 }

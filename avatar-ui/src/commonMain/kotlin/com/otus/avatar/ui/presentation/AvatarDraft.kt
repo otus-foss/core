@@ -1,5 +1,6 @@
-package com.otus.accounts.presentation
+package com.otus.avatar.ui.presentation
 
+import com.otus.avatar.AvatarColor
 import com.otus.avatar.AvatarImage
 import com.otus.avatar.AvatarMark
 import com.otus.avatar.AvatarOrigin
@@ -34,7 +35,7 @@ internal enum class PhotoSource {
  */
 internal data class AvatarDraft(
     val kind: AvatarKind,
-    /** A folder color name or a custom `#RRGGBB`, as [AvatarStyle.color] stores it. */
+    /** An [AvatarColor] id or a custom `#RRGGBB`, as [AvatarStyle.color] stores it. */
     val color: String,
     val letters: String,
     val source: PhotoSource = PhotoSource.Upload,
@@ -95,7 +96,7 @@ internal data class AvatarDraft(
             canUpload: Boolean,
         ): AvatarDraft {
             val fallback = shown?.fallback
-            val color = AvatarColors[(fallback?.colorIndex ?: 0) % AvatarColors.size].name
+            val color = AvatarColor.entries[(fallback?.colorIndex ?: 0) % AvatarColor.entries.size].id
             val source = if (canUpload) PhotoSource.Upload else PhotoSource.Website
             val initial = AvatarDraft(AvatarKind.Photo, color, avatarLetters(fallback?.initials.orEmpty()), source)
             val style = shown?.style

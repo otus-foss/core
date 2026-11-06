@@ -1,6 +1,5 @@
-package com.otus.accounts.presentation
+package com.otus.avatar.ui.presentation
 
-import com.otus.accounts.domain.ConnectedAccount
 import com.otus.avatar.ContactAvatar
 import com.otus.avatar.ResolvedAvatar
 import com.otus.designsystem.shared.people.components.ChipAvatar
@@ -21,10 +20,10 @@ internal class AccountAvatarEdit(
 )
 
 /** The editing of one avatar for every address of [account]. */
-internal fun OwnAvatarsState.accountEdit(account: ConnectedAccount): AccountAvatarEdit =
+internal fun OwnAvatarsState.accountEdit(account: OwnAccount): AccountAvatarEdit =
     AccountAvatarEdit(
         account.name,
-        account.ownAddresses,
+        account.addresses,
         accountAvatar(account),
         pickPhoto = if (canPickPhoto) ::pickPhoto else null,
         replaced = { replaced(account, it) },

@@ -1,6 +1,6 @@
-package com.otus.accounts.presentation
+package com.otus.avatar.ui.presentation
 
-import com.otus.accounts.domain.ConnectedAccount
+import com.otus.avatar.AvatarColor
 import com.otus.avatar.AvatarMark
 import com.otus.avatar.AvatarStyle
 import com.otus.avatar.ResolvedAvatar
@@ -25,7 +25,7 @@ public fun ResolvedAvatar.toChipAvatar(): ChipAvatar {
 }
 
 /** This avatar, or the generated one of [name] and [email] while there is none. */
-internal fun ResolvedAvatar?.toChipAvatarOr(
+public fun ResolvedAvatar?.toChipAvatarOr(
     name: String,
     email: String,
 ): ChipAvatar = (this ?: ResolvedAvatar(generatedAvatar(name, email))).toChipAvatar()
@@ -38,7 +38,7 @@ public fun AvatarStyle.toChipAvatar(): ChipAvatar =
         symbol = (mark as? AvatarMark.Icon)?.let { AvatarSymbols.icons[it.name] },
     )
 
-/** [color] is a folder color name or a custom `#RRGGBB`; anything else becomes the first folder color. */
+/** [color] is an [AvatarColor] id or a custom `#RRGGBB`; anything else becomes the first preset. */
 internal fun styledChip(
     initials: String,
     color: String,
@@ -49,16 +49,18 @@ internal fun styledChip(
     return ChipAvatar(initials, 0, image, if (custom == null) presetColor(color) else null, symbol, custom)
 }
 
-/** The preset colors a style can use: every folder color except Default, which has no fill. */
-internal val AvatarColors: List<FolderColor> = FolderColor.entries - FolderColor.Default
+private fun presetColor(name: String): FolderColor = (AvatarColor.of(name) ?: AvatarColor.entries.first()).folderColor
 
-private fun presetColor(name: String): FolderColor =
-    FolderColor.named(name).takeIf { it in AvatarColors } ?: AvatarColors.first()
-
-/** The account's own mail addresses: its sign-in when that is one, and its sending addresses without wildcards. */
-public val ConnectedAccount.ownAddresses: List<String>
+/** The design-system color that draws this preset. */
+internal val AvatarColor.folderColor: FolderColor
     get() =
-        (listOf(username) + emailAddresses)
-            .map { it.trim() }
-            .filter { '@' in it && '*' !in it }
-            .distinctBy { it.lowercase() }
+        when (this) {
+            AvatarColor.Red -> FolderColor.Red
+            AvatarColor.Orange -> FolderColor.Orange
+            AvatarColor.Yellow -> FolderColor.Yellow
+            AvatarColor.Green -> FolderColor.Green
+            AvatarColor.Teal -> FolderColor.Teal
+            AvatarColor.Blue -> FolderColor.Blue
+            AvatarColor.Purple -> FolderColor.Purple
+            AvatarColor.Pink -> FolderColor.Pink
+        }

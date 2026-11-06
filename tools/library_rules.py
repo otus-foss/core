@@ -29,7 +29,7 @@ UI_LAYERS = frozenset({"elements", "components"})
 UI_SCOPES = frozenset({"shared", "mail", "calendar"})
 PACKAGE_SEGMENT = r"[A-Za-z_]\w*"
 FEATURE_LAYERS = {"domain", "data", "presentation"}
-FEATURE_UI_MODULES = frozenset({"accounts", "settings"})
+FEATURE_UI_MODULES = frozenset({"accounts", "avatar-ui", "settings"})
 # Design-system code may format dates, but must not reach protocol, storage, or feature modules.
 UI_ALLOWED_MODULES = frozenset({"dateformat"})
 
@@ -158,7 +158,9 @@ def violations(path: Path, text: str, ui_modules: frozenset[str] = frozenset()) 
     else:
         composable = re.search(COMPOSABLE, code)
         if module not in FEATURE_UI_MODULES and (uses(code, UI_APIS) or composable):
-            errors.append("Compose is limited to design-system, accounts, and settings modules")
+            errors.append(
+                "Compose is limited to design-system, accounts, avatar-ui, and settings modules"
+            )
         errors.extend(feature_violations(path, base, location, code))
     return sorted(set(errors))
 
@@ -193,7 +195,9 @@ def feature_violations(path: Path, base: str, location: list[str], code: str) ->
     if layer == ["presentation"] and uses(code, ("com.otus.jmap.",)):
         errors.append("presentation uses domain contracts, not protocol clients")
     module = path.parts[0]
-    other_features = tuple(f"com.otus.{name}." for name in FEATURE_UI_MODULES - {module})
+    other_features = tuple(
+        f"com.otus.{module_namespace(name)}." for name in FEATURE_UI_MODULES - {module}
+    )
     if uses(code, other_features):
         errors.append("shared features cannot depend directly on another shared feature")
     for reference in re.findall(r"\b" + re.escape(base) + r"\.([A-Za-z_][\w.]*)", code):

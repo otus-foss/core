@@ -10,14 +10,40 @@ import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.contentOrNull
 
 /**
- * An avatar the user built in Otus instead of a photo: a color and what sits on it. [color] is a
- * name each app maps to a theme color, such as `Blue`, or a custom `#RRGGBB`. The names in [mark]
- * are keys each app maps to its own symbols, so this type holds no UI values.
+ * An avatar the user built in Otus instead of a photo: a color and what sits on it. [color] is the
+ * [AvatarColor.id] of a preset, such as `blue`, or a custom `#RRGGBB`. The names in [mark] are keys
+ * each app maps to its own symbols, so this type holds no UI values.
  */
 public data class AvatarStyle(
     val color: String,
     val mark: AvatarMark,
 )
+
+/**
+ * The preset colors of an [AvatarStyle]. A card stores the [id], which never changes, so the colors
+ * of saved avatars do not follow renames in the design system.
+ */
+public enum class AvatarColor(
+    public val id: String,
+) {
+    Red("red"),
+    Orange("orange"),
+    Yellow("yellow"),
+    Green("green"),
+    Teal("teal"),
+    Blue("blue"),
+    Purple("purple"),
+    Pink("pink"),
+    ;
+
+    public companion object {
+        /**
+         * The preset [stored] names, or null for a custom color. Cards saved before the ids hold the
+         * capitalized design-system names, such as `Blue`, so case does not matter.
+         */
+        public fun of(stored: String): AvatarColor? = entries.firstOrNull { it.id.equals(stored, ignoreCase = true) }
+    }
+}
 
 /** What an [AvatarStyle] draws on its color. */
 public sealed interface AvatarMark {
@@ -120,7 +146,7 @@ private fun AvatarStyleDto.toStyle(): AvatarStyle? {
             icon != null -> AvatarMark.Icon(icon)
             else -> null
         }
-    return mark?.takeIf { color.isNotBlank() }?.let { AvatarStyle(color, it) }
+    return mark?.takeIf { color.isNotBlank() }?.let { AvatarStyle(AvatarColor.of(color)?.id ?: color, it) }
 }
 
 private val StyleJson = Json { ignoreUnknownKeys = true }

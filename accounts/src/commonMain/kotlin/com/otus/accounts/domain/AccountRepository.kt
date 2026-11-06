@@ -10,6 +10,14 @@ public data class ConnectedAccount(
     val emailAddresses: List<String> = emptyList(),
 )
 
+/** The account's own mail addresses: its sign-in when that is one, and its sending addresses without wildcards. */
+public val ConnectedAccount.ownAddresses: List<String>
+    get() =
+        (listOf(username) + emailAddresses)
+            .map { it.trim() }
+            .filter { '@' in it && '*' !in it }
+            .distinctBy { it.lowercase() }
+
 public enum class ConnectFailure {
     WrongCredentials,
     NotPermitted,

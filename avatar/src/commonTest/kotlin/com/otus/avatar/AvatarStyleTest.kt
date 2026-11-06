@@ -21,12 +21,20 @@ class AvatarStyleTest {
     }
 
     @Test
+    fun aDesignSystemColorNameSavedBeforeTheIdsReadsAsItsId() {
+        val saved = """{"properties": [["x-otus-avatar", {}, "text", "{\"color\": \"Blue\", \"letters\": \"AL\"}"]]}"""
+        assertEquals(AvatarStyle("blue", AvatarMark.Letters("AL")), avatarStyleIn(Json.parseToJsonElement(saved)))
+        assertEquals(AvatarColor.Purple, AvatarColor.of("Purple"))
+        assertNull(AvatarColor.of("#4D6F92"))
+    }
+
+    @Test
     fun savingAStyleKeepsTheCardsOtherVCardProperties() {
         val vCard =
             Json.parseToJsonElement(
                 """{"properties": [["x-abc", {}, "text", "keep"], ["X-OTUS-AVATAR", {}, "text", "{}"]]}""",
             )
-        val properties = avatarPropertiesWith(vCard, AvatarStyle("Blue", AvatarMark.Icon("home")))
+        val properties = avatarPropertiesWith(vCard, AvatarStyle("blue", AvatarMark.Icon("home")))
         assertEquals(listOf("x-abc", AVATAR_STYLE_PROPERTY), properties.map { it.jsonArray[0].jsonPrimitive.content })
     }
 
@@ -34,7 +42,7 @@ class AvatarStyleTest {
     fun removingAStyleLeavesOnlyTheOtherProperties() {
         val vCard =
             JsonObject(
-                mapOf("properties" to avatarPropertiesWith(null, AvatarStyle("Blue", AvatarMark.Icon("home")))),
+                mapOf("properties" to avatarPropertiesWith(null, AvatarStyle("blue", AvatarMark.Icon("home")))),
             )
         assertTrue(hasAvatarStyle(vCard))
         assertTrue(avatarPropertiesWith(vCard, null).isEmpty())

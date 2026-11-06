@@ -7,10 +7,8 @@ import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.junit4.v2.createComposeRule
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.otus.accounts.domain.ConnectedAccount
-import com.otus.accounts.presentation.AccountAvatarEdit
 import com.otus.designsystem.shared.people.components.ChipAvatar
 import org.junit.Rule
 import org.junit.runner.RunWith
@@ -43,19 +41,11 @@ class ConnectedAccountRowTest {
         assertEquals(1, edits)
     }
 
-    @Test
-    fun theEditorShowsNothingForAnAccountWithoutAddresses() {
-        val edit =
-            AccountAvatarEdit("Jdoe", emptyList(), null, null, { emptyList() }, { ChipAvatar("J", 1) }) { _, _ -> }
-        compose.setContent { AccountAvatarEditor(edit) {} }
-        compose.onNodeWithText("All addresses of Jdoe").assertDoesNotExist()
-    }
-
     @Composable
     private fun AccountRow(
         account: ConnectedAccount,
         onEditAll: () -> Unit,
-    ) = ConnectedAccountRow(account, { null }, null, {}, {}, onEditAll)
+    ) = ConnectedAccountRow(account, { ChipAvatar("A", 1) }, ChipAvatar("A", 1), {}, {}, onEditAll)
 
     private fun hasClickLabel(label: String) =
         SemanticsMatcher("click label $label") { it.config.getOrNull(SemanticsActions.OnClick)?.label == label }

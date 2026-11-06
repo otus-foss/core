@@ -1,4 +1,4 @@
-package com.otus.accounts.presentation.components
+package com.otus.avatar.ui.presentation.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,11 +16,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import com.otus.accounts.presentation.AvatarDraft
-import com.otus.accounts.presentation.AvatarKind
-import com.otus.accounts.presentation.PhotoSource
-import com.otus.accounts.presentation.isSet
 import com.otus.avatar.ResolvedAvatar
+import com.otus.avatar.ui.presentation.AvatarDraft
+import com.otus.avatar.ui.presentation.AvatarKind
+import com.otus.avatar.ui.presentation.PhotoSource
+import com.otus.avatar.ui.presentation.isSet
 import com.otus.designsystem.shared.controls.components.SegmentedToggle
 import com.otus.designsystem.shared.overlays.components.SheetFrame
 import com.otus.designsystem.shared.overlays.components.SheetHeaderAction

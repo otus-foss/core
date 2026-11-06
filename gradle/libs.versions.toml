@@ -61,6 +61,7 @@ detekt-cli = { module = "io.gitlab.arturbosch.detekt:detekt-cli", version.ref = 
 otus-json-types = { module = "com.otus:json-types" }
 otus-jmap = { module = "com.otus:jmap" }
 otus-avatar = { module = "com.otus:avatar" }
+otus-avatar-ui = { module = "com.otus:avatar-ui" }
 otus-dateformat = { module = "com.otus:dateformat" }
 otus-designsystem = { module = "com.otus:designsystem" }
 otus-settings = { module = "com.otus:settings" }

@@ -1,6 +1,5 @@
-package com.otus.accounts.presentation
+package com.otus.accounts.domain
 
-import com.otus.accounts.domain.ConnectedAccount
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

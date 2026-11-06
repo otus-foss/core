@@ -1,9 +1,8 @@
-package com.otus.accounts.presentation
+package com.otus.avatar.ui.presentation
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.otus.accounts.domain.ConnectedAccount
 import com.otus.avatar.AvatarOrigin
 import com.otus.avatar.AvatarPhotoPicker
 import com.otus.avatar.ContactAvatar
@@ -48,7 +47,7 @@ public class OwnAvatarsState(
 
     /** What [email] of [account] shows now, or null before it loads. */
     public fun avatar(
-        account: ConnectedAccount,
+        account: OwnAccount,
         email: String,
     ): ResolvedAvatar? = shown[key(account, email)]
 
@@ -56,13 +55,13 @@ public class OwnAvatarsState(
      * The avatar [account] shows as a whole: its first address's, which is the sign-in address
      * when that is one, as the sidebar shows it. Null before it loads.
      */
-    public fun accountAvatar(account: ConnectedAccount): ResolvedAvatar? =
-        account.ownAddresses.firstOrNull()?.let { shown[key(account, it)] }
+    public fun accountAvatar(account: OwnAccount): ResolvedAvatar? =
+        account.addresses.firstOrNull()?.let { shown[key(account, it)] }
 
     /** Loads the avatar of every address of [accounts]. */
-    public fun load(accounts: List<ConnectedAccount>) {
+    public fun load(accounts: List<OwnAccount>) {
         accounts.forEach { account ->
-            account.ownAddresses.forEach { email ->
+            account.addresses.forEach { email ->
                 scope.launch { confirm(key(account, email), avatars.avatar(account.id, email, account.name)) }
             }
         }
@@ -75,23 +74,23 @@ public class OwnAvatarsState(
      * those with a photo or a style of their own that differs from it.
      */
     public fun replaced(
-        account: ConnectedAccount,
+        account: OwnAccount,
         avatar: ContactAvatar?,
     ): List<String> =
-        account.ownAddresses.filter { email ->
+        account.addresses.filter { email ->
             shown[key(account, email)]?.let { it.isSet && !it.looksLike(avatar.resolved(it.fallback)) } == true
         }
 
     /** Saves [avatar] for each of [emails] of [account], as [save] does for one. */
     public fun saveAll(
-        account: ConnectedAccount,
+        account: OwnAccount,
         emails: List<String>,
         avatar: ContactAvatar?,
     ): Unit = emails.forEach { save(account, it, avatar) }
 
     /** Saves [avatar] for [email], or goes back to the generated avatar when it is null. */
     public fun save(
-        account: ConnectedAccount,
+        account: OwnAccount,
         email: String,
         avatar: ContactAvatar?,
     ) {
@@ -135,7 +134,7 @@ public class OwnAvatarsState(
     }
 
     private fun key(
-        account: ConnectedAccount,
+        account: OwnAccount,
         email: String,
     ) = AddressKey(account.id, email.lowercase())
 

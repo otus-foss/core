@@ -1,4 +1,4 @@
-package com.otus.accounts.presentation
+package com.otus.avatar.ui.presentation
 
 import com.otus.avatar.AvatarMark
 import com.otus.avatar.AvatarStyle

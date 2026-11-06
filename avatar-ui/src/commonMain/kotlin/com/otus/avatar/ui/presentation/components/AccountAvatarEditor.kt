@@ -1,4 +1,4 @@
-package com.otus.accounts.presentation.components
+package com.otus.avatar.ui.presentation.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.rememberScrollState
@@ -9,8 +9,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.otus.accounts.presentation.AccountAvatarEdit
 import com.otus.avatar.ContactAvatar
+import com.otus.avatar.ui.presentation.AccountAvatarEdit
 import com.otus.designsystem.shared.overlays.components.ClosableSheet
 import com.otus.designsystem.shared.overlays.components.SheetConfirm
 import com.otus.designsystem.shared.people.components.PersonAvatar

@@ -21,12 +21,9 @@ import com.otus.accounts.domain.JmapAccountDraft
 import com.otus.accounts.domain.JmapServerAddress
 import com.otus.accounts.domain.isValidUsername
 import com.otus.accounts.domain.parseJmapServer
+import com.otus.accounts.presentation.AccountAvatars
 import com.otus.accounts.presentation.AccountsState
 import com.otus.accounts.presentation.ConnectStatus
-import com.otus.accounts.presentation.OwnAvatarsState
-import com.otus.accounts.presentation.accountEdit
-import com.otus.accounts.presentation.components.AccountAvatarEditor
-import com.otus.accounts.presentation.components.AvatarSheet
 import com.otus.accounts.presentation.components.ConnectedAccountRow
 import com.otus.accounts.presentation.confirmHostMessage
 import com.otus.accounts.presentation.message
@@ -44,11 +41,16 @@ import com.otus.designsystem.shared.settings.components.SettingsSection
 import com.otus.designsystem.theme.tokens.layout.PageTokens
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 
-/** Connected JMAP accounts, and a form that verifies a new one before saving it. */
+/**
+ * Connected JMAP accounts with their [avatars], and a form that verifies a new one before saving
+ * it. [avatarEditor] edits the avatar of one address of an account, or of all of them when the
+ * address is null.
+ */
 @Composable
 public fun AccountSetupScreen(
     state: AccountsState,
-    avatars: OwnAvatarsState,
+    avatars: AccountAvatars,
+    avatarEditor: @Composable (account: ConnectedAccount, email: String?, onDismiss: () -> Unit) -> Unit,
     title: String,
     service: AccountService,
     onBack: () -> Unit,
@@ -84,7 +86,7 @@ public fun AccountSetupScreen(
         )
     }
     editing?.let { (accountId, email) ->
-        state.accounts.firstOrNull { it.id == accountId }?.let { AvatarEditors(avatars, it, email) { editing = null } }
+        state.accounts.firstOrNull { it.id == accountId }?.let { avatarEditor(it, email) { editing = null } }
     }
     if (adding) {
         AddAccountSheet(state, service) {
@@ -95,7 +97,7 @@ public fun AccountSetupScreen(
     state.accounts.firstOrNull { it.id == removing }?.let { account ->
         ConfirmDialog(
             title = "Remove ${account.name}?",
-            message = "Removes it from this app only. Your account and mail stay on your server.",
+            message = "Removes it from this app only. Your account and ${service.name} stay on your server.",
             confirmLabel = "Remove",
             onConfirm = { state.remove(account.id) },
             onDismiss = { removing = null },
@@ -107,7 +109,7 @@ public fun AccountSetupScreen(
 @Composable
 private fun ConnectedAccounts(
     state: AccountsState,
-    avatars: OwnAvatarsState,
+    avatars: AccountAvatars,
     onRemove: (String) -> Unit,
     onEditAvatar: (account: String, email: String) -> Unit,
     onEditAll: (account: String) -> Unit,
@@ -134,38 +136,6 @@ private fun ConnectedAccounts(
 @Composable
 private fun AccountsFooter(onConnect: () -> Unit) {
     ActionButton("Connect an account", onConnect, Modifier.fillMaxWidth(), primary = true)
-}
-
-/** The editor of [email]'s avatar, or of every address's when it is null. */
-@Composable
-private fun AvatarEditors(
-    avatars: OwnAvatarsState,
-    account: ConnectedAccount,
-    email: String?,
-    onDismiss: () -> Unit,
-) {
-    if (email == null) {
-        AccountAvatarEditor(avatars.accountEdit(account), onDismiss)
-    } else {
-        AvatarEditor(avatars, account, email, onDismiss)
-    }
-}
-
-@Composable
-private fun AvatarEditor(
-    avatars: OwnAvatarsState,
-    account: ConnectedAccount,
-    email: String,
-    onDismiss: () -> Unit,
-) {
-    AvatarSheet(
-        email,
-        email.substringAfterLast('@'),
-        avatars.avatar(account, email),
-        pickPhoto = if (avatars.canPickPhoto) avatars::pickPhoto else null,
-        onSave = { avatars.save(account, email, it) },
-        onDismiss = onDismiss,
-    )
 }
 
 @Composable
