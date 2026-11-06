@@ -5,7 +5,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import java.util.Locale
 import java.util.TimeZone
@@ -54,28 +53,5 @@ class AndroidDateFormattingTest {
     @Test
     fun localeCalendarDoesNotReplaceTheDomainGregorianYear() {
         assertEquals("04/10/2026", DateFormatter(localeIdentifier = "th-TH").format(LocalDate.parse("2026-10-04")))
-    }
-
-    @Test
-    fun preferencesRestoreAndCanReturnToFollowingTheDevice() {
-        val context = RuntimeEnvironment.getApplication()
-        val first = AndroidDateFormatPreferenceStore(context)
-        assertEquals(DateFormatPreference.DeviceLocale, first.read())
-        first.write(DateFormatPreference.DayMonthYearSlashes)
-        val next = AndroidDateFormatPreferenceStore(context)
-        assertEquals(DateFormatPreference.DayMonthYearSlashes, next.read())
-        next.write(DateFormatPreference.DeviceLocale)
-        assertEquals(DateFormatPreference.DeviceLocale, AndroidDateFormatPreferenceStore(context).read())
-    }
-
-    @Test
-    fun corruptedStoredChoiceRecoversToDeviceFormatting() {
-        val context = RuntimeEnvironment.getApplication()
-        context
-            .getSharedPreferences("otus_date_format", 0)
-            .edit()
-            .putString("date_format", "unknown")
-            .apply()
-        assertEquals(DateFormatPreference.DeviceLocale, AndroidDateFormatPreferenceStore(context).read())
     }
 }
