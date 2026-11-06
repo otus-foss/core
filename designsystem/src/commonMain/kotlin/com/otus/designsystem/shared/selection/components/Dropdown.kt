@@ -29,8 +29,10 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.window.PopupPositionProvider
 import com.otus.designsystem.shared.overlays.components.MenuPopup
-import com.otus.designsystem.shared.overlays.components.keptInside
 import com.otus.designsystem.shared.overlays.components.menuSurface
+import com.otus.designsystem.shared.overlays.elements.PopupAlign
+import com.otus.designsystem.shared.overlays.elements.keptInside
+import com.otus.designsystem.shared.overlays.elements.popupStart
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
@@ -134,8 +136,8 @@ private class BelowAnchor(
         val roomBelow = windowSize.height - edge - anchorBounds.bottom - gap
         val roomAbove = anchorBounds.top - gap - edge
         room = if (roomBelow >= minRoom) roomBelow else maxOf(roomBelow, roomAbove)
-        val atEnd = alignEnd != (layoutDirection == LayoutDirection.Rtl)
-        val x = if (atEnd) anchorBounds.right - popupContentSize.width else anchorBounds.left
+        val align = if (alignEnd) PopupAlign.End else PopupAlign.Start
+        val x = anchorBounds.popupStart(align, popupContentSize.width, layoutDirection)
         val below = anchorBounds.bottom + gap
         val above = anchorBounds.top - gap - popupContentSize.height
         val fitsBelow = below + popupContentSize.height <= windowSize.height - edge

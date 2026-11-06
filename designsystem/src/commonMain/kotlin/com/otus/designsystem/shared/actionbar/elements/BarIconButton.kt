@@ -16,16 +16,14 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.IntRect
-import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.LayoutDirection
-import androidx.compose.ui.window.PopupPositionProvider
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
+import com.otus.designsystem.shared.overlays.elements.AbovePopup
+import com.otus.designsystem.shared.overlays.elements.PopupAlign
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.controls.ControlTokens
@@ -34,6 +32,7 @@ import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.layout.PageTokens
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
+import com.otus.designsystem.theme.tokens.overlays.MenuTokens
 import org.jetbrains.compose.resources.DrawableResource
 
 /**
@@ -51,8 +50,9 @@ public fun BarIconButton(
     mirrorInRtl: Boolean = false,
 ) {
     val interactions = remember { MutableInteractionSource() }
+    val edge = with(LocalDensity.current) { MenuTokens.edge.roundToPx() }
     BasicTooltipBox(
-        positionProvider = AboveAnchor,
+        positionProvider = remember(edge) { AbovePopup(gap = 0, edge, PopupAlign.Center) },
         tooltip = { BarTooltip(label) },
         state = rememberBasicTooltipState(),
         modifier = modifier,
@@ -81,21 +81,4 @@ private fun BarTooltip(label: String) {
             .padding(horizontal = ControlTokens.chipPadding, vertical = Spacing.iconGap),
         fontSize = PageTokens.captionSize,
     )
-}
-
-/** Centers the tooltip above its anchor, inside the window, with a small gap. */
-private object AboveAnchor : PopupPositionProvider {
-    override fun calculatePosition(
-        anchorBounds: IntRect,
-        windowSize: IntSize,
-        layoutDirection: LayoutDirection,
-        popupContentSize: IntSize,
-    ): IntOffset {
-        val x = anchorBounds.center.x - popupContentSize.width / 2
-        val y = anchorBounds.top - popupContentSize.height
-        return IntOffset(
-            x.coerceIn(0, (windowSize.width - popupContentSize.width).coerceAtLeast(0)),
-            y.coerceAtLeast(0),
-        )
-    }
 }

@@ -7,18 +7,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.IntRect
-import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.round
-import androidx.compose.ui.window.PopupPositionProvider
 import com.otus.designsystem.shared.controls.elements.IconButton
 import com.otus.designsystem.shared.controls.elements.IconButtonLook
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.overlays.components.MenuAction
 import com.otus.designsystem.shared.overlays.components.MenuPopup
 import com.otus.designsystem.shared.overlays.components.menuSurface
+import com.otus.designsystem.shared.overlays.elements.AbovePopup
+import com.otus.designsystem.shared.overlays.elements.PopupAlign
 import com.otus.designsystem.theme.tokens.overlays.MenuTokens
 
 /**
@@ -36,7 +33,7 @@ public fun QuickActionBar(
     val density = LocalDensity.current
     val edge = with(density) { MenuTokens.edge.roundToPx() }
     val gap = with(density) { MenuTokens.barGap.roundToPx() }
-    val position = remember(at, edge, gap) { AbovePoint(at.round(), edge, gap) }
+    val position = remember(at, edge, gap) { AbovePopup(gap, edge, PopupAlign.Center, at.round()) }
     MenuPopup(position, onDismiss) {
         Row(Modifier.menuSurface().padding(MenuTokens.inset)) {
             actions.forEach { action ->
@@ -53,27 +50,5 @@ public fun QuickActionBar(
                 }
             }
         }
-    }
-}
-
-/** Centers the bar over the point, [gap] pixels above it, or below when it would leave the window. */
-private class AbovePoint(
-    private val point: IntOffset,
-    private val edge: Int,
-    private val gap: Int,
-) : PopupPositionProvider {
-    override fun calculatePosition(
-        anchorBounds: IntRect,
-        windowSize: IntSize,
-        layoutDirection: LayoutDirection,
-        popupContentSize: IntSize,
-    ): IntOffset {
-        val x = anchorBounds.left + point.x - popupContentSize.width / 2
-        val y = anchorBounds.top + point.y
-        val above = y - gap - popupContentSize.height
-        return IntOffset(
-            x.coerceIn(edge, maxOf(edge, windowSize.width - popupContentSize.width - edge)),
-            if (above >= edge) above else y + gap,
-        )
     }
 }

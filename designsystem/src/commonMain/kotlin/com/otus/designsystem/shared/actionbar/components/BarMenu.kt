@@ -13,14 +13,11 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.IntRect
-import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.LayoutDirection
-import androidx.compose.ui.window.PopupPositionProvider
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.shared.overlays.components.ContextMenu
 import com.otus.designsystem.shared.overlays.components.MenuAction
+import com.otus.designsystem.shared.overlays.elements.AbovePopup
+import com.otus.designsystem.shared.overlays.elements.PopupAlign
 import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 import com.otus.designsystem.theme.tokens.overlays.MenuTokens
 
@@ -61,7 +58,13 @@ internal class BarMenu {
         val density = LocalDensity.current
         val position =
             remember(end, density) {
-                with(density) { AboveBar(ActionBarTokens.gap.roundToPx(), MenuTokens.edge.roundToPx(), end) }
+                with(density) {
+                    AbovePopup(
+                        ActionBarTokens.gap.roundToPx(),
+                        MenuTokens.edge.roundToPx(),
+                        if (end) PopupAlign.End else PopupAlign.Start,
+                    )
+                }
             }
         ContextMenu(actions, position, { open = false }, unrolls = false)
     }
@@ -86,30 +89,4 @@ internal fun Modifier.primaryButton(
     return semantics { contentDescription = listOfNotNull(primary.label, context?.description).joinToString(", ") }
         .clickable(interactions, indication = null, enabled = primary.enabled, role = Role.Button, onClick = onClick)
         .controlPressFeedback(interactions, shape)
-}
-
-/**
- * Puts a menu [gap] pixels above its button, lined up with the button's [end] or start edge, and
- * below it when there is no room above. It keeps [edge] pixels inside the window.
- */
-private class AboveBar(
-    private val gap: Int,
-    private val edge: Int,
-    private val end: Boolean,
-) : PopupPositionProvider {
-    override fun calculatePosition(
-        anchorBounds: IntRect,
-        windowSize: IntSize,
-        layoutDirection: LayoutDirection,
-        popupContentSize: IntSize,
-    ): IntOffset {
-        val right = end == (layoutDirection == LayoutDirection.Ltr)
-        val x = if (right) anchorBounds.right - popupContentSize.width else anchorBounds.left
-        val above = anchorBounds.top - gap - popupContentSize.height
-        val y = if (above >= edge) above else anchorBounds.bottom + gap
-        return IntOffset(
-            x.coerceIn(edge, maxOf(edge, windowSize.width - popupContentSize.width - edge)),
-            y.coerceIn(edge, maxOf(edge, windowSize.height - popupContentSize.height - edge)),
-        )
-    }
 }
