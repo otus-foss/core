@@ -197,7 +197,7 @@ private class SelfCardServer(
         }
     private val logins = adaLogins()
     val avatars =
-        JmapOwnAvatars(JmapConnections(JmapClient(engine), logins), logins, AvatarService()) { AvatarOptions() }
+        JmapOwnAvatars(JmapConnections(JmapClient(engine), logins), AvatarService()) { AvatarOptions() }
 
     private fun result(
         method: String,

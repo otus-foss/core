@@ -6,6 +6,7 @@ import com.otus.jmap.JmapCall
 import com.otus.jmap.JmapCapability
 import com.otus.jmap.JmapConnection
 import com.otus.jmap.JmapConnections
+import com.otus.jmap.JmapException
 import com.otus.jmap.JmapIds
 import com.otus.jmap.QueryMethod
 import com.otus.jmap.SetMethod
@@ -13,7 +14,6 @@ import com.otus.jmap.contacts.AddressBook
 import com.otus.jmap.contacts.ContactCardFilter
 import com.otus.jmap.contacts.cardPatch
 import com.otus.jmap.contacts.toCreation
-import com.otus.jmap.login.LoginStore
 import com.otus.jscontact.Card
 import com.otus.jscontact.CardKind
 import com.otus.jscontact.EmailAddress
@@ -39,7 +39,6 @@ import com.otus.jmap.contacts.ContactCardType as CardType
  */
 public class JmapOwnAvatars(
     private val connections: JmapConnections,
-    private val logins: LoginStore,
     private val service: AvatarService,
     private val options: () -> AvatarOptions,
 ) : OwnAvatars {
@@ -96,12 +95,13 @@ public class JmapOwnAvatars(
 
     /** The login's connection and the account that holds its contacts. */
     private suspend fun contactsAccount(accountKey: String): Pair<JmapConnection, String> {
-        val login = logins.savedLogin(accountKey) ?: throw OwnAvatarException(OwnAvatarFailure.Failed)
-        val connection = connections.connection(login)
         val account =
-            connection.session().accountFor(JmapCapability.CONTACTS)
-                ?: throw OwnAvatarException(OwnAvatarFailure.NoContacts)
-        return connection to account
+            try {
+                connections.account(accountKey, JmapCapability.CONTACTS)
+            } catch (error: JmapException.Unsupported) {
+                throw OwnAvatarException(OwnAvatarFailure.NoContacts, error)
+            } ?: throw OwnAvatarException(OwnAvatarFailure.Failed)
+        return account.connection to account.id
     }
 
     /**
@@ -121,7 +121,7 @@ public class JmapOwnAvatars(
             val response =
                 connection.send {
                     val query =
-                        call(QueryMethod(CardType, account, ContactCardFilter(email = email).toFilter().toJson()))
+                        call(QueryMethod(CardType, account, ContactCardFilter(email = email).toFilter()))
                     get = call(GetMethod(CardType, account, JmapIds.Result(query.resultOf("/ids")), properties))
                     if (made != null) {
                         byId = call(GetMethod(CardType, account, JmapIds.Of(listOf(made)), properties))

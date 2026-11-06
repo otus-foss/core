@@ -72,7 +72,7 @@ public data class JmapSort(
 public class QueryMethod(
     type: JmapType<*>,
     accountId: String,
-    private val filter: JsonObject? = null,
+    private val filter: JmapFilter? = null,
     private val sort: List<JmapSort> = emptyList(),
     private val limit: Int? = null,
     private val extra: Map<String, JsonElement> = emptyMap(),
@@ -84,7 +84,7 @@ public class QueryMethod(
     override fun arguments(): JsonObject =
         buildJsonObject {
             put("accountId", JsonPrimitive(accountId))
-            if (filter != null) put("filter", filter)
+            if (filter != null) put("filter", filter.toJson())
             if (sort.isNotEmpty()) put("sort", sortJson(sort))
             if (limit != null) put("limit", JsonPrimitive(limit))
             extra.forEach { (key, value) -> put(key, value) }

@@ -32,7 +32,7 @@ class ContactCardSyncTest {
                        "oldQueryState": "q1", "newQueryState": "q2", "total": 3, "removed": ["c2"],
                        "added": [{"id": "c5", "index": 0}]}, "c0"]]}"""
                 }
-            val filter = ContactCardFilter(inAddressBook = PERSONAL).toFilter().toJson()
+            val filter = ContactCardFilter(inAddressBook = PERSONAL).toFilter()
             val sort = listOf(JmapSort("name/surname"))
             val method =
                 QueryChangesMethod(
@@ -71,7 +71,7 @@ class ContactCardSyncTest {
                 }
             lateinit var query: JmapCall<QueryResult>
             lateinit var get: JmapCall<GetResult<Card>>
-            val filter = ContactCardFilter(email = "joe").toFilter().toJson()
+            val filter = ContactCardFilter(email = "joe").toFilter()
             val response =
                 server.send {
                     query = call(QueryMethod(ContactCardType, "a0x9", filter, listOf(JmapSort("created")), 10))

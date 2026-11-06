@@ -200,7 +200,7 @@ private class ContactFixture(
             }
         }
     private val store = adaLogins()
-    val source = JmapContactAvatarSource(JmapConnections(JmapClient(engine), store), store, images)
+    val source = JmapContactAvatarSource(JmapConnections(JmapClient(engine), store), images)
 }
 
 private const val CONTACT_SESSION = """

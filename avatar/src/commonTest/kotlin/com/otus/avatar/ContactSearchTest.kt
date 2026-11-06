@@ -42,14 +42,14 @@ class ContactSearchTest {
         }
 
     @Test
-    fun aSingleApprovedBookRetainsBothFilterOperators() =
+    fun aSingleApprovedBookFiltersByItsCondition() =
         runTest {
             val fixture = SearchFixture(count = 1, matchAt = 0)
             assertContentEquals(byteArrayOf(1), fixture.search()?.bytes)
             val expectedFilter =
                 JmapJson.parseToJsonElement(
                     """{"operator":"AND","conditions":[{"email":"target@example.org"},
-                    {"operator":"OR","conditions":[{"inAddressBook":"book"}]}]}""",
+                    {"inAddressBook":"book"}]}""",
                 )
             assertEquals(listOf(expectedFilter), fixture.filters)
         }

@@ -54,7 +54,7 @@ class ContactsSupportTest {
             ChangesMethod(AddressBookType, accountId, "~4144"),
             GetMethod(ContactCardType, accountId),
             ChangesMethod(ContactCardType, accountId, "s1"),
-            QueryMethod(ContactCardType, accountId, ContactCardFilter(email = "joe").toFilter().toJson()),
+            QueryMethod(ContactCardType, accountId, ContactCardFilter(email = "joe").toFilter()),
             QueryChangesMethod(ContactCardType, accountId, "q1"),
         )
 }

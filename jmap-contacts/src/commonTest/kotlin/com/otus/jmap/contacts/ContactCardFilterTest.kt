@@ -109,7 +109,7 @@ class ContactCardFilterTest {
         val filter =
             ContactCardFilter(inAddressBook = PERSONAL).toFilter() and
                 noneOf(ContactCardFilter(kind = CardKind.Group).toFilter())
-        val query = QueryMethod(ContactCardType, "a0x9", filter.toJson(), listOf(JmapSort("name/surname")))
+        val query = QueryMethod(ContactCardType, "a0x9", filter, listOf(JmapSort("name/surname")))
         assertEquals(
             parseObject(
                 """{"accountId": "a0x9", "filter": {"operator": "AND", "conditions": [

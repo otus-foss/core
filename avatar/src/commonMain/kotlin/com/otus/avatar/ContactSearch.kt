@@ -1,6 +1,5 @@
 package com.otus.avatar
 
-import com.otus.jmap.FilterOperator
 import com.otus.jmap.GetMethod
 import com.otus.jmap.GetResult
 import com.otus.jmap.JmapCall
@@ -11,11 +10,11 @@ import com.otus.jmap.JmapIds
 import com.otus.jmap.QueryMethod
 import com.otus.jmap.QueryResult
 import com.otus.jmap.allOf
+import com.otus.jmap.anyOf
 import com.otus.jmap.contacts.ContactCardFilter
 import com.otus.jmap.contacts.ContactCardType
 import com.otus.jscontact.Card
 import kotlinx.coroutines.withTimeoutOrNull
-import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 
 /**
@@ -101,11 +100,11 @@ internal suspend fun <T> withCardProperties(load: suspend (List<String>) -> T): 
 private fun contactFilter(
     email: String,
     books: Set<String>,
-): JsonObject =
+): JmapFilter =
     allOf(
         ContactCardFilter(email = email).toFilter(),
-        JmapFilter.Operator(FilterOperator.OR, books.sorted().map { ContactCardFilter(inAddressBook = it).toFilter() }),
-    ).toJson()
+        anyOf(books.sorted().map { ContactCardFilter(inAddressBook = it).toFilter() }),
+    )
 
 private const val CONTACT_PAGE_SIZE = 32
 private val CARD_PROPERTIES = listOf("id", "addressBookIds", "emails", "media")

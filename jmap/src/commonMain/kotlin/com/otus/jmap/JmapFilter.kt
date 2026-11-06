@@ -1,6 +1,7 @@
 package com.otus.jmap
 
 import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
@@ -53,14 +54,28 @@ public enum class FilterOperator {
     NOT,
 }
 
-/** Matches when every one of [filters] matches. */
-public fun allOf(vararg filters: JmapFilter): JmapFilter = JmapFilter.Operator(FilterOperator.AND, filters.toList())
+/** The FilterCondition `{name: value}`, such as `{"inMailbox": "m1"}`. */
+public fun filterCondition(
+    name: String,
+    value: JsonElement,
+): JmapFilter = JmapFilter.Condition(buildJsonObject { put(name, value) })
 
-/** Matches when at least one of [filters] matches. */
-public fun anyOf(vararg filters: JmapFilter): JmapFilter = JmapFilter.Operator(FilterOperator.OR, filters.toList())
+/** Matches when every one of [filters] matches. One filter stays itself, which means the same. */
+public fun allOf(filters: List<JmapFilter>): JmapFilter =
+    filters.singleOrNull() ?: JmapFilter.Operator(FilterOperator.AND, filters)
+
+public fun allOf(vararg filters: JmapFilter): JmapFilter = allOf(filters.toList())
+
+/** Matches when at least one of [filters] matches. One filter stays itself, which means the same. */
+public fun anyOf(filters: List<JmapFilter>): JmapFilter =
+    filters.singleOrNull() ?: JmapFilter.Operator(FilterOperator.OR, filters)
+
+public fun anyOf(vararg filters: JmapFilter): JmapFilter = anyOf(filters.toList())
 
 /** Matches when none of [filters] matches. */
-public fun noneOf(vararg filters: JmapFilter): JmapFilter = JmapFilter.Operator(FilterOperator.NOT, filters.toList())
+public fun noneOf(filters: List<JmapFilter>): JmapFilter = JmapFilter.Operator(FilterOperator.NOT, filters)
+
+public fun noneOf(vararg filters: JmapFilter): JmapFilter = noneOf(filters.toList())
 
 /** Matches when both filters match. A chain such as `a and b and c` stays one flat `AND`. */
 public infix fun JmapFilter.and(other: JmapFilter): JmapFilter = joined(FilterOperator.AND, other)

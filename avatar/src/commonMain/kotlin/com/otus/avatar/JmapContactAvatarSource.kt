@@ -6,14 +6,9 @@ import com.otus.jmap.JmapConnection
 import com.otus.jmap.JmapConnections
 import com.otus.jmap.contacts.AddressBook
 import com.otus.jmap.contacts.AddressBookType
-import com.otus.jmap.login.JmapLogin
-import com.otus.jmap.login.LoginStore
 import com.otus.jscontact.Card
 import com.otus.jscontact.Media
 import com.otus.jscontact.MediaKind
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
-import kotlinx.coroutines.withContext
 import kotlin.io.encoding.Base64
 
 /**
@@ -23,7 +18,6 @@ import kotlin.io.encoding.Base64
  */
 public class JmapContactAvatarSource(
     private val connections: JmapConnections,
-    private val logins: LoginStore,
     private val images: AvatarImageLoader,
 ) : ContactAvatarSource {
     override suspend fun avatar(
@@ -31,12 +25,10 @@ public class JmapContactAvatarSource(
         allowExternalImages: Boolean,
     ): ContactAvatar? =
         nullOnFailure {
-            val login = logins.savedLogin(request.accountKey) ?: return@nullOnFailure null
-            val connection = connections.connection(login)
-            val session = connection.session()
-            if (JmapCapability.CONTACTS !in session.capabilities) return@nullOnFailure null
             // Contacts may live in a separate JMAP account from mail, within the same login.
-            val account = session.accountFor(JmapCapability.CONTACTS) ?: return@nullOnFailure null
+            val contacts = connections.account(request.accountKey, JmapCapability.CONTACTS) ?: return@nullOnFailure null
+            val connection = contacts.connection
+            val account = contacts.id
             val books = readableBooks(connection, account)
             if (books.isEmpty()) return@nullOnFailure null
             val own = books.filter { it.myRights.mayWrite }.map { it.id }.toSet()
@@ -104,10 +96,6 @@ public class JmapContactAvatarSource(
         }
     }
 }
-
-/** The saved login with [id], read off the main thread, or null when there is none. */
-internal suspend fun LoginStore.savedLogin(id: String): JmapLogin? =
-    withContext(Dispatchers.IO) { logins().firstOrNull { it.id == id } }
 
 /** Some servers keep data URIs instead of returning a blobId. Bound input before Base64 decoding. */
 private fun inlineContactImage(uri: String): AvatarImage? {
