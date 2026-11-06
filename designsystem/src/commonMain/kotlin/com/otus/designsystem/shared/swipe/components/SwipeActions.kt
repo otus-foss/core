@@ -170,10 +170,10 @@ internal suspend fun runSwipe(
 ) = coroutineScope {
     launch {
         flash.snapTo(SwipeTokens.FLASH_ALPHA)
-        if (!action.dismisses) action.onSwipe()
+        if (!action.dismisses) action.action.onClick()
         flash.animateTo(0f, Motion.tween(scale = motionScale))
         // Running a dismissing action removes the row, so it waits until the flash has faded.
-        if (action.dismisses) action.onSwipe()
+        if (action.dismisses) action.action.onClick()
     }
     state.anchoredDrag(MutatePriority.PreventUserInput) { anchors ->
         slideTo(state.requireOffset(), anchors.positionOf(side), motionScale)
@@ -224,8 +224,8 @@ private fun Modifier.swipeAccessibility(vararg actions: SwipeAction?): Modifier 
     semantics {
         customActions =
             actions.filterNotNull().map { action ->
-                CustomAccessibilityAction(action.label) {
-                    action.onSwipe()
+                CustomAccessibilityAction(action.action.label) {
+                    action.action.onClick()
                     true
                 }
             }

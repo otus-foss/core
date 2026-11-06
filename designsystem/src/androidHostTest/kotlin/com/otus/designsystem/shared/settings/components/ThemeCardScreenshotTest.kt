@@ -7,7 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.unit.dp
 import com.otus.designsystem.screenshot.screenshot
-import com.otus.designsystem.shared.overlays.components.MenuAction
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.theme.colors.OtusPalette
 import com.otus.designsystem.theme.colors.ThemeBase
 import com.otus.designsystem.theme.colors.ThemeChoice
@@ -40,7 +40,7 @@ class ThemeCardScreenshotTest {
     fun selectedWithActions() =
         compose.screenshot("theme_card_actions") {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                val actions = listOf(MenuAction("Rename") {}, MenuAction("Delete") {})
+                val actions = listOf(UiAction("Rename") {}, UiAction("Delete") {})
                 ThemeCard("My ink", "Custom", palette(ThemeBase.Ink), selected = true, {}, card, actions)
                 ThemeCard("Black", "True black", palette(ThemeBase.Black), selected = false, {}, card, actions)
             }

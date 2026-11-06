@@ -17,8 +17,8 @@ import androidx.compose.ui.semantics.semantics
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_more_horiz
 import com.otus.designsystem.shared.controls.elements.Symbol
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
-import com.otus.designsystem.shared.overlays.components.MenuAction
 import com.otus.designsystem.shared.panels.elements.darkSurface
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
@@ -30,16 +30,16 @@ import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
  */
 @Composable
 internal fun BarMoreButton(
-    actions: List<MenuAction>,
+    actions: List<UiAction>,
     modifier: Modifier = Modifier,
 ) {
-    val more = BarAction("More actions", Res.drawable.symbol_more_horiz, menu = actions) {}
+    val more = BarAction(UiAction("More actions", Res.drawable.symbol_more_horiz) {}, menu = actions)
     val menu = rememberBarMenu()
     val interactions = remember { MutableInteractionSource() }
     Box(
         modifier
             .size(ActionBarTokens.height)
-            .semantics { contentDescription = more.label }
+            .semantics { contentDescription = more.action.label }
             .clickable(interactions, indication = null, role = Role.Button, onClick = menu.click(more))
             .controlPressFeedback(interactions, CircleShape)
             .darkSurface(CircleShape),

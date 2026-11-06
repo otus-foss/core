@@ -27,7 +27,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
-import com.otus.designsystem.shared.overlays.components.MenuAction
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.theme.motion.MotionCurve
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
@@ -46,7 +46,7 @@ internal fun MinimizedBar(
     primary: BarAction,
     context: BarContext?,
     hidden: Boolean,
-    more: List<MenuAction>,
+    more: List<UiAction>,
     modifier: Modifier = Modifier,
 ) {
     val ime = WindowInsets.ime

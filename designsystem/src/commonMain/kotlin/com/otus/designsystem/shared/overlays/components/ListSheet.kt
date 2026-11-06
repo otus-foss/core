@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalViewConfiguration
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import kotlin.time.Duration.Companion.milliseconds
@@ -32,7 +33,7 @@ import kotlin.time.TimeSource
 public fun ListSheet(
     title: String,
     onDismiss: () -> Unit,
-    done: SheetConfirm = SheetConfirm("Done", onDismiss),
+    done: UiAction = UiAction("Done", onClick = onDismiss),
     onClear: (() -> Unit)? = null,
     search: (@Composable () -> Unit)? = null,
     footnote: String? = null,

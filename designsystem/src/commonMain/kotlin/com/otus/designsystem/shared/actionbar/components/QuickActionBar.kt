@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.round
 import com.otus.designsystem.shared.controls.elements.IconButton
 import com.otus.designsystem.shared.controls.elements.IconButtonLook
 import com.otus.designsystem.shared.controls.elements.Symbol
-import com.otus.designsystem.shared.overlays.components.MenuAction
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.overlays.components.MenuPopup
 import com.otus.designsystem.shared.overlays.components.menuSurface
 import com.otus.designsystem.shared.overlays.elements.AbovePopup
@@ -26,7 +26,7 @@ import com.otus.designsystem.theme.tokens.overlays.MenuTokens
  */
 @Composable
 public fun QuickActionBar(
-    actions: List<MenuAction>,
+    actions: List<UiAction>,
     at: Offset,
     onDismiss: () -> Unit,
 ) {
@@ -45,7 +45,7 @@ public fun QuickActionBar(
                     },
                     look = IconButtonLook.Plain,
                 ) {
-                    val icon = action.icon
+                    val icon = action.symbol
                     if (icon != null) Symbol(icon)
                 }
             }

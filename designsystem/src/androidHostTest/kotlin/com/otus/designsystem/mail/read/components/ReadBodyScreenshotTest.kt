@@ -13,6 +13,7 @@ import com.otus.designsystem.resources.symbol_hide_image
 import com.otus.designsystem.resources.symbol_image
 import com.otus.designsystem.resources.symbol_notifications_off
 import com.otus.designsystem.screenshot.screenshot
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.dates.elements.DatePill
 import com.otus.designsystem.shared.folders.elements.FolderPath
 import com.otus.designsystem.shared.overlays.components.OptionsItem
@@ -46,12 +47,12 @@ class ReadBodyScreenshotTest {
                 ImageBanner(
                     Res.drawable.symbol_hide_image,
                     "Images blocked for privacy",
-                    listOf(BannerAction("Show") {}),
+                    listOf(UiAction("Show") {}),
                 )
                 ImageBanner(
                     Res.drawable.symbol_image,
                     "Images shown",
-                    listOf(BannerAction("Hide") {}, BannerAction("Always") {}),
+                    listOf(UiAction("Hide") {}, UiAction("Always") {}),
                 )
             }
         }
@@ -104,14 +105,13 @@ class ReadBodyScreenshotTest {
         compose.screenshot("options_list_read") {
             OptionsList(
                 listOf(
-                    OptionsItem.Action("Forward", Res.drawable.symbol_forward, {}),
-                    OptionsItem.Action("Flag", Res.drawable.symbol_flag, {}),
+                    OptionsItem.Action(UiAction("Forward", Res.drawable.symbol_forward, onClick = {})),
+                    OptionsItem.Action(UiAction("Flag", Res.drawable.symbol_flag, onClick = {})),
                     OptionsItem.Divider,
                     OptionsItem.Caption("Whole conversation"),
                     OptionsItem.Action(
-                        "Move to…",
-                        Res.drawable.symbol_archive,
-                        {},
+                        UiAction("Move to…", Res.drawable.symbol_archive, onClick = {
+                        }),
                         opens = true,
                         detail = "Usually Invoices",
                     ),

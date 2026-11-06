@@ -34,6 +34,7 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
 import com.otus.designsystem.shared.controls.elements.Symbol
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.shared.overlays.elements.AtPoint
 import com.otus.designsystem.theme.colors.OtusColors
@@ -52,7 +53,7 @@ import com.otus.designsystem.theme.typography.panelTextStyle
  */
 @Composable
 public fun ContextMenu(
-    actions: List<MenuAction>,
+    actions: List<UiAction>,
     at: Offset,
     onDismiss: () -> Unit,
 ) {
@@ -66,7 +67,7 @@ public fun ContextMenu(
  */
 @Composable
 internal fun ContextMenu(
-    actions: List<MenuAction>,
+    actions: List<UiAction>,
     position: PopupPositionProvider,
     onDismiss: () -> Unit,
     unrolls: Boolean = true,
@@ -80,7 +81,7 @@ internal fun ContextMenu(
  */
 @Composable
 internal fun MenuRows(
-    actions: List<MenuAction>,
+    actions: List<UiAction>,
     onDismiss: () -> Unit,
     surface: Modifier = Modifier,
 ) {
@@ -142,7 +143,7 @@ public fun Modifier.onPressDown(onPress: (Offset) -> Unit): Modifier =
 
 @Composable
 private fun MenuRow(
-    action: MenuAction,
+    action: UiAction,
     onClick: () -> Unit,
 ) {
     val interactions = remember { MutableInteractionSource() }
@@ -157,7 +158,7 @@ private fun MenuRow(
         horizontalArrangement = Arrangement.spacedBy(MenuTokens.iconGap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        val icon = action.icon
+        val icon = action.symbol
         if (icon != null) Symbol(icon)
         Text(action.label, style = panelTextStyle())
     }

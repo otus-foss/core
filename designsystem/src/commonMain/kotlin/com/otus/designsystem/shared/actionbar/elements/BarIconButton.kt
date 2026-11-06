@@ -47,7 +47,6 @@ public fun BarIconButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    mirrorInRtl: Boolean = false,
 ) {
     val interactions = remember { MutableInteractionSource() }
     val edge = with(LocalDensity.current) { MenuTokens.edge.roundToPx() }
@@ -66,7 +65,7 @@ public fun BarIconButton(
             contentAlignment = Alignment.Center,
         ) {
             CompositionLocalProvider(LocalContentColor provides if (enabled) OtusColors.text1 else OtusColors.text3) {
-                Symbol(symbol, mirrorInRtl, ActionBarTokens.symbolSize)
+                Symbol(symbol, size = ActionBarTokens.symbolSize)
             }
         }
     }

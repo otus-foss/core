@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import com.otus.designsystem.shared.controls.elements.StripButton
 import com.otus.designsystem.shared.controls.elements.Symbol
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.rows.components.StripCard
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.content.ReadTokens
@@ -33,7 +34,7 @@ public fun InfoStrip(
     icon: DrawableResource,
     title: String,
     subtitle: String?,
-    action: StripAction?,
+    action: UiAction?,
     modifier: Modifier = Modifier,
 ) {
     StripCard(modifier) {
@@ -49,7 +50,7 @@ public fun InfoStrip(
                 Symbol(icon, size = StripTokens.iconSize)
             }
             StripText(title, subtitle, Modifier.weight(1f))
-            if (action != null) StripButton(action.label, action.icon, StripTokens.buttonHeight, action.onClick)
+            if (action != null) StripButton(action.label, action.symbol, StripTokens.buttonHeight, action.onClick)
         }
     }
 }

@@ -10,7 +10,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.otus.designsystem.shared.controls.components.ButtonPair
-import com.otus.designsystem.shared.controls.components.PairButton
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.overlays.components.SheetHeader
 import com.otus.designsystem.shared.overlays.components.SheetSurface
 import com.otus.designsystem.shared.rows.elements.SectionCaption
@@ -45,8 +45,8 @@ public fun ChangeLogSheet(
             ChangeSections(sections)
         }
         ButtonPair(
-            PairButton(secondaryLabel, onSecondary),
-            PairButton(actionLabel, onAction),
+            UiAction(secondaryLabel, onClick = onSecondary),
+            UiAction(actionLabel, onClick = onAction),
             Modifier.padding(SheetTokens.inset),
         )
     }

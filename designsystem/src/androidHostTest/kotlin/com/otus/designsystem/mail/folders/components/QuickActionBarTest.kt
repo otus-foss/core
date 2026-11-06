@@ -15,7 +15,7 @@ import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_delete
 import com.otus.designsystem.resources.symbol_edit
 import com.otus.designsystem.shared.actionbar.components.QuickActionBar
-import com.otus.designsystem.shared.overlays.components.MenuAction
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.sidebar.elements.SidebarFolder
 import org.junit.Rule
 import org.junit.runner.RunWith
@@ -47,8 +47,8 @@ class QuickActionBarTest {
             if (point != null) {
                 val actions =
                     listOf(
-                        MenuAction("Rename", Res.drawable.symbol_edit) { chosen += "Rename" },
-                        MenuAction("Delete", Res.drawable.symbol_delete) { chosen += "Delete" },
+                        UiAction("Rename", Res.drawable.symbol_edit) { chosen += "Rename" },
+                        UiAction("Delete", Res.drawable.symbol_delete) { chosen += "Delete" },
                     )
                 QuickActionBar(actions, point, onDismiss = { at = null })
             }

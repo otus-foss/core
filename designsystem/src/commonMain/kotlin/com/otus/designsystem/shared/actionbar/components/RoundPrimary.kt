@@ -56,11 +56,11 @@ internal fun RoundPrimary(
         contentAlignment = Alignment.CenterEnd,
     ) {
         CompositionLocalProvider(
-            LocalContentColor provides if (primary.enabled) OtusColors.text1 else OtusColors.text3,
+            LocalContentColor provides if (primary.action.enabled) OtusColors.text1 else OtusColors.text3,
         ) {
-            ContextShell(front, primary.enabled, pill)
-            Circle(primary.enabled) {
-                front.face.Swapping { Symbol(it.symbol, it.mirrorInRtl, ActionBarTokens.symbolSize) }
+            ContextShell(front, primary.action.enabled, pill)
+            Circle(primary.action.enabled) {
+                front.face.Swapping { Symbol(it.symbol, size = ActionBarTokens.symbolSize) }
             }
         }
         menu.Menu(primary, end = true)

@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.MotionSpeed
@@ -47,7 +48,7 @@ import com.otus.designsystem.theme.typography.panelTextStyle
 @Composable
 public fun Toast(
     text: String,
-    action: ToastAction?,
+    action: UiAction?,
     remaining: Float,
     modifier: Modifier = Modifier,
     lifted: Boolean = false,
@@ -84,7 +85,7 @@ public fun Toast(
 /** The action, with a touch area the toast's full height around its visible pill. */
 @Composable
 private fun ToastButton(
-    action: ToastAction,
+    action: UiAction,
     remaining: Float,
     fill: Color,
 ) {
@@ -92,7 +93,7 @@ private fun ToastButton(
     Box(
         Modifier
             .fillMaxHeight()
-            .clickable(interactions, indication = null, role = Role.Button, onClick = action.onAction)
+            .clickable(interactions, indication = null, role = Role.Button, onClick = action.onClick)
             .padding(ToastTokens.actionInset),
         contentAlignment = Alignment.Center,
     ) {

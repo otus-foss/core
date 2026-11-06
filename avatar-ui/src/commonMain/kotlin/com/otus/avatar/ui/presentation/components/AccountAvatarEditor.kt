@@ -11,7 +11,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.otus.avatar.ContactAvatar
 import com.otus.avatar.ui.presentation.AccountAvatarEdit
-import com.otus.designsystem.shared.overlays.components.SheetConfirm
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.overlays.components.SheetFrame
 import com.otus.designsystem.shared.people.components.PersonAvatar
 import com.otus.designsystem.shared.selection.components.PickMark
@@ -77,7 +77,7 @@ private fun ReplaceSheet(
         if (choice.replaced.size == 1) "Replace 1 avatar?" else "Replace ${choice.replaced.size} avatars?",
         onDismiss,
         done =
-            SheetConfirm(label, {
+            UiAction(label, onClick = {
                 edit.saveAll(edit.emails - kept, choice.avatar)
                 onDismiss()
             }),

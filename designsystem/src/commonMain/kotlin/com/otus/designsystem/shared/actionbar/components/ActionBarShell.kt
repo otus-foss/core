@@ -71,7 +71,7 @@ internal fun PrimaryShell(
 ) {
     val shape = SmoothCornerShape(ActionBarTokens.radius)
     val menu = rememberBarMenu()
-    val shown = entry.shownContext(context, primary.label)
+    val shown = entry.shownContext(context, primary.action.label)
     val animation = rememberCollapse(context != null, entry)
     val progress = { entry.blend(animation.value) { it.progress } }
     val fadeStart = ActionBarTokens.CONTEXT_FADE_START
@@ -84,13 +84,13 @@ internal fun PrimaryShell(
         // Drawn before the action, so the action's accent border covers it where the two meet.
         Box(Modifier.matchParentSize().strokeBorder(Sizes.borderWidth, OtusColors.strokeBgDark, shape))
         CompositionLocalProvider(
-            LocalContentColor provides if (primary.enabled) OtusColors.text1 else OtusColors.text3,
+            LocalContentColor provides if (primary.action.enabled) OtusColors.text1 else OtusColors.text3,
         ) {
             if (shown != null) {
                 ContextContent(
                     shown.title,
                     shown.context,
-                    if (primary.enabled) OtusColors.text2 else OtusColors.text3,
+                    if (primary.action.enabled) OtusColors.text2 else OtusColors.text3,
                     Modifier
                         .align(Alignment.CenterStart)
                         .graphicsLayer { alpha = ((progress() - fadeStart) / (1f - fadeStart)).coerceIn(0f, 1f) }
@@ -195,18 +195,18 @@ private fun Action(
                 .align(Alignment.CenterEnd)
                 .fillMaxHeight()
                 .fillMaxWidth()
-                .background(if (primary.enabled) OtusColors.accentDark else OtusColors.bgDark, shape)
+                .background(if (primary.action.enabled) OtusColors.accentDark else OtusColors.bgDark, shape)
                 // A disabled action loses its accent entirely, so it reads as part of the shell.
                 .strokeBorder(
                     Sizes.borderWidth,
-                    if (primary.enabled) OtusColors.accentRegular else OtusColors.strokeBgDark,
+                    if (primary.action.enabled) OtusColors.accentRegular else OtusColors.strokeBgDark,
                     shape,
                 ),
         ) {
             Box(
                 Modifier.align(Alignment.CenterEnd).width(ActionBarTokens.collapsedActionWidth).fillMaxHeight(),
                 contentAlignment = Alignment.Center,
-            ) { face.Swapping { Symbol(it.symbol, it.mirrorInRtl, ActionBarTokens.symbolSize) } }
+            ) { face.Swapping { Symbol(it.symbol, size = ActionBarTokens.symbolSize) } }
         }
     }
 }

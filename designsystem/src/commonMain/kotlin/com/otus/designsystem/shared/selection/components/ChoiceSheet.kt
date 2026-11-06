@@ -22,8 +22,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import com.otus.designsystem.shared.controls.elements.LeadingSymbol
 import com.otus.designsystem.shared.controls.elements.LocalIconTint
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.folders.elements.FolderColorSwatch
-import com.otus.designsystem.shared.overlays.components.SheetConfirm
 import com.otus.designsystem.shared.overlays.components.SheetFrame
 import com.otus.designsystem.shared.people.components.NamedAvatar
 import com.otus.designsystem.shared.people.components.PersonText
@@ -67,9 +67,13 @@ public fun <T> ChoiceSheet(
         }
     val done =
         if (saveOnDone == null) {
-            SheetConfirm("Done", onDismiss)
+            UiAction("Done", onClick = onDismiss)
         } else {
-            SheetConfirm("Done", { saveAndClose(picked, onSelect, onDismiss) }, enabled = saveOnDone.enabled(picked))
+            UiAction(
+                "Done",
+                enabled = saveOnDone.enabled(picked),
+                onClick = { saveAndClose(picked, onSelect, onDismiss) },
+            )
         }
     SheetFrame(title, onDismiss, done = done) {
         Column(

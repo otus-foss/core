@@ -27,11 +27,11 @@ import androidx.compose.ui.unit.dp
 import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 import androidx.navigationevent.compose.rememberNavigationEventDispatcherOwner
 import com.otus.designsystem.shared.actionbar.components.ActionBarHost
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.feedback.components.ToastHost
 import com.otus.designsystem.shared.feedback.components.ToastMessage
 import com.otus.designsystem.shared.feedback.components.ToastState
 import com.otus.designsystem.shared.feedback.components.captureWindow
-import com.otus.designsystem.shared.feedback.elements.ToastAction
 import com.otus.designsystem.theme.OtusTheme
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
@@ -82,7 +82,7 @@ class BottomClearanceTest {
 
     @Test
     fun undoSinksTheToastBehindTheBar() {
-        val state = ToastState().apply { show(ToastMessage("Email deleted", ToastAction("Undo") {})) }
+        val state = ToastState().apply { show(ToastMessage("Email deleted", UiAction("Undo") {})) }
         compose.mainClock.autoAdvance = false
         compose.setContent {
             OtusTheme {
@@ -114,7 +114,7 @@ class BottomClearanceTest {
 
     @Test
     fun draggingUncoversDismissAndStretchesThePill() {
-        val state = ToastState().apply { show(ToastMessage("Email deleted", ToastAction("Undo") {})) }
+        val state = ToastState().apply { show(ToastMessage("Email deleted", UiAction("Undo") {})) }
         compose.mainClock.autoAdvance = false
         compose.setContent {
             OtusTheme {

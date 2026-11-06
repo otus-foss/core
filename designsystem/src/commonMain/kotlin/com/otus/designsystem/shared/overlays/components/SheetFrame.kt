@@ -32,6 +32,7 @@ import com.otus.designsystem.shared.controls.elements.ActionButton
 import com.otus.designsystem.shared.controls.elements.IconButton
 import com.otus.designsystem.shared.controls.elements.IconButtonLook
 import com.otus.designsystem.shared.controls.elements.Symbol
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
@@ -55,12 +56,12 @@ import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 public fun SheetFrame(
     title: String,
     onDismiss: () -> Unit,
-    done: SheetConfirm? = SheetConfirm("Done", onDismiss),
+    done: UiAction? = UiAction("Done", onClick = onDismiss),
     closeButton: Boolean = false,
     leadingAction: (@Composable (done: () -> Unit) -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    SheetSurface(title, onDismiss, onDone = { done?.onConfirm?.invoke() }) { close, finish, closing ->
+    SheetSurface(title, onDismiss, onDone = { done?.onClick?.invoke() }) { close, finish, closing ->
         if (closeButton) {
             ClosableHeader(title, close)
             content()
@@ -191,7 +192,7 @@ private fun ClosableHeader(
 
 @Composable
 private fun ConfirmButton(
-    confirm: SheetConfirm,
+    confirm: UiAction,
     done: () -> Unit,
     closing: Boolean,
 ) {
@@ -206,7 +207,7 @@ private fun ConfirmButton(
             horizontalArrangement = Arrangement.spacedBy(Spacing.iconGap * 2),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            val icon = confirm.icon
+            val icon = confirm.symbol
             if (icon != null) Symbol(icon)
             Text(confirm.label, color = if (confirm.enabled) OtusColors.text1 else OtusColors.text3)
         }

@@ -30,8 +30,8 @@ import com.otus.designsystem.resources.symbol_close
 import com.otus.designsystem.shared.controls.elements.IconButton
 import com.otus.designsystem.shared.controls.elements.IconButtonLook
 import com.otus.designsystem.shared.controls.elements.Symbol
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.overlays.components.ContextMenu
-import com.otus.designsystem.shared.overlays.components.MenuAction
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.shapes.strokeBorder
@@ -52,7 +52,7 @@ public fun AttachmentChip(
     detail: String,
     onRemove: () -> Unit,
     modifier: Modifier = Modifier,
-    actions: List<MenuAction> = emptyList(),
+    actions: List<UiAction> = emptyList(),
 ) {
     val shape = SmoothCornerShape(ComposeTokens.recipientRadius)
     var open by remember { mutableStateOf(false) }

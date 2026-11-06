@@ -6,6 +6,7 @@ import androidx.compose.ui.test.performClick
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_send
 import com.otus.designsystem.screenshot.screenshot
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.people.components.DemoActions.move
 import com.otus.designsystem.shared.people.components.DemoActions.secondary
 import com.otus.designsystem.shared.people.components.DemoActions.send
@@ -63,7 +64,7 @@ class BarContextScreenshotTest {
         var sent = 0
         compose.setContent {
             ActionBar(
-                BarAction("Send", Res.drawable.symbol_send) { sent++ },
+                BarAction(UiAction("Send", Res.drawable.symbol_send) { sent++ }),
                 context = BarContext("Ada Lovelace", BarToken.Person(DemoPeople.ada)),
             )
         }

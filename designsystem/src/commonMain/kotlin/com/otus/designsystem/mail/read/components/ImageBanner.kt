@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import com.otus.designsystem.shared.controls.elements.StripButton
 import com.otus.designsystem.shared.controls.elements.Symbol
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.panels.elements.darkSurface
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
@@ -31,7 +32,7 @@ import org.jetbrains.compose.resources.DrawableResource
 public fun ImageBanner(
     icon: DrawableResource,
     text: String,
-    actions: List<BannerAction>,
+    actions: List<UiAction>,
     modifier: Modifier = Modifier,
 ) {
     val shape = SmoothCornerShape(ReadTokens.bannerRadius)

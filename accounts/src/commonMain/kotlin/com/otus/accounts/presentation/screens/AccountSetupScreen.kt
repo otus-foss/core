@@ -28,8 +28,8 @@ import com.otus.accounts.presentation.components.ConnectedAccountRow
 import com.otus.accounts.presentation.confirmHostMessage
 import com.otus.accounts.presentation.message
 import com.otus.designsystem.shared.controls.components.ButtonPair
-import com.otus.designsystem.shared.controls.components.PairButton
 import com.otus.designsystem.shared.controls.elements.ActionButton
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.feedback.components.InfoText
 import com.otus.designsystem.shared.input.elements.InputField
 import com.otus.designsystem.shared.input.elements.InputKind
@@ -219,7 +219,7 @@ private fun ConfirmHostPrompt(
     state: AccountsState,
 ) {
     PageNote(confirmHostMessage(host))
-    ButtonPair(PairButton("Cancel", state::cancelHost), PairButton("Trust $host", state::trustHost))
+    ButtonPair(UiAction("Cancel", onClick = state::cancelHost), UiAction("Trust $host", onClick = state::trustHost))
 }
 
 private fun statusText(

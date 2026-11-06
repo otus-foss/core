@@ -11,6 +11,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.input.elements.InputField
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 
@@ -37,10 +38,10 @@ public fun InputSheet(
         title,
         onDismiss,
         done =
-            SheetConfirm(confirmLabel, {
+            UiAction(confirmLabel, enabled = error == null, onClick = {
                 onConfirm(value)
                 onDismiss()
-            }, enabled = error == null),
+            }),
     ) {
         InputField(
             label,

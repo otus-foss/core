@@ -3,7 +3,7 @@ package com.otus.designsystem.shared.overlays.components
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import com.otus.designsystem.shared.controls.components.ButtonPair
-import com.otus.designsystem.shared.controls.components.PairButton
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.theme.colors.OtusColors
 
 /**
@@ -26,6 +26,6 @@ public fun ConfirmDialog(
             onDismiss()
             onConfirm()
         }
-        ButtonPair(PairButton(dismissLabel, onDismiss), PairButton(confirmLabel, confirm))
+        ButtonPair(UiAction(dismissLabel, onClick = onDismiss), UiAction(confirmLabel, onClick = confirm))
     }
 }

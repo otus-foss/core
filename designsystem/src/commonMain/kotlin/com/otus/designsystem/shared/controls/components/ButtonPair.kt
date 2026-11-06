@@ -32,6 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Constraints
 import com.otus.designsystem.shared.controls.elements.ActionButton
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.controls.ControlTokens
@@ -48,8 +49,8 @@ import kotlin.math.roundToInt
  */
 @Composable
 public fun ButtonPair(
-    secondary: PairButton,
-    primary: PairButton,
+    secondary: UiAction,
+    primary: UiAction,
     modifier: Modifier = Modifier,
 ) {
     // The track paints behind its buttons and clips nothing, so the primary pill's outline stays on top.
@@ -142,7 +143,7 @@ internal fun PrimaryLabel(
 }
 
 @Composable
-private fun SecondaryHalf(button: PairButton) {
+private fun SecondaryHalf(button: UiAction) {
     val interactions = remember { MutableInteractionSource() }
     Box(
         Modifier

@@ -77,14 +77,14 @@ private fun ActionOption(
     onDone: () -> Unit,
 ) {
     OptionsRow(
-        item.icon,
-        item.label,
+        item.action.symbol,
+        item.action.label,
         item.detail,
         Modifier
             .currentChoice(item.current)
             .clickable(role = Role.Button) {
                 onDone()
-                item.onClick()
+                item.action.onClick()
             },
     ) { if (item.opens) Symbol(Res.drawable.symbol_chevron_right, mirrorInRtl = true) }
 }
@@ -123,7 +123,7 @@ internal fun OptionsDivider() {
 
 @Composable
 private fun OptionsRow(
-    icon: DrawableResource,
+    icon: DrawableResource?,
     label: String,
     detail: String?,
     modifier: Modifier,
@@ -137,7 +137,7 @@ private fun OptionsRow(
         horizontalArrangement = Arrangement.spacedBy(MenuTokens.rowPadding),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Symbol(icon)
+        if (icon != null) Symbol(icon)
         Column(Modifier.weight(1f)) {
             Text(label, style = panelTextStyle())
             if (detail != null) {

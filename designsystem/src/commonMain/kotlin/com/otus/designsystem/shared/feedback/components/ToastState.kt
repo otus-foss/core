@@ -7,7 +7,7 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.otus.designsystem.shared.feedback.elements.ToastAction
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.theme.tokens.feedback.ToastTokens
 
 /**
@@ -24,12 +24,12 @@ import com.otus.designsystem.theme.tokens.feedback.ToastTokens
 @Immutable
 public data class ToastMessage(
     val text: String,
-    val action: ToastAction? = null,
+    val action: UiAction? = null,
     val group: Any? = null,
     val sticky: Boolean = false,
     val onClose: (() -> Unit)? = null,
     val durationMillis: Long? = null,
-    val swipeAction: ToastAction? = null,
+    val swipeAction: UiAction? = null,
 )
 
 /** The toasts on screen, newest last. Create it with `remember` and pass it to [ToastHost]. */
@@ -95,7 +95,7 @@ public class ToastState {
 
     /** Removes a toast the user swiped away: its swipe action runs, or else its close callback. */
     internal fun swipe(entry: ToastEntry) =
-        drop(entry) { (entry.message.swipeAction?.onAction ?: entry.message.onClose)?.invoke() }
+        drop(entry) { (entry.message.swipeAction?.onClick ?: entry.message.onClose)?.invoke() }
 
     private fun drop(
         entry: ToastEntry,

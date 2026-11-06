@@ -6,6 +6,7 @@ import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.runtime.MonotonicFrameClock
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_archive
+import com.otus.designsystem.shared.controls.elements.UiAction
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -28,7 +29,7 @@ class SwipeRunTest {
         runTest {
             val state = AnchoredDraggableState(SwipeAnchor.Settled, anchors)
             var runs = 0
-            val archive = SwipeAction("Archive", Res.drawable.symbol_archive, dismisses = true) { runs++ }
+            val archive = SwipeAction(UiAction("Archive", Res.drawable.symbol_archive) { runs++ }, dismisses = true)
             launch(FrameClock()) { runSwipe(state, SwipeAnchor.StartToEnd, archive, Animatable(0f), motionScale = 1f) }
             advanceTimeBy(PARKED_MILLIS)
             assertEquals(1, runs)

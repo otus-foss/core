@@ -36,9 +36,9 @@ import com.otus.designsystem.resources.symbol_more_horiz
 import com.otus.designsystem.shared.controls.elements.IconButton
 import com.otus.designsystem.shared.controls.elements.IconButtonLook
 import com.otus.designsystem.shared.controls.elements.Symbol
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.shared.overlays.components.ContextMenu
-import com.otus.designsystem.shared.overlays.components.MenuAction
 import com.otus.designsystem.shared.overlays.components.onPressDown
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.colors.OtusPalette
@@ -62,7 +62,7 @@ public fun ThemeCard(
     selected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    actions: List<MenuAction> = emptyList(),
+    actions: List<UiAction> = emptyList(),
 ) {
     var press by remember { mutableStateOf(Offset.Zero) }
     var menuAt by remember { mutableStateOf<Offset?>(null) }

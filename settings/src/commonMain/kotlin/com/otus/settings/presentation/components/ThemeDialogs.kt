@@ -1,9 +1,9 @@
 package com.otus.settings.presentation.components
 
 import androidx.compose.runtime.Composable
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.overlays.components.ConfirmDialog
 import com.otus.designsystem.shared.overlays.components.InputSheet
-import com.otus.designsystem.shared.overlays.components.MenuAction
 import com.otus.designsystem.theme.colors.CustomTheme
 import com.otus.designsystem.theme.colors.ThemeChoice
 import com.otus.settings.presentation.ThemeOption
@@ -21,12 +21,12 @@ internal fun themeActions(
     choice: ThemeChoice,
     onChange: (ThemeChoice) -> Unit,
     onDialog: (ThemeDialog) -> Unit,
-): List<MenuAction> {
+): List<UiAction> {
     val custom = option.custom
     return buildList {
-        if (custom != null) add(MenuAction("Rename") { onDialog(ThemeDialog.Rename(custom)) })
-        add(MenuAction("Duplicate") { onChange(option.choice.withCopy(choice.copyName(option))) })
-        if (custom != null) add(MenuAction("Delete") { onDialog(ThemeDialog.Delete(custom)) })
+        if (custom != null) add(UiAction("Rename") { onDialog(ThemeDialog.Rename(custom)) })
+        add(UiAction("Duplicate") { onChange(option.choice.withCopy(choice.copyName(option))) })
+        if (custom != null) add(UiAction("Delete") { onDialog(ThemeDialog.Delete(custom)) })
     }
 }
 

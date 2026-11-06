@@ -13,8 +13,8 @@ import com.otus.designsystem.resources.symbol_archive
 import com.otus.designsystem.resources.symbol_newspaper
 import com.otus.designsystem.resources.symbol_unsubscribe
 import com.otus.designsystem.screenshot.screenshot
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.feedback.components.InfoStrip
-import com.otus.designsystem.shared.feedback.components.StripAction
 import com.otus.designsystem.shared.folders.elements.FolderStack
 import com.otus.designsystem.shared.people.components.DemoPeople
 import com.otus.designsystem.shared.people.components.NamedAvatar
@@ -94,13 +94,13 @@ class ReadStripScreenshotTest {
                     Res.drawable.symbol_newspaper,
                     "Sentry weekly digest",
                     "Mailing list · about once a week",
-                    StripAction("Unsubscribe", Res.drawable.symbol_unsubscribe) {},
+                    UiAction("Unsubscribe", Res.drawable.symbol_unsubscribe) {},
                 )
                 InfoStrip(
                     Res.drawable.symbol_newspaper,
                     "Unsubscribed",
                     "Takes up to 2 days · 23 older digests in your mail",
-                    StripAction("Archive all", Res.drawable.symbol_archive) {},
+                    UiAction("Archive all", Res.drawable.symbol_archive) {},
                 )
             }
         }

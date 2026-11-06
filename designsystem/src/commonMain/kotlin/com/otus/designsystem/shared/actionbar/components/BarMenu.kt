@@ -13,9 +13,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.shared.overlays.components.ContextMenu
-import com.otus.designsystem.shared.overlays.components.MenuAction
 import com.otus.designsystem.shared.overlays.elements.AbovePopup
 import com.otus.designsystem.shared.overlays.elements.PopupAlign
 import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
@@ -28,11 +28,11 @@ import com.otus.designsystem.theme.tokens.overlays.MenuTokens
 internal class BarMenu {
     private var open by mutableStateOf(false)
 
-    fun click(action: BarAction): () -> Unit = click(action.menu, action.onClick)
+    fun click(action: BarAction): () -> Unit = click(action.menu, action.action.onClick)
 
     /** Runs [run], or opens [menu] when it has choices. */
     fun click(
-        menu: List<MenuAction>,
+        menu: List<UiAction>,
         run: () -> Unit = {},
     ): () -> Unit = { if (menu.isEmpty()) run() else open = true }
 
@@ -51,7 +51,7 @@ internal class BarMenu {
     /** [actions] in the open menu, placed as for an action's own. */
     @Composable
     fun Menu(
-        actions: List<MenuAction>,
+        actions: List<UiAction>,
         end: Boolean = false,
     ) {
         if (!open) return
@@ -86,7 +86,17 @@ internal fun Modifier.primaryButton(
 ): Modifier {
     val interactions = remember { MutableInteractionSource() }
     val onClick = menu.click(primary)
-    return semantics { contentDescription = listOfNotNull(primary.label, context?.description).joinToString(", ") }
-        .clickable(interactions, indication = null, enabled = primary.enabled, role = Role.Button, onClick = onClick)
-        .controlPressFeedback(interactions, shape)
+    return semantics {
+        contentDescription =
+            listOfNotNull(
+                primary.action.label,
+                context?.description,
+            ).joinToString(", ")
+    }.clickable(
+        interactions,
+        indication = null,
+        enabled = primary.action.enabled,
+        role = Role.Button,
+        onClick = onClick,
+    ).controlPressFeedback(interactions, shape)
 }
