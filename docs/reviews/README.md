@@ -11,6 +11,7 @@ The ready-for-review prompt uses Claude Opus and posts its findings to the exist
 | Pull request | [pull-request.md](pull-request.md) | One PR or related Meta and Mail PRs, including a stack |
 | Ready for review | [ready-for-review.md](ready-for-review.md) | An Opus review when a Meta or Mail PR leaves draft |
 | Repository | [repository.md](repository.md) | Existing defects and engineering problems across Meta, Mail, or both |
+| Security and protocol | [security.md](security.md) | Security, JMAP RFC conformance, race conditions, and bug-prone code smells |
 | Daily review and fixes | [merged-window.md](merged-window.md) | The last 24 hours of merged changes, issues, fix PRs, and persistent follow-up |
 
 Each prompt requires [review-guide.md](review-guide.md). Keep this directory together. The guide
@@ -97,6 +98,19 @@ VALIDATION: full
 Use `SCOPE: meta` or `SCOPE: mail` for one repository. Set `REFS` to explicit branch names or
 commit SHAs when reviewing work that has not reached the default branch. Uncommitted work is
 excluded unless explicitly requested.
+
+## Run a security and protocol audit
+
+```text
+Read otus-meta/docs/reviews/security.md and follow it, including its required review guide.
+SCOPE: both
+REFS: remote default branch for each selected repository
+VALIDATION: targeted
+AGENTS: 3
+```
+
+Set `FOCUS` to audit only some areas, for example `FOCUS: jmap, races`. `AGENTS` caps the parallel
+review agents; the lead agent verifies every finding they return.
 
 ## Schedule the daily review and fixes
 
