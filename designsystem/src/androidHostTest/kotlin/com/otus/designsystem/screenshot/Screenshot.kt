@@ -19,7 +19,7 @@ import com.otus.designsystem.theme.colors.OtusPalette
 
 private const val SHOT_TAG = "screenshot"
 
-private fun shotPath(name: String) = "src/androidHostTest/screenshots/$name.png"
+internal fun shotPath(name: String) = "src/androidHostTest/screenshots/$name.png"
 
 /**
  * Renders [content] in [palette] on the raised background and compares it with
