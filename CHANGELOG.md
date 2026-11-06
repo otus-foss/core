@@ -2,6 +2,34 @@
 
 ## Unreleased
 
+- Add `json-types` with `UtcDateSerializer` (moved from `jmap`) and the PatchObject path rules
+  `patchPath`, `patchTokens`, and `overlappingPatchPath`, which `jmap` and `jscontact` share.
+  Breaking: import `UtcDateSerializer` and `patchPath` from `com.otus.json.types`. A seconds field
+  such as `:600` no longer reads as a leap second.
+- Add `storage` with `KeyValueStore`, `StringMapStore`, `StoredChoice`, `inMemoryChoice`,
+  `storedName`, and their Android and iOS stores. Breaking: the four `*PreferenceStore`
+  interfaces and their platform stores are gone; the settings states take a `StoredChoice` and
+  extend `StoredChoiceState<T>`. `PushSubscriptions` takes a `StringMapStore`.
+- JMAP: add `JmapConnections.account(login, capability)`, `account(loginId, capability)`,
+  `savedLogins()`, `JmapLoginAccount`, `JmapException.category`, `MethodError.isTemporary`,
+  `jmapCallOr`, `filterCondition`, list forms of `allOf`, `anyOf`, and `noneOf`, and the session's
+  `getBatch`, `setBatch`, `callBatch`, and `maxCallsInRequest`. Breaking: `QueryMethod` and
+  `QueryChangesMethod` take a `JmapFilter`; `allOf` and `anyOf` of one filter return it.
+- Add `LoginLifecycle` in `com.otus.jmap.login`. Breaking: `JmapAccountRepository` takes a list of
+  them instead of `beforeRemove` and `onAccountChanged`, and `AccountService.Mail` is gone.
+- Add `avatar-ui` with the avatar looks (`toChipAvatar`), `OwnAvatarsState`, and the own-avatar
+  editor, moved from `accounts`. Breaking: `AccountSetupScreen` takes `AccountAvatars` and an
+  editor slot, `ConnectedAccountRow` takes `ChipAvatar`s, and `accounts` no longer exposes
+  `avatar`. `ownAddresses` moved to `com.otus.accounts.domain`.
+- Avatars: styles store `AvatarColor` ids such as `blue`; saved design-system names still read.
+  `IconSource` and `avatarOptions` move here from Mail. `JmapContactAvatarSource` and
+  `JmapOwnAvatars` no longer take a `LoginStore`, and `AvatarService` is a `LoginLifecycle`.
+- Contacts: add `cardPatch(before, after)`. Breaking: remove `contactCardPatch`, `ContactCardSort`,
+  `ContactsCapability`, the AddressBook write APIs, `CopyMethod`, the `jmap.sharing` package, and
+  `Card.validate`; see docs/removed-apis.md.
+- dateformat: add `formatNamedDay`, `formatRecentDay`, `shortWeekday`, and `clockTime`; settings
+  adds `rememberDateFormatter` and `LocalDateFormatter`. Breaking: remove `formatIsoDate`.
+
 - Avatars: the module bundles the Public Suffix List, and `PublicSuffixDomainResolver()` reads it
   by default, so apps no longer ship their own copy. A custom loader still works.
 - `LetterIndex` keeps the pressed letter in place: its row opens level with the heading that
