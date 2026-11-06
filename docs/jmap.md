@@ -1,14 +1,14 @@
 # JMAP
 
 The `jmap` module (`com.otus.jmap`, artifact `com.otus:jmap`) is a provider-independent client for
-RFC 8620 (core), with the sharing types of RFC 9670 and login storage. It has no UI and no app
+RFC 8620 (core) and login storage. It has no UI and no app
 code, so Otus Mail and Otus Calendar can both use it. Mail-specific types live in the Mail app.
 Developed and checked against Stalwart. It moved here from otus-mail at version 0.1.0.
 
 ## Module rules
 
 - Kotlin explicit API mode: every public declaration is deliberate. Depends only on Ktor client
-  core, kotlinx.serialization, and coroutines. Apps supply the HTTP engine (OkHttp on Android, Darwin
+  core, kotlinx.serialization, coroutines, and `json-types`. Apps supply the HTTP engine (OkHttp on Android, Darwin
   on iOS).
 - The architecture check enforces: package root `com.otus.jmap`; no Compose or lifecycle; no
   references to `com.otus.mail` or `com.otus.calendar`; no platform APIs in common code. File length,
@@ -30,11 +30,15 @@ Developed and checked against Stalwart. It moved here from otus-mail at version 
   `send { … }` for several results.
 - `JmapConnections(client, logins)`: one connection per saved login; `forget(id)` after it changes.
   Credential loading and cache insertion share the invalidation lock, including concurrent first access.
+  `account(login, capability)` returns a `JmapLoginAccount` (login, connection, session, and the
+  account id for that capability) and throws `Unsupported` when no account offers it;
+  `account(loginId, capability)` does the same for a saved login, or returns null once it was
+  removed. `savedLogins()` reads the logins off the main thread.
 - `JmapResponse[call]` decodes the explicit response and validates its method name.
   `responses(call)` exposes every response in wire order, including implicit calls and errors;
   an implicit failure does not replace the explicit method's result.
 - Typed methods for any data type (RFC 8620, section 5): `GetMethod`, `QueryMethod`, `ChangesMethod`,
-  `QueryChangesMethod`, `SetMethod`, and `CopyMethod`, with `JmapType(name, capability, serializer)`.
+  `QueryChangesMethod`, and `SetMethod`, with `JmapType(name, capability, serializer)`.
   Result references (section 3.7) chain calls in one request:
   `JmapIds.Result(query.resultOf("/ids"))`. Subclass `JmapMethod` for anything else.
 - `QueryChangesMethod(type, accountId, sinceQueryState, filter, sort, maxChanges, extra)` updates a
@@ -43,53 +47,40 @@ Developed and checked against Stalwart. It moved here from otus-mail at version 
   Splice the removed ids out, then the added ids in, lowest index first. `extra` carries `upToId`
   and `calculateTotal`. `cannotCalculateChanges` and `tooManyChanges` arrive as `MethodError`. The
   RFC's own example answers `"added": null`, which reads as an empty list.
-- `CopyMethod(type, fromAccountId, accountId, create, onSuccessDestroyOriginal, ifFromInState,
-  ifInState)` copies objects into another account (section 5.4), the only way to move them between
-  accounts. Each `create` entry names its source object's `id`. `CopyResult` keeps each copy's
-  outcome, and `createdId` gives the copy's new id. With `onSuccessDestroyOriginal`, the server
-  destroys the originals through an implicit `/set` in the from account. Read that response from
-  `JmapResponse.responses(call)` and decode it with a `SetMethod` that destroys the source ids.
 - `JmapFilter` is the `filter` of a `/query` or `/queryChanges` (section 5.5): a type-specific
   `JmapFilter.Condition`, or a `JmapFilter.Operator` that combines filters with `AND`, `OR`, or
-  `NOT`. `allOf`, `anyOf`, `noneOf`, `and`, and `or` build operators, and a chain such as
-  `a and b and c` stays one flat `AND`. Send `toJson()`. A condition with an `operator` property
-  throws.
+  `NOT`. `filterCondition(name, value)` builds a condition. `allOf`, `anyOf`, and `noneOf` take
+  filters or a list, `and` and `or` chain them, and a chain such as `a and b and c` stays one flat
+  `AND`. `allOf` and `anyOf` of a single filter return it unchanged, which means the same.
+  `QueryMethod` and `QueryChangesMethod` take a `JmapFilter`. A condition with an `operator`
+  property throws.
 - `jmapPatch { set(value, "keywords", "chopin"); remove("name") }` builds a `/set` PatchObject
-  (section 5.3). Each path segment escapes `~` and `/` as JSON Pointer does, and `patchPath` writes
-  one such key. Two paths where one is a prefix of the other throw, because the server would answer
-  `invalidPatch`. `include` adds the entries of another patch.
+  (section 5.3). Each path segment escapes `~` and `/` as JSON Pointer does, and `patchPath` from
+  `json-types` writes one such key. Two paths where one is a prefix of the other throw
+  (`overlappingPatchPath`), because the server would answer `invalidPatch`. `jscontact` reads and
+  checks its patches with the same `json-types` rules. `include` adds the entries of another patch.
 - `JmapSort` takes a `collation`, an RFC 4790 algorithm from the core capability's
   `collationAlgorithms`. It is sent only when set.
 - `QueryResult.canCalculateChanges` says whether `/queryChanges` can follow the query.
   `QueryResult.limit` holds the limit the server applied when it set or changed one, and callers
   page by that size. Paging arguments such as `position`, `anchor`, and `calculateTotal` go in
   `extra`, as [decision 0016](decisions/0016-contacts-modules.md) explains.
-- `JmapSession.maxObjectsInGet` reads the most objects one `/get` returns (section 2). It is null
-  when the server does not say or sends a malformed value.
-- `UtcDateSerializer` reads and writes a UTCDate (section 1.4) as a `kotlin.time.Instant`. It
-  writes the `Z` form with a fraction of a second only when it is not zero, without trailing
-  zeros, such as `2014-10-30T06:12:00.5Z`. It reads any RFC 3339 offset. `Instant` holds neither a
-  leap second nor more than nine fraction digits, so `23:59:60` reads as `23:59:59.999999999`, and
-  reading drops the digits after the ninth. A year outside 0000 to 9999 fails in both directions,
-  because RFC 3339 cannot write it. `jscontact` writes a UTCDateTime the same way, and the
-  sharing types and `ContactCardFilter` use this serializer for their dates.
-- Sharing (`com.otus.jmap.sharing`, RFC 9670): `PrincipalType` and `ShareNotificationType` are data
-  types for the standard methods, under `JmapCapability.PRINCIPALS`. A `Principal` has an open
-  `PrincipalKind`. Its `accounts` lists every account with that Principal's data that the user
-  may access, including accounts the session leaves out because the user subscribes to nothing in
-  them (sections 1.4 and 2). It is null when there are none. `PrincipalFilter` and
-  `ShareNotificationFilter` build query conditions, and `ShareNotificationSort.created` is the one
-  sort every server supports. RFC 9670 defines no sort for `Principal/query`. A ShareNotification
-  can only be destroyed, which dismisses it. `JmapAccount.principals` reads
-  `currentUserPrincipalId` (section 1.5.1), and `JmapAccount.principalOwner` reads the Principal
-  that owns an account and the account that holds it (section 1.5.2). Both read a malformed value
-  as null. Each shareable data type keeps its own `shareWith` rights, such as `AddressBookRights`
-  in [`jmap-contacts`](contacts.md).
-- A `Principal/get` or `ShareNotification/get` with `properties` returns only those properties and
-  the id (RFC 8620, section 5.1). `Principal.type` and the `created`, `changedBy`, `objectType`,
-  `objectAccountId`, and `objectId` of a `ShareNotification` are therefore nullable, although
-  RFC 9670 requires them, and such a partial result decodes with null for the ones it leaves out.
-  Other left-out properties take their defaults, such as an empty `name`.
+- `JmapSession.maxObjectsInGet`, `maxObjectsInSet`, and `maxCallsInRequest` read the core limits
+  (section 2). Each is null when the server does not say or sends a malformed value.
+  `getBatch`, `setBatch`, and `callBatch` are the sizes to send: the limit, at most 256 objects or
+  16 calls, which is also the default without one.
+- `UtcDateSerializer` (in `json-types`) reads and writes a UTCDate (section 1.4) as a
+  `kotlin.time.Instant`. It writes the `Z` form with a fraction of a second only when it is not
+  zero, without trailing zeros, such as `2014-10-30T06:12:00.5Z`. It reads any RFC 3339 offset.
+  `Instant` holds neither a leap second nor more than nine fraction digits, so `23:59:60` reads as
+  `23:59:59.999999999`, and reading drops the digits after the ninth. A seconds field of three
+  digits, such as `:600`, is malformed. A year outside 0000 to 9999 fails in both directions,
+  because RFC 3339 cannot write it. `jscontact` and `ContactCardFilter` use the same serializer.
+- Failures: `JmapException.category` reads any failure as one `JmapErrorCategory` (`Auth`,
+  `Permission`, `Credentials`, `Offline`, `Unsupported`, or `Server`), so apps map it once.
+  `MethodError.isTemporary` says whether `serverUnavailable`, `serverFail`, or `serverPartialFail`
+  may pass on a later try. `jmapCallOr(fallback) { … }` returns the fallback when the server fails
+  or the saved logins cannot be read, for optional work such as a count.
 - `SetMethod` sends creations, patches, and destructions as JSON, with optional `ifInState` and
   type-specific arguments. `SetResult` keeps each object's outcome; `SetError` carries `type`,
   `description`, `properties`, and `existingId`. Refer to an object created earlier in the same
@@ -129,11 +120,12 @@ Developed and checked against Stalwart. It moved here from otus-mail at version 
   such as the core limits (`maxObjectsInSet`, `maxSizeUpload`), the mail limits, or the supported Sieve
   extensions. Apps decode the parts they need; malformed values read as unknown.
 - Before sending, the client checks every capability against the session and each account a call
-  touches, both accounts for a `/copy`. It throws `Unsupported` instead of sending a request the
-  server cannot serve.
+  touches. It throws `Unsupported` instead of sending a request the server cannot serve.
 - Logins (`com.otus.jmap.login`): `JmapLogin` identifies a server and user, not a JMAP account.
-  Each app resolves its own account per capability with `JmapSession.accountFor`, so one login can
-  serve mail and calendars. `LoginStore` keeps secrets apart from the list.
+  Each app resolves its own account per capability with `JmapConnections.account`, so one login can
+  serve mail and calendars. `LoginStore` keeps secrets apart from the list. `LoginLifecycle` is what
+  follows a login's life: `connected`, `removing`, `removeFailed`, and `removed`; see
+  [shared features](shared-features.md#accounts).
 
 ## Security model
 
@@ -162,7 +154,6 @@ only), OAuth, and sharing logins between the two installed apps.
 | 5.1, 5.2, 5.5 | `/get`, `/changes`, `/query` | `JmapRequestTest`, Mail tests |
 | 5.3 | `/set` creations, patches, destructions, `ifInState`, creation references, per-object errors and outcome validation | `JmapSetTest`, `JmapSetValidationTest` |
 | 5.3 | PatchObjects with escaped JSON Pointer keys; overlapping paths rejected before sending | `JmapPatchTest` |
-| 5.4 | `/copy` between two accounts, the capability checked in both, one outcome per copy, and the implicit destroy of the originals | `JmapCopyTest` |
 | 5.5 | FilterOperator trees, Comparator `collation`, `canCalculateChanges`, and the server's `limit` | `JmapFilterTest`, `JmapQueryTest` |
 | 5.6 | `/queryChanges` with the cached filter and sort, `maxChanges`, and `extra`; `added` in index order | `JmapQueryChangesTest` |
 | 2 | Blob endpoints on another origin are approved at sign-in and fail only blob calls until then | `JmapDiscoveryTest`, `JmapBlobRecoveryTest`, `JmapAccountRepositoryTest` in `accounts` |
@@ -170,32 +161,20 @@ only), OAuth, and sharing logins between the two installed apps.
 | 6.2 | Bounded authenticated blob downloads through the advertised URI template, with trusted-origin checks, `BlobNotFound` for a 404, and no whole-call time limit; streamed downloads with the same checks | `JmapDownloadTest`, `JmapDownloadStreamTest`, `JmapBlobRecoveryTest`, `JmapTimeoutTest` |
 | RFC 7617 | Basic credentials; a colon in the username is rejected | `JmapLoginTest` |
 | 1.3, 5.5 | Query counters support the full unsigned 53-bit range | `JmapDecodingTest` |
-| 1.4 | UTCDate written in its `Z` form without trailing fraction zeros; any RFC 3339 offset, a leap second, and a fraction longer than nine digits read; years outside 0000 to 9999 refused | `UtcDateSerializerTest` |
+| 1.4 | UTCDate written in its `Z` form without trailing fraction zeros; any RFC 3339 offset, a leap second, and a fraction longer than nine digits read; a three-digit seconds field and years outside 0000 to 9999 refused | `UtcDateSerializerTest` in `json-types` |
 | 2 | `maxObjectsInGet` from the core capability | `JmapSessionLimitsTest` |
 | 7.1, 7.2 | `StateChange` and `PushVerification` messages; `PushSubscription/get` and `/set` without an account or state; https push URLs | `JmapPushTest` |
 | RFC 9749 | The VAPID public key from the session | `JmapPushTest` |
-| RFC 9670, 1.4, 2 | `Principal/get` and `/query`, an open Principal `type`, the `accounts` a user may access, and a partial `/get` without `type` | `PrincipalTest` |
-| RFC 9670, 1.5 | The `principals` and `principals:owner` account capabilities | `SharingCapabilitiesTest` |
-| RFC 9670, 2.4.1 | `Principal/query` conditions, alone or combined | `PrincipalTest` |
-| RFC 9670, 3 | ShareNotifications, a partial `/get`, their filter with UTCDates, the sort by `created`, and dismissal by destroy | `ShareNotificationTest` |
-| RFC 9670, 4 | `shareWith` patches on AddressBooks | `AddressBookPatchTest`, `AddressBookSetTest` in `jmap-contacts` |
-
-`JmapPatchTest`, `JmapCopyTest`, `JmapFilterTest`, `JmapQueryTest`, `JmapQueryChangesTest`,
-`UtcDateSerializerTest`, `JmapSessionLimitsTest`, and the three sharing tests are new on
-`feat/jmap-contacts` and have not run yet.
-
-Not implemented yet: `destroyFromIfInState` on `/copy`, `Blob/copy` (section 6.3), Blob/upload
-(RFC 9404), the EventSource stream (section 7.3), and request limits such as
-`maxCallsInRequest`. `maxObjectsInSet` and `maxObjectsInGet` are read but not enforced, and Mail
-batches large moves within `maxObjectsInSet`. For RFC 9670, there is no typed `Principal/set`
-(send a `SetMethod` with `PrincipalType`), decoding does not check a Principal's `email` or
-`timeZone`, and only AddressBooks have typed `shareWith` rights.
+Not implemented: `/copy` and the RFC 9670 sharing types, removed on 2026-11-06 for having no
+caller (see [removed APIs](removed-apis.md)), `Blob/copy` (section 6.3), Blob/upload (RFC 9404),
+and the EventSource stream (section 7.3). The client does not enforce the core limits; callers
+size their calls with `getBatch`, `setBatch`, and `callBatch`.
 
 ## Use in the apps
 
 Apps depend on `com.otus:jmap` and define their own data types with `JmapType` and the matching
 capability, such as `MailboxType` in Mail or a `CalendarEvent` type in Calendar, and resolve the
-account with `accountFor`. Each installed app passes its own storage names to `AndroidLoginStore`
+account with `JmapConnections.account`. Each installed app passes its own storage names to `AndroidLoginStore`
 and `IosLoginStore`, so apps never share logins. Mail keeps the names of its first release
 (`otus_accounts` and `otus.account.credentials` on Android, `otus.accounts` and
 `otus.mail.account` on iOS) so earlier accounts keep working.

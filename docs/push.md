@@ -30,11 +30,12 @@ storage keys, and platform delivery services keep their formats and identities.
     subscriptions, sends verification codes, renews verified subscriptions past half their granted
     lifetime for another 7 days, and deletes them when the endpoint is cleared.
   - `forget(loginId)` deletes a login's subscription and record. Call it before the login's
-    credentials are removed; `JmapAccountRepository` takes it as `beforeRemove`.
+    credentials are removed, from the `removing` step of a `LoginLifecycle` the app registers with
+    `JmapAccountRepository`.
   - `status()` reports `Off`, `Waiting`, `Active`, or `Refused` per login, without waiting for a
     running `sync`.
-- `PushStateStore` keeps each login's record as text in app-private storage. Records hold no
-  credentials.
+- A `StringMapStore` from `com.otus:storage` keeps each login's record as text in app-private
+  storage. Records hold no credentials.
 
 ## Behavior
 

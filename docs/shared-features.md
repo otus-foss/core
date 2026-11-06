@@ -25,30 +25,50 @@ is, draws its title, icon, value, and switch dimmed, and ignores taps; give it a
 says what it waits on. Prefer it to hiding the row, so the page keeps its shape and search still
 finds the setting.
 
-The app supplies its own `DateFormatPreferenceStore`. Selection calls the store's `write` before
-updating the displayed preference, so a `write` that throws leaves the shown choice unchanged.
-`write` returns nothing, though, and the provided stores save in the background:
-`AndroidDateFormatPreferenceStore` with `SharedPreferences.apply()` and
-`IosDateFormatPreferenceStore` with `NSUserDefaults`. A failed save on disk is never reported, so
-the new choice shows as saved and may be lost after a restart. `AnimationSettingsState` and the
-animation stores work the same way.
+### Stored choices
+
+The theme, app icon, animation speed, and date format are each a `StoredChoiceState<T>`:
+`ThemeSettingsState`, `AppIconSettingsState`, `AnimationSettingsState`, and
+`DateFormatSettingsState`. Each takes a `StoredChoice` from `com.otus:storage`, one text value
+under a key in a `KeyValueStore`. The app chooses the file and key; `SharedPreferenceValues` keeps
+them in Android shared preferences and `UserDefaultsValues` in iOS user defaults. Previews and
+tests pass `inMemoryChoice()`.
+
+Selection writes the choice before showing it, so a store that throws leaves the shown choice
+unchanged. The platform stores save in the background, with `SharedPreferences.apply()` and
+`NSUserDefaults`, so a failed save on disk is never reported, and the new choice may be lost after
+a restart.
+
+`com.otus:storage` also holds `StringMapStore`, a map read and replaced whole, with
+`PreferenceMap` and `UserDefaultsMap`, and `storedName`, the SHA-256 name of a value for a file.
 The appearance screen offers date formatting as a flat `SettingRow` with the pattern in a
 `ValueButton`; tapping it opens a `ChoiceSheet`. Its trailing `content` slot places app-owned
 sections below it, such as Mail's swipe actions. Its Look section starts with a Theme row that
 shows the theme's name and accent and opens `ThemeSettingsScreen`, and an app adds its own rows
 to the section through the `look` slot. `ThemeSettingsScreen` shows the app's preview, the four
 themes as cards, the accent presets with a custom color sheet, and the three accent shades. A
-choice applies at once and is written to the app's `ThemePreferenceStore` first. Pass
+choice applies at once and is written to the theme's `StoredChoice` first. Pass
 `ThemeSettingsState.palette` to `OtusTheme`.
 
 ## Accounts
 
 `com.otus:accounts` owns account models/contracts, JMAP server-address parsing,
 `JmapAccountRepository`, `AccountsState`, `AccountSetupScreen`, and `ConnectedAccountRow`.
-The app supplies its login store, transport, connection cache, coroutine scope, account-change
-callbacks, and required `AccountService`. Screen titles are app supplied.
+The app supplies its login store, transport, connection cache, coroutine scope, required
+`AccountService`, and the `LoginLifecycle`s that follow each login. Screen titles are app
+supplied.
 
-Mail uses `AccountService.Mail`. Setup checks the advertised account capability and verifies
+`LoginLifecycle` (in `jmap`) has four steps, each a no-op unless overridden: `connected` after a
+login is saved, `removing` while its credentials still exist, `removeFailed` when a removal stopped
+and the login is still saved, and `removed` once it is gone. A `removing` that throws stops the
+removal. Mail registers its cache, waiting changes, attachments, device data and push, and the
+avatar service, so no wrapper repository has to undo a failed removal.
+
+`AccountSetupScreen` takes the avatars it shows as an `AccountAvatars` and the avatar editor as a
+slot, so `accounts` does not depend on `avatar`. Mail fills both from `avatar-ui`.
+
+Mail defines its service with `JmapCapability.MAIL` and `Mailbox`. Setup checks the advertised
+account capability and verifies
 `Mailbox/get` before saving credentials, following
 [RFC 8620](https://www.rfc-editor.org/rfc/rfc8620.html#section-2) and
 [RFC 8621](https://www.rfc-editor.org/rfc/rfc8621.html#section-2).
@@ -71,7 +91,8 @@ different submission account or requires submission to connect for mail. Rows sh
 addresses below the account name, omit addresses already used as the name or sign-in, and retain
 wildcard identities such as `*@example.org`. Receiving aliases without an identity are not exposed
 by this method. Addresses refresh when accounts reload and are not persisted. A network, credential,
-or identity error falls back to the saved sign-in and server. Other services skip identity discovery.
+or identity error falls back to the saved sign-in and server. A service whose account cannot submit
+mail finds no identities.
 Each saved login's server is asked at the same time, so the list waits only for the slowest one and
 keeps the saved order.
 

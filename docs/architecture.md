@@ -39,9 +39,10 @@ sets. Keep this build structure and organize responsibilities beneath the module
 
 The first modules move existing code. `jmap` moved in version 0.1.0; `designsystem`, `dateformat`,
 and `avatar` moved from Mail in 0.2.0. Version 0.3.0 added `accounts` and `settings`,
-plus the historical date-range picker and avatar-stack pill in `designsystem`. Mail consumes all
-nine modules. Calendar consumes `avatar`, `dateformat`, `designsystem`, and `settings`. Both
-apps build Meta from source; see [consuming](consuming.md).
+plus the historical date-range picker and avatar-stack pill in `designsystem`. Mail consumes every
+module. Calendar consumes `dateformat`, `designsystem`, and `settings` (with `storage`), and
+declares `avatar` without using it yet. Both apps build Meta from source; see
+[consuming](consuming.md).
 
 | Order | Module | Source | Notes |
 | --- | --- | --- | --- |
@@ -52,8 +53,11 @@ apps build Meta from source; see [consuming](consuming.md).
 | 5 | `accounts` | Mail account setup | Moved in 0.3.0. See decision 0007. |
 | 6 | `settings` | Mail settings | Moved in 0.3.0; both apps consume it. See decision 0007. |
 | 7 | `jmap-push` | New | JMAP push subscriptions for Mail, and Calendar later. See [push](push.md) and decision 0015. |
-| 8 | `jscontact` | New | JSContact cards (RFC 9553), consumed by Mail. Depends only on kotlinx.serialization. See [contacts](contacts.md) and decision 0016. |
+| 8 | `jscontact` | New | JSContact cards (RFC 9553), consumed by Mail. Depends only on `json-types`. See [contacts](contacts.md) and decision 0016. |
 | 9 | `jmap-contacts` | New | JMAP for Contacts (RFC 9610) on `jmap` and `jscontact`, consumed by Mail. See [contacts](contacts.md) and decision 0016. |
+| 10 | `json-types` | `jmap` and `jscontact` | RFC 3339 dates and PatchObject paths, the RFC 8620 conventions RFC 9553 reuses; only kotlinx.serialization, so `jscontact` needs no networking. See [JMAP](jmap.md). |
+| 11 | `storage` | Mail `core/preferences`, the four `*PreferenceStore`s, the stored-name digest | Key-value and string-map stores with Android and iOS implementations, `StoredChoice`, and `storedName`. See [shared features](shared-features.md#stored-choices). |
+| 12 | `avatar-ui` | `accounts` presentation | Avatar looks and the own-avatar editor, so `accounts` needs no `avatar`. See [avatars](avatar.md). |
 
 Later modules come from the roadmap issues once their APIs exist in one app and the second app
 needs them. Candidates are storage (SQLDelight drivers, migrations, blob files), sync cursors,
@@ -78,7 +82,8 @@ The checker in `tools/check_architecture.py` enforces these rules at source leve
   these UI groups. The module may format dates through `dateformat`, but cannot depend on account or
   settings features, protocol clients, networking, or storage. See
   [decision 0018](decisions/0018-ui-domain-packages.md).
-- The shared `accounts` and `settings` features may use Compose in `presentation` only.
+- The shared `accounts`, `avatar-ui`, and `settings` features may use Compose in `presentation`
+  only.
   Composables live in `presentation/components` or `presentation/screens`, with screen files
   named `*Screen.kt`. Domain cannot depend on data, presentation, or the design system.
   Presentation uses domain contracts, never data implementations or protocol clients.
@@ -115,12 +120,16 @@ serves all three repositories.
 
 `accounts` owns JMAP account contracts, the verifying repository, screen state, connected-account
 rows, and the setup screen. The app supplies a login store, transport, coroutine scope, refresh
-callbacks, and the required `AccountService`. Mail chooses the RFC 8621 mail capability and
-`Mailbox/get`; the library does not assume that another service is advertised.
+callbacks, the required `AccountService`, the `LoginLifecycle`s that follow each login, and the
+avatars the setup screen shows (`AccountAvatars` and an editor slot). Mail defines its service
+with the RFC 8621 mail capability and `Mailbox/get`; the library assumes no service.
+
+`avatar-ui` owns how avatars look on the design system and the own-avatar editor. It takes each
+account as an `OwnAccount` value, so it does not depend on `accounts`.
 
 `settings` owns the settings list and its search, Appearance screen, date-format state, and
 examples. The app builds a `settingsIndex` of its pages and settings, each page with a callback
-that opens it on a found setting, and supplies the date-format preference store and navigation.
+that opens it on a found setting, and supplies the `StoredChoice` of each choice and navigation.
 Shared settings do not embed Mail folder or rule destinations.
 
 Both modules retain `domain`, `data`, and `presentation` boundaries where used. Their screens
