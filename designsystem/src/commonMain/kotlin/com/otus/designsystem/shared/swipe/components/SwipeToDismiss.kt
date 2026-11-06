@@ -92,7 +92,7 @@ public fun SwipeToDismiss(
                 enabled,
                 onDragStarted = { settle?.cancel() },
                 onDragStopped = {
-                    val dismissing = abs(offset) >= width * ToastTokens.DISMISS_FRACTION
+                    val dismissing = DismissRule(width * ToastTokens.DISMISS_FRACTION).dismisses(abs(offset), 0f)
                     settle =
                         scope.launch {
                             if (dismissing) {
@@ -105,7 +105,7 @@ public fun SwipeToDismiss(
                                     onDismiss = { currentOnDismiss() },
                                 )
                             } else {
-                                slide(offset, 0f, MotionCurve.Standard, motionScale) { offset = it }
+                                settleBack(offset, motionScale) { offset = it }
                             }
                         }
                 },

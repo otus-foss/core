@@ -1,6 +1,5 @@
 package com.otus.designsystem.shared.panels.components
 
-import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
@@ -45,9 +44,10 @@ import androidx.compose.ui.util.lerp
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
+import com.otus.designsystem.shared.swipe.components.DismissRule
+import com.otus.designsystem.shared.swipe.components.settleBack
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.LocalMotionScale
-import com.otus.designsystem.theme.motion.Motion
 import com.otus.designsystem.theme.motion.MotionCurve
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
@@ -194,14 +194,11 @@ private class SheetLift(
 
     fun settle(velocity: Float) {
         returning?.cancel()
-        if (lift < -closeDistance || (lift < 0f && velocity < -closeFling)) {
+        if (DismissRule(closeDistance, closeFling).dismisses(-lift, -velocity)) {
             onDismiss()
             lift = 0f
         } else {
-            returning =
-                scope.launch {
-                    animate(lift, 0f, animationSpec = Motion.tween(scale = motionScale)) { value, _ -> lift = value }
-                }
+            returning = scope.launch { settleBack(lift, motionScale) { lift = it } }
         }
     }
 

@@ -19,6 +19,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Velocity
+import com.otus.designsystem.shared.swipe.components.DismissRule
 import com.otus.designsystem.theme.motion.Motion
 import com.otus.designsystem.theme.motion.MotionCurve
 import com.otus.designsystem.theme.motion.MotionSpeed
@@ -85,8 +86,8 @@ internal class SheetPosition(
         close: () -> Unit,
     ) {
         if (closing) return
-        val dismiss = velocity > flingVelocity || hidden > ChoiceSheetTokens.DISMISS_FRACTION
-        if (dismiss) close() else show(MotionCurve.Standard)
+        val rule = DismissRule(height * ChoiceSheetTokens.DISMISS_FRACTION, flingVelocity)
+        if (rule.dismisses(hidden * height, velocity)) close() else show(MotionCurve.Standard)
     }
 
     private suspend fun animateTo(
