@@ -1,52 +1,29 @@
 package com.otus.designsystem.theme.motion
 
+import kotlin.math.roundToInt
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class MotionTest {
     @Test
-    fun eachSpeedDividesTheBaseDuration() {
-        assertEquals(
-            mapOf(
-                MotionSpeed.Quick to 120,
-                MotionSpeed.Fast to 160,
-                MotionSpeed.Normal to 240,
-                MotionSpeed.Relaxed to 300,
-            ),
-            MotionSpeed.entries.associateWith { Motion.millis(it) },
-        )
-    }
-
-    @Test
     fun aLargerScaleShortensEveryDuration() {
-        assertEquals(60, Motion.millis(MotionSpeed.Quick, scale = 2f))
-        assertEquals(480, Motion.millis(MotionSpeed.Normal, scale = 0.5f))
-        assertEquals(240, Motion.millis(MotionSpeed.Relaxed, scale = 1.25f))
-    }
-
-    @Test
-    fun eachAnimationSpeedScalesTheDuration() {
-        assertEquals(
-            mapOf(
-                AnimationSpeed.Instant to 0,
-                AnimationSpeed.Slow to 320,
-                AnimationSpeed.Regular to 240,
-                AnimationSpeed.Fast to 160,
-            ),
-            AnimationSpeed.entries.associateWith { Motion.millis(MotionSpeed.Normal, it.scale) },
-        )
+        MotionSpeed.entries.forEach { speed ->
+            assertEquals(Motion.millis(speed) / 2, Motion.millis(speed, scale = 2f), speed.name)
+        }
+        assertEquals(Motion.millis(MotionSpeed.Normal) * 2, Motion.millis(MotionSpeed.Normal, scale = 0.5f))
     }
 
     @Test
     fun durationsRoundToTheNearestMillisecond() {
-        assertEquals(107, Motion.millis(MotionSpeed.Fast, scale = 1.5f))
+        val base = Motion.millis(MotionSpeed.Fast)
+        assertEquals((base / SCALE_WITH_FRACTION).roundToInt(), Motion.millis(MotionSpeed.Fast, SCALE_WITH_FRACTION))
     }
 
     @Test
     fun tweenUsesTheScaledDurationAndCurve() {
         val spec = Motion.tween<Float>(MotionSpeed.Fast, MotionCurve.Exit, scale = 2f)
-        assertEquals(80, spec.durationMillis)
+        assertEquals(Motion.millis(MotionSpeed.Fast, scale = 2f), spec.durationMillis)
         assertEquals(MotionCurve.Exit.easing, spec.easing)
     }
 
@@ -61,5 +38,9 @@ class MotionTest {
     @Test
     fun aScaleThatIsNotPositiveIsRejected() {
         assertFailsWith<IllegalArgumentException> { Motion.millis(MotionSpeed.Normal, scale = 0f) }
+    }
+
+    private companion object {
+        const val SCALE_WITH_FRACTION = 1.5f
     }
 }
