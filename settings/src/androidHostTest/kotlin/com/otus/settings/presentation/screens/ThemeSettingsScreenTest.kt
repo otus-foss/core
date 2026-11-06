@@ -44,7 +44,7 @@ class ThemeSettingsScreenTest {
         clickButton("Done")
         compose.onNodeWithContentDescription("Hue").assertDoesNotExist()
         assertEquals(Color(0xFF101828), state.choice.customColors[ThemeColor.Page])
-        compose.onNodeWithText("Made from Otus").assertExists()
+        compose.onNodeWithText("Custom").assertExists()
     }
 
     @Test
