@@ -14,9 +14,24 @@ internal object LetterIndexTokens {
     /** The share of [motionBlur] a letter also blurs sideways, so the blur reads as vertical motion. */
     const val SIDEWAYS_BLUR: Float = 0.1f
 
-    /** The tallest a letter's row grows; with many letters the rows shrink to fit the screen. */
+    /** A letter's row; with more letters than fit, the column scrolls instead of shrinking them. */
     val rowHeight: Dp = 48.dp
+
+    /** The gap above and below the highlight behind the current letter, inside its row. */
+    val highlightInset: Dp = 4.dp
 
     /** The letter's column, wider than any letter, so every count starts at the same edge. */
     val letterColumn: Dp = 28.dp
+
+    /** How far from a heading's start edge a press opens the index; further along it takes a long press. */
+    val handleWidth: Dp = 64.dp
+
+    /** How many rows deep the edge zones are where a held finger scrolls an overflowing column. */
+    const val EDGE_ROWS: Float = 1.5f
+
+    /** How many rows a second the column scrolls with the finger deepest in an edge zone. */
+    const val EDGE_ROWS_PER_SECOND: Float = 14f
+
+    /** How long after the list stops scrolling a press on a heading still counts as part of the scroll. */
+    const val SCROLL_SETTLE_MILLIS: Long = 300
 }

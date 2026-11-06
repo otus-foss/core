@@ -12,13 +12,15 @@ import com.otus.designsystem.theme.colors.toHex
 /**
  * Stores a choice as its built-in theme and accent, then the selected custom theme, each custom
  * theme as its number and the theme it was made from, its name with spaces escaped, and each
- * changed color, such as `light #2383E2 custom=1 1:ink 1:name=Night%20ink 1:page=#101011`.
+ * changed color, such as `light #2383E2 custom=1 1:ink 1:name=Night%20ink 1:page=#101011`. A
+ * `system` part selects the device's colors, with the built-in theme as the fallback where it has none.
  */
 internal fun ThemeChoice.encode(): String =
     buildList {
         add(base.name.lowercase())
         add(accent.toHex())
         if (customId != null) add("$SELECTED$customId")
+        if (systemSelected) add(SYSTEM)
         customThemes.forEach { theme ->
             add("${theme.id}:${theme.base.name.lowercase()}")
             val name = theme.name
@@ -43,6 +45,7 @@ internal fun decodeThemeChoice(value: String): ThemeChoice {
         accent = parts.getOrNull(1)?.let(::parseHexColor)?.let(AccentPreset::current) ?: default.accent,
         customThemes = themes,
         customId = selectedThemeId(rest, themes),
+        systemSelected = SYSTEM in rest,
     )
 }
 
@@ -93,3 +96,4 @@ private val escapes = Regex("%2[05]")
 
 private const val SELECTED = "custom="
 private const val NAME = "name="
+private const val SYSTEM = "system"
