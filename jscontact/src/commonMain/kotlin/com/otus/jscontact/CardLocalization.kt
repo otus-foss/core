@@ -2,7 +2,6 @@ package com.otus.jscontact
 
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.jsonObject
 
 /**
  * Finds the localization for [language] and applies it, see [Card.localized]. An exact key wins over one
@@ -32,7 +31,7 @@ internal fun Card.localizedWith(
     require(FILLED_IN_BY_DECODING.none { patch[it] is JsonNull }) {
         "The \"$tag\" localization removes a mandatory property (RFC 9553, sections 1.4.3 and 2.1)"
     }
-    val copy = JsContactJson.encodeToJsonElement(Card.serializer(), this).jsonObject - LOCALIZATIONS
+    val copy = toJsonObject() - LOCALIZATIONS
     return JsContactJson
         .decodeFromJsonElement(Card.serializer(), JsContactPatch.apply(JsonObject(copy), patch))
         .copy(language = tag)

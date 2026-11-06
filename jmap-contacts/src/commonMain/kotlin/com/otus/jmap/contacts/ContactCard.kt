@@ -3,10 +3,9 @@ package com.otus.jmap.contacts
 import com.otus.jmap.JmapCapability
 import com.otus.jmap.JmapType
 import com.otus.jscontact.Card
-import com.otus.jscontact.JsContactJson
 import com.otus.jscontact.cardPropertyNames
+import com.otus.jscontact.toJsonObject
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.jsonObject
 
 /**
  * The `ContactCard` data type (RFC 9610, sections 3 and 7.3): a JSContact [Card] with the JMAP
@@ -38,5 +37,3 @@ public fun Card.toCreation(): JsonObject {
     }
     return JsonObject(toJsonObject() - "id")
 }
-
-internal fun Card.toJsonObject(): JsonObject = JsContactJson.encodeToJsonElement(Card.serializer(), this).jsonObject

@@ -45,7 +45,7 @@ public class JmapClient(
      * [name] fills the template's `{name}`, the file name a server gives in `Content-Disposition`;
      * it defaults to `download`. A blob the server does not have throws [JmapException.BlobNotFound].
      */
-    public suspend fun download(
+    internal suspend fun download(
         session: JmapSession,
         auth: JmapAuth,
         accountId: String,
@@ -57,7 +57,7 @@ public class JmapClient(
         JmapDownloads(http, urls, policy).download(session, auth, accountId, blobId, mediaType, maxBytes, name)
 
     /** Authenticated blob upload (RFC 8620, section 6.1), within the server's `maxSizeUpload`. */
-    public suspend fun upload(
+    internal suspend fun upload(
         session: JmapSession,
         auth: JmapAuth,
         accountId: String,

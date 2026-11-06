@@ -1,6 +1,7 @@
 package com.otus.jmap.contacts
 
 import com.otus.jscontact.Card
+import com.otus.jscontact.toJsonObject
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 

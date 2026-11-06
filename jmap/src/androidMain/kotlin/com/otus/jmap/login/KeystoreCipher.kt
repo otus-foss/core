@@ -44,10 +44,8 @@ internal class KeystoreCipher(
             // AndroidKeyStore reports some key failures outside GeneralSecurityException.
             LoginSecret.Unreadable(error)
         } catch (error: IOException) {
-            // KeyStore.load reads the keystore.
             LoginSecret.Unreadable(error)
         } catch (error: IllegalArgumentException) {
-            // Malformed Base64 in storage.
             LoginSecret.Unreadable(error)
         }
     }
