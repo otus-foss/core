@@ -11,7 +11,6 @@ internal object LabelTokens {
     public val horizontalPadding: Dp = 8.dp
     public val iconSize: Dp = 14.dp
     public val iconGap: Dp = 4.dp
-    public val spacing: Dp = 6.dp
     public val textSize: TextUnit = 12.sp
 
     // A count pill, such as the number of mails in a conversation.

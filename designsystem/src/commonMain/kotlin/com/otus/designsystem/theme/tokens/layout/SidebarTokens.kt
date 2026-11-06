@@ -18,7 +18,6 @@ internal object SidebarTokens {
 
     /** The expand button at the end of a folder row with subfolders. */
     val expandButton = 32.dp
-    val headingChevron = 16.dp
 
     /** Headings, counts, and the subtitle under the title. */
     val detailSize = TypeScale.detail

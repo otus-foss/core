@@ -16,7 +16,6 @@ public object PanelTokens {
     public val panelInset: Dp = 8.dp
     public val headerHeight: Dp = Sizes.touchTarget + panelInset * 2
     public val panelRadius: Dp = CornerTokens.panel
-    public val detachedGap: Dp = 0.dp
 
     /** The control panel's one header row, below the status bar. */
     public val headerRowHeight: Dp = 56.dp

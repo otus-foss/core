@@ -12,16 +12,12 @@ public object SignatureTokens {
     /** The editor box around the signature. */
     public val editorRadius: Dp = CornerTokens.row
 
-    /** A selected image: its outline, the remove button, and the corner handle that resizes it. */
+    /** A selected image: its outline and the corner handle that resizes it. */
     public val selectionOutline: Dp = 2.dp
-    public val removeSize: Dp = 32.dp
     public val handleSize: Dp = 16.dp
 
     /** The narrowest and widest an image can be dragged, and how close to a preset it snaps. */
     public val minImageWidth: Dp = 48.dp
     public val maxImageWidth: Dp = 300.dp
     public val snapDistance: Dp = 12.dp
-
-    /** The list of preset sizes under a selected image. */
-    public val sizeListWidth: Dp = 220.dp
 }

@@ -16,14 +16,8 @@ public object FilterTokens {
     public val labelGap: Dp = 8.dp
     public val labelInset: Dp = 4.dp
     public val labelSize: TextUnit = 13.sp
-    public val headerHeight: Dp = 48.dp
-    public val titleInset: Dp = 16.dp
-    public val closeIconSize: Dp = 24.dp
-    public val titleSize: TextUnit = 17.sp
     public val bodyInset: Dp = 12.dp
     public val footerPadding: Dp = 12.dp
-    public val searchHeight: Dp = 48.dp
-    public val searchRadius: Dp = CornerTokens.button
     public val folderRowHeight: Dp = 48.dp
     public val folderIndent: Dp = Spacing.indent
 
@@ -43,9 +37,6 @@ public object FilterTokens {
     public val placeholderMinWidth: Dp = 80.dp
 
     public val cardRadius: Dp = CornerTokens.panel
-
-    /** A small note under a filter page's choices, such as which folders are left out. */
-    public val noteSize: TextUnit = 12.sp
 
     /** How far each folder in a pill's stack overlaps the one before it. */
     public val folderStackOverlap: Dp = 8.dp

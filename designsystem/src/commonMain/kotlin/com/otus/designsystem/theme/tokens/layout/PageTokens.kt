@@ -14,7 +14,6 @@ public object PageTokens {
     /** Free-standing text lines up with the text inside full-width rows. */
     public val textInset: Dp = 12.dp
     public val rowGap: Dp = 8.dp
-    public val sectionGap: Dp = 24.dp
     public val captionSize: TextUnit = 14.sp
     public val dialogMaxWidth: Dp = 420.dp
 
