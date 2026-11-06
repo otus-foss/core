@@ -9,11 +9,16 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kotlin.coroutines.CoroutineContext
 
-/** One shared [JmapConnection] per saved login. Call [forget] after a login is replaced or removed. */
+/**
+ * One shared [JmapConnection] per saved login. Call [forget] after a login is replaced or removed.
+ * Saved logins and their secrets are read on [io], off the main thread.
+ */
 public class JmapConnections(
     private val client: JmapClient,
     private val logins: LoginStore,
+    private val io: CoroutineContext = Dispatchers.IO,
 ) {
     private val lock = Mutex()
     private val open = mutableMapOf<String, JmapConnection>()
@@ -48,15 +53,15 @@ public class JmapConnections(
         capability: String,
     ): JmapLoginAccount? = savedLogins().firstOrNull { it.id == loginId }?.let { account(it, capability) }
 
-    /** The saved logins, read off the main thread. Throws [LoginStoreException] when they cannot be read. */
-    public suspend fun savedLogins(): List<JmapLogin> = withContext(Dispatchers.IO) { logins.logins() }
+    /** The saved logins. Throws [LoginStoreException] when they cannot be read. */
+    public suspend fun savedLogins(): List<JmapLogin> = withContext(io) { logins.logins() }
 
     public suspend fun forget(loginId: String) {
         lock.withLock { open.remove(loginId) }
     }
 
     private suspend fun create(login: JmapLogin): JmapConnection {
-        val secret = withContext(Dispatchers.IO) { logins.secret(login.id) }
+        val secret = withContext(io) { logins.secret(login.id) }
         if (secret !is LoginSecret.Found) throw JmapException.CredentialsUnavailable(login.id)
         return JmapConnection(client, login.sessionUrl, login.auth(secret.value), login.trustedOrigins)
     }
