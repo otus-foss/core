@@ -108,10 +108,6 @@ public object PanelTokens {
     public val searchIconShift: Dp = 4.dp
     public val searchInputPull: Dp = 2.dp
 
-    /** A message a search found, in the panel's search surface: its height and the gap after its icon. */
-    public val searchHitHeight: Dp = 48.dp
-    public val searchHitGap: Dp = 16.dp
-
     /** How much a page dims behind an open search field before anything is typed. */
     public const val SEARCH_DIM: Float = 0.45f
 

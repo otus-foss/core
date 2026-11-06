@@ -1,8 +1,8 @@
 # Removed APIs
 
 Public APIs that no code in Mail or Calendar called, outside their own tests, were removed on
-2026-11-06 (decision 3 of the untangle refactor). Each entry names the last commit that has it, on
-`origin/main` of otus-meta. To bring one back, restore its files from that commit with
+2026-11-06 and 2026-11-07 (decision 3 of the untangle refactor). Each entry names the last commit
+that has it, on `origin/main` of otus-meta unless the entry names another branch. To bring one back, restore its files from that commit with
 `git checkout 2b8a290b -- <path>` and its tests with them.
 
 | API | Module | Removed | Last commit with it | What it did |
@@ -26,5 +26,8 @@ Public APIs that no code in Mail or Calendar called, outside their own tests, we
 | `ButtonPair(primaryBusy)` | `designsystem` | 2026-11-06 | `2b8a290b` | A progress ring after the primary label. |
 | `ChoiceDialog` | `designsystem` | 2026-11-06 | `2b8a290b` | A single-choice popup; `ChoiceSheet` does the same job as a sheet. |
 | `symbol_arrow_downward`, `symbol_collapse_content`, `symbol_contact_page`, `symbol_create_new_folder`, `symbol_folder_off`, `symbol_rule_folder`, `symbol_share`, `symbol_speaker_notes_off` | `designsystem` | 2026-11-06 | `2b8a290b` | Material Symbols drawables no code drew. |
+| `PanelSearchField`, `SearchHitRow`, `PanelTokens.searchHitHeight`, `PanelTokens.searchHitGap` | `designsystem` | 2026-11-07 | `2b8a290b` | A search field in the control panel and a row for a message it found; Mail's inbox search sheet, their only caller, went with the one search UI. |
+| `FilterTokens.pickAvatarSize` | `designsystem` | 2026-11-07 | `2b8a290b` | The 36 dp avatar size of a filter page's people rows. |
+| `Spacing.xxs`, `Spacing.m`, `Spacing.xxl` | `designsystem` | 2026-11-07 | `6e4baf53` on `refactor/untangle` | The 2, 8, and 24 dp steps of the spacing scale, which no token used. |
 
 `ContactCardFilter` stays: the `avatar` module searches cards with it.

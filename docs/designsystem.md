@@ -70,7 +70,7 @@ names its Mail callers, not even in KDoc, so a move does not leave stale prose b
 Every size, gap, radius, and text size comes from `theme`. Components read scales and their own
 token objects, never a token object named after another screen.
 
-- **Spacing.** `theme/tokens/core/Spacing.kt` has the steps `xxs` (2 dp) to `xxl` (24 dp) and the
+- **Spacing.** `theme/tokens/core/Spacing.kt` has the steps `xs` (4 dp), `s` (6 dp), `l` (12 dp), and `xl` (16 dp), the ones a token uses, and the
   roles `gutter` (16 dp, the inset from a screen or card edge), `indent` (16 dp, one tree level),
   `iconGap` (4 dp), and `inlineGap` (6 dp, between chips or an avatar and a name). A feature
   token that means one of these roles is defined as it, such as `SheetTokens.inset = Spacing.gutter`.

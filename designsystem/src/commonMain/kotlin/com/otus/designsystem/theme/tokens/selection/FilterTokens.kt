@@ -28,8 +28,6 @@ public object FilterTokens {
     public val valueRowHeight: Dp = 52.dp
     public val rowTitleSize: TextUnit = 15.sp
 
-    public val pickAvatarSize: Dp = 36.dp
-
     /** The From and To column of a line of picked people. */
     public val peopleLabelWidth: Dp = 40.dp
 

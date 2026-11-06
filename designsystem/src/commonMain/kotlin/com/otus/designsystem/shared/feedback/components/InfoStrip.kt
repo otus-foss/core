@@ -19,8 +19,8 @@ import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.rows.components.StripCard
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.content.ReadTokens
 import com.otus.designsystem.theme.tokens.rows.StripTokens
+import com.otus.designsystem.theme.typography.TypeScale
 import com.otus.designsystem.theme.typography.panelTextStyle
 import org.jetbrains.compose.resources.DrawableResource
 
@@ -75,7 +75,7 @@ private fun StripText(
                 subtitle,
                 style = panelTextStyle(),
                 color = OtusColors.text3,
-                fontSize = ReadTokens.detailSize,
+                fontSize = TypeScale.detail,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )

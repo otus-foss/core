@@ -2,6 +2,7 @@ package com.otus.designsystem.shared.filters.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.unit.dp
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_calendar_today
 import com.otus.designsystem.resources.symbol_folder
@@ -12,7 +13,6 @@ import com.otus.designsystem.shared.people.components.Recipient
 import com.otus.designsystem.shared.selection.components.PickMark
 import com.otus.designsystem.shared.selection.components.PickRow
 import com.otus.designsystem.shared.selection.components.PickStyle
-import com.otus.designsystem.theme.tokens.selection.FilterTokens
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -83,13 +83,13 @@ class FilterRowsScreenshotTest {
                     "grace@navy.example · 12 conversations",
                     PickMark(selected = true, multiple = true, style = PickStyle.CheckCircle),
                     {},
-                ) { PersonAvatar(DemoPeople.grace, FilterTokens.pickAvatarSize) }
+                ) { PersonAvatar(DemoPeople.grace, 36.dp) }
                 PickRow(
                     "Ada Lovelace",
                     "ada@analytical.example · 6 conversations",
                     PickMark(selected = false, multiple = true, style = PickStyle.CheckCircle),
                     {},
-                ) { PersonAvatar(DemoPeople.ada, FilterTokens.pickAvatarSize) }
+                ) { PersonAvatar(DemoPeople.ada, 36.dp) }
                 PickRow(
                     "All accounts",
                     "2 accounts · 3 addresses",
