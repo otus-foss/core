@@ -1,5 +1,6 @@
 package com.otus.avatar
 
+import com.otus.jmap.login.LoginLifecycle
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
@@ -10,7 +11,7 @@ public class AvatarService(
     images: AvatarImageLoader = AvatarImageLoader { null },
     cacheConfig: AvatarCacheConfig = AvatarCacheConfig(),
     domains: AvatarDomainResolver = AvatarDomainResolver { it },
-) {
+) : LoginLifecycle {
     private val websites = WebsiteIcons(images, domains)
     private val cache =
         AvatarLookupCache(
@@ -133,6 +134,11 @@ public class AvatarService(
 
     /** Logout/reconnect purges private photos while retaining public website icons. */
     public suspend fun removeAccount(account: String): Unit = cache.clear(account)
+
+    /** New credentials may see other contacts, so the login's avatars are read again. */
+    override suspend fun connected(loginId: String): Unit = removeAccount(loginId)
+
+    override suspend fun removed(loginId: String): Unit = removeAccount(loginId)
 
     private suspend fun contactOrNull(
         request: AvatarRequest,
