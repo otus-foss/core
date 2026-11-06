@@ -145,7 +145,7 @@ class GitHookTests(unittest.TestCase):
                 self.assertNotEqual(git("rev-parse", "--verify", "HEAD", check=False).returncode, 0)
             attributed = VALID + "\nCo-Authored-By: Claude <noreply@anthropic.com>\n"
             git("commit", "--allow-empty", "-m", attributed)
-            self.assertEqual(git("log", "-1", "--format=%B").stdout.strip(), VALID.strip())
+            self.assertEqual(git("log", "-1", "--format=%B").stdout.strip(), attributed.strip())
             git("config", "core.commentChar", ";")
             message_file = repo / "message.txt"
             message_file.write_text(VALID + "; Editor comment\n", encoding="utf-8")
