@@ -112,7 +112,7 @@ class ThemeSettingsScreenTest {
             }
         compose.setContent {
             CompositionLocalProvider(LocalNavigationEventDispatcherOwner provides back) {
-                OtusTheme(state.palette) { ThemeSettingsScreen(state, onBack = {}) {} }
+                OtusTheme(state.palette) { ThemeSettingsScreen(state, onBack = {}) }
             }
         }
     }
