@@ -1,19 +1,13 @@
 package com.otus.designsystem.shared.selection.components
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
@@ -22,7 +16,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
@@ -41,8 +34,6 @@ import com.otus.designsystem.shared.overlays.components.menuSurface
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
-import com.otus.designsystem.theme.shapes.SmoothCornerShape
-import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.MenuTokens
@@ -98,60 +89,6 @@ public fun Dropdown(
                     .selectableGroup()
                     .padding(MenuTokens.inset),
                 content = content,
-            )
-        }
-    }
-}
-
-/**
- * A choice in a [Dropdown]: an optional [leading] avatar, the [title], a smaller `text3`
- * [subtitle] under it, and a one-line `text3` [detail] at its end, such as a size or an address.
- * The [selected] row is filled with `bgRegular`, without a mark.
- */
-@Composable
-public fun DropdownRow(
-    title: String,
-    selected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    subtitle: String? = null,
-    detail: String? = null,
-    leading: (@Composable () -> Unit)? = null,
-) {
-    val shape = SmoothCornerShape(MenuTokens.radius - MenuTokens.inset)
-    Row(
-        modifier
-            .fillMaxWidth()
-            .heightIn(min = Sizes.touchTarget)
-            .background(if (selected) OtusColors.bgRegular else OtusColors.bgDark, shape)
-            .selectable(selected, onClick = onClick)
-            .padding(horizontal = MenuTokens.rowPadding - MenuTokens.inset, vertical = Spacing.iconGap),
-        horizontalArrangement = Arrangement.spacedBy(MenuTokens.rowPadding - MenuTokens.inset),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        leading?.invoke()
-        Column(Modifier.weight(1f)) {
-            Text(title, style = panelTextStyle(), maxLines = 1, overflow = TextOverflow.Ellipsis)
-            if (subtitle != null) {
-                Text(
-                    subtitle,
-                    style = panelTextStyle(),
-                    color = OtusColors.text3,
-                    fontSize = TypeScale.detail,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-        }
-        if (detail != null) {
-            Text(
-                detail,
-                Modifier.widthIn(max = MenuTokens.detailMaxWidth),
-                style = panelTextStyle(),
-                color = OtusColors.text3,
-                fontSize = TypeScale.detail,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
             )
         }
     }

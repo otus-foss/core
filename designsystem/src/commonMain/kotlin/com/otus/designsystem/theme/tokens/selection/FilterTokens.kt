@@ -44,8 +44,6 @@ public object FilterTokens {
     public val valueRowHeight: Dp = 52.dp
     public val rowTitleSize: TextUnit = 15.sp
 
-    /** A person, address, or account to pick on a filter page. */
-    public val pickRowHeight: Dp = 56.dp
     public val pickAvatarSize: Dp = 36.dp
 
     /** The From and To column of a line of picked people. */

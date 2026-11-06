@@ -42,7 +42,7 @@ import com.otus.designsystem.theme.typography.panelTextStyle
 /**
  * The [Sidebar]'s header: [avatars], [title], and an optional [subtitle], then an unfold button
  * and Settings. Tapping the title or the unfold button calls [onPick], which opens a picker such
- * as a [ScopeSheet][com.otus.designsystem.shared.selection.components.ScopeSheet]; [pickLabel] names
+ * as a [ListSheet][com.otus.designsystem.shared.overlays.components.ListSheet]; [pickLabel] names
  * that action for screen readers. It shares the context panel's header height, so the title lines
  * up with the page title.
  */

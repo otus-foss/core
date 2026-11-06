@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import com.otus.designsystem.shared.input.elements.InputField
+import com.otus.designsystem.shared.overlays.components.SheetConfirm
 import com.otus.designsystem.shared.overlays.components.SheetFrame
 import com.otus.designsystem.shared.overlays.components.SheetHeaderAction
 import com.otus.designsystem.shared.reorder.components.HALF
@@ -63,10 +64,11 @@ public fun ColorSheet(
     SheetFrame(
         title,
         onDismiss = onDismiss,
-        onDone = {
-            if (resetting) onReset?.invoke() else onPick(color)
-            onDismiss()
-        },
+        done =
+            SheetConfirm("Done", {
+                if (resetting) onReset?.invoke() else onPick(color)
+                onDismiss()
+            }),
         leadingAction =
             onReset?.let {
                 { done ->

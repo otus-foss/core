@@ -11,8 +11,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.otus.avatar.ContactAvatar
 import com.otus.avatar.ui.presentation.AccountAvatarEdit
-import com.otus.designsystem.shared.overlays.components.ClosableSheet
 import com.otus.designsystem.shared.overlays.components.SheetConfirm
+import com.otus.designsystem.shared.overlays.components.SheetFrame
 import com.otus.designsystem.shared.people.components.PersonAvatar
 import com.otus.designsystem.shared.selection.components.PickMark
 import com.otus.designsystem.shared.selection.components.PickRow
@@ -73,13 +73,15 @@ private fun ReplaceSheet(
             ticked.isEmpty() -> "Keep all"
             else -> "Replace ${ticked.size}"
         }
-    ClosableSheet(
+    SheetFrame(
         if (choice.replaced.size == 1) "Replace 1 avatar?" else "Replace ${choice.replaced.size} avatars?",
         onDismiss,
-        SheetConfirm(label, {
-            edit.saveAll(edit.emails - kept, choice.avatar)
-            onDismiss()
-        }),
+        done =
+            SheetConfirm(label, {
+                edit.saveAll(edit.emails - kept, choice.avatar)
+                onDismiss()
+            }),
+        closeButton = true,
     ) {
         // Many addresses scroll, so the confirm button below them stays on the sheet.
         Column(Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState())) {

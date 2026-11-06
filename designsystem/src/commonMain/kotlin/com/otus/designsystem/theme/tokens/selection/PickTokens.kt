@@ -3,10 +3,12 @@ package com.otus.designsystem.theme.tokens.selection
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-/** The radio and checkbox marks of a pick row. */
+/** Pick rows: the radio and checkbox marks, and the height of a row with a check or check circle. */
 public object PickTokens {
-    /** The radio and checkbox marks in a pick list. */
     public val markSize: Dp = 22.dp
     public val markStroke: Dp = 2.dp
     public val markDot: Dp = 10.dp
+
+    /** A row marked with a check or a check circle, such as a choice in a choice sheet. */
+    public val optionHeight: Dp = 56.dp
 }

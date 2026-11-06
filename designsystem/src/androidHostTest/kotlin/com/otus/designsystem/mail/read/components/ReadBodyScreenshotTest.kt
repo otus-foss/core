@@ -24,7 +24,6 @@ import com.otus.designsystem.shared.rows.components.DetailLine
 import com.otus.designsystem.shared.rows.components.DetailsTable
 import com.otus.designsystem.shared.selection.components.PickMark
 import com.otus.designsystem.shared.selection.components.PickRow
-import com.otus.designsystem.shared.selection.components.PickRowLayout
 import com.otus.designsystem.theme.typography.panelTextStyle
 import org.junit.Rule
 import org.junit.runner.RunWith
@@ -87,7 +86,7 @@ class ReadBodyScreenshotTest {
                     "Contacts, people you've written to and senders you allowed. Everyone else asks first.",
                     PickMark(selected = true, atStart = true),
                     {},
-                    layout = PickRowLayout(subtitleLines = 3),
+                    subtitleLines = 3,
                 )
                 PickRow("Never", "Always ask, for every mail.", PickMark(selected = false, atStart = true), {})
             }

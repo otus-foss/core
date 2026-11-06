@@ -1,6 +1,7 @@
 package com.otus.designsystem.shared.selection.components
 
-import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -8,36 +9,38 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
-import com.otus.designsystem.shared.rows.components.RowDensity
+import androidx.compose.ui.unit.Dp
+import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.theme.colors.OtusAlpha
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.core.Spacing
+import com.otus.designsystem.theme.tokens.overlays.MenuTokens
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.tokens.selection.PickTokens
-import com.otus.designsystem.theme.tokens.settings.SettingTokens
 import com.otus.designsystem.theme.typography.TypeScale
 import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
- * A choice in a sheet list: an optional [leading] avatar, the [title], a smaller `text2` [subtitle],
- * and a radio or checkbox in the selected-chip colors. A null [onClick] shows the row disabled.
- * [layout] sets its height and how many lines the subtitle may take.
+ * A choice in a list, sheet, or menu: an optional [leading] avatar or icon, the one-line [title], a
+ * smaller `text2` [subtitle] of up to [subtitleLines] lines, a one-line `text3` [detail] at the end,
+ * such as an address, and the [mark]. A null [onClick] shows the row disabled. [height] is the
+ * row's least height.
  */
 @Composable
 public fun PickRow(
@@ -46,23 +49,26 @@ public fun PickRow(
     mark: PickMark,
     onClick: (() -> Unit)?,
     modifier: Modifier = Modifier,
-    layout: PickRowLayout = PickRowLayout(),
+    detail: String? = null,
+    height: Dp = mark.style.rowHeight(subtitle != null),
+    subtitleLines: Int = 1,
     leading: (@Composable () -> Unit)? = null,
 ) {
-    PickRowFrame(mark, onClick, modifier.heightIn(min = layout.density.pickRowHeight), leading) {
-        PickRowText(title, subtitle, layout.subtitleLines)
-    }
+    PickRowFrame(
+        mark,
+        onClick,
+        modifier.heightIn(min = height),
+        leading,
+        trailing = detail?.let { { PickDetail(it) } },
+    ) { PickRowText(title, subtitle, subtitleLines) }
 }
 
-/**
- * The [title] and smaller `text2` [subtitle] of a [PickRow] or
- * [FilterPickRow][com.otus.designsystem.shared.filters.components.FilterPickRow].
- */
+/** The [title] and smaller `text2` [subtitle] of a [PickRow]. */
 @Composable
-internal fun PickRowText(
+private fun PickRowText(
     title: String,
     subtitle: String?,
-    subtitleLines: Int = 1,
+    subtitleLines: Int,
 ) {
     Text(title, style = panelTextStyle(), maxLines = 1, overflow = TextOverflow.Ellipsis)
     if (subtitle != null) {
@@ -77,11 +83,23 @@ internal fun PickRowText(
     }
 }
 
+@Composable
+private fun PickDetail(text: String) {
+    Text(
+        text,
+        Modifier.widthIn(max = MenuTokens.detailMaxWidth),
+        style = panelTextStyle(),
+        color = OtusColors.text3,
+        fontSize = TypeScale.detail,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+    )
+}
+
 /**
- * The frame of a [PickRow] and its relatives, such as
- * [FolderPickRow][com.otus.designsystem.mail.folders.components.FolderPickRow]: the [leading] slot, the
- * [content] column, an optional [trailing] slot, and the [markView] at the end, or first when
- * [mark] is [PickMark.atStart]. [modifier] sets the row's minimum height.
+ * The frame of a [PickRow] for rows whose text is not a plain title: the [leading] slot, the
+ * [content] column, an optional [trailing] slot, and the [mark] at the end, or first when
+ * [PickMark.atStart]. [modifier] sets the row's least height.
  */
 @Composable
 internal fun PickRowFrame(
@@ -90,83 +108,55 @@ internal fun PickRowFrame(
     modifier: Modifier,
     leading: (@Composable () -> Unit)?,
     trailing: (@Composable () -> Unit)? = null,
-    markView: @Composable () -> Unit = { PickMarkView(mark) },
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    val enabled = onClick != null
-    val choose =
-        if (mark.multiple) {
-            Modifier.toggleable(mark.selected, enabled, Role.Checkbox) { onClick?.invoke() }
-        } else {
-            Modifier.selectable(mark.selected, enabled, Role.RadioButton) { onClick?.invoke() }
-        }
+    val interactions = remember { MutableInteractionSource() }
+    val card = mark.style == PickStyle.Card
+    val shape: Shape = if (card) SmoothCornerShape(SheetTokens.rowRadius) else RectangleShape
     Row(
         modifier
             .fillMaxWidth()
-            .then(choose)
-            .alpha(if (enabled) 1f else OtusAlpha.DISABLED)
-            .padding(horizontal = SheetTokens.inset, vertical = Spacing.iconGap),
+            .pick(mark, onClick, interactions)
+            .alpha(if (onClick != null) 1f else OtusAlpha.DISABLED)
+            .clip(shape)
+            .cardFill(card, mark.selected)
+            .controlPressFeedback(interactions, shape)
+            .padding(horizontal = if (card) SheetTokens.gap else SheetTokens.inset, vertical = Spacing.iconGap),
         horizontalArrangement = Arrangement.spacedBy(SheetTokens.gap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        if (mark.atStart) markView()
+        if (mark.atStart) PickMarkView(mark)
         leading?.invoke()
         Column(Modifier.weight(1f), content = content)
         trailing?.invoke()
-        if (!mark.atStart) markView()
+        if (!mark.atStart) PickMarkView(mark)
     }
 }
 
-/**
- * The radio or checkbox of a [PickRow] on its own, for rows built from other parts, such as a
- * folder tree row in the Folders sheet. Unchosen marks have a dim `text3` outline; a ticked
- * checkbox fills with `text1` around a `bgDark` tick, as in a `SelectionRow`, and a chosen radio
- * turns `text1`.
- */
-@Composable
-public fun PickMarkView(mark: PickMark) {
-    Canvas(Modifier.size(PickTokens.markSize)) {
-        val stroke = PickTokens.markStroke.toPx()
-        val inset = Offset(stroke / 2, stroke / 2)
-        val inner = size.copy(size.width - stroke, size.height - stroke)
-        // Unchosen marks keep a quiet text3 outline, so the text1 of a chosen one stands out.
-        val outline = if (mark.selected) OtusColors.text1 else OtusColors.text3
-        if (mark.multiple) {
-            val corner = CornerRadius(SettingTokens.valueRadius.toPx() / 2)
-            if (mark.selected) {
-                drawRoundRect(OtusColors.text1, cornerRadius = corner)
-                val check =
-                    Path().apply {
-                        moveTo(size.width * CHECK_START_X, size.height * CHECK_MID_Y)
-                        lineTo(size.width * CHECK_LOW_X, size.height * CHECK_LOW_Y)
-                        lineTo(size.width * CHECK_END_X, size.height * CHECK_END_Y)
-                    }
-                drawPath(check, OtusColors.bgDark, style = Stroke(stroke, cap = StrokeCap.Round))
-            }
-            drawRoundRect(outline, inset, inner, corner, Stroke(stroke))
-        } else {
-            drawCircle(outline, radius = size.minDimension / 2 - stroke / 2, style = Stroke(stroke))
-            if (mark.selected) drawCircle(OtusColors.text1, radius = PickTokens.markDot.toPx() / 2)
+private fun Modifier.pick(
+    mark: PickMark,
+    onClick: (() -> Unit)?,
+    interactions: MutableInteractionSource,
+): Modifier =
+    if (mark.multiple) {
+        toggleable(mark.selected, interactions, indication = null, enabled = onClick != null, role = Role.Checkbox) {
+            onClick?.invoke()
+        }
+    } else {
+        selectable(mark.selected, interactions, indication = null, enabled = onClick != null, role = Role.RadioButton) {
+            onClick?.invoke()
         }
     }
-}
 
-private const val CHECK_START_X = 0.25f
-private const val CHECK_MID_Y = 0.52f
-private const val CHECK_LOW_X = 0.43f
-private const val CHECK_LOW_Y = 0.7f
-private const val CHECK_END_X = 0.76f
-private const val CHECK_END_Y = 0.32f
+private fun Modifier.cardFill(
+    card: Boolean,
+    selected: Boolean,
+): Modifier = if (card) background(if (selected) OtusColors.selectedFill else OtusColors.bgDark) else this
 
-/** A pick row's least height: a full row, or a touch target for long lists of short choices. */
-private val RowDensity.pickRowHeight
-    get() = if (this == RowDensity.Compact) Sizes.touchTarget else SheetTokens.rowHeight
-
-/**
- * How a [PickRow] is laid out: a [RowDensity.Compact] row is only a touch target tall, for long
- * lists of short choices, and the subtitle takes up to [subtitleLines] lines.
- */
-public data class PickRowLayout(
-    val density: RowDensity = RowDensity.Regular,
-    val subtitleLines: Int = 1,
-)
+/** A row's least height for its style: a [PickStyle.Card] row is a touch target tall until it has a subtitle. */
+internal fun PickStyle.rowHeight(hasSubtitle: Boolean): Dp =
+    when (this) {
+        PickStyle.Mark -> SheetTokens.rowHeight
+        PickStyle.CheckCircle, PickStyle.Check -> PickTokens.optionHeight
+        PickStyle.Card -> if (hasSubtitle) SheetTokens.rowHeight else Sizes.touchTarget
+    }

@@ -10,6 +10,8 @@ import com.otus.designsystem.shared.people.components.DemoPeople
 import com.otus.designsystem.shared.people.components.PersonAvatar
 import com.otus.designsystem.shared.people.components.Recipient
 import com.otus.designsystem.shared.selection.components.PickMark
+import com.otus.designsystem.shared.selection.components.PickRow
+import com.otus.designsystem.shared.selection.components.PickStyle
 import com.otus.designsystem.theme.tokens.selection.FilterTokens
 import org.junit.Rule
 import org.junit.runner.RunWith
@@ -76,19 +78,24 @@ class FilterRowsScreenshotTest {
     fun pickRows() =
         compose.screenshot("pick_row") {
             Column {
-                FilterPickRow(
+                PickRow(
                     "Grace Hopper",
                     "grace@navy.example · 12 conversations",
-                    PickMark(selected = true, multiple = true),
+                    PickMark(selected = true, multiple = true, style = PickStyle.CheckCircle),
                     {},
                 ) { PersonAvatar(DemoPeople.grace, FilterTokens.pickAvatarSize) }
-                FilterPickRow(
+                PickRow(
                     "Ada Lovelace",
                     "ada@analytical.example · 6 conversations",
-                    PickMark(selected = false, multiple = true),
+                    PickMark(selected = false, multiple = true, style = PickStyle.CheckCircle),
                     {},
                 ) { PersonAvatar(DemoPeople.ada, FilterTokens.pickAvatarSize) }
-                FilterPickRow("All accounts", "2 accounts · 3 addresses", PickMark(selected = false), {})
+                PickRow(
+                    "All accounts",
+                    "2 accounts · 3 addresses",
+                    PickMark(selected = false, style = PickStyle.CheckCircle),
+                    {},
+                )
             }
         }
 }

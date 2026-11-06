@@ -24,7 +24,7 @@ import com.otus.designsystem.theme.colors.ThemeColor
 import com.otus.designsystem.theme.colors.get
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.shapes.strokeBorder
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.tokens.settings.ThemeTokens
 import com.otus.settings.presentation.ThemeSettingsState
@@ -101,7 +101,7 @@ private fun AppPreview(preview: @Composable () -> Unit) {
             .fillMaxWidth()
             .semantics { contentDescription = "Preview of the app in this theme" }
             .background(OtusColors.bgRegular, shape)
-            .strokeBorder(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape)
+            .strokeBorder(Sizes.borderWidth, OtusColors.strokeBgDark, shape)
             .padding(ThemeTokens.previewPadding),
     ) { preview() }
 }

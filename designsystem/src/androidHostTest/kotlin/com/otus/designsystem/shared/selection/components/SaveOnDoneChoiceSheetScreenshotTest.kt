@@ -17,7 +17,7 @@ import kotlin.test.assertTrue
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35], qualifiers = "w360dp-h640dp-xhdpi")
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
-class RadioChoiceSheetScreenshotTest {
+class SaveOnDoneChoiceSheetScreenshotTest {
     @get:Rule
     val compose = createComposeRule()
 
@@ -27,12 +27,13 @@ class RadioChoiceSheetScreenshotTest {
     @Test
     fun withDetails() =
         compose.screenScreenshot("radio_choice_sheet") {
-            RadioChoiceSheet(
+            ChoiceSheet(
                 "Load images",
                 ChoiceOptions(details.keys.toList(), selected = "In your contacts"),
                 row = { ChoiceRow(it, details[it]) },
-                onSave = {},
+                onSelect = {},
                 onDismiss = {},
+                saveOnDone = SaveOnDone(),
             )
         }
 
@@ -40,12 +41,13 @@ class RadioChoiceSheetScreenshotTest {
     fun doneSavesThePickedOptionAndNothingBefore() {
         val saved = mutableListOf<String>()
         compose.setContent {
-            RadioChoiceSheet(
+            ChoiceSheet(
                 "Theme",
                 ChoiceOptions(listOf("Ink", "Slate"), "Ink"),
                 { ChoiceRow(it) },
                 { saved += it },
                 {},
+                saveOnDone = SaveOnDone(),
             )
         }
         compose.onNodeWithText("Slate").performClick()
@@ -65,7 +67,14 @@ class RadioChoiceSheetScreenshotTest {
         val themes = listOf(Theme("Ink"), Theme("Slate"))
         val restoration = StateRestorationTester(compose)
         restoration.setContent {
-            RadioChoiceSheet("Theme", ChoiceOptions(themes, themes[0]), { ChoiceRow(it.name) }, { saved += it }, {})
+            ChoiceSheet(
+                "Theme",
+                ChoiceOptions(themes, themes[0]),
+                { ChoiceRow(it.name) },
+                { saved += it },
+                {},
+                saveOnDone = SaveOnDone(),
+            )
         }
         compose.onNodeWithText("Slate").performClick()
         restoration.emulateSavedInstanceStateRestore()

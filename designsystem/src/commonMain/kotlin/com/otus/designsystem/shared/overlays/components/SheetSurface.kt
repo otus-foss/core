@@ -33,6 +33,7 @@ import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.LocalMotionScale
 import com.otus.designsystem.theme.motion.MotionCurve
@@ -74,7 +75,7 @@ internal fun SheetSurface(
     LaunchedEffect(Unit) {
         if (pull == null) position.show(MotionCurve.Enter) else position.follow(pull, flingVelocity, close)
     }
-    Dialog(close, properties = selectionSheetDialogProperties()) {
+    Dialog(close, properties = sheetDialogProperties()) {
         CompositionLocalProvider(LocalDensity provides density) {
             BoxWithConstraints(Modifier.fillMaxSize()) {
                 SheetScrim(title, visible = 1f - position.hidden, onClick = close)
@@ -160,3 +161,6 @@ private suspend fun SheetPosition.follow(
             .first()
     releasePull(released, flingVelocity, close)
 }
+
+/** Android's window-inset option is absent from the iOS dialog API. */
+internal expect fun sheetDialogProperties(): DialogProperties

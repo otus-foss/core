@@ -22,6 +22,7 @@ import com.otus.avatar.ui.presentation.AvatarKind
 import com.otus.avatar.ui.presentation.PhotoSource
 import com.otus.avatar.ui.presentation.isSet
 import com.otus.designsystem.shared.controls.components.SegmentedToggle
+import com.otus.designsystem.shared.overlays.components.SheetConfirm
 import com.otus.designsystem.shared.overlays.components.SheetFrame
 import com.otus.designsystem.shared.overlays.components.SheetHeaderAction
 import com.otus.designsystem.shared.people.components.PersonAvatar
@@ -63,17 +64,16 @@ public fun AvatarSheet(
     SheetFrame(
         "Avatar",
         onDismiss = onDismiss,
-        onDone = {
-            val avatar = draft.avatar
-            if (resetting) {
-                onSave(null)
-            } else if (avatar != null) {
-                onSave(avatar)
-            }
-            onDismiss()
-        },
-        doneEnabled = draft.ready,
-        doneLabel = "Save",
+        done =
+            SheetConfirm("Save", {
+                val avatar = draft.avatar
+                if (resetting) {
+                    onSave(null)
+                } else if (avatar != null) {
+                    onSave(avatar)
+                }
+                onDismiss()
+            }, enabled = draft.ready),
         leadingAction =
             if (isSet) {
                 { done ->

@@ -34,12 +34,13 @@ class SheetScreenshotTest {
     @Test
     fun selectionSheet() =
         compose.screenScreenshot("selection_sheet_search") {
-            SelectionSheet(
+            ListSheet(
                 "From",
-                onDismiss = {},
+                {},
+                done = SheetConfirm("Done", {}),
                 onClear = {},
-                onApply = {},
                 search = { PickerSearch("", {}, "Search people") },
+                scrolls = true,
             ) {
                 SettingToggleRow("Mira Chen", checked = true, {})
                 SettingToggleRow("Tomas Berg", checked = false, {})
@@ -50,7 +51,7 @@ class SheetScreenshotTest {
     @Test
     fun selectionSheetApplyDisabled() =
         compose.screenScreenshot("selection_sheet_apply_disabled") {
-            SelectionSheet("Folder", onDismiss = {}, onClear = {}, onApply = {}, applyEnabled = false) {
+            ListSheet("Folder", {}, done = SheetConfirm("Done", {}, enabled = false), onClear = {}, scrolls = true) {
                 Chip("Receipts", {})
             }
         }

@@ -27,9 +27,11 @@ import androidx.compose.ui.semantics.toggleableState
 import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.style.TextOverflow
 import com.otus.designsystem.shared.controls.elements.ExpandChevron
-import com.otus.designsystem.shared.filters.components.FilterPickMark
 import com.otus.designsystem.shared.filters.elements.ChipLabel
 import com.otus.designsystem.shared.filters.elements.annotated
+import com.otus.designsystem.shared.selection.components.PickMark
+import com.otus.designsystem.shared.selection.components.PickMarkView
+import com.otus.designsystem.shared.selection.components.PickStyle
 import com.otus.designsystem.theme.colors.OtusAlpha
 import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.core.Spacing
@@ -78,7 +80,7 @@ public fun FilterFolderRow(
         )
         Spacer(Modifier.width(Spacing.iconGap))
         Box(Modifier.alpha(if (enabled) 1f else OtusAlpha.DISABLED)) {
-            FilterPickMark(selected = check != FolderCheck.Off)
+            PickMarkView(PickMark(check != FolderCheck.Off, style = PickStyle.CheckCircle))
         }
     }
 }

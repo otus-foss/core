@@ -56,7 +56,9 @@ class DropdownScreenshotTest {
                     },
                 ) {
                     ListCaption("Work")
-                    addresses.forEach { DropdownRow(it, selected = false, onClick = {}) }
+                    addresses.forEach {
+                        PickRow(it, null, PickMark(false, style = PickStyle.Card), {})
+                    }
                 }
             }
         }

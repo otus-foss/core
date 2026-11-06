@@ -1,4 +1,4 @@
-package com.otus.designsystem.shared.selection.elements
+package com.otus.designsystem.shared.selection.components
 
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.Modifier
@@ -21,34 +21,37 @@ import kotlin.test.Test
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35], qualifiers = "w360dp-h640dp-xhdpi")
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
-class SelectionRowScreenshotTest {
+class CardPickRowScreenshotTest {
     @get:Rule
     val compose = createComposeRule()
 
     @Test
     fun unchecked() =
         compose.screenshot("selection_row_unchecked") {
-            SelectionRow("Receipts", selected = false, {}, WIDTH)
+            PickRow("Receipts", null, PickMark(false, multiple = true, style = PickStyle.Card), {}, WIDTH)
         }
 
     @Test
-    fun checked() = compose.screenshot("selection_row_checked") { SelectionRow("Receipts", selected = true, {}, WIDTH) }
+    fun checked() =
+        compose.screenshot("selection_row_checked") {
+            PickRow("Receipts", null, PickMark(true, multiple = true, style = PickStyle.Card), {}, WIDTH)
+        }
 
     @Test
     fun singleChoice() =
         compose.screenshot("selection_row_single_choice") {
-            SelectionRow("Receipts", selected = true, {}, WIDTH, singleChoice = true)
+            PickRow("Receipts", null, PickMark(true, style = PickStyle.Card), {}, WIDTH)
         }
 
     @Test
     fun subtitleAndAvatar() =
         compose.screenshot("selection_row_subtitle_avatar") {
-            SelectionRow(
+            PickRow(
                 "Ada Lovelace",
-                selected = false,
+                "ada@example.com",
+                PickMark(false, multiple = true, style = PickStyle.Card),
                 {},
                 WIDTH,
-                subtitle = "ada@example.com",
                 leading = { Avatar("AL") },
             )
         }
@@ -56,12 +59,12 @@ class SelectionRowScreenshotTest {
     @Test
     fun icon() =
         compose.screenshot("selection_row_icon") {
-            SelectionRow(
+            PickRow(
                 "Receipts",
-                selected = false,
+                null,
+                PickMark(false, style = PickStyle.Card),
                 {},
                 WIDTH,
-                singleChoice = true,
                 leading = { Symbol(Res.drawable.symbol_folder) },
             )
         }
@@ -70,12 +73,14 @@ class SelectionRowScreenshotTest {
     fun longTitle() =
         compose.screenshot("selection_row_long_title") {
             val title = "Receipts from the Analytical Engine Society, 2026 and earlier"
-            SelectionRow(title, selected = true, {}, WIDTH, subtitle = "1,204 messages")
+            PickRow(title, "1,204 messages", PickMark(true, multiple = true, style = PickStyle.Card), {}, WIDTH)
         }
 
     @Test
     fun checkboxStateFollowsSelected() {
-        compose.setContent { SelectionRow("Receipts", selected = true, {}) }
+        compose.setContent {
+            PickRow("Receipts", null, PickMark(true, multiple = true, style = PickStyle.Card), {})
+        }
         compose.onNodeWithText("Receipts", useUnmergedTree = false).assertIsOn()
     }
 

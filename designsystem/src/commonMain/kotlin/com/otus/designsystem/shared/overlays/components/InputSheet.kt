@@ -36,12 +36,11 @@ public fun InputSheet(
     SheetFrame(
         title,
         onDismiss,
-        onDone = {
-            onConfirm(value)
-            onDismiss()
-        },
-        doneEnabled = error == null,
-        doneLabel = confirmLabel,
+        done =
+            SheetConfirm(confirmLabel, {
+                onConfirm(value)
+                onDismiss()
+            }, enabled = error == null),
     ) {
         InputField(
             label,

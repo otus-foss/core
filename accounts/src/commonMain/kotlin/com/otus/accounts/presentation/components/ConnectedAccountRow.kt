@@ -14,8 +14,8 @@ import com.otus.designsystem.shared.people.components.PersonChip
 import com.otus.designsystem.shared.people.components.Recipient
 import com.otus.designsystem.shared.rows.elements.RowButton
 import com.otus.designsystem.shared.settings.components.SettingRow
+import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.layout.PageTokens
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.rows.EntryTokens
 
 /**
@@ -57,7 +57,7 @@ public fun ConnectedAccountRow(
         ) { RowButton("Remove", onRemove, accessibilityLabel = "Remove ${account.name}") }
         FlowRow(
             Modifier.padding(horizontal = PageTokens.textInset),
-            horizontalArrangement = Arrangement.spacedBy(PanelTokens.chipGap),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.inlineGap),
         ) {
             account.ownAddresses.forEach { email ->
                 PersonChip(

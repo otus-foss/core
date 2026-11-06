@@ -11,7 +11,6 @@ internal object ChoiceSheetTokens {
     val handleTop = 8.dp
     val headerHeight = 64.dp
     val titleSize = 18.sp
-    val optionMinHeight = 56.dp
     val optionPadding = Spacing.gutter
     val optionGap = 12.dp
 

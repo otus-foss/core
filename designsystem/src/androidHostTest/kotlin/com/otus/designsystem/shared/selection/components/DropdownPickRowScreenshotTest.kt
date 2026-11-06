@@ -19,7 +19,7 @@ import kotlin.test.Test
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35], qualifiers = "w360dp-h640dp-xhdpi")
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
-class DropdownRowScreenshotTest {
+class DropdownPickRowScreenshotTest {
     @get:Rule
     val compose = createComposeRule()
 
@@ -36,7 +36,7 @@ class DropdownRowScreenshotTest {
         compose.screenshot("dropdown_row_people") {
             Column(Modifier.width(344.dp)) {
                 people.forEach { (person, address) ->
-                    DropdownRow(person.name, selected = false, onClick = {}, detail = address) {
+                    PickRow(person.name, null, PickMark(false, style = PickStyle.Card), {}, detail = address) {
                         PersonAvatar(person.avatar, ComposeTokens.dropdownAvatarSize)
                     }
                 }
