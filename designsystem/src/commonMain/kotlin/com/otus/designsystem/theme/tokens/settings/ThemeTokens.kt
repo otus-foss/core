@@ -15,8 +15,6 @@ public object ThemeTokens {
     public val cardGap: Dp = 8.dp
     public val cardTitleSize: TextUnit = 15.sp
     public val cardTitleLineHeight: TextUnit = 20.sp
-    public val cardDetailSize: TextUnit = 12.sp
-    public val cardDetailLineHeight: TextUnit = 16.sp
     public val sketchHeight: Dp = 64.dp
     public val sketchRadius: Dp = cardRadius - cardPadding
     public val sketchPadding: Dp = 8.dp
@@ -46,7 +44,7 @@ public object ThemeTokens {
     public val stackSwatch: Dp = 24.dp
     public val stackOverlap: Dp = 8.dp
 
-    /** The live preview above the theme cards, and the small message rows an app sketches in it. */
+    /** The phone preview above the theme cards: its pills, message rows, and action bar. */
     public val previewPadding: Dp = 10.dp
     public val previewGap: Dp = 8.dp
     public val previewRowPadding: Dp = 8.dp
@@ -56,6 +54,18 @@ public object ThemeTokens {
     public val previewDetailSize: TextUnit = 11.sp
     public val previewSubjectSize: TextUnit = 14.sp
     public val previewSubjectLineHeight: TextUnit = 18.sp
+    public val previewIcon: Dp = 16.dp
+    public val previewIconGap: Dp = 6.dp
+    public val previewBarHeight: Dp = 44.dp
+    public val previewBarPadding: Dp = 14.dp
+
+    /** The phone around the preview: a metal frame, then a black bezel, then the screen. */
+    public val phoneRadius: Dp = 44.dp
+    public val phoneFrameWidth: Dp = 3.dp
+    public val phoneBezelWidth: Dp = 7.dp
+    public val phoneScreenRadius: Dp = phoneRadius - phoneFrameWidth - phoneBezelWidth
+    public val phoneFrame: Color = Color(0xFF4A4A4F)
+    public val phoneBezel: Color = Color(0xFF050506)
 
     /** The custom color sheet: the picked color beside its hex code, and a preview per theme. */
     public val customColorSize: Dp = 64.dp

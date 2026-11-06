@@ -4,6 +4,38 @@
 
 - `IconPill` takes a `fill`, `bgRegular` by default, so it can match the pills beside it.
   `DetailsTable` now sits on a raised `darkSurface` card with the images banner's radius and inset.
+- Add a System theme: `SystemTheme` holds the device's colors, `ThemeChoice.withSystem()` selects
+  them, and `ThemeSettingsState(store, system)` takes the current ones each launch. On Android,
+  `Context.systemTheme()` reads the Material You colors in the device's light or dark mode, or
+  null before Android 12. The theme page shows a System card where the device has colors, and
+  hides the accent and Colors while it is selected. A saved choice adds a `system` part.
+- `SegmentedToggle` slides one pill to the new segment, easing in and out at the user's animation
+  speed, and takes a `track` color for the track and unselected segments.
+
+- Theme page: the preview is now a phone, `ThemePhonePreview(palette, expansion)`, drawn from any
+  `OtusPalette`, so colors can be tried before they apply. It runs edge to edge under the control
+  panel with a frame and bezel. A tap or drag down grows it with a `PhoneExpansion`
+  (`rememberPhoneExpansion()`), and `ThemePhonePanel` fades the page's panel into the phone's; a
+  tap, drag up, or back shrinks it. Breaking: `ThemeSettingsScreen` takes `preview: OtusPalette`
+  and a `controls` slot instead of a `preview` composable; Mail passes the colors its hue picker
+  is trying.
+- `Subpage` takes a `PageBackdrop`: content that runs edge to edge under the panel's rounded
+  corners, and a `panelOverlay` drawn over the panel at its size.
+- `SwatchStack` takes a `size`.
+- Theme cards show only the theme's name, without a description.
+
+- `LetterIndex` keeps the pressed letter in place: its row opens level with the heading that
+  `letterIndexHandle` or its "Show letters" action opened it from, and the other letters line up
+  above and below it. Rows keep `LetterIndexTokens.rowHeight` instead of shrinking to fit. Letters
+  past the top or bottom, or under the status and navigation bars, scroll into view by dragging the
+  column, or by holding a dragging finger near either end. The current letter sits on a
+  `selectedFill` highlight, which stays on a picked letter while the index closes. Screen readers
+  can scroll the column. Without a known heading, the column is centred between the bars.
+- `letterIndexHandle` opens the index on a press within 64 dp of the heading's start edge, the
+  right one in right-to-left layouts, or on a long press anywhere on it. Other presses scroll the list.
+- Add `LetterIndexScrollGuard(state, scroll)`: while the list it watches scrolls, and for 300 ms
+  after, presses on the headings pass through to the list, so stopping a fling does not open the
+  index.
 - `FeaturedAvatars` shows its faces in one centered row instead of two over the rest. When the
   row is too narrow, the faces share its width evenly.
 - Design system: `Dropdown` takes an optional `header`, such as a `PickerSearch`, that stays at

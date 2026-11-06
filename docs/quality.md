@@ -53,9 +53,7 @@ read. Kotlin/Native tests for iOS run only on macOS. On Linux, compile the iOS s
 with `./gradlew :<module>:compileKotlinIosSimulatorArm64`; this does not run them.
 
 The versioned Git hooks are the main gate. `pre-commit` runs the Spotless and Ruff checks on the
-working tree, so stash unrelated changes first. `commit-msg` checks the message and removes AI
-attribution lines, such as `Co-authored-by` trailers that name Claude, Anthropic, or Cursor. No
-hook runs `checkAll`, because a full build on every push is too heavy for a laptop. Run
+working tree, so stash unrelated changes first. `commit-msg` checks the message. No hook runs `checkAll`, because a full build on every push is too heavy for a laptop. Run
 `./gradlew checkAll` before pushing work that needs it, such as a direct push to `main` or a
 release tag. Do not skip the hooks with `--no-verify`.
 
@@ -139,22 +137,23 @@ Limits:
 - A composable whose name the scanner cannot find in the bytecode is reported as not found
   rather than as unrendered.
 
-Measured on 2026-10-16, after the design system screenshot tests. The `jmap-push` module was
-named `push` at the time:
+Measured on 2026-11-02 on `main` at `19f9973`:
 
 | Module | Line | Branch |
 | --- | --- | --- |
-| `accounts` | 56.1% | 28.0% |
-| `avatar` | 96.8% | 73.3% |
-| `dateformat` | 89.8% | 100% |
-| `designsystem` | 92.1% | 56.8% |
-| `jmap` | 96.4% | 58.5% |
-| `jmap-push` | 97.3% | 77.3% |
-| `settings` | 77.5% | 59.6% |
-| All modules | 90.6% | 60.6% |
+| `accounts` | 38.4% | 17.5% |
+| `avatar` | 96.8% | 74.8% |
+| `dateformat` | 89.9% | 95.5% |
+| `designsystem` | 74.2% | 46.8% |
+| `jmap` | 96.9% | 56.0% |
+| `jmap-contacts` | 99.5% | 53.8% |
+| `jmap-push` | 95.9% | 79.6% |
+| `jscontact` | 97.8% | 79.1% |
+| `settings` | 66.7% | 54.5% |
+| All modules | 79.0% | 54.2% |
 
-The `designsystem` module holds two thirds of the measured lines, so it decides most of the
-total. Its screenshot tests raised it from 12.6% of lines; see
+The `designsystem` module holds nearly three quarters of the measured lines, so it decides most
+of the total. Screenshot tests raised it from 12.6% of lines; see
 [screenshot tests](designsystem.md#screenshot-tests).
 
 ## Architecture checks

@@ -5,9 +5,9 @@ import androidx.compose.ui.graphics.Color
 
 /**
  * The selected theme, the one accent color the user picked, and the user's [customThemes].
- * [customId] selects a custom theme; while it is null, the built-in [base] is selected. Changing a
- * color never changes a built-in theme: it creates a custom theme instead. [palette] derives every
- * color from these.
+ * [customId] selects a custom theme; while it is null, the built-in [base] is selected, or with
+ * [systemSelected] the device's [system] colors where the device has them. Changing a color never
+ * changes a built-in theme: it creates a custom theme instead. [palette] derives every color from these.
  */
 @Immutable
 public data class ThemeChoice(
@@ -15,7 +15,13 @@ public data class ThemeChoice(
     public val accent: Color = AccentPreset.OtusBlue.color,
     public val customThemes: List<CustomTheme> = emptyList(),
     public val customId: Int? = null,
+    public val systemSelected: Boolean = false,
+    public val system: SystemTheme? = null,
 ) {
+    /** The device's colors while they are selected and the device has them, else null. */
+    public val activeSystem: SystemTheme?
+        get() = system.takeIf { systemSelected && customId == null }
+
     /** The selected custom theme, or null while a built-in theme is selected. */
     public val customTheme: CustomTheme?
         get() = customThemes.firstOrNull { it.id == customId }
@@ -31,7 +37,13 @@ public data class ThemeChoice(
     /** The accent's fill, outline, and text shades for the theme, after the user's own shades. */
     public val shades: AccentShades
         get() {
-            val derived = accentShades(accent, color(ThemeColor.Page), color(ThemeColor.Raised), color(ThemeColor.Text))
+            val derived =
+                accentShades(
+                    activeSystem?.accent ?: accent,
+                    color(ThemeColor.Page),
+                    color(ThemeColor.Raised),
+                    color(ThemeColor.Text),
+                )
             return derived.copy(
                 fill = customColors[ThemeColor.AccentFill] ?: derived.fill,
                 regular = customColors[ThemeColor.AccentOutline] ?: derived.regular,
@@ -58,10 +70,13 @@ public data class ThemeChoice(
         }
 
     /** Selects the built-in [base] theme. */
-    public fun withBase(base: ThemeBase): ThemeChoice = copy(base = base, customId = null)
+    public fun withBase(base: ThemeBase): ThemeChoice = copy(base = base, customId = null, systemSelected = false)
+
+    /** Selects the device's own colors. */
+    public fun withSystem(): ThemeChoice = copy(customId = null, systemSelected = true)
 
     /** Selects the custom theme [id]. */
-    public fun withCustomTheme(id: Int): ThemeChoice = copy(customId = id)
+    public fun withCustomTheme(id: Int): ThemeChoice = copy(customId = id, systemSelected = false)
 
     /** The accent for every theme; it replaces the accent shades set by hand in the selected theme. */
     public fun withAccent(accent: Color): ThemeChoice {
@@ -118,11 +133,13 @@ public data class ThemeChoice(
                     customThemes + theme
                 },
             customId = theme.id,
+            systemSelected = false,
         )
 
     private val nextId: Int
         get() = (customThemes.maxOfOrNull { it.id } ?: 0) + 1
 
     /** A surface or text color of the theme; only called for colors the theme defines itself. */
-    private fun color(color: ThemeColor): Color = customColors[color] ?: checkNotNull(origin.color(color))
+    private fun color(color: ThemeColor): Color =
+        activeSystem?.color(color) ?: customColors[color] ?: checkNotNull(origin.color(color))
 }

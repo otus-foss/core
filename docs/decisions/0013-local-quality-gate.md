@@ -51,7 +51,8 @@ laptop shared with other work.
 
 - The repositories no longer version a `pre-push` hook. Run `./gradlew checkAll` by hand before a
   push that needs it, such as a direct push to `main` or a Meta release tag.
-- The `commit-msg` hook removes AI attribution lines (`Co-authored-by` trailers that name Claude,
-  Anthropic, or Cursor, and "Generated with Claude Code" lines) before Git saves the commit.
+- The `commit-msg` hook removed AI attribution lines (`Co-authored-by` trailers that name Claude,
+  Anthropic, or Cursor, and "Generated with Claude Code" lines) before Git saved the commit. On
+  2026-11-01 this moved to the agents' own settings, and the hook now only checks the message.
 - Pushes after a pull request's one CI run, direct pushes to `main`, and release tags now go
   unchecked unless someone runs `checkAll`. The `publish` workflow still runs the host tests.
