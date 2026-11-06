@@ -152,6 +152,7 @@ com/otus/designsystem/
   shared/<group>/components/
   mail/<feature>/elements/
   mail/<feature>/components/
+  mail/<feature>/html/          Plain Kotlin beside a group's UI; no composables
 ```
 
 Groups such as `people`, `contacts`, `dates`, `rows`, `filters`, and `sidebar` hold shared UI.
@@ -161,10 +162,10 @@ these paths. Keep component-specific display values and visual state beside thei
 app business models and services do not move into these groups. See the
 [package migration guide](ui-package-migration.md) for the declaration mapping.
 
-Token families group related visual rules, such as layout, rows, overlays, and editing.
-`InboxTokens`, `ComposeTokens`, and `ReadTokens` remain available to shared UI under `theme`;
-their names do not make them Mail-owned dependencies.
+Token families group related visual rules, such as layout, rows, overlays, and editing, on top of
+the core scales `Spacing`, `Sizes`, and `TypeScale`. Shared UI reads the scales and its own token
+objects, never a Mail screen's (`InboxTokens`, `ComposeTokens`, `ReadTokens`); see
+[the design system guide](designsystem.md#tokens).
 
-`designsystem` also owns `ContentRow`, `DetailRow`, `EmptyState`, `InboxTokens`, and the public
-`com.otus.designsystem.resources.Res` symbol bundle. Mail supplies display values and actions
+`designsystem` also owns the public `com.otus.designsystem.resources.Res` symbol bundle. Mail supplies display values and actions
 through feature adapters. No Mail domain model enters these component APIs.

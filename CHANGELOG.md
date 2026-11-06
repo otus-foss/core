@@ -2,6 +2,29 @@
 
 ## Unreleased
 
+- Design system: add the core scales `Spacing`, `Sizes`, and `TypeScale` and the token objects
+  `ControlTokens`, `StripTokens`, `FolderTokens`, `PersonPillTokens`, and `PickTokens`. Breaking:
+  `PanelTokens` keeps only the control panel's values; read the touch target, icon, border, chip,
+  and text sizes from the scales, and the strip, folder, and quote-pill values from the new
+  objects instead of `ReadTokens`, `InboxTokens`, `ComposeTokens`, and `SignatureTokens`. Detail
+  text is 12 sp everywhere.
+- Design system: one component per job. Breaking: `PickRow` with `PickMark` and `PickStyle`
+  replaces `SelectionRow`, `DropdownRow`, and `FilterPickRow`; `ListSheet` replaces `ScopeSheet`
+  and `SelectionSheet`; `ChoiceSheet(saveOnDone)` replaces `RadioChoiceSheet`; `SheetFrame`
+  (`closeButton`) replaces `ClosableSheet`; `Chip` (`look`, `role`) replaces `FilterChip`;
+  `UiAction` replaces `MenuAction`, `ToastAction`, `StripAction`, `BannerAction`, `PairButton`,
+  and `SheetConfirm`, and `BarAction`, `SwipeAction`, and `OptionsItem.Action` wrap it;
+  `Caption` replaces `ListCaption`. `SwipeActions` takes `settledBy` and returns a kept row when
+  it changes, instead of after a second.
+- Design system: add `dragToSelect`, `LoadMoreNearEnd`, `OrderedChoiceSheet`, `Confirmation`,
+  `hiddenWhen`, and the grown panel's layers and stages (`GrownPanelLayers`, `grownPanelHeight`),
+  moved from Mail.
+- Design system: Mail-only parts move under `mail/` (`AddressPill`, `DestinationPill`, the
+  sidebar mailbox tiles and tile editor, `RuleChip`, the filter folder rows, the launch art), and
+  the HTML scanner and sanitizer move to the plain Kotlin `mail.read.html` package with
+  `HtmlQuote`. `AppIconSetting` takes the app's icon as a slot. 58 declarations only the module
+  used are now internal. Unused components and symbols are removed; see docs/removed-apis.md.
+
 - Add `json-types` with `UtcDateSerializer` (moved from `jmap`) and the PatchObject path rules
   `patchPath`, `patchTokens`, and `overlappingPatchPath`, which `jmap` and `jscontact` share.
   Breaking: import `UtcDateSerializer` and `patchPath` from `com.otus.json.types`. A seconds field
