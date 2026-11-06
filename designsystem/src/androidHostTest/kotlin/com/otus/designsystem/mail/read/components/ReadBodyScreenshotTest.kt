@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Text
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.unit.dp
-import com.otus.designsystem.mail.folders.components.FolderName
-import com.otus.designsystem.mail.folders.components.FolderPickRow
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_archive
 import com.otus.designsystem.resources.symbol_flag
@@ -27,7 +25,6 @@ import com.otus.designsystem.shared.rows.components.DetailsTable
 import com.otus.designsystem.shared.selection.components.PickMark
 import com.otus.designsystem.shared.selection.components.PickRow
 import com.otus.designsystem.shared.selection.components.PickRowLayout
-import com.otus.designsystem.theme.colors.FolderColor
 import com.otus.designsystem.theme.typography.panelTextStyle
 import org.junit.Rule
 import org.junit.runner.RunWith
@@ -78,25 +75,6 @@ class ReadBodyScreenshotTest {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 QuoteFold(QuotedLevel(DemoPeople.mira, "10 Oct", QUOTE, onPerson = {}), expanded = false, onToggle = {})
                 QuoteFold(QuotedLevel(person = null, "10 Oct", QUOTE), expanded = true, onToggle = {})
-            }
-        }
-
-    @Test
-    fun folderPicks() =
-        compose.screenshot("folder_pick_row") {
-            Column {
-                FolderPickRow(DemoRead.clients, checked = true, {}, detail = "you're here")
-                FolderPickRow(DemoRead.invoices, checked = true, {})
-                FolderPickRow(DemoRead.archive, checked = false, {})
-                FolderPickRow(
-                    FolderName(
-                        listOf("Freelancing", "Clients", "Long running invoices"),
-                        FolderColor.Pink,
-                        system = false,
-                    ),
-                    checked = false,
-                    {},
-                )
             }
         }
 

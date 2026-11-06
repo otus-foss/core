@@ -16,10 +16,8 @@ import org.jetbrains.compose.resources.DrawableResource
 /**
  * Colors the leading icon of the rows inside it, such as a folder's
  * [com.otus.designsystem.theme.colors.FolderColor.tint]. Null keeps each row's own icon color. Text,
- * backgrounds, the selected state, trailing icons, and disabled icons keep their colors.
- * [SidebarEntry][com.otus.designsystem.shared.sidebar.elements.SidebarEntry],
- * [ActionRow][com.otus.designsystem.shared.rows.elements.ActionRow], `SettingRow`, `SettingToggleRow`,
- * `ValuePicker`, and `ValueToken` read it; a `ChoiceRow` takes its own `iconTint`.
+ * backgrounds, the selected state, trailing icons, and disabled icons keep their colors. Rows
+ * that draw a [LeadingSymbol] read it.
  */
 public val LocalIconTint: ProvidableCompositionLocal<Color?> = compositionLocalOf { null }
 

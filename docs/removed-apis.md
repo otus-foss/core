@@ -16,5 +16,15 @@ Public APIs that no code in Mail or Calendar called, outside their own tests, we
 | `ContactsCapability`, `JmapAccount.contacts` | `jmap-contacts` | 2026-11-06 | `2b8a290b` | Read an account's contacts limits, `maxAddressBooksPerCard` and `mayCreateAddressBook`. |
 | `Card.validate`, `JsContactProblem`, the `validation` package | `jscontact` | 2026-11-06 | `2b8a290b` | Reported each RFC 9553 rule a card broke, with its JSON Pointer. |
 | `DateFormatter.formatIsoDate` | `dateformat` | 2026-11-06 | `2b8a290b` | Formatted an ISO date string; `format(LocalDate.parse(text))` does the same. |
+| `ContentRow`, `ContentRowText`, `RowLabel` | `designsystem` | 2026-11-06 | `2b8a290b` | An inbox-style row with title, subtitle, trailing text, labels, and selection; Mail draws `CompactContentRow`. |
+| `DetailRow` | `designsystem` | 2026-11-06 | `2b8a290b` | A row of caller-supplied details with tree indentation. |
+| `ActionRow` | `designsystem` | 2026-11-06 | `2b8a290b` | A titled row with an optional icon, summary, and trailing symbol. |
+| `FilterPanelHeader` | `designsystem` | 2026-11-06 | `2b8a290b` | A filter panel's title row, or a back button named after the previous page. |
+| `FilterNote` | `designsystem` | 2026-11-06 | `2b8a290b` | A 12 sp `text3` note under a filter page's choices. |
+| `SidebarHeading` | `designsystem` | 2026-11-06 | `2b8a290b` | A collapsing caption over a group of sidebar entries. |
+| `FolderPickRow` | `designsystem` | 2026-11-06 | `2b8a290b` | A folder name with a checkbox, for picking folders. |
+| `ButtonPair(primaryBusy)` | `designsystem` | 2026-11-06 | `2b8a290b` | A progress ring after the primary label. |
+| `ChoiceDialog` | `designsystem` | 2026-11-06 | `2b8a290b` | A single-choice popup; `ChoiceSheet` does the same job as a sheet. |
+| `symbol_arrow_downward`, `symbol_collapse_content`, `symbol_contact_page`, `symbol_create_new_folder`, `symbol_folder_off`, `symbol_rule_folder`, `symbol_share`, `symbol_speaker_notes_off` | `designsystem` | 2026-11-06 | `2b8a290b` | Material Symbols drawables no code drew. |
 
 `ContactCardFilter` stays: the `avatar` module searches cards with it.

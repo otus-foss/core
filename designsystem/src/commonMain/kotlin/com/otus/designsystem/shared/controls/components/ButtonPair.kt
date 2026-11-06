@@ -42,22 +42,20 @@ import kotlin.math.roundToInt
 /**
  * A way out and a way forward in one pill, such as Cancel and Delete. [secondary] sits in the
  * outlined track; the wider [primary] pill fills its end and widens for a long label. Each half
- * greys out while it is not enabled. While [primaryBusy], a progress ring follows the primary
- * label, and screen readers announce a changed primary label politely.
+ * greys out while it is not enabled. Screen readers announce a changed primary label politely.
  */
 @Composable
 public fun ButtonPair(
     secondary: PairButton,
     primary: PairButton,
     modifier: Modifier = Modifier,
-    primaryBusy: Boolean = false,
 ) {
     // The track paints behind its buttons and clips nothing, so the primary pill's outline stays on top.
     Layout(
         {
             SecondaryHalf(secondary)
             ActionButton(primary.label, primary.onClick, primary = true, enabled = primary.enabled) {
-                PrimaryLabel(primary.label, primary.enabled, primaryBusy)
+                PrimaryLabel(primary.label, primary.enabled, busy = false)
             }
         },
         modifier

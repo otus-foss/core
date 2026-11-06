@@ -29,16 +29,6 @@ class ButtonPairScreenshotTest {
         }
 
     @Test
-    fun secondaryDisabledAndBusy() =
-        compose.screenshot("button_pair_busy") {
-            ButtonPair(
-                PairButton("Reset", {}, enabled = false),
-                PairButton("Show conversations", {}),
-                primaryBusy = true,
-            )
-        }
-
-    @Test
     fun longPrimaryLabelWidens() =
         compose.screenshot("button_pair_long_primary") {
             ButtonPair(PairButton("Cancel", {}), PairButton("Trust mail.example.com", {}))

@@ -11,8 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_folder
-import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.pages.components.pageScreenshot
+import com.otus.designsystem.shared.sidebar.elements.SidebarEntry
 import com.otus.designsystem.shared.sidebar.elements.SidebarExpandButton
 import org.junit.Rule
 import org.junit.runner.RunWith
@@ -87,7 +87,7 @@ class CollapsibleScreenshotTest {
             if (folder.name == collapse) LaunchedEffect(Unit) { onExpandedChange(false) }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(Modifier.weight(1f)) {
-                    DetailRow(folder.name, emptyList(), {}, depth = folder.depth) { Symbol(Res.drawable.symbol_folder) }
+                    SidebarEntry(folder.name, Res.drawable.symbol_folder, selected = false, {}, depth = folder.depth)
                 }
                 if (expanded != null) SidebarExpandButton(folder.name, expanded, onExpandedChange)
             }

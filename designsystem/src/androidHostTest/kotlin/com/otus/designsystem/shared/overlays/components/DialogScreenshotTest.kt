@@ -6,7 +6,6 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.otus.designsystem.screenshot.screenScreenshot
-import com.otus.designsystem.shared.selection.components.ChoiceDialog
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -21,20 +20,6 @@ import kotlin.test.assertEquals
 class DialogScreenshotTest {
     @get:Rule
     val compose = createComposeRule()
-
-    @Test
-    fun choiceDialog() =
-        compose.screenScreenshot("choice_dialog") {
-            ChoiceDialog(
-                "Swipe right",
-                listOf("Archive", "Delete", "Mark as read", "Flag"),
-                selected = "Archive",
-                label = { it },
-                onSelect = {},
-                onDismiss = {},
-                detail = { if (it == "Delete") "Moves the message to Trash" else null },
-            )
-        }
 
     @Test
     fun confirmDialog() =
