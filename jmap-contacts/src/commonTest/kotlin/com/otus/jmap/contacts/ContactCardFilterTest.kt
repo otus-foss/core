@@ -109,7 +109,7 @@ class ContactCardFilterTest {
         val filter =
             ContactCardFilter(inAddressBook = PERSONAL).toFilter() and
                 noneOf(ContactCardFilter(kind = CardKind.Group).toFilter())
-        val query = QueryMethod(ContactCardType, "a0x9", filter.toJson(), listOf(ContactCardSort.nameSurname()))
+        val query = QueryMethod(ContactCardType, "a0x9", filter.toJson(), listOf(JmapSort("name/surname")))
         assertEquals(
             parseObject(
                 """{"accountId": "a0x9", "filter": {"operator": "AND", "conditions": [
@@ -117,27 +117,6 @@ class ContactCardFilterTest {
                 "sort": [{"property": "name/surname", "isAscending": true}]}""",
             ),
             query.arguments(),
-        )
-    }
-
-    @Test
-    fun everySortPropertyHasItsRfcName() {
-        // RFC 9610, section 3.3.2.
-        assertEquals(
-            listOf(
-                JmapSort("created", isAscending = false),
-                JmapSort("updated"),
-                JmapSort("name/given", collation = "i;unicode-casemap"),
-                JmapSort("name/surname", isAscending = false),
-                JmapSort("name/surname2"),
-            ),
-            listOf(
-                ContactCardSort.created(isAscending = false),
-                ContactCardSort.updated(),
-                ContactCardSort.nameGiven(collation = "i;unicode-casemap"),
-                ContactCardSort.nameSurname(isAscending = false),
-                ContactCardSort.nameSurname2(),
-            ),
         )
     }
 }

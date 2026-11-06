@@ -47,8 +47,6 @@ public class DateFormatter(
         }
     }
 
-    public fun formatIsoDate(date: String): String = format(LocalDate.parse(date))
-
     public fun formatRange(
         start: LocalDate,
         end: LocalDate,

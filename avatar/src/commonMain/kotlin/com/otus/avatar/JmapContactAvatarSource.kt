@@ -4,8 +4,13 @@ import com.otus.jmap.GetMethod
 import com.otus.jmap.JmapCapability
 import com.otus.jmap.JmapConnection
 import com.otus.jmap.JmapConnections
+import com.otus.jmap.contacts.AddressBook
+import com.otus.jmap.contacts.AddressBookType
 import com.otus.jmap.login.JmapLogin
 import com.otus.jmap.login.LoginStore
+import com.otus.jscontact.Card
+import com.otus.jscontact.Media
+import com.otus.jscontact.MediaKind
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
@@ -36,7 +41,7 @@ public class JmapContactAvatarSource(
             if (books.isEmpty()) return@nullOnFailure null
             val own = books.filter { it.myRights.mayWrite }.map { it.id }.toSet()
             findContactAvatar(connection, account, request.email, books.map { it.id }.toSet(), own) { card ->
-                card.style
+                card.avatarStyle
                     ?.takeIf { card.isIn(own) || it.mark != AvatarMark.Website }
                     ?.let(ContactAvatar::Styled)
                     ?: loadCard(connection, account, card, allowExternalImages)
@@ -47,7 +52,7 @@ public class JmapContactAvatarSource(
     private suspend fun readableBooks(
         connection: JmapConnection,
         account: String,
-    ): List<AvatarAddressBook> =
+    ): List<AddressBook> =
         connection
             .call(GetMethod(AddressBookType, account))
             .list
@@ -56,13 +61,16 @@ public class JmapContactAvatarSource(
     private suspend fun loadCard(
         connection: JmapConnection,
         account: String,
-        card: ContactCard,
+        card: Card,
         external: Boolean,
     ): ContactAvatar.Photo? =
-        card.media.values
-            .filter { it.kind == "photo" || it.kind == "logo" }
-            .sortedWith(compareBy({ it.kind != "photo" }, { it.pref ?: Int.MAX_VALUE }, { it.blobId ?: it.uri }))
-            .firstNotNullOfOrNull { photo ->
+        card.media
+            .orEmpty()
+            .values
+            .filter { it.kind == MediaKind.Photo || it.kind == MediaKind.Logo }
+            .sortedWith(
+                compareBy({ it.kind != MediaKind.Photo }, { it.pref ?: Int.MAX_VALUE }, { it.blobId ?: it.uri }),
+            ).firstNotNullOfOrNull { photo ->
                 avatarOrNull { load(connection, account, photo, external) }?.let {
                     ContactAvatar.Photo(it, photo.mediaType ?: DEFAULT_PHOTO_TYPE)
                 }
@@ -71,15 +79,16 @@ public class JmapContactAvatarSource(
     private suspend fun load(
         connection: JmapConnection,
         account: String,
-        media: ContactMedia,
+        media: Media,
         external: Boolean,
     ): AvatarImage? {
-        if (media.blobId != null && media.mediaType in CONTACT_RASTER_TYPES) {
+        val blobId = media.blobId
+        if (blobId != null && media.mediaType in CONTACT_RASTER_TYPES) {
             val mediaType = requireNotNull(media.mediaType)
             val blob =
                 connection.download(
                     account,
-                    media.blobId,
+                    blobId,
                     mediaType,
                     MAX_AVATAR_BYTES,
                     name = AVATAR_DOWNLOAD_NAME,
@@ -88,7 +97,7 @@ public class JmapContactAvatarSource(
         }
         val uri = media.uri
         return when {
-            uri == null -> null
+            uri.isEmpty() -> null
             uri.startsWith("data:") -> inlineContactImage(uri)
             external -> images.load(uri)
             else -> null

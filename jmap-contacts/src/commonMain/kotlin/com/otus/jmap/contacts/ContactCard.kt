@@ -12,8 +12,8 @@ import kotlinx.serialization.json.jsonObject
  * The `ContactCard` data type (RFC 9610, sections 3 and 7.3): a JSContact [Card] with the JMAP
  * properties `id` and `addressBookIds`. It works with the generic `/get`, `/changes`, `/query`,
  * `/queryChanges`, `/set`, and `/copy` methods. A `/get` with `properties` returns partial cards.
- * Unknown properties survive decoding, but update cards with [contactCardPatch] so that only the
- * changed properties go back to the server.
+ * Unknown properties survive decoding; update cards with [cardPatch] so that only the changed
+ * properties go back to the server.
  */
 public val ContactCardType: JmapType<Card> =
     JmapType("ContactCard", JmapCapability.CONTACTS, Card.serializer())

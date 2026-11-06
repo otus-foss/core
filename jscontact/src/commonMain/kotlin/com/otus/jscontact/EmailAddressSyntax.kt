@@ -1,9 +1,11 @@
 package com.otus.jscontact
 
-import com.otus.jscontact.validation.NON_ASCII
-
 /** Whether [address] is an RFC 5322 addr-spec, such as "ada@example.org", as an EmailAddress needs. */
 public fun isEmailAddress(address: String): Boolean = ADDR_SPEC.matches(address)
+
+// Any code point from U+0080. A negated class also matches the code points above U+FFFF, such as
+// emoji, which a range up to \uFFFF misses.
+private const val NON_ASCII = """[^\x00-\x7F]"""
 
 // atext (RFC 5322, section 3.2.3), plus non-ASCII as RFC 6532, section 3.2, allows in internationalized mail.
 private const val ATEXT = """(?:[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]|$NON_ASCII)"""

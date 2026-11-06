@@ -11,7 +11,7 @@ import com.otus.jmap.QueryMethod
 import com.otus.jmap.SetMethod
 import com.otus.jmap.contacts.AddressBook
 import com.otus.jmap.contacts.ContactCardFilter
-import com.otus.jmap.contacts.contactCardPatch
+import com.otus.jmap.contacts.cardPatch
 import com.otus.jmap.contacts.toCreation
 import com.otus.jmap.login.LoginStore
 import com.otus.jscontact.Card
@@ -150,40 +150,17 @@ private fun List<AddressBook>.saveTarget(): AddressBook =
 private fun Card.update(
     avatar: ContactAvatar?,
     photo: Media?,
-): Map<String, JsonObject> = mapOf(requireNotNull(id) to patch(avatar, photo))
+): Map<String, JsonObject> = mapOf(requireNotNull(id) to cardPatch(this, withAvatar(avatar, photo)))
 
-private fun Card.patch(
+/** This card with [photo] as its only photo, or none, and with the style of [avatar], or none. */
+private fun Card.withAvatar(
     avatar: ContactAvatar?,
     photo: Media?,
-): JsonObject {
-    val oldPhotos =
-        media
-            .orEmpty()
-            .filter { (key, value) -> value.kind == MediaKind.Photo && !(photo != null && key == AVATAR_PHOTO_KEY) }
-            .keys
-    val hasMedia = media != null
-    val vCard = extra[VCARD_PROPERTY]
-    val style = (avatar as? ContactAvatar.Styled)?.style
-    return contactCardPatch {
-        oldPhotos.forEach { media.remove(it) }
-        // A patch path needs its parent on the server, so a card without `media` gets the whole map.
-        when {
-            photo == null -> Unit
-            !hasMedia -> media.set(mapOf(AVATAR_PHOTO_KEY to photo))
-            else -> media.put(AVATAR_PHOTO_KEY, photo)
-        }
-        if (style != null || hasAvatarStyle(vCard)) {
-            raw {
-                val properties = avatarPropertiesWith(vCard, style)
-                // The same goes for `vCard`.
-                if (vCard is JsonObject) {
-                    set(properties, VCARD_PROPERTY, VCARD_PROPERTIES)
-                } else {
-                    set(JsonObject(mapOf(VCARD_PROPERTIES to properties)), VCARD_PROPERTY)
-                }
-            }
-        }
-    }
+): Card {
+    val others = media?.filterValues { it.kind != MediaKind.Photo }
+    val photos = photo?.let { mapOf(AVATAR_PHOTO_KEY to it) }.orEmpty()
+    return copy(media = if (media == null && photo == null) null else others.orEmpty() + photos)
+        .withAvatarStyle((avatar as? ContactAvatar.Styled)?.style)
 }
 
 /** The `create` argument that makes a self card for [email] in the default writable book. */

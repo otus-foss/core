@@ -4,6 +4,7 @@ import com.otus.jmap.JmapAuth
 import com.otus.jmap.JmapClient
 import com.otus.jmap.JmapConnection
 import com.otus.jmap.JmapJson
+import com.otus.jscontact.Card
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.http.content.TextContent
@@ -173,7 +174,7 @@ private class SearchFixture(
     suspend fun search(
         books: Set<String> = setOf("book"),
         email: String = "target@example.org",
-        load: suspend (ContactCard) -> AvatarImage? = { AvatarImage(byteArrayOf(1)) },
+        load: suspend (Card) -> AvatarImage? = { AvatarImage(byteArrayOf(1)) },
     ): AvatarImage? = findContactAvatar(connection, "a", email, books, own = emptySet(), load)
 
     private fun page(position: Long): String {

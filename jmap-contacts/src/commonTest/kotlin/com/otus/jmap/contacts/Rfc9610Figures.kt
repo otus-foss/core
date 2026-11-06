@@ -89,59 +89,5 @@ val FIGURE_2 =
     ]
     """.trimIndent()
 
-/** Figure 3: making "Autosaved" the default address book. */
-val FIGURE_3 =
-    """
-    [
-      ["AddressBook/set", {
-        "accountId": "a0x9",
-        "onSuccessSetIsDefault": "cd40089d-35f9-4fd7-980b-ba3a9f1d74fe"
-      }, "0"]
-    ]
-    """.trimIndent()
-
-/**
- * Figure 4: the response to [FIGURE_3]. The RFC nests `oldState` and `newState` inside `updated`,
- * where RFC 8620, section 5.3 puts them at the top level.
- */
-val FIGURE_4 =
-    """
-    [
-      ["AddressBook/set", {
-        "accountId": "a0x9",
-        "updated": {
-          "cd40089d-35f9-4fd7-980b-ba3a9f1d74fe": {
-            "isDefault": true
-          },
-          "062adcfa-105d-455c-bc60-6db68b69c3f3": {
-            "isDefault": false
-          },
-          "oldState": "~4144",
-          "newState": "~4148"
-        }
-      }, "0"]
-    ]
-    """.trimIndent()
-
-/** [FIGURE_4] with its states moved to the top level, where RFC 8620, section 5.3 puts them. */
-val FIGURE_4_CORRECTED =
-    """
-    [
-      ["AddressBook/set", {
-        "accountId": "a0x9",
-        "oldState": "~4144",
-        "newState": "~4148",
-        "updated": {
-          "cd40089d-35f9-4fd7-980b-ba3a9f1d74fe": {
-            "isDefault": true
-          },
-          "062adcfa-105d-455c-bc60-6db68b69c3f3": {
-            "isDefault": false
-          }
-        }
-      }, "0"]
-    ]
-    """.trimIndent()
-
 const val PERSONAL = "062adcfa-105d-455c-bc60-6db68b69c3f3"
 const val AUTOSAVED = "cd40089d-35f9-4fd7-980b-ba3a9f1d74fe"

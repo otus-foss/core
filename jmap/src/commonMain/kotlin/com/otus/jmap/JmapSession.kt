@@ -19,15 +19,6 @@ public object JmapCapability {
 
     /** The server signs Web Push messages with VAPID (RFC 9749). */
     public const val WEBPUSH_VAPID: String = "urn:ietf:params:jmap:webpush-vapid"
-
-    /** Principals and the sharing of data between them (RFC 9670, section 1.5.1). */
-    public const val PRINCIPALS: String = "urn:ietf:params:jmap:principals"
-
-    /**
-     * Names the principal that owns an account (RFC 9670, section 1.5.2). It appears only among an
-     * account's capabilities, never the session's, so no method is sent with it.
-     */
-    public const val PRINCIPALS_OWNER: String = "urn:ietf:params:jmap:principals:owner"
 }
 
 /**

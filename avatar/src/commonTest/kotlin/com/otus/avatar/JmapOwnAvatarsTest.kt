@@ -26,7 +26,7 @@ class JmapOwnAvatarsTest {
     private val letters = ContactAvatar.Styled(AvatarStyle("blue", AvatarMark.Letters("AL")))
 
     @Test
-    fun aPhotoOnACardWithoutMediaSetsTheWholeMap() =
+    fun aPhotoOnACardWithoutMediaSetsTheMap() =
         runTest {
             val server = SelfCardServer(card = """{"id":"c","addressBookIds":{"own":true},$ADA_EMAIL}""")
             server.avatars.save("ada", "ada@example.org", "Ada", photo)
@@ -48,8 +48,8 @@ class JmapOwnAvatarsTest {
             val server = SelfCardServer(card = """{"id":"c","addressBookIds":{"own":true},$ADA_EMAIL,$media}""")
             server.avatars.save("ada", "ada@example.org", "Ada", photo)
             val patch = server.update()
-            assertEquals(setOf("media/p", "media/$AVATAR_PHOTO_KEY"), patch.keys)
-            assertEquals("null", patch.getValue("media/p").toString())
+            assertEquals(setOf("media"), patch.keys)
+            assertEquals(setOf("l", AVATAR_PHOTO_KEY), patch.getValue("media").jsonObject.keys)
         }
 
     @Test
@@ -71,8 +71,15 @@ class JmapOwnAvatarsTest {
             val server = SelfCardServer(card = card)
             server.avatars.save("ada", "ada@example.org", "Ada", null)
             val patch = server.update()
-            assertEquals("null", patch.getValue("media/$AVATAR_PHOTO_KEY").toString())
-            assertTrue(patch.getValue("vCard/properties").jsonArray.isEmpty())
+            assertTrue(patch.getValue("media").jsonObject.isEmpty())
+            assertTrue(
+                patch
+                    .getValue("vCard")
+                    .jsonObject
+                    .getValue("properties")
+                    .jsonArray
+                    .isEmpty(),
+            )
         }
 
     @Test
