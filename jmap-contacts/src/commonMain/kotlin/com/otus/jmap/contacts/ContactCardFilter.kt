@@ -2,8 +2,8 @@ package com.otus.jmap.contacts
 
 import com.otus.jmap.JmapFilter
 import com.otus.jmap.JmapJson
-import com.otus.jmap.UtcDateSerializer
 import com.otus.jscontact.CardKind
+import com.otus.json.types.UtcDateSerializer
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive

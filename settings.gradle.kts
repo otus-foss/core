@@ -24,6 +24,7 @@ plugins {
 }
 
 // Library modules; see docs/architecture.md.
+include(":json-types")
 include(":jmap")
 include(":dateformat")
 include(":avatar")

@@ -1,5 +1,6 @@
 package com.otus.jscontact
 
+import com.otus.json.types.UtcDateSerializer
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
@@ -103,7 +104,7 @@ public data class PartialDate(
 @KeepGeneratedSerializer
 @Serializable(with = Timestamp.Serializer::class)
 public data class Timestamp(
-    @Serializable(with = UtcDateTimeSerializer::class)
+    @Serializable(with = UtcDateSerializer::class)
     val utc: Instant,
     /** Unknown and vendor-specific properties, kept as received (RFC 9553, section 1.7.4). */
     @Transient val extra: Map<String, JsonElement> = emptyMap(),

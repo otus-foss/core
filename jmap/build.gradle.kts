@@ -8,6 +8,7 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
+            api(projects.jsonTypes)
             api(libs.ktor.client.core)
             api(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.coroutines.core)

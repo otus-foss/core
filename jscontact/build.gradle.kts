@@ -7,7 +7,7 @@ plugins {
 
 kotlin {
     sourceSets {
-        commonMain.dependencies { api(libs.kotlinx.serialization.json) }
+        commonMain.dependencies { api(projects.jsonTypes) }
         commonTest.dependencies { implementation(kotlin("test")) }
         getByName("androidHostTest").dependencies { implementation(libs.robolectric) }
     }
