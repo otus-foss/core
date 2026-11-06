@@ -177,13 +177,13 @@ contacts account through the app's `JmapConnections`, so contact lookups never c
 cards and address books are jmap-contacts' `Card` and `AddressBook`. `AvatarService` is a
 `LoginLifecycle`: register it with the account repository, and a login's cached avatars clear when
 it connects again or goes. The disk cache names its files with `storedName` from `storage`.
-Calendar depends on the module but does not wire it yet.
+Calendar does not use the module yet.
 
 Contact queries ask for `id`, `addressBookIds`, `emails`, `media`, and `vCard`. Stalwart returns a
 card's extra vCard properties, where the style lives, only when `vCard` is asked for by name; a
 server that rejects `vCard` with `invalidArguments` gets the query again without it. They search
 readable address books that are subscribed or writable, because Stalwart leaves the user's own
-books unsubscribed, and fetch up to 32 candidates per
+books unsubscribed (a book without `isSubscribed` counts as subscribed), and fetch up to 32 candidates per
 page. Each candidate must contain the exact normalized email address; server searches may also
 match email labels. On each page, cards in the user's writable books come first, then cards whose
 avatar Otus wrote, so a shared card never hides the user's own. Lookup continues across pages until it finds a usable photo or reaches an empty
@@ -225,9 +225,9 @@ parent on the server (RFC 8620, section 5.3).
   show it too. Stalwart refuses a `blobId` in `media` ("blobIds in media is not supported"). Saving a
   photo replaces the card's other photos and drops the style.
 - An `AvatarStyle` is a color and an `AvatarMark`. The color is an `AvatarColor` id, such as
-  `blue`, or a custom `#RRGGBB`. Ids never change, so a renamed design-system color does not
-  change saved avatars. Cards saved before 2026-11-06 hold the capitalized `FolderColor` names,
-  such as `Blue`; reading accepts any case, so they read as the matching id. The mark is up to `MAX_AVATAR_LETTERS` letters, an icon name from `AvatarSymbols`, or
+  `Blue`, or a custom `#RRGGBB`. Ids never change, so a renamed design-system color does not
+  change saved avatars. The ids are the capitalized names older builds wrote and still read;
+  reading accepts any case. The mark is up to `MAX_AVATAR_LETTERS` letters, an icon name from `AvatarSymbols`, or
   `Website`. `Website` shows the website icon of the address's domain even when
   `AvatarOptions.domainIcons` is off, because the user picked it for their own address;
   `ResolvedAvatar` then has both the icon and the style. Lookups honor `Website` only on cards in

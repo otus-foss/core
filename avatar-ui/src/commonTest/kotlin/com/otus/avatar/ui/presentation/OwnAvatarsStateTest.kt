@@ -57,7 +57,7 @@ class OwnAvatarsStateTest {
             assertNotNull(state.error)
         }
 
-    private fun styled(letters: String) = ContactAvatar.Styled(AvatarStyle("blue", AvatarMark.Letters(letters)))
+    private fun styled(letters: String) = ContactAvatar.Styled(AvatarStyle("Blue", AvatarMark.Letters(letters)))
 }
 
 /** Holds each save until the test completes its gate, and keeps the last saved avatar. */

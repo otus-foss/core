@@ -23,7 +23,7 @@ import kotlin.test.assertTrue
 
 class JmapOwnAvatarsTest {
     private val photo = ContactAvatar.Photo(AvatarImage(byteArrayOf(1, 2, 3)), "image/png")
-    private val letters = ContactAvatar.Styled(AvatarStyle("blue", AvatarMark.Letters("AL")))
+    private val letters = ContactAvatar.Styled(AvatarStyle("Blue", AvatarMark.Letters("AL")))
 
     @Test
     fun aPhotoOnACardWithoutMediaSetsTheMap() =

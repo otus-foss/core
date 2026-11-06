@@ -11,7 +11,7 @@ import kotlinx.serialization.json.contentOrNull
 
 /**
  * An avatar the user built in Otus instead of a photo: a color and what sits on it. [color] is the
- * [AvatarColor.id] of a preset, such as `blue`, or a custom `#RRGGBB`. The names in [mark] are keys
+ * [AvatarColor.id] of a preset, such as `Blue`, or a custom `#RRGGBB`. The names in [mark] are keys
  * each app maps to its own symbols, so this type holds no UI values.
  */
 public data class AvatarStyle(
@@ -21,26 +21,24 @@ public data class AvatarStyle(
 
 /**
  * The preset colors of an [AvatarStyle]. A card stores the [id], which never changes, so the colors
- * of saved avatars do not follow renames in the design system.
+ * of saved avatars do not follow renames in the design system. The ids are the capitalized names
+ * older builds wrote and still read, such as `Blue`.
  */
 public enum class AvatarColor(
     public val id: String,
 ) {
-    Red("red"),
-    Orange("orange"),
-    Yellow("yellow"),
-    Green("green"),
-    Teal("teal"),
-    Blue("blue"),
-    Purple("purple"),
-    Pink("pink"),
+    Red("Red"),
+    Orange("Orange"),
+    Yellow("Yellow"),
+    Green("Green"),
+    Teal("Teal"),
+    Blue("Blue"),
+    Purple("Purple"),
+    Pink("Pink"),
     ;
 
     public companion object {
-        /**
-         * The preset [stored] names, or null for a custom color. Cards saved before the ids hold the
-         * capitalized design-system names, such as `Blue`, so case does not matter.
-         */
+        /** The preset [stored] names, in any case, or null for a custom color. */
         public fun of(stored: String): AvatarColor? = entries.firstOrNull { it.id.equals(stored, ignoreCase = true) }
     }
 }

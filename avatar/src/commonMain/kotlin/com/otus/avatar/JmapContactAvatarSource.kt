@@ -4,11 +4,12 @@ import com.otus.jmap.GetMethod
 import com.otus.jmap.JmapCapability
 import com.otus.jmap.JmapConnection
 import com.otus.jmap.JmapConnections
-import com.otus.jmap.contacts.AddressBook
-import com.otus.jmap.contacts.AddressBookType
+import com.otus.jmap.JmapType
+import com.otus.jmap.contacts.AddressBookRights
 import com.otus.jscontact.Card
 import com.otus.jscontact.Media
 import com.otus.jscontact.MediaKind
+import kotlinx.serialization.Serializable
 import kotlin.io.encoding.Base64
 
 /**
@@ -44,9 +45,9 @@ public class JmapContactAvatarSource(
     private suspend fun readableBooks(
         connection: JmapConnection,
         account: String,
-    ): List<AddressBook> =
+    ): List<LookupBook> =
         connection
-            .call(GetMethod(AddressBookType, account))
+            .call(GetMethod(LookupBookType, account, properties = listOf("id", "isSubscribed", "myRights")))
             .list
             .filter { it.myRights.mayRead && (it.isSubscribed || it.myRights.mayWrite) }
 
@@ -113,6 +114,19 @@ private fun inlineContactImage(uri: String): AvatarImage? {
         null
     }
 }
+
+/**
+ * The parts of an AddressBook that avatar lookup reads. RFC 9610 requires `isSubscribed`, but a
+ * server that omits it still shows the book's cards, so a missing value counts as subscribed here.
+ */
+@Serializable
+private data class LookupBook(
+    val id: String,
+    val isSubscribed: Boolean = true,
+    val myRights: AddressBookRights = AddressBookRights(),
+)
+
+private val LookupBookType = JmapType("AddressBook", JmapCapability.CONTACTS, LookupBook.serializer())
 
 private const val MAX_INLINE_IMAGE_CHARS = 700_000
 private const val AVATAR_DOWNLOAD_NAME = "avatar"
