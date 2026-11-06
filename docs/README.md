@@ -28,7 +28,7 @@
 - [Design system](designsystem.md): the `designsystem` module's contents, resources, and tests.
 - [UI package migration](ui-package-migration.md): the domain layout and declaration moves in 0.10.0.
 - [Using Meta from an app](consuming.md): how Mail and Calendar build Meta from source.
-- [Releasing](releasing.md): versions, changelog, and publishing.
+- [Releasing](releasing.md): versions and the changelog.
 - [Quality gate](quality.md): commands, convention plugins, shared tools, and checks for all three
   repositories.
 
@@ -52,5 +52,6 @@
 - [0016: JMAP contacts modules](decisions/0016-contacts-modules.md)
 - [0017: Apple push through an APNs bridge](decisions/0017-apple-push.md)
 - [0018: UI domain packages](decisions/0018-ui-domain-packages.md)
+- [0019: Meta publishes no artifacts](decisions/0019-no-library-publishing.md)
 
 Decisions 0001 to 0004 were made in the app repositories and apply to every Otus repository.

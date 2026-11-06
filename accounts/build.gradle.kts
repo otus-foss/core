@@ -1,5 +1,5 @@
 // JMAP account setup shared by the apps: verification, saved logins, and the setup page. Each app
-// passes the JMAP service it needs. Published as com.otus:accounts.
+// passes the JMAP service it needs.
 plugins {
     id("otus.kmp-compose-library")
 }

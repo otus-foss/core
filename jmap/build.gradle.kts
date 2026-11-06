@@ -1,5 +1,5 @@
 // Provider-independent JMAP client (RFC 8620) and login storage. No UI and no app code, so Mail and
-// Calendar can both depend on it. Every public declaration is explicit. Published as com.otus:jmap.
+// Calendar can both depend on it. Every public declaration is explicit.
 plugins {
     id("otus.kmp-library")
     alias(libs.plugins.kotlinSerialization)

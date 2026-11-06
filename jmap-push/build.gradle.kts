@@ -1,5 +1,5 @@
-// Keeps JMAP push subscriptions (RFC 8620, section 7.2) pointed at each login's push endpoint.
-// No UI and no platform push code; apps connect their push service. Published as com.otus:jmap-push.
+// Keeps JMAP push subscriptions (RFC 8620, section 7.2) pointed at each login's push endpoint. No
+// UI and no platform push code; apps connect their push service.
 plugins {
     id("otus.kmp-library")
     alias(libs.plugins.kotlinSerialization)

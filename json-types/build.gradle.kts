@@ -1,6 +1,5 @@
 // The JSON conventions of RFC 8620 that JSContact (RFC 9553) reuses: UTCDate text and PatchObject
-// paths. Only kotlinx.serialization, so jscontact stays free of networking. Published as
-// com.otus:json-types.
+// paths. Only kotlinx.serialization, so jscontact stays free of networking.
 plugins {
     id("otus.kmp-library")
 }

@@ -59,7 +59,7 @@ version they read comes from `gradle/libs.versions.toml`.
 | --- | --- | --- |
 | `otus.settings` | every settings file | the Google and Maven Central repositories |
 | `otus.quality` | every root project | Spotless, detekt with Meta's `config/detekt.yml`, the architecture check and tool tests, Ruff, `formatAll`, `qualityCheck`, Kover, test sharding |
-| `otus.kmp-library` | Meta's modules without UI | iOS and Android targets, SDKs, JVM 11, warnings as errors, explicit API, the package `com.otus.<module>`, publishing |
+| `otus.kmp-library` | Meta's modules without UI | iOS and Android targets, SDKs, JVM 11, warnings as errors, explicit API, the package `com.otus.<module>` |
 | `otus.kmp-compose-library` | Meta's Compose modules | the same, with Compose and Android resources |
 | `otus.kmp-app` | an app's `shared` module | the same targets and SDKs, Compose, and the static `Shared` iOS framework |
 | `otus.android-app` | an app's `androidApp` module | namespace and application id `com.otus.<app>`, SDKs, JVM 11, lint, warnings as errors |
@@ -97,7 +97,7 @@ in one place. Their tests live in `tools/tests` here.
 | `check_commit_message.py` | the `commit-msg` hook of every repository |
 | `coverage_report.py` | the coverage summary |
 | `launch_colors.py` | writes an app's launch-window colors from the theme |
-| `brand_drawables.py`, `check_publications.py` | Meta's brand drawables and release check |
+| `brand_drawables.py` | Meta's brand drawables |
 
 One copy of `config/detekt.yml` serves all three repositories. `.editorconfig` and `ruff.toml`
 must sit at each repository's root for editors and Ruff to find them, so the apps keep copies,
@@ -178,10 +178,7 @@ require checks on their GitHub plan, so CI reports results but cannot block a me
 
 In Meta, the `check` job runs `checkAll` as three parallel jobs: `qualityCheck`,
 `checkDesignSystem`, and `checkLibraries`. The `ios` job runs every module's iOS simulator tests.
-The `publish` workflow is paused: it runs only by hand and then validates without uploading. The
-publisher builds Android and both iOS library variants on Linux and verifies the complete local
-Maven publication; pull request CI does not build publications. See [Releasing](releasing.md) and
-[decision 0011](decisions/0011-linux-library-publication.md).
+Meta builds no publications; see [decision 0019](decisions/0019-no-library-publishing.md).
 
 ## Commit messages
 

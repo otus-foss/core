@@ -77,16 +77,6 @@ secret to a Gradle step or shares one through a workflow or job `env`.
 
 ## Packages
 
-Meta publishes to GitHub Packages at `https://maven.pkg.github.com/reazndev/otus-meta`. The apps
-do not download from it.
-**Publishing is paused:** the `publish` workflow runs only when started by hand, and a manual run
-never uploads, so a version tag publishes nothing until the tag trigger returns to
-`.github/workflows/publish.yml`. With that trigger, a version tag on `main` starts the workflow on
-Linux. Its `build` job runs the modules' host tests,
-builds every publication in an isolated local Maven repository, and verifies the root metadata,
-platform binaries, checksums, and `com.otus` dependency versions. Its `publish` job then uploads
-with the workflow's `GITHUB_TOKEN`. The workflow does not run `checkAll`; run it by hand before tagging.
-A manual run does the same checks without uploading. See [releasing](releasing.md).
-
-GitHub Packages has versions up to 0.3.0 and from 0.6.0 on. Versions 0.3.1 to 0.5.0 are not
-on GitHub Packages.
+Meta publishes no packages; the apps build it from source
+([decision 0019](decisions/0019-no-library-publishing.md)). GitHub Packages still holds the old
+versions, up to 0.3.0 and from 0.6.0 on, and gets no new ones.

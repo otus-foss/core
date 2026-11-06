@@ -1,13 +1,9 @@
-"""Secrets reach only the workflow steps that need them, never a Gradle build.
-
-The one exception is the run's own GITHUB_TOKEN, which Meta's publish step hands Gradle to upload
-to the repository's package registry; it expires with the run.
-"""
+"""Secrets reach only the workflow steps that need them, never a Gradle build."""
 
 import re
 from pathlib import Path
 
-REPOSITORY_SECRET = re.compile(r"secrets\.(?!GITHUB_TOKEN\b)")
+REPOSITORY_SECRET = re.compile(r"secrets\.")
 STEP = re.compile(r" {6}- ")
 SHARED_ENV = re.compile(r"(?: {4})?env:\s*$")
 

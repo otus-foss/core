@@ -1,5 +1,4 @@
-// Locale-aware date formatting and the user's date-format preference. No UI. Published as
-// com.otus:dateformat.
+// Locale-aware date formatting and the user's date-format preference. No UI.
 plugins {
     id("otus.kmp-library")
 }

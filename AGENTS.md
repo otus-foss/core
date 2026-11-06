@@ -217,5 +217,5 @@ Update `docs/architecture.md` when modules or boundaries change.
 Mail, Calendar, and this repository are separate Git repositories. The apps build Meta from
 source, from a sibling checkout or `otus.meta.path`, and their CI checks Meta out beside them.
 When a change here needs app changes, use the same branch name in each repository and merge Meta's
-pull request first; see `docs/consuming.md`. Do not publish a release, push tags, or change
-package access without a concrete task.
+pull request first; see `docs/consuming.md`. Do not push release tags without a concrete
+task.

@@ -1,5 +1,5 @@
-// Shared settings pages: the settings list, Appearance & behavior with the date-format choice, and the theme page.
-// Published as com.otus:settings.
+// Shared settings pages: the settings list, Appearance & behavior with the date-format choice, and
+// the theme page.
 plugins {
     id("otus.kmp-compose-library")
 }

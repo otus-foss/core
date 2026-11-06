@@ -18,8 +18,8 @@ used only by Mail. See [decision 0008](decisions/0008-central-ui-ownership.md).
 ## Modules
 
 Each top-level directory with a `build.gradle.kts` and `src/` is one library module. A module
-named `jmap-mail` uses the package `com.otus.jmap.mail` and publishes the Maven artifact
-`com.otus:jmap-mail`. The architecture checker derives the namespace from the directory name.
+named `jmap-mail` uses the package `com.otus.jmap.mail` and the coordinates `com.otus:jmap-mail`,
+which the apps' composite builds resolve to the module. The architecture checker derives the namespace from the directory name.
 
 ```text
 <module>/
@@ -40,8 +40,7 @@ sets. Keep this build structure and organize responsibilities beneath the module
 The first modules move existing code. `jmap` moved in version 0.1.0; `designsystem`, `dateformat`,
 and `avatar` moved from Mail in 0.2.0. Version 0.3.0 added `accounts` and `settings`,
 plus the historical date-range picker and avatar-stack pill in `designsystem`. Mail consumes every
-module. Calendar consumes `dateformat`, `designsystem`, and `settings` (with `storage`), and
-declares `avatar` without using it yet. Both apps build Meta from source; see
+module. Calendar consumes only `designsystem` so far. Both apps build Meta from source; see
 [consuming](consuming.md).
 
 | Order | Module | Source | Notes |

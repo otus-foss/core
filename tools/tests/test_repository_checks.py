@@ -44,12 +44,6 @@ class WorkflowSecretTests(unittest.TestCase):
             ["step 'Sign' runs Gradle with a secret"], workflow_secret_violations(text)
         )
 
-    def test_gradle_may_publish_with_the_run_token(self):
-        text = WORKFLOW.replace("secrets.KEY", "secrets.GITHUB_TOKEN").replace(
-            "apksigner sign app.apk", "./gradlew publish"
-        )
-        self.assertEqual([], workflow_secret_violations(text))
-
     def test_workflow_and_job_env_share_no_secrets(self):
         for text in (
             "env:\n  TOKEN: ${{ secrets.TOKEN }}\n" + WORKFLOW,

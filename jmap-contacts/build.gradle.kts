@@ -1,6 +1,5 @@
 // JMAP for Contacts (RFC 9610): address books and contact cards over the jmap client, with cards
-// typed by jscontact. No UI and no app code, so Mail and Calendar can both use it. Published as
-// com.otus:jmap-contacts.
+// typed by jscontact. No UI and no app code, so Mail and Calendar can both use it.
 plugins {
     id("otus.kmp-library")
     alias(libs.plugins.kotlinSerialization)

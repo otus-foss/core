@@ -1,5 +1,4 @@
 // The Otus design system: theme tokens, elements, and components driven by values and callbacks.
-// Published as com.otus:designsystem.
 plugins {
     id("otus.kmp-compose-library")
     id("otus.screenshots")

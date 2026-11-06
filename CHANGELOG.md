@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+- Build: Meta publishes no packages any more (decision 0019). The `publish` workflow, the
+  publication checker, and `maven-publish` are gone; the apps build Meta from source.
+- JMAP: `JmapClient.download`, `upload`, and `downloadStream` are internal. Breaking: download and
+  upload through `JmapConnection`, which holds the session and credentials.
+- JSContact: `Card.toJsonObject()` is public, so callers stop encoding cards themselves.
+- Design system: add `offlineHtml`, the Read view's seal for a message with remote content off,
+  for printing. Breaking: remove `PanelSearchField`, `SearchHitRow`, their two `PanelTokens`,
+  `FilterTokens.pickAvatarSize`, and the unused `Spacing` steps `xxs`, `m`, and `xxl`; see
+  docs/removed-apis.md. `InfoStrip` reads `TypeScale.detail` instead of `ReadTokens.detailSize`.
+- Avatars: lookup counts an address book without `isSubscribed` as subscribed, as before the
+  shared `AddressBook` type.
 - Settings: add `SettingsSectionSpec` with `ToggleRowSpec`, `ChoiceRowSpec`, and `PageRowSpec`,
   which `SettingSections` and `SettingSpecRow` show and `sections` and `row` add to the settings
   index, so a page declares each searchable row once. A null `icon` in the index DSL now means the
@@ -18,8 +29,8 @@
   (`closeButton`) replaces `ClosableSheet`; `Chip` (`look`, `role`) replaces `FilterChip`;
   `UiAction` replaces `MenuAction`, `ToastAction`, `StripAction`, `BannerAction`, `PairButton`,
   and `SheetConfirm`, and `BarAction`, `SwipeAction`, and `OptionsItem.Action` wrap it;
-  `Caption` replaces `ListCaption`. `SwipeActions` takes `settledBy` and returns a kept row when
-  it changes, instead of after a second.
+  `Caption` replaces `ListCaption`. `SwipeActions` takes `settledBy` and returns a kept row as
+  soon as it changes; a row nothing changes still returns after a second.
 - Design system: add `dragToSelect`, `LoadMoreNearEnd`, `OrderedChoiceSheet`, `Confirmation`,
   `hiddenWhen`, and the grown panel's layers and stages (`GrownPanelLayers`, `grownPanelHeight`),
   moved from Mail.
@@ -48,7 +59,7 @@
   editor, moved from `accounts`. Breaking: `AccountSetupScreen` takes `AccountAvatars` and an
   editor slot, `ConnectedAccountRow` takes `ChipAvatar`s, and `accounts` no longer exposes
   `avatar`. `ownAddresses` moved to `com.otus.accounts.domain`.
-- Avatars: styles store `AvatarColor` ids such as `blue`; saved design-system names still read.
+- Avatars: styles store `AvatarColor` ids such as `Blue`, the names older builds read; any case reads.
   `IconSource` and `avatarOptions` move here from Mail. `JmapContactAvatarSource` and
   `JmapOwnAvatars` no longer take a `LoginStore`, and `AvatarService` is a `LoginLifecycle`.
 - Contacts: add `cardPatch(before, after)`. Breaking: remove `contactCardPatch`, `ContactCardSort`,

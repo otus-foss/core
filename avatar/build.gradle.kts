@@ -1,6 +1,6 @@
-// Account-scoped avatar lookup: JMAP contact photos, optional domain icons, and bounded caches.
-// No UI; apps decode images. Published as com.otus:avatar. Compose resources only package the
-// bundled Public Suffix List, so the code reads it without importing any Compose API.
+// Account-scoped avatar lookup: JMAP contact photos, optional domain icons, and bounded caches. No
+// UI; apps decode images. Compose resources only package the bundled Public Suffix List, so the
+// code reads it without importing any Compose API.
 plugins {
     id("otus.kmp-compose-library")
     alias(libs.plugins.kotlinSerialization)
