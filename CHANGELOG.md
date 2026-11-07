@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- `fillRail()` leaves out the rail's inset at both ends, so the last chip in a filled rail is no
+  longer clipped by the edge fade.
 - `IconPill` takes a `fill`, `bgRegular` by default, so it can match the pills beside it.
   `DetailsTable` now sits on a raised `darkSurface` card with the images banner's radius and inset.
 - Add a System theme: `SystemTheme` holds the device's colors, `ThemeChoice.withSystem()` selects
