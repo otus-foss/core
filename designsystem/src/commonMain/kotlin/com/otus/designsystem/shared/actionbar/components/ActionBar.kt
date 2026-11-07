@@ -3,7 +3,6 @@ package com.otus.designsystem.shared.actionbar.components
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.navigationBars
@@ -22,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.findRootCoordinates
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.layout.positionInRoot
@@ -149,29 +147,9 @@ public fun ActionBarHost(
 
 /**
  * Keeps a hosted bar, or what floats above it, [ActionBarTokens.barInset] above the navigation bar
- * and keyboard, and as far from the sides as it sits from the bottom of the screen.
+ * and keyboard, and the same distance from the sides as the rest of the page.
  */
 @Composable
-public fun Modifier.actionBarInset(): Modifier {
-    val navigation = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
-    return windowInsetsPadding(WindowInsets.navigationBars.union(WindowInsets.ime))
+public fun Modifier.actionBarInset(): Modifier =
+    windowInsetsPadding(WindowInsets.navigationBars.union(WindowInsets.ime))
         .padding(ActionBarTokens.barInset)
-        .padding(horizontal = navigation)
-}
-
-/**
- * Widens a hosted bar over the keyboard by the side padding [actionBarInset] adds for the
- * navigation bar. There the bar sits [ActionBarTokens.barInset] from the keyboard, so it keeps
- * only that gap at its sides too.
- */
-@Composable
-internal fun Modifier.overKeyboard(): Modifier {
-    val navigation = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
-    // A layout wider than its constraints is centered over them, so it reaches past both sides.
-    return layout { measurable, constraints ->
-        val extra = navigation.roundToPx() * 2
-        val wider = constraints.copy(minWidth = constraints.minWidth + extra, maxWidth = constraints.maxWidth + extra)
-        val placeable = measurable.measure(wider)
-        layout(placeable.width, placeable.height) { placeable.place(0, 0) }
-    }
-}
