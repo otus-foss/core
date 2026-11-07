@@ -28,6 +28,9 @@ Pull request workflows run once, when a pull request opens as ready or a draft i
 Drafts run nothing. Later pushes run them again only while the pull request has the
 `ci on every push` label, and adding the label runs them at once.
 
+The `land` workflow merges a pull request once a maintainer adds `ready to land`, together with
+its partners in the other repositories. See [landing](landing.md).
+
 Each `quality` run first lists the changed files: workflow-only and Markdown-only pull requests skip
 the build, and pull requests that change only Android code skip the macOS `ios` job. The
 `pull request` workflow labels each pull request by size (`size:XS` to `size:XL`, tests left
