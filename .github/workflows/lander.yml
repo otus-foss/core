@@ -23,6 +23,9 @@ env:
   LABEL: ready to land
   STATUS: otus/land
   MARKER: <!-- otus-land -->
+  # The jobs that only ask the ready-gate action whether to check anything. They pass on every
+  # push, even when every real check is skipped, so they never count as checks.
+  GATES: gate,changes
 
 jobs:
   # Ties each approval to one commit: a maintainer's label sets the otus/land status on the head
@@ -44,6 +47,7 @@ jobs:
           github-token: ${{ steps.token.outputs.token }}
           script: |
             const { LABEL, STATUS } = process.env;
+            const gates = process.env.GATES.split(',');
             const { owner, repo } = context.repo;
             const { action, pull_request: pr, sender } = context.payload;
             const issue = { owner, repo, issue_number: pr.number };
@@ -77,7 +81,8 @@ jobs:
             // A push after the one CI run leaves the new commit unchecked, so start the checks.
             const { data: checks } = await github.rest.checks.listForRef({ owner, repo, ref: pr.head.sha });
             const fromThisRepo = pr.head.repo?.full_name === pr.base.repo.full_name;
-            if (fromThisRepo && !checks.check_runs.some((run) => run.conclusion !== 'skipped')) {
+            const checked = checks.check_runs.some((run) => run.conclusion !== 'skipped' && !gates.includes(run.name));
+            if (fromThisRepo && !checked) {
               await github.rest.actions.createWorkflowDispatch({
                 owner, repo, workflow_id: 'quality.yml', ref: pr.head.ref,
               });
@@ -108,6 +113,7 @@ jobs:
           github-token: ${{ steps.token.outputs.token }}
           script: |
             const { LABEL, STATUS, MARKER, BOT } = process.env;
+            const gates = process.env.GATES.split(',');
             const repos = process.env.REPOS.split(',');
             const { owner } = context.repo;
             const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -153,6 +159,7 @@ jobs:
               const checks = [
                 ...runs
                   .filter((run) => run.conclusion !== 'skipped' && !run.name.startsWith('lander'))
+                  .filter((run) => run.conclusion !== 'success' || !gates.includes(run.name))
                   .map((run) => ({ name: run.name, state: run.status !== 'completed' ? 'pending' : run.conclusion })),
                 ...current
                   .filter((status) => status.context !== STATUS)

@@ -1,4 +1,4 @@
-# 0019: Meta publishes no artifacts
+# 0020: Meta publishes no artifacts
 
 Status: follows the user's decision of 2026-11-06 that both apps build Meta from source.
 

@@ -27,7 +27,7 @@
   `DateFormatPreference.fromStorageValue`.
 - Design system: `RowFolderIcon` takes an `icon` instead of a `FolderGlyphKind`, and
   `folderSymbol` takes only a role. `LetterIndexScrollGuard` is public again for Mail's contacts.
-- Build: Meta publishes no packages any more (decision 0019). The `publish` workflow, the
+- Build: Meta publishes no packages any more (decision 0020). The `publish` workflow, the
   publication checker, and `maven-publish` are gone; the apps build Meta from source.
 - JMAP: `JmapClient.download`, `upload`, and `downloadStream` are internal. Breaking: download and
   upload through `JmapConnection`, which holds the session and credentials.
@@ -96,18 +96,19 @@
 - Avatars: the module bundles the Public Suffix List, and `PublicSuffixDomainResolver()` reads it
   by default, so apps no longer ship their own copy. A custom loader still works.
 
-- Design system: `LetterIndex` can sit on either edge. Breaking: it takes `side: LetterIndexSide` and
-  `onSideChange`; a button in the other top corner switches sides on a tap or when a dragging
+- Design system: `LetterIndex` can sit on either edge. Breaking: it takes `side: LetterIndexSide`
+  and `onSideChange`; a button in the other top corner switches sides on a tap or when a dragging
   finger lifts on it. A heading's press zone follows the side.
-- Design system: the letter index scrolls within a thumb's reach: the edge zones sit about four rows above and
-  below the pressed heading, and every letter can scroll into that reach.
-- Design system: `IndexLetter` takes `names`; the current letter shows the first two in place of its count, or
-  only the first when it is longer than ten characters.
+- Design system: the letter index scrolls within a thumb's reach: the edge zones sit about four
+  rows above and below the pressed heading, and every letter can scroll into that reach.
+- Design system: `IndexLetter` takes `names`; the current letter shows the first two in place of
+  its count, or only the first when it is longer than ten characters.
 
-- Design system: `actionBarInset()` keeps the bar `barInset` from the sides instead of adding the navigation bar
-  height, so it lines up with the page. `FormattingBar` no longer widens itself over the keyboard.
-- Design system: `fillRail()` leaves out the rail's inset at both ends, so the last chip in a filled rail is no
-  longer clipped by the edge fade.
+- Design system: a hosted action bar keeps `barInset` from the sides instead of adding the
+  navigation bar height, so it lines up with the page. `FormattingBar` no longer widens itself
+  over the keyboard.
+- Design system: `fillRail()` leaves out the rail's inset at both ends, so the last chip in a
+  filled rail is no longer clipped by the edge fade.
 - `IconPill` takes a `fill`, `bgRegular` by default, so it can match the pills beside it.
   `DetailsTable` now sits on a raised `darkSurface` card with the images banner's radius and inset.
 - Add a System theme: `SystemTheme` holds the device's colors, `ThemeChoice.withSystem()` selects

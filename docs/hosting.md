@@ -40,6 +40,9 @@ because Ubicloud has no macOS runners, and only while the repository variable `I
 - `actionlint` lints workflows in pull requests that change `.github/`.
 - `issue link` warns when a pull request closes no issue, and `issue report` lists each Monday the
   open issues that merged pull requests name, in an issue called "Open issues with merged work".
+- `land` merges a pull request once a maintainer adds `ready to land`, together with its partners
+  in the other repositories; see [landing](landing.md). It runs on label changes and pushes, and
+  on every finished check workflow, and checks out no code, so it needs no ready gate.
 
 Dependabot opens one grouped pull request a week each for GitHub Actions, Gradle, and the pinned
 Python tools. The apps' Gradle updates cover only their `gradle/app.versions.toml`; the shared
@@ -57,15 +60,13 @@ The rule lives once, in the `ready-gate` action. Each workflow starts with a sma
 the changed files: workflow-only and Markdown-only pull requests skip the build, and pull requests
 that change only Android code skip the macOS `ios` job.
 
-The `land` workflow merges a pull request once a maintainer adds `ready to land`, together with
-its partners in the other repositories. See [landing](landing.md).
-
 ## Shared actions
 
-Meta's `.github/actions` holds the steps every repository repeats. GitHub cannot run a reusable
-workflow from another private repository, so the apps check out otus-meta and use the actions
-from that checkout with `uses: ./otus-meta/.github/actions/<name>`; Meta uses
-`./.github/actions/<name>`.
+Meta's `.github/actions` holds the steps every repository repeats. The apps check out otus-meta
+and use the actions from that checkout with `uses: ./otus-meta/.github/actions/<name>`, so each
+job runs the actions of the Meta branch it builds with; Meta uses `./.github/actions/<name>`. Only
+the apps' `land` workflow calls Meta directly, `lander.yml` from `main`, which needs Meta's Actions
+access setting; see [landing](landing.md#setup).
 
 - `ready-gate` says whether the run should check anything.
 - `quality-changes` lists the changed files and says which `quality` jobs they need.
@@ -88,5 +89,5 @@ secret to a Gradle step or shares one through a workflow or job `env`.
 ## Packages
 
 Meta publishes no packages; the apps build it from source
-([decision 0019](decisions/0019-no-library-publishing.md)). GitHub Packages still holds the old
+([decision 0020](decisions/0020-no-library-publishing.md)). GitHub Packages still holds the old
 versions, up to 0.3.0 and from 0.6.0 on, and gets no new ones.

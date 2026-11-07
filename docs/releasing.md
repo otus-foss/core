@@ -16,7 +16,7 @@ the apps change, which their partner branches do in the same landing. A release 
 
 ## Tags
 
-Meta builds no packages; see [decision 0019](decisions/0019-no-library-publishing.md). A release sets
+Meta builds no packages; see [decision 0020](decisions/0020-no-library-publishing.md). A release sets
 `version` in `gradle.properties`, renames `Unreleased` in the changelog, and tags that commit on
 `main` as `v<version>`. Run `./gradlew checkAll` on that commit first; no
 hook runs it for a tag.

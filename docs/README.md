@@ -54,6 +54,6 @@
 - [0017: Apple push through an APNs bridge](decisions/0017-apple-push.md)
 - [0018: UI domain packages](decisions/0018-ui-domain-packages.md)
 - [0019: Landing partner pull requests together](decisions/0019-linked-landing.md), proposed
-- [0019: Meta publishes no artifacts](decisions/0019-no-library-publishing.md)
+- [0020: Meta publishes no artifacts](decisions/0020-no-library-publishing.md)
 
 Decisions 0001 to 0004 were made in the app repositories and apply to every Otus repository.

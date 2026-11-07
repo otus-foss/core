@@ -181,7 +181,7 @@ In Meta, the `check` job runs `checkAll` as three parallel jobs: `qualityCheck`,
 module's `iosMain` on Linux with `compileIosMainKotlinMetadata`. The `apps` job compiles Mail's and
 Calendar's Android code against the pull request, at the app branch with the same name or at the
 app's `main`. The `ios` job runs every module's iOS simulator tests on macOS.
-Meta builds no publications; see [decision 0019](decisions/0019-no-library-publishing.md).
+Meta builds no publications; see [decision 0020](decisions/0020-no-library-publishing.md).
 
 ## Commit messages
 

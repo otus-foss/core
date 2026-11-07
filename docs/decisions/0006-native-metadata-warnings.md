@@ -26,5 +26,5 @@ deleting it and running `./gradlew :designsystem:compileIosMainKotlinMetadata`.
 
 - The `android` CI job runs `publishToMavenLocal`, so publication problems appear before a tag.
 - The publish workflow builds every publication locally before uploading any of them.
-- Since [decision 0019](0019-no-library-publishing.md), Meta builds no publications, so neither
+- Since [decision 0020](0020-no-library-publishing.md), Meta builds no publications, so neither
   check runs any more.

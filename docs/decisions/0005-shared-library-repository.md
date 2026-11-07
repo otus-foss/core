@@ -14,7 +14,7 @@ stuck on 0.7.0. The "composite builds only" alternative below is now the rule: e
 otus-meta in CI with the read-only `OTUS_META_DEPLOY_KEY` deploy key. The rest of this decision
 stands. See [consuming.md](../consuming.md).
 
-**Publishing superseded on 2026-11-06** by [decision 0019](0019-no-library-publishing.md): Meta
+**Publishing superseded on 2026-11-06** by [decision 0020](0020-no-library-publishing.md): Meta
 no longer builds or uploads packages.
 
 ## Decision
