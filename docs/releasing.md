@@ -3,18 +3,16 @@
 ## Versions
 
 All modules share one version and are released together from one tag. The apps do not consume
-releases: they build Meta from source, see [consuming](consuming.md). A release names a point in
-Meta's history that the changelog describes.
-
-Use semantic versioning. While the version is below 1.0.0, a minor release (`0.2.0`) may break
-public API and a patch release (`0.1.1`) may not. From 1.0.0, only a major release may break
-public API.
+releases: they build Meta's `main` from source, see [consuming](consuming.md), so a version number
+protects no caller. A release only names a point in Meta's history that the changelog describes;
+raise the minor number for each one.
 
 ## Changelog
 
 Every pull request that changes a module's public API or behavior adds a line under
-`## Unreleased` in `CHANGELOG.md`. A breaking change names the affected declarations and the
-migration each app needs. A release renames `Unreleased` to the version and date.
+`## Unreleased` in `CHANGELOG.md`. A breaking change names the affected declarations and what
+the apps change, which their partner branches do in the same landing. A release renames
+`Unreleased` to the version and date.
 
 ## Tags
 
@@ -29,6 +27,7 @@ Record unrun checks when tagging.
 
 ## Compatibility checks
 
-Both apps build against Meta's source, so a breaking change lands with the matching app changes:
-open them on branches with the same name and merge Meta's first; see
-[consuming.md](consuming.md).
+Both apps build against Meta's source, so a breaking change lands with the matching app changes.
+Open them on branches with the same name. Meta's `quality` workflow compiles each app at that
+branch, or at its `main`, against the Meta pull request, so a change that breaks an app fails
+there first; see [consuming.md](consuming.md).

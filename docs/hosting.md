@@ -65,14 +65,21 @@ from that checkout with `uses: ./otus-meta/.github/actions/<name>`; Meta uses
 `./.github/actions/<name>`.
 
 - `ready-gate` says whether the run should check anything.
+- `quality-changes` lists the changed files and says which `quality` jobs they need.
 - `setup-build` installs Java, Gradle, the Android SDK packages, and the pinned Python tools.
-- `meta-partner` switches an otus-meta checkout to the branch with the app's branch name when
-  there is one.
+- `size-label` labels a pull request by size.
+- `screenshot-comment` comments the screenshots a pull request adds or changes.
+
+Every app job checks otus-meta out with its full history and first switches it to the branch with
+the app's branch name when there is one, so every action it then runs comes from that branch. An
+action change is therefore tested by its partner app pull request, and an app pull request runs
+before its Meta partner merges.
 
 An app's build jobs check the app out to `otus-<app>` and Meta to `otus-meta`, side by side as on
 a development machine, so Gradle finds Meta at `../otus-meta` and Spotless never sees Meta's
 files. The apps read otus-meta with the read-only `OTUS_META_DEPLOY_KEY` deploy key, which only
-the checkout steps receive. Meta's architecture check fails a workflow that gives a repository
+the checkout steps receive. Meta's `apps` job reads the apps the same way, with the
+`OTUS_MAIL_DEPLOY_KEY` and `OTUS_CALENDAR_DEPLOY_KEY` deploy keys. Meta's architecture check fails a workflow that gives a repository
 secret to a Gradle step or shares one through a workflow or job `env`.
 
 ## Packages

@@ -30,7 +30,8 @@ compiling for iOS. Read [the suite product goals](docs/suite/product-goals.md) a
 - Move existing code here when both apps need it or the user explicitly requests a suite
   extraction. Do not add speculative modules or placeholder files.
 - Enable explicit API mode and warnings as errors in every module. Public declarations are a
-  contract with both apps; change them only with a changelog entry and the right version bump.
+  contract with both apps; change them with a changelog entry and, when an app's call sites
+  break, a partner app branch of the same name that lands with it.
 - `designsystem` modules follow **elements → components**, with tokens in `theme` and values
   and callbacks at their public boundary. Put UI in `shared/<group>/elements` or `components`,
   or in `mail/<feature>/elements` or `components` for mail-specific rendering. Add a `calendar`

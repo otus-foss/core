@@ -71,6 +71,53 @@ jobs:
       - uses: ./.github/actions/setup-build
       - run: ./gradlew ${{ matrix.tasks }} --console=plain
 
+  # Compiles each app against this Meta, at the app branch with this branch's name when there is one,
+  # else its main, so a Meta change that breaks an app shows here before it lands. Each app's
+  # deploy key is a secret here, as OTUS_META_DEPLOY_KEY is in the apps.
+  apps:
+    needs: changes
+    if: needs.changes.outputs.build == 'true'
+    name: apps (${{ matrix.app }})
+    runs-on: ubicloud-standard-2
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - app: otus-mail
+            key: OTUS_MAIL_DEPLOY_KEY
+            tasks: :shared:compileAndroidMain :androidApp:compileDebugKotlin
+          - app: otus-calendar
+            key: OTUS_CALENDAR_DEPLOY_KEY
+            tasks: :androidApp:compileDebugKotlin
+    defaults:
+      run:
+        working-directory: ${{ matrix.app }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: otus-meta
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: reazndev/${{ matrix.app }}
+          path: ${{ matrix.app }}
+          fetch-depth: 0
+          ssh-key: ${{ secrets[matrix.key] }}
+          persist-credentials: false
+      - name: Use the app partner branch
+        env:
+          BRANCH: ${{ github.head_ref || github.ref_name }}
+        run: |
+          if git rev-parse --verify --quiet "origin/$BRANCH" > /dev/null; then
+            git checkout --quiet --detach "origin/$BRANCH"
+          fi
+          git log --oneline -1
+      - uses: ./otus-meta/.github/actions/setup-build
+        with:
+          directory: ${{ matrix.app }}
+          python: "false"
+      - run: ./gradlew ${{ matrix.tasks }} -Potus.meta.path=../otus-meta --console=plain
+
   # Runs only while the repository variable IOS_CI is "on" (Settings > Secrets and variables >
   # Actions > Variables), so macOS minutes stay off until someone turns it back on.
   ios:

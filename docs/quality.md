@@ -178,8 +178,9 @@ require checks on their GitHub plan, so CI reports results but cannot block a me
 
 In Meta, the `check` job runs `checkAll` as three parallel jobs: `qualityCheck`,
 `checkDesignSystem`, and `checkLibraries`. A fourth part, outside `checkAll`, compiles every
-module's `iosMain` on Linux with `compileIosMainKotlinMetadata`. The `ios` job runs every module's
-iOS simulator tests on macOS.
+module's `iosMain` on Linux with `compileIosMainKotlinMetadata`. The `apps` job compiles Mail's and
+Calendar's Android code against the pull request, at the app branch with the same name or at the
+app's `main`. The `ios` job runs every module's iOS simulator tests on macOS.
 Meta builds no publications; see [decision 0019](decisions/0019-no-library-publishing.md).
 
 ## Commit messages

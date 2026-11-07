@@ -60,8 +60,14 @@ the checkout by that name.
 
 Give the Meta branch and the app branch the same name. The app's CI checks out otus-meta beside
 the app and switches to the branch with the app's branch name when one exists, or stays on Meta's
-`main`. Mail and Calendar label such a pull request `needs meta`. Merge the Meta pull request
-first, then the app's, so the app's `main` always builds against Meta's `main`.
+`main`. Every job does this before it runs a Meta action, so the gate, the build, and the
+pull-request facts all use the Meta that lands with the change, and an app pull request runs
+before its Meta partner merges. Meta's `quality` workflow does the same the other way round: its
+`apps` job compiles Mail and Calendar at the branch with Meta's branch name, or at their `main`,
+against the Meta pull request.
+
+Mail and Calendar label such a pull request `needs meta`. Merge the Meta pull request first, then
+the app's, so the app's `main` always builds against Meta's `main`.
 
 ## iOS
 
