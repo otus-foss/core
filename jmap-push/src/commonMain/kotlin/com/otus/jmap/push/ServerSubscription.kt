@@ -6,6 +6,7 @@ import com.otus.jmap.NewPushSubscription
 import com.otus.jmap.PushSubscriptionGetMethod
 import com.otus.jmap.PushSubscriptionSetMethod
 import com.otus.jmap.SetResult
+import com.otus.json.types.toUtcDate
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
@@ -158,6 +159,6 @@ internal class ServerSubscription(
 }
 
 /** A UTCDate in whole seconds, such as `2026-10-14T08:00:00Z`. */
-private fun utcDate(instant: Instant): String = Instant.fromEpochSeconds(instant.epochSeconds).toString()
+private fun utcDate(instant: Instant): String = Instant.fromEpochSeconds(instant.epochSeconds).toUtcDate()
 
 private fun JsonObject.stringOf(key: String): String? = (get(key) as? JsonPrimitive)?.takeIf { it.isString }?.content

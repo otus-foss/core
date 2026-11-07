@@ -36,12 +36,15 @@ public object UtcDateSerializer : KSerializer<Instant> {
 
     override fun deserialize(decoder: Decoder): Instant {
         val text = decoder.decodeString()
-        return text.toInstantOrNull() ?: throw SerializationException("not an RFC 3339 date-time: $text")
+        return text.toUtcDateOrNull() ?: throw SerializationException("not an RFC 3339 date-time: $text")
     }
 }
 
-/** Parses this RFC 3339 date-time, or returns null when it is not one or its year is not 0000 to 9999. */
-private fun String.toInstantOrNull(): Instant? =
+/**
+ * Reads this RFC 3339 date-time as [UtcDateSerializer] does, leap second included; null when it is
+ * not one or its year is not 0000 to 9999.
+ */
+public fun String.toUtcDateOrNull(): Instant? =
     takeIf { UNSIGNED_YEAR.containsMatchIn(it) }
         ?.replace(LEAP_SECOND) { it.groupValues[1] + LAST_NANOSECOND }
         ?.replace(LONG_FRACTION) { it.groupValues[1] }
@@ -54,7 +57,8 @@ private fun String.toInstantOrNull(): Instant? =
  */
 private fun Instant.inRfc3339Years(): Instant? = takeIf { it in RFC_3339_YEARS }
 
-private fun Instant.toUtcDate(): String {
+/** This instant as [UtcDateSerializer] writes it; its year must be 0000 to 9999. */
+public fun Instant.toUtcDate(): String {
     // Instant.toString() pads a fraction to groups of three digits, such as ".500Z".
     val text = toString()
     return if ('.' in text) text.dropLast(1).trimEnd('0') + "Z" else text
