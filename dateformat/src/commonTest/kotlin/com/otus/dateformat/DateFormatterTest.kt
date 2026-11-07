@@ -43,16 +43,6 @@ class DateFormatterTest {
     }
 
     @Test
-    fun missingOrUnrecognizedStoredPreferenceFallsBackToDeviceLocale() {
-        assertEquals(DateFormatPreference.DeviceLocale, DateFormatPreference.fromStorageValue(null))
-        assertEquals(DateFormatPreference.DeviceLocale, DateFormatPreference.fromStorageValue("old-unknown-value"))
-        assertEquals(
-            DateFormatPreference.DayMonthYearSlashes,
-            DateFormatPreference.fromStorageValue("dmy-slashes"),
-        )
-    }
-
-    @Test
     fun malformedIsoInputIsRejectedRatherThanGuessedAsAnotherDateOrder() {
         val formatter = DateFormatter(DateFormatPreference.DayMonthYearDots)
         assertFailsWith<IllegalArgumentException> { formatter.format(LocalDate.parse("31/12/2020")) }

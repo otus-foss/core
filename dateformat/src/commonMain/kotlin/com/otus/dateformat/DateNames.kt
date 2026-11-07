@@ -58,8 +58,12 @@ private val DateFormatter.dayFirst: Boolean
             else -> false
         }
 
+/** This month's English name, such as "January". */
+public val Month.fullName: String
+    get() = name.lowercase().replaceFirstChar(Char::uppercase)
+
 private val Month.shortName: String
-    get() = name.take(SHORT_NAME).lowercase().replaceFirstChar(Char::uppercase)
+    get() = fullName.take(SHORT_NAME)
 
 internal const val TODAY = "Today"
 internal const val YESTERDAY = "Yesterday"

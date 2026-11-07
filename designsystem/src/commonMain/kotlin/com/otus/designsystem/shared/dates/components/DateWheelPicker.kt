@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import com.otus.dateformat.fullName
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_close
 import com.otus.designsystem.shared.controls.elements.ActionButton
@@ -31,6 +32,7 @@ import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.tokens.selection.CalendarTokens
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.Month
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.number
 import kotlinx.datetime.onDay
@@ -141,21 +143,7 @@ internal fun DatePickerColumn(
 private const val DAY_REQUIRED = "Choose a day to continue."
 private const val DAY_OPTIONAL = "Leave day as Any to choose a month."
 
-internal val MONTH_NAMES =
-    listOf(
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-    )
+internal val MONTH_NAMES: List<String> = Month.entries.map { it.fullName }
 
 /** A date picker's [title], its close button, and a `text2` [note] on how to choose. */
 @Composable
