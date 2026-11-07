@@ -66,7 +66,7 @@
 - Design system: one component per job. Breaking: `PickRow` with `PickMark` and `PickStyle`
   replaces `SelectionRow`, `DropdownRow`, and `FilterPickRow`; `ListSheet` replaces `ScopeSheet`
   and `SelectionSheet`; `ChoiceSheet(saveOnDone)` replaces `RadioChoiceSheet`; `SheetFrame`
-  (`closeButton`) replaces `ClosableSheet`; `Chip` (`look`, `role`) replaces `FilterChip`;
+  (`closeButton`) replaces `ClosableSheet`; `Chip` (with a `ChipStyle`) replaces `FilterChip`;
   `UiAction` replaces `MenuAction`, `ToastAction`, `StripAction`, `BannerAction`, `PairButton`,
   and `SheetConfirm`, and `BarAction`, `SwipeAction`, and `OptionsItem.Action` wrap it;
   `Caption` replaces `ListCaption`. `SwipeActions` takes `settledBy` and returns a kept row as
@@ -125,7 +125,6 @@
 - Design system: `fillRail()` leaves out the rail's inset at both ends, so the last chip in a
   filled rail is no longer clipped by the edge fade.
 - `IconPill` takes a `fill`, `bgRegular` by default, so it can match the pills beside it.
-  `DetailsTable` now sits on a raised `darkSurface` card with the images banner's radius and inset.
 - Add a System theme: `SystemTheme` holds the device's colors, `ThemeChoice.withSystem()` selects
   them, and `ThemeSettingsState(store, system)` takes the current ones each launch. On Android,
   `Context.systemTheme()` reads the Material You colors in the device's light or dark mode, or

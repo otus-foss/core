@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -76,7 +78,7 @@ public fun rememberShownUntilClosed(
  * A grown panel's room: the [quick] view around the first stop, and the [lastStop] toward the last,
  * each fading with how far [expansion] is open and leaving the accessibility tree once faded out.
  * [shared], such as a message's details, sits above both and stays still while one fades into the
- * other, so it never redraws between the stops.
+ * other, so it never redraws between the stops; it scrolls when the stop is too short for it.
  * The quick view stays hidden while the panel skips past it. The last stop is composed only while
  * it is [lastStopOpen], and until the panel stops moving after, so its faded layer takes no taps.
  */
@@ -90,18 +92,22 @@ public fun GrownPanelLayers(
 ) {
     val position = { expansion.position }
     val sharedHidden by remember(expansion) { derivedStateOf { sharedAlpha(position(), expansion.skipping) == 0f } }
+    if (shared == null) {
+        Layers(expansion, lastStopOpen, quick, lastStop, fill = true)
+        return
+    }
+    // The layers keep their own height and the shared part takes the rest, scrolling when it is
+    // taller, so what sits under it stays in reach.
     Column(Modifier.fillMaxSize()) {
-        shared?.let { content ->
-            Box(
-                Modifier
-                    .fillMaxWidth()
-                    .graphicsLayer { alpha = sharedAlpha(position(), expansion.skipping) }
-                    .hiddenWhen(sharedHidden),
-            ) { content() }
-        }
-        Box(Modifier.weight(1f).fillMaxWidth()) {
-            Layers(expansion, lastStopOpen, quick, lastStop)
-        }
+        Box(
+            Modifier
+                .weight(1f, fill = false)
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .graphicsLayer { alpha = sharedAlpha(position(), expansion.skipping) }
+                .hiddenWhen(sharedHidden),
+        ) { shared() }
+        Layers(expansion, lastStopOpen, quick, lastStop, fill = false)
     }
 }
 
@@ -111,13 +117,15 @@ private fun Layers(
     lastStopOpen: Boolean,
     quick: @Composable () -> Unit,
     lastStop: @Composable () -> Unit,
+    fill: Boolean,
 ) {
     val position = { expansion.position }
+    val size = if (fill) Modifier.fillMaxSize() else Modifier.fillMaxWidth()
     val quickHidden by remember(expansion) {
         derivedStateOf { expansion.skipping || quickViewAlpha(position()) == 0f }
     }
     val lastHidden by remember(expansion) { derivedStateOf { lastStopAlpha(position()) == 0f } }
-    Box(Modifier.fillMaxSize()) {
+    Box(size) {
         Box(
             Modifier
                 .graphicsLayer { alpha = if (expansion.skipping) 0f else quickViewAlpha(position()) }
@@ -125,8 +133,7 @@ private fun Layers(
         ) { quick() }
         if (rememberShownWhileMoving(expansion, lastStopOpen)) {
             Box(
-                Modifier
-                    .fillMaxSize()
+                size
                     .graphicsLayer { alpha = lastStopAlpha(position()) }
                     .hiddenWhen(lastHidden),
             ) { lastStop() }
