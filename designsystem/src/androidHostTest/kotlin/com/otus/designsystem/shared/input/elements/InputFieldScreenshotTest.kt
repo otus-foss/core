@@ -53,6 +53,34 @@ class InputFieldScreenshotTest {
             InputField("Server", "https://jmap.mail.analytical-engine.example.com/.well-known/jmap", {}, WIDTH)
         }
 
+    @Test
+    fun valid() =
+        compose.screenshot("input_field_valid") {
+            InputField(
+                "Server",
+                "mail.example.org",
+                {},
+                WIDTH,
+                supportingText = "Connects to https://mail.example.org/.well-known/jmap",
+                kind = InputKind.Url,
+                valid = true,
+            )
+        }
+
+    @Test
+    fun invalid() =
+        compose.screenshot("input_field_invalid") {
+            InputField(
+                "Server",
+                "asdf",
+                {},
+                WIDTH,
+                supportingText = "This doesn't look like a server address.",
+                kind = InputKind.Url,
+                valid = false,
+            )
+        }
+
     private companion object {
         val WIDTH = Modifier.width(320.dp)
     }

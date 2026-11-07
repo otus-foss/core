@@ -19,7 +19,11 @@ import androidx.compose.ui.semantics.contentType
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import com.otus.designsystem.resources.Res
+import com.otus.designsystem.resources.symbol_check
+import com.otus.designsystem.resources.symbol_close
 import com.otus.designsystem.shared.controls.elements.Symbol
+import com.otus.designsystem.theme.colors.FolderColor
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.shapes.darkSurface
@@ -47,6 +51,20 @@ internal fun Modifier.inputFrame(endsWithButton: Boolean): Modifier {
 internal fun InputIcon(icon: DrawableResource) {
     CompositionLocalProvider(LocalContentColor provides OtusColors.text2) {
         Box(Modifier.padding(end = SheetTokens.gap)) { Symbol(icon) }
+    }
+}
+
+/**
+ * A green check when [valid], or a red ✕, at a field's end. The palette has no status colors, so it
+ * takes the Green and Red folder shades, which reach 3:1 contrast on `bgDark` in every theme.
+ */
+@Composable
+private fun ValidityMark(valid: Boolean) {
+    val color = if (valid) FolderColor.Green else FolderColor.Red
+    CompositionLocalProvider(LocalContentColor provides (color.tint ?: OtusColors.text2)) {
+        Box(Modifier.padding(start = SheetTokens.gap)) {
+            Symbol(if (valid) Res.drawable.symbol_check else Res.drawable.symbol_close)
+        }
     }
 }
 
@@ -87,6 +105,8 @@ internal fun InputBox(
                     if (value.isEmpty()) Text(look.placeholder, style = style, color = OtusColors.text3, maxLines = 1)
                     field()
                 }
+                val valid = look.valid
+                if (valid != null) ValidityMark(valid)
                 if (onRemove != null) RemoveFieldButton("Remove $description", onRemove)
             }
         },
