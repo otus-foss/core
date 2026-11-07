@@ -82,19 +82,34 @@ public class JmapClient(
         trustedOrigins: Set<String> = emptySet(),
         requireTrustedBlobOrigins: Boolean = false,
     ): JmapSession {
-        var target = urls.parse(url)
-        val trusted = trustedOrigins + target.origin()
+        val start = urls.parse(url)
+        val trusted = trustedOrigins + start.origin()
+        val (target, response) = getFollowingRedirects(start) { hop -> auth.takeIf { hop.origin() in trusted } }
+        val session = parseSession(target.requireTrusted(trusted), response, trusted)
+        if (requireTrustedBlobOrigins) urls.requireTrustedBlobOrigins(session)
+        return session
+    }
+
+    /**
+     * Whether [url] answers like a JMAP session resource when asked without credentials, following
+     * redirects such as `/.well-known/jmap`. Throws [JmapException.Unreachable] when nothing answers.
+     */
+    public suspend fun isJmapServer(url: String): Boolean =
+        getFollowingRedirects(urls.parse(url)) { null }
+            .second
+            .looksLikeSession()
+
+    /** The URL that finally answered a GET of [start], and its answer; [auth] picks each hop's credentials. */
+    private suspend fun getFollowingRedirects(
+        start: Url,
+        auth: (Url) -> JmapAuth?,
+    ): Pair<Url, RawResponse> {
+        var target = start
         repeat(policy.maxRedirects + 1) {
-            val authorized = target.origin() in trusted
-            val response = exchange(HttpMethod.Get, target, auth.takeIf { authorized }, body = null)
+            val response = exchange(HttpMethod.Get, target, auth(target), body = null)
             val location = response.location
-            if (response.status in REDIRECT_STATUSES && location != null) {
-                target = urls.resolve(target, location)
-            } else {
-                val session = parseSession(target.requireTrusted(trusted), response, trusted)
-                if (requireTrustedBlobOrigins) urls.requireTrustedBlobOrigins(session)
-                return session
-            }
+            if (response.status !in REDIRECT_STATUSES || location == null) return target to response
+            target = urls.resolve(target, location)
         }
         throw JmapException.TooManyRedirects()
     }

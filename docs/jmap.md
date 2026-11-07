@@ -146,6 +146,7 @@ only), OAuth, and sharing logins between the two installed apps.
 | Section | Behavior | Tests |
 | --- | --- | --- |
 | 2, 2.2 | Session resource; `/.well-known/jmap` with redirects (relative `Location` included); RFC 3986 URL resolution | `JmapDiscoveryTest`, `JmapUrlResolutionTest` |
+| 2 | `isJmapServer` probes a session URL without credentials, following the same redirects: a 401 or a session with the core capability counts as JMAP | `JmapServerProbeTest` |
 | 3.2–3.4 | Request envelope with `using`, invocations, `sessionState` | `JmapRequestTest`, `JmapConnectionTest` |
 | 3.6.1 | Request-level problem details become `RequestFailed(type, limit)` | `JmapDiscoveryTest` |
 | 3.6.2 | Method-level errors become `MethodError(type)` for that call only | `JmapRequestTest` |
