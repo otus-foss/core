@@ -26,8 +26,9 @@ Meta's history; see [releasing](../releasing.md).
 
 ## Consequences
 
-- No CI job builds Meta's iOS library variants on Linux any more. The apps' builds still compile
-  the iOS Kotlin targets they use, and the `ios` quality job runs on macOS when enabled.
+- No CI job builds Meta's iOS library variants any more. In their place, the quality workflow's
+  `ios metadata` part compiles every module's `iosMain` on Linux, and the `ios` job runs the iOS
+  tests on macOS when enabled.
 - The packages already on GitHub Packages (up to 0.3.0, and from 0.6.0 on) stay there and get
   no new versions.
 - Publishing again means restoring the workflow and checker from the commit that removed them

@@ -62,6 +62,10 @@ jobs:
             tasks: checkDesignSystem -x qualityCheck
           - part: libraries
             tasks: checkLibraries -x qualityCheck
+          # Not part of checkAll: compiles every module's iosMain on Linux, so iOS code breaks show
+          # even while the macOS job is off.
+          - part: ios metadata
+            tasks: compileIosMainKotlinMetadata -x qualityCheck
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/setup-build
