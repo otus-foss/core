@@ -35,6 +35,7 @@ that has it, on `origin/main` of otus-meta unless the entry names another branch
 | `FolderGlyphKind`, `FolderGlyph(kind)`, `RowFolderIcon.kind` | `designsystem` | 2026-11-07 | `d98e4a45` | Asked a folder glyph for the inbox symbol; `icon = symbol_inbox` with no color draws the same. |
 | `JmapFilter.and`, `JmapFilter.or` | `jmap` | 2026-11-07 | `d98e4a45` | Infix filter operators that kept chains of one operator flat; `allOf` and `anyOf` build the same filters. |
 | `DateFormatPreference.fromStorageValue` | `dateformat` | 2026-11-07 | `d98e4a45` | Read a saved date format; `DateFormatSettingsState` reads it, and only a test called this. |
+| `QuickPerson`, `QuickViewTokens.personStart`, `personEnd`, `personGap`, `personNameSize`, `personAddressSize` | `designsystem` | 2026-11-07 | `2b8a290b` | A quick view module for one person, such as who sent the open message; the Read view's expanded stop shows the message details instead. |
+| `DetailsTable` | `designsystem` | 2026-11-07 | `2b8a290b` | Detail rows on a raised card; the Read view draws `DetailRows` straight on its panel at both stops. |
 
 `ContactCardFilter` stays: the `avatar` module searches cards with it.
-| `QuickPerson`, `QuickViewTokens.personStart`, `personEnd`, `personGap`, `personNameSize`, `personAddressSize` | `designsystem` | 2026-11-07 | `2b8a290b` | A quick view module for one person, such as who sent the open message; the Read view's expanded stop shows the message details instead. |

@@ -14,35 +14,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.shapes.SmoothCornerShape
-import com.otus.designsystem.theme.shapes.darkSurface
-import com.otus.designsystem.theme.tokens.content.ReadTokens
 import com.otus.designsystem.theme.tokens.rows.DetailsTableTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
-
-/**
- * [DetailRows] on a raised card like the images banner, so text scrolling behind them stays out of
- * sight.
- */
-@Composable
-public fun DetailsTable(
-    rows: List<DetailLine>,
-    modifier: Modifier = Modifier,
-) {
-    DetailRows(
-        rows,
-        modifier
-            .fillMaxWidth()
-            .darkSurface(SmoothCornerShape(ReadTokens.bannerRadius))
-            .padding(horizontal = ReadTokens.bannerStart, vertical = DetailsTableTokens.padding),
-    )
-}
 
 /**
  * Label and value rows, such as a message's sender details: From, To, Date, and Folders. The labels
  * line up in a narrow `text3` column that grows with the font scale and wraps a long label to a
  * second line, and hairlines separate the rows. They draw no background, so they sit straight on a
- * panel or inside a [DetailsTable].
+ * panel.
  */
 @Composable
 public fun DetailRows(

@@ -2,10 +2,10 @@
 
 ## Unreleased
 
-- Design system: `DetailRows` draws a `DetailsTable`'s rows without its card, so they sit straight
-  on a panel, and `grownStopHeight(content)` gives a grown panel stop's height for measured
-  content. `GROWN_EXPANDED_STOP` names the expanded stop. Breaking: `QuickPerson` and its `QuickViewTokens.person*` tokens are gone; see
-  docs/removed-apis.md.
+- Design system: `DetailRows` replaces `DetailsTable` and draws the rows without a card, so they
+  sit straight on a panel. `grownStopHeight(content)` gives a grown panel stop's height for
+  measured content, and `GROWN_EXPANDED_STOP` names the expanded stop. Breaking: `DetailsTable`,
+  `QuickPerson`, and the `QuickViewTokens.person*` tokens are gone; see docs/removed-apis.md.
 - Accounts: the setup form checks the server address as it is typed and marks it with a check or
   a cross. Add `AccountRepository.checkServer(sessionUrl)` and `AccountsState.checkServer`, which
   ask without credentials whether an address answers like a JMAP server. Breaking for any other

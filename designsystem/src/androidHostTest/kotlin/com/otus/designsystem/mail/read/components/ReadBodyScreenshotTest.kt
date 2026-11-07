@@ -22,7 +22,7 @@ import com.otus.designsystem.shared.people.components.DemoPeople
 import com.otus.designsystem.shared.people.components.PersonChip
 import com.otus.designsystem.shared.people.components.Recipient
 import com.otus.designsystem.shared.rows.components.DetailLine
-import com.otus.designsystem.shared.rows.components.DetailsTable
+import com.otus.designsystem.shared.rows.components.DetailRows
 import com.otus.designsystem.shared.selection.components.PickMark
 import com.otus.designsystem.shared.selection.components.PickRow
 import com.otus.designsystem.theme.typography.panelTextStyle
@@ -59,8 +59,8 @@ class ReadBodyScreenshotTest {
 
     @Test
     fun details() =
-        compose.screenshot("details_table") {
-            DetailsTable(
+        compose.screenshot("detail_rows") {
+            DetailRows(
                 listOf(
                     DetailLine("From") { Text("Grace Hopper", style = panelTextStyle()) },
                     DetailLine("Date") { DatePill("12 Oct", "12 Oct 2026, 09:14", {}) },
