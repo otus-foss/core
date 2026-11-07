@@ -41,7 +41,6 @@ import com.otus.designsystem.resources.symbol_format_list_numbered
 import com.otus.designsystem.resources.symbol_link
 import com.otus.designsystem.resources.symbol_send
 import com.otus.designsystem.shared.actionbar.components.LocalBarParts
-import com.otus.designsystem.shared.actionbar.components.overKeyboard
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.shared.panels.components.drawEdgeFade
@@ -59,8 +58,7 @@ import org.jetbrains.compose.resources.DrawableResource
  * Attach, comes first behind a divider, then a button for each [TextFormat]; the row scrolls
  * sideways and fades at its edges when it does not fit. Link runs [onLink] so the caller can ask
  * for an address, or removes the link at the cursor. [trailing], such as a [CompactSendButton],
- * stays pinned at the end, flush with the row's edge and drawn over its border. The row spans
- * the width above the keyboard; see [overKeyboard]. Inside a
+ * stays pinned at the end, flush with the row's edge and drawn over its border. Inside a
  * [BarMorph][com.otus.designsystem.shared.actionbar.components.BarMorph], the row and [trailing]
  * move into the other bar's parts.
  */
@@ -75,10 +73,7 @@ public fun FormattingBar(
     val shape = SmoothCornerShape(ActionBarTokens.formatBarRadius)
     val parts = LocalBarParts.current
     Box(
-        // Widen before applying BarMorph so it moves the whole row.
-        Modifier
-            .overKeyboard()
-            .then(parts.group)
+        parts.group
             .then(modifier)
             .fillMaxWidth()
             .height(ComposeTokens.formatBarHeight)

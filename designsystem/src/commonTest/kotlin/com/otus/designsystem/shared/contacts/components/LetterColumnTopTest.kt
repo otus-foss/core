@@ -53,6 +53,21 @@ class LetterColumnTopTest {
         assertEquals(-280f..80f, scrollReach(top = -280f, height = 1200f, band = 80f..920f))
     }
 
+    @Test
+    fun theThumbReachesFourRowsAroundThePress() {
+        assertEquals(400f..800f, thumbBand(band = 0f..BOX, pressY = 600f, rowHeight = 50f))
+    }
+
+    @Test
+    fun theThumbReachStopsAtTheBand() {
+        assertEquals(80f..300f, thumbBand(band = 80f..920f, pressY = 100f, rowHeight = 50f))
+    }
+
+    @Test
+    fun withoutAPressTheThumbReachesTheWholeBand() {
+        assertEquals(80f..920f, thumbBand(band = 80f..920f, pressY = null, rowHeight = 50f))
+    }
+
     private fun top(
         anchorCenterY: Float?,
         anchorIndex: Int,

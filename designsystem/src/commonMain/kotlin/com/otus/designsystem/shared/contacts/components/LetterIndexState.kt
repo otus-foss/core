@@ -28,11 +28,35 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.toSize
 import com.otus.designsystem.theme.tokens.rows.LetterIndexTokens
 
-/** One letter of a [LetterIndex] and how many entries are filed under it. */
+/**
+ * One letter of a [LetterIndex], how many entries are filed under it, and the [names] of its first
+ * entries, which the current letter shows in place of its count.
+ */
 public data class IndexLetter(
     public val letter: String,
     public val count: Int,
-)
+    public val names: List<String> = emptyList(),
+) {
+    /**
+     * What the current letter shows of [names]: the first two when the first is short, else only
+     * the first, so the row stays short; null without names.
+     */
+    internal val preview: String?
+        get() =
+            names
+                .take(if (names.firstOrNull().orEmpty().length > LetterIndexTokens.PREVIEW_CHARACTERS) 1 else 2)
+                .joinToString(", ")
+                .ifEmpty { null }
+}
+
+/** The edge a [LetterIndex] puts its letters on, so either thumb can reach them. */
+public enum class LetterIndexSide {
+    Start,
+    End,
+    ;
+
+    public val other: LetterIndexSide get() = if (this == Start) End else Start
+}
 
 /**
  * Whether a [LetterIndex] is open, its letters, and the letter the finger is on while it drags
@@ -44,6 +68,7 @@ public class LetterIndexState {
     internal var open by mutableStateOf(false)
     internal var active by mutableStateOf<String?>(null)
     internal var letters by mutableStateOf(emptyList<IndexLetter>())
+    internal var side by mutableStateOf(LetterIndexSide.Start)
 
     /** The letter whose heading opened the index, which keeps its place on screen. */
     internal var anchor by mutableStateOf<String?>(null)
@@ -82,6 +107,14 @@ public class LetterIndexState {
     internal var dragging by mutableStateOf(false)
         private set
 
+    /** Where the button that moves the letters to the other side sits, in window coordinates. */
+    internal var switchBounds: Rect? = null
+
+    /** Whether a dragging finger is on that button, so lifting it there switches sides. */
+    internal var onSwitch by mutableStateOf(false)
+        private set
+    internal var onSwitchSide: () -> Unit = {}
+
     /** Whether a press on a heading is part of a list scroll rather than a press meant for the index. */
     internal var scrolling: () -> Boolean = { false }
 
@@ -100,7 +133,27 @@ public class LetterIndexState {
     internal fun drag(position: Offset) {
         finger = position
         dragging = true
-        hover(position)
+        onSwitch = switchBounds?.contains(position) == true
+        if (onSwitch) active = null else hover(position)
+    }
+
+    /**
+     * Ends a drag where the finger lifted: on the switch button it switches sides, on a letter it
+     * picks it, and elsewhere it closes the index.
+     */
+    internal fun release() {
+        val letter = active
+        when {
+            onSwitch -> switchSide()
+            letter != null -> pick(letter)
+            else -> close()
+        }
+    }
+
+    /** Moves the letters to the other side and leaves the index open on them. */
+    internal fun switchSide() {
+        onSwitch = false
+        onSwitchSide()
     }
 
     internal fun endDrag() {
@@ -118,6 +171,7 @@ public class LetterIndexState {
         this.onPick = onPick
         this.anchor = anchor
         picked = null
+        onSwitch = false
         anchorY = anchor?.let(headings::get)?.center?.y
         shift = 0f
         open = true
@@ -156,9 +210,10 @@ private suspend fun AwaitPointerEventScope.awaitLongPress(down: PointerInputChan
     } == null
 
 /**
- * Makes the heading of [letter] open the [state]'s index of [letters] on a press near its start
- * edge, or a long press anywhere on it. A tap leaves the index open to pick from; holding and
- * dragging marks the letter under the finger, and lifting jumps to it, all in one touch. Picking a
+ * Makes the heading of [letter] open the [state]'s index of [letters] on a press near the edge the
+ * letters sit on, or a long press anywhere on it. A tap leaves the index open to pick from; holding and
+ * dragging marks the letter under the finger, and lifting jumps to it, all in one touch; lifting on
+ * the button that switches sides moves the letters across instead. Picking a
  * letter either way runs [onPick] with it. The open index keeps [letter] level with this heading. A
  * short press further along the heading, or any press while a [LetterIndexScrollGuard] reports a
  * scroll, passes through to the list. Screen readers get a "Show letters" action that opens the
@@ -190,8 +245,9 @@ public fun Modifier.letterIndexHandle(
         awaitEachGesture {
             val down = awaitFirstDown()
             if (state.scrolling()) return@awaitEachGesture
-            val fromStart = if (rtl) size.width - down.position.x else down.position.x
-            if (fromStart > LetterIndexTokens.handleWidth.toPx() && !awaitLongPress(down)) return@awaitEachGesture
+            val fromRight = rtl != (state.side == LetterIndexSide.End)
+            val fromEdge = if (fromRight) size.width - down.position.x else down.position.x
+            if (fromEdge > LetterIndexTokens.handleWidth.toPx() && !awaitLongPress(down)) return@awaitEachGesture
             down.consume()
             state.open(currentLetters, currentPick, currentLetter)
             var dragging = false
@@ -207,10 +263,7 @@ public fun Modifier.letterIndexHandle(
             } finally {
                 state.endDrag()
             }
-            if (dragging) {
-                val active = state.active
-                if (active != null) state.pick(active) else state.close()
-            }
+            if (dragging) state.release()
         }
     }
 }

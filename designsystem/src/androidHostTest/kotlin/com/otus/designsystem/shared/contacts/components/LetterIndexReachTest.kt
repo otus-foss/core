@@ -80,15 +80,34 @@ class LetterIndexReachTest {
         assertTrue(indexShown())
     }
 
+    @Test
+    fun withLettersOnTheEndAPressNearTheRightEdgeOpensTheIndex() {
+        show(SHORT, LayoutDirection.Ltr, LetterIndexSide.End)
+
+        pressAt(fromLeft = false)
+
+        assertTrue(indexShown())
+    }
+
+    @Test
+    fun withLettersOnTheEndAShortPressNearTheLeftEdgeDoesNotOpenTheIndex() {
+        show(SHORT, LayoutDirection.Ltr, LetterIndexSide.End)
+
+        pressAt(fromLeft = true)
+
+        assertFalse(indexShown())
+    }
+
     private fun show(
         letters: List<IndexLetter>,
         direction: LayoutDirection,
+        side: LetterIndexSide = LetterIndexSide.Start,
     ) {
         compose.setContent {
             CompositionLocalProvider(LocalLayoutDirection provides direction) {
                 WithBackDispatcher {
                     val state = rememberLetterIndexState()
-                    LetterIndex(state, Modifier.fillMaxSize()) {
+                    LetterIndex(state, side, {}, Modifier.fillMaxSize()) {
                         Box(Modifier.fillMaxSize()) {
                             Text("A", Modifier.fillMaxWidth().letterIndexHandle(state, "A", letters) {})
                         }

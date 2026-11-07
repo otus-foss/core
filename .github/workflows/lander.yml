@@ -1,0 +1,239 @@
+name: lander
+
+# Merges a pull request once a maintainer approves it with the "ready to land" label, together
+# with its partners: the open pull requests in the other Otus repositories from a branch with the
+# same name. Every repository's land workflow calls this one; docs/landing.md explains the rules.
+#
+# Callers run it on pull_request_target and workflow_run, which run the workflow from main with
+# secrets. Neither job checks out or runs pull request code, so that is safe for fork pull requests.
+on:
+  workflow_call:
+    inputs:
+      repos:
+        description: Repositories that can hold partners, in merge order.
+        type: string
+        default: otus-meta,otus-mail,otus-calendar
+    secrets:
+      app-private-key:
+        required: true
+
+permissions: {}
+
+env:
+  LABEL: ready to land
+  STATUS: otus/land
+  MARKER: <!-- otus-land -->
+
+jobs:
+  # Ties each approval to one commit: a maintainer's label sets the otus/land status on the head
+  # commit, and a new push removes the label, so the new commit has no approval yet.
+  approve:
+    # The env context is not available here, so the label name is spelled out.
+    if: >-
+      github.event_name == 'pull_request_target' && (
+        github.event.action == 'synchronize' || github.event.label.name == 'ready to land')
+    runs-on: ubicloud-standard-2
+    steps:
+      - id: token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          client-id: ${{ vars.LANDER_CLIENT_ID }}
+          private-key: ${{ secrets.app-private-key }}
+      - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          github-token: ${{ steps.token.outputs.token }}
+          script: |
+            const { LABEL, STATUS } = process.env;
+            const { owner, repo } = context.repo;
+            const { action, pull_request: pr, sender } = context.payload;
+            const issue = { owner, repo, issue_number: pr.number };
+            const removeLabel = () => github.rest.issues.removeLabel({ ...issue, name: LABEL })
+              .catch((error) => { if (error.status !== 404) throw error; });
+            const setStatus = (state, description) => github.rest.repos.createCommitStatus({
+              owner, repo, sha: pr.head.sha, state, context: STATUS, description,
+            });
+
+            if (action === 'synchronize') {
+              if (pr.labels.some((label) => label.name === LABEL)) await removeLabel();
+              return;
+            }
+            if (action === 'unlabeled') {
+              await setStatus('pending', `Add the "${LABEL}" label to approve`);
+              return;
+            }
+
+            const { data: permission } = await github.rest.repos.getCollaboratorPermissionLevel({
+              owner, repo, username: sender.login,
+            });
+            if (!['admin', 'maintain'].includes(permission.role_name)) {
+              await removeLabel();
+              await github.rest.issues.createComment({
+                ...issue, body: `Only maintainers can add "${LABEL}", so the label was removed.`,
+              });
+              return;
+            }
+            await setStatus('success', `Approved by ${sender.login}`);
+
+            // A push after the one CI run leaves the new commit unchecked, so start the checks.
+            const { data: checks } = await github.rest.checks.listForRef({ owner, repo, ref: pr.head.sha });
+            const fromThisRepo = pr.head.repo?.full_name === pr.base.repo.full_name;
+            if (fromThisRepo && !checks.check_runs.some((run) => run.conclusion !== 'skipped')) {
+              await github.rest.actions.createWorkflowDispatch({
+                owner, repo, workflow_id: 'quality.yml', ref: pr.head.ref,
+              });
+            }
+
+  # Lands every approved group this event can affect. Runs one at a time per repository; a newer
+  # run replaces a waiting one, which is safe because each run reads the current state.
+  land:
+    needs: approve
+    if: always() && needs.approve.result != 'failure'
+    runs-on: ubicloud-standard-2
+    concurrency:
+      group: lander-${{ github.repository }}
+      cancel-in-progress: false
+    steps:
+      - id: token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          client-id: ${{ vars.LANDER_CLIENT_ID }}
+          private-key: ${{ secrets.app-private-key }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ inputs.repos }}
+      - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          REPOS: ${{ inputs.repos }}
+          BOT: ${{ steps.token.outputs.app-slug }}[bot]
+        with:
+          github-token: ${{ steps.token.outputs.token }}
+          script: |
+            const { LABEL, STATUS, MARKER, BOT } = process.env;
+            const repos = process.env.REPOS.split(',');
+            const { owner } = context.repo;
+            const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+            const name = ({ repo, pr }) => `${owner}/${repo}#${pr.number}`;
+            const hasLabel = (pr) => pr.labels.some((label) => label.name === LABEL);
+
+            const getPull = (repo, number) => github.rest.pulls.get({ owner, repo, pull_number: number })
+              .then(({ data }) => data);
+
+            // GitHub computes mergeability in the background and reports null until it is done.
+            async function settledPull(repo, number) {
+              let pr = await getPull(repo, number);
+              for (let tries = 0; pr.state === 'open' && pr.mergeable === null && tries < 5; tries++) {
+                await sleep(3000);
+                pr = await getPull(repo, number);
+              }
+              return pr;
+            }
+
+            // Partners share the branch name and come from the repository itself, never from a fork,
+            // so nobody outside can attach a pull request to a maintainer's change.
+            async function groupOf(repo, pr) {
+              const fromThisRepo = pr.head.repo?.full_name === pr.base.repo.full_name;
+              if (!fromThisRepo) return [{ repo, number: pr.number }];
+              const lists = await Promise.all(repos.map((other) => github.paginate(github.rest.pulls.list, {
+                owner, repo: other, state: 'open', head: `${owner}:${pr.head.ref}`,
+              }).then((pulls) => pulls
+                .filter((pull) => pull.base.ref === pull.base.repo.default_branch)
+                .map((pull) => ({ repo: other, number: pull.number })))));
+              return lists.flat();
+            }
+
+            async function problemsOf(repo, pr) {
+              const ref = pr.head.sha;
+              const [statuses, runs, reviews] = await Promise.all([
+                github.paginate(github.rest.repos.listCommitStatusesForRef, { owner, repo, ref }),
+                github.paginate(github.rest.checks.listForRef, { owner, repo, ref }),
+                github.paginate(github.rest.pulls.listReviews, { owner, repo, pull_number: pr.number }),
+              ]);
+              // Statuses come newest first; replaying them oldest first leaves the newest per context.
+              const current = [...new Map(statuses.toReversed().map((status) => [status.context, status])).values()];
+              const approval = current.find((status) => status.context === STATUS);
+              const checks = [
+                ...runs
+                  .filter((run) => run.conclusion !== 'skipped' && !run.name.startsWith('lander'))
+                  .map((run) => ({ name: run.name, state: run.status !== 'completed' ? 'pending' : run.conclusion })),
+                ...current
+                  .filter((status) => status.context !== STATUS)
+                  .map((status) => ({ name: status.context, state: status.state })),
+              ];
+              const pending = checks.filter((check) => check.state === 'pending').map((check) => check.name);
+              const failed = checks
+                .filter((check) => !['pending', 'success', 'neutral'].includes(check.state))
+                .map((check) => check.name);
+              const changesRequested = [...new Map(reviews
+                .filter((review) => review.state !== 'COMMENTED')
+                .map((review) => [review.user.login, review.state])).values()]
+                .includes('CHANGES_REQUESTED');
+
+              return [
+                !hasLabel(pr) && `needs the "${LABEL}" label`,
+                pr.draft && 'is a draft',
+                hasLabel(pr) && !(approval?.state === 'success' && approval.creator?.login === BOT) &&
+                  'has no approval for its latest commit; add the label again',
+                checks.length === 0 && 'has no checks on its latest commit',
+                pending.length > 0 && `is waiting for ${pending.join(', ')}`,
+                failed.length > 0 && `fails ${failed.join(', ')}`,
+                changesRequested && 'has a review that requests changes',
+                pr.mergeable === false && 'has merge conflicts',
+                pr.mergeable === null && 'is still being checked for conflicts',
+              ].filter(Boolean);
+            }
+
+            // Comments only where the label is or a status comment already is, so unapproved
+            // branches stay quiet and an old comment never shows a stale state.
+            async function report(members, headline) {
+              const approved = members.some(({ pr }) => hasLabel(pr));
+              const rows = members.map((member) => `| ${name(member)} | ${member.problems.join('; ') || 'Ready'} |`);
+              const body = [MARKER, `**${headline}**`, '', '| Pull request | State |', '| --- | --- |', ...rows].join('\n');
+              await Promise.all(members.map(async ({ repo, pr }) => {
+                const issue = { owner, repo, issue_number: pr.number };
+                const comments = await github.paginate(github.rest.issues.listComments, issue);
+                const existing = comments.find((comment) => comment.body?.startsWith(MARKER));
+                if (existing?.body === body || !existing && !approved) return;
+                if (existing) await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+                else await github.rest.issues.createComment({ ...issue, body });
+              }));
+            }
+
+            async function land(group) {
+              const members = await Promise.all(group.map(async ({ repo, number }) => {
+                const pr = await settledPull(repo, number);
+                return { repo, pr, problems: await problemsOf(repo, pr) };
+              }));
+              const blocked = members.filter((member) => member.problems.length > 0);
+              if (blocked.length > 0) return report(members, 'Waiting to land');
+
+              const landed = [];
+              for (const member of members) {
+                const { repo, pr } = member;
+                try {
+                  // The sha makes GitHub refuse the merge if someone pushed since the checks above.
+                  await github.rest.pulls.merge({ owner, repo, pull_number: pr.number, sha: pr.head.sha, merge_method: 'squash' });
+                } catch (error) {
+                  // Another repository's lander may have merged it a moment ago.
+                  if (!(await getPull(repo, pr.number)).merged) {
+                    member.problems = [`did not merge: ${error.message}`];
+                    await report(members, landed.length > 0
+                      ? `Landed ${landed.map(name).join(', ')}, then stopped. Merge the rest by hand.`
+                      : 'Could not land');
+                    return core.setFailed(`${name(member)}: ${error.message}`);
+                  }
+                }
+                landed.push(member);
+              }
+              if (members.length > 1) await report(members, 'Landed together');
+            }
+
+            // A pull request event lands its own group; a finished workflow can unblock any approved one.
+            const starts = context.eventName === 'pull_request_target'
+              ? [context.payload.pull_request]
+              : await github.paginate(github.rest.pulls.list, { ...context.repo, state: 'open' })
+                .then((pulls) => pulls.filter(hasLabel));
+            const groups = await Promise.all(starts
+              .filter((pr) => pr.state === 'open')
+              .map((pr) => groupOf(context.repo.repo, pr)));
+            const key = (group) => group.map(({ repo, number }) => `${repo}#${number}`).join();
+            const unique = [...new Map(groups.map((group) => [key(group), group])).values()];
+            for (const group of unique) await land(group);

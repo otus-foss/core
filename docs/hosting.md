@@ -57,6 +57,9 @@ The rule lives once, in the `ready-gate` action. Each workflow starts with a sma
 the changed files: workflow-only and Markdown-only pull requests skip the build, and pull requests
 that change only Android code skip the macOS `ios` job.
 
+The `land` workflow merges a pull request once a maintainer adds `ready to land`, together with
+its partners in the other repositories. See [landing](landing.md).
+
 ## Shared actions
 
 Meta's `.github/actions` holds the steps every repository repeats. GitHub cannot run a reusable
