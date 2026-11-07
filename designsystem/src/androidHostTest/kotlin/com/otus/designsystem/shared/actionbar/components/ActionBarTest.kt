@@ -258,7 +258,7 @@ class ActionBarTest {
 
     private fun saveScreenshot(name: String): Bitmap {
         val bitmap = compose.windowBitmap()
-        bitmap.captureRoboImage(shotPath("action_bar_${name.replace('-', '_')}"))
+        bitmap.captureRoboImage(shotPath("action_bar_state_${name.replace('-', '_')}"))
         return bitmap
     }
 
