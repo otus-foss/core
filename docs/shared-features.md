@@ -17,7 +17,8 @@ content. A query of several words also finds a setting that holds every word in 
 disabled go inside `unavailable(reason) { ... }`, and their results show the reason in place of
 their section. Opening a result calls the page's callback with the setting's title, and the app
 provides it as `LocalFoundSetting` so the row flashes. A setting with no icon of its own shows
-its page's icon. `appearanceIndex` lists the Appearance page's settings for the app's index.
+its page's icon. `appearanceSections` declares the Appearance page this way, with the app's own
+rows such as `appIconRow`, so `AppearanceSettingsScreen` and the app's index show the same rows.
 
 A page can declare its searchable rows once, so its screen and the index cannot drift apart. It
 builds a list of `SettingsSectionSpec`s from its state, each with a heading (or none) and rows:
