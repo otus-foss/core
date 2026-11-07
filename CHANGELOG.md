@@ -10,6 +10,12 @@
 - `IndexLetter` takes `names`; the current letter shows the first two in place of its count, or
   only the first when it is longer than ten characters.
 
+- `actionBarInset()` keeps the bar `barInset` from the sides instead of adding the navigation bar
+  height, so it lines up with the page. `FormattingBar` no longer widens itself over the keyboard.
+- `fillRail()` leaves out the rail's inset at both ends, so the last chip in a filled rail is no
+  longer clipped by the edge fade.
+- `IconPill` takes a `fill`, `bgRegular` by default, so it can match the pills beside it.
+  `DetailsTable` now sits on a raised `darkSurface` card with the images banner's radius and inset.
 - Add a System theme: `SystemTheme` holds the device's colors, `ThemeChoice.withSystem()` selects
   them, and `ThemeSettingsState(store, system)` takes the current ones each launch. On Android,
   `Context.systemTheme()` reads the Material You colors in the device's light or dark mode, or

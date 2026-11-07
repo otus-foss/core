@@ -61,11 +61,11 @@ public class ContextPanelScope internal constructor(
     /**
      * Stretches a chip, such as a
      * [PickerChip][com.otus.designsystem.shared.selection.components.PickerChip], across the rail's
-     * visible width.
+     * visible width, inside the inset [PanelChipRail] keeps at both ends.
      */
     public fun Modifier.fillRail(): Modifier =
         layout { measurable, constraints ->
-            val width = geometry.railWidth
+            val width = geometry.railWidth - PanelTokens.panelInset.roundToPx() * 2
             val fitted = if (width > 0) constraints.copy(minWidth = width, maxWidth = width) else constraints
             val placeable = measurable.measure(fitted)
             layout(placeable.width, placeable.height) { placeable.place(0, 0) }
