@@ -29,13 +29,13 @@ class AppRuleTests(unittest.TestCase):
 
     def test_domain_cannot_import_data(self):
         errors = check("feature.inbox.domain", "import com.otus.mail.feature.inbox.data.Messages")
-        self.assertIn("domain cannot depend on data/presentation", errors)
+        self.assertIn("domain cannot depend on data or presentation", errors)
 
     def test_core_slices_keep_feature_layers(self):
         errors = check(
             "core.messages.domain", "import com.otus.mail.core.messages.presentation.MailEdits"
         )
-        self.assertIn("domain cannot depend on data/presentation", errors)
+        self.assertIn("domain cannot depend on data or presentation", errors)
         errors = check(
             "core.messages.presentation", "import com.otus.mail.core.messages.data.JmapEmailWriter"
         )

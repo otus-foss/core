@@ -9,12 +9,15 @@ from source_code import (
     CATCH_ALL_PACKAGES,
     COMPOSABLE,
     DATA_APIS,
+    FEATURE_LAYERS,
     PLATFORM_APIS,
-    SERVICE_TYPES,
     UI_APIS,
     is_production,
     kotlin_header_violations,
+    layer_violations,
     literal_color,
+    screen_name_violations,
+    service_violations,
     source_code,
     source_package,
     suppression_violations,
@@ -22,7 +25,6 @@ from source_code import (
 )
 
 SOURCE_FOLDERS = ("shared/src", "androidApp/src", "iosApp")
-FEATURE_LAYERS = {"domain", "data", "presentation"}
 DRAWABLE = re.compile(r"drawable(?:-[\w-]+)?")
 # Material's theme and surfaces skip OtusTheme's tokens; Meta's elements wrap what apps need.
 MATERIAL_DRAWING = (
@@ -68,10 +70,10 @@ def violations(path: Path, text: str, base: str, layers: frozenset[str]) -> list
         errors.append("domain and data cannot depend on the design system")
     if "presentation" in location and uses(code, DATA_APIS):
         errors.append("UI must not access network or database APIs")
-    if ("elements" in location or "components" in location) and re.search(SERVICE_TYPES, code):
-        errors.append("elements/components take values and callbacks, not services or navigation")
-    if "screens" in location and not path.stem.endswith("Screen"):
-        errors.append("screen files must end in Screen.kt")
+    if "elements" in location or "components" in location:
+        errors += service_violations(code)
+    if "screens" in location:
+        errors += screen_name_violations(path.stem)
     if re.search(COMPOSABLE, code):
         allowed = location[:1] == ["app"] or (
             "presentation" in location and any(x in location for x in ("screens", "components"))
@@ -88,10 +90,12 @@ def violations(path: Path, text: str, base: str, layers: frozenset[str]) -> list
 def reference_violations(location: list[str], suffix: str, code: str, base: str) -> list[str]:
     """Dependency directions between app packages, including fully qualified references."""
     errors = []
-    for reference in re.findall(r"\b" + re.escape(base) + r"\.([A-Za-z_][\w.]*)", code):
-        if reference == suffix:
-            continue
-        target = reference.split(".")
+    targets = [
+        reference.split(".")
+        for reference in re.findall(r"\b" + re.escape(base) + r"\.([A-Za-z_][\w.]*)", code)
+        if reference != suffix
+    ]
+    for target in targets:
         if location[:1] == ["core"] and target[0] in {"app", "feature"}:
             errors.append("core cannot depend on app/features")
         if "components" in location and "screens" in target:
@@ -103,13 +107,10 @@ def reference_violations(location: list[str], suffix: str, code: str, base: str)
             errors.append("features cannot depend on app wiring")
         if in_feature and target[:1] == ["feature"] and target[1:2] != location[1:2]:
             errors.append("features cannot import other features directly")
-        # Shared slices of core, such as core/messages, keep the same layers as a feature.
-        if "domain" in location and any(x in target for x in ("data", "presentation")):
-            errors.append("domain cannot depend on data/presentation")
-        if "presentation" in location and "data" in target:
-            errors.append("presentation cannot depend on data implementations")
-        if "data" in location and "presentation" in target:
-            errors.append("data cannot depend on presentation")
+    # Shared slices of core, such as core/messages, keep the same layers as a feature.
+    if location[:1] in (["feature"], ["core"]):
+        layer = next((part for part in location if part in FEATURE_LAYERS), None)
+        errors += layer_violations(layer, targets)
     return errors
 
 

@@ -9,11 +9,11 @@ from library_rules import violations, visual_resource_violations
 from source_code import source_code
 
 
-def check(module, package, body, source_set="commonMain", ui_modules=frozenset({"designsystem"})):
+def check(module, package, body, source_set="commonMain"):
     base = "com.otus." + module.replace("-", ".")
     name = base + (f".{package}" if package else "")
     path = Path(f"{module}/src/{source_set}/kotlin") / name.replace(".", "/") / "Example.kt"
-    return violations(path, f"package {name}\n{body}", ui_modules)
+    return violations(path, f"package {name}\n{body}")
 
 
 def reference_bodies(reference):
@@ -316,24 +316,17 @@ class QualifiedExpressionTests(unittest.TestCase):
     )
 
     def test_closed_and_open_ended_theme_ranges_are_allowed(self):
-        modules = frozenset({"designsystem", "designsystem-controls"})
-        for namespace in ("designsystem", "designsystem.controls"):
-            for theme in ("theme", "theme.brand"):
-                base = f"com.otus.{namespace}.{theme}"
-                for operator in ("..", "..<", " .. ", " ..< ", "..\n    ", "..<\n    "):
-                    expression = f"{base}.OWL_ART_WIDTH{operator}{base}.OWL_ART_HEIGHT"
-                    for module, package in (
-                        ("designsystem", "theme.brand"),
-                        ("designsystem", "shared.controls.elements"),
-                        ("accounts", "presentation.components"),
-                    ):
-                        with self.subTest(module=module, package=package, expression=expression):
-                            self.assertEqual(
-                                check(
-                                    module, package, f"val value = {expression}", ui_modules=modules
-                                ),
-                                [],
-                            )
+        for theme in ("theme", "theme.brand"):
+            base = f"com.otus.designsystem.{theme}"
+            for operator in ("..", "..<", " .. ", " ..< ", "..\n    ", "..<\n    "):
+                expression = f"{base}.OWL_ART_WIDTH{operator}{base}.OWL_ART_HEIGHT"
+                for module, package in (
+                    ("designsystem", "theme.brand"),
+                    ("designsystem", "shared.controls.elements"),
+                    ("accounts", "presentation.components"),
+                ):
+                    with self.subTest(module=module, package=package, expression=expression):
+                        self.assertEqual(check(module, package, f"val value = {expression}"), [])
 
     def test_qualified_theme_tokens_and_navigation_can_span_lines(self):
         for reference in (
@@ -594,44 +587,40 @@ class ScopedDesignSystemTests(unittest.TestCase):
                 errors = check("designsystem", package, "val tint = Color(0xFFFFFFFF)")
                 self.assertIn("literal colors belong in theme", errors)
 
-    def test_split_design_system_modules_keep_dependency_rules(self):
-        modules = frozenset({"designsystem", "designsystem-controls"})
-        for module, target_base in (
-            ("designsystem", "com.otus.designsystem.controls"),
-            ("designsystem-controls", "com.otus.designsystem"),
+    def test_design_system_dependency_rules(self):
+        module = "designsystem"
+        for package, target, error in (
+            ("shared.forms.components", "shared.controls.elements.Button", None),
+            ("shared.forms.components", "resources.Res", None),
+            ("shared.forms.elements", "theme.colors.OtusColors", None),
+            ("shared.forms.components", "theme.tokens.inbox.InboxTokens", None),
+            ("theme.colors", "theme.motion.Motion", None),
+            (
+                "shared.forms.elements",
+                "shared.controls.components.Row",
+                "elements cannot depend",
+            ),
+            ("shared.forms.components", "mail.inbox.elements.Label", "shared UI cannot depend"),
+            ("mail.forms.components", "calendar.events.elements.Label", "mail and calendar UI"),
+            ("calendar.forms.components", "mail.inbox.elements.Label", "mail and calendar UI"),
+            ("theme", "shared.controls.elements.Button", "theme cannot depend"),
+            ("theme.colors", "shared.controls.elements.Button", "theme cannot depend"),
+            ("theme.tokens.inbox", "mail.inbox.components.Row", "theme cannot depend"),
+            ("theme.motion", "calendar.events.elements.Label", "theme cannot depend"),
+            ("shared.forms.components", "elements.Button", "design-system references must use"),
+            ("shared.forms.components", "components.Row", "design-system references must use"),
         ):
-            for package, target, error in (
-                ("shared.forms.components", "shared.controls.elements.Button", None),
-                ("shared.forms.components", "resources.Res", None),
-                ("shared.forms.elements", "theme.colors.OtusColors", None),
-                ("shared.forms.components", "theme.tokens.inbox.InboxTokens", None),
-                ("theme.colors", "theme.motion.Motion", None),
-                (
-                    "shared.forms.elements",
-                    "shared.controls.components.Row",
-                    "elements cannot depend",
-                ),
-                ("shared.forms.components", "mail.inbox.elements.Label", "shared UI cannot depend"),
-                ("mail.forms.components", "calendar.events.elements.Label", "mail and calendar UI"),
-                ("calendar.forms.components", "mail.inbox.elements.Label", "mail and calendar UI"),
-                ("theme", "shared.controls.elements.Button", "theme cannot depend"),
-                ("theme.colors", "shared.controls.elements.Button", "theme cannot depend"),
-                ("theme.tokens.inbox", "mail.inbox.components.Row", "theme cannot depend"),
-                ("theme.motion", "calendar.events.elements.Label", "theme cannot depend"),
-                ("shared.forms.components", "elements.Button", "design-system references must use"),
-                ("shared.forms.components", "components.Row", "design-system references must use"),
-            ):
-                for body in reference_bodies(f"{target_base}.{target}"):
-                    with self.subTest(module=module, package=package, body=body):
-                        errors = check(module, package, body, ui_modules=modules)
-                        if error is None:
-                            self.assertEqual(errors, [])
-                        else:
-                            self.assertTrue(any(message.startswith(error) for message in errors))
-            self.assertEqual(
-                check(module, "theme.colors", "val tint = Color(0xFFFFFFFF)", ui_modules=modules),
-                [],
-            )
+            for body in reference_bodies(f"com.otus.designsystem.{target}"):
+                with self.subTest(module=module, package=package, body=body):
+                    errors = check(module, package, body)
+                    if error is None:
+                        self.assertEqual(errors, [])
+                    else:
+                        self.assertTrue(any(message.startswith(error) for message in errors))
+        self.assertEqual(
+            check(module, "theme.colors", "val tint = Color(0xFFFFFFFF)"),
+            [],
+        )
 
     def test_comments_and_strings_do_not_count_as_references(self):
         body = """

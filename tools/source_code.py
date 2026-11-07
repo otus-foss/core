@@ -140,3 +140,32 @@ def source_package(path_parts: tuple[str, ...]) -> str:
 
 def is_production(path_parts: tuple[str, ...]) -> bool:
     return any(part.endswith("Main") or part == "main" for part in path_parts)
+
+
+FEATURE_LAYERS = frozenset({"domain", "data", "presentation"})
+# What code in each layer of a feature may not reach, in the apps and in Meta's feature modules.
+LAYER_LIMITS = {
+    "domain": (("data", "presentation"), "domain cannot depend on data or presentation"),
+    "presentation": (("data",), "presentation cannot depend on data implementations"),
+    "data": (("presentation",), "data cannot depend on presentation"),
+}
+
+
+def layer_violations(layer: str | None, targets: list[list[str]]) -> list[str]:
+    """Errors for code in a feature's layer that reaches the packages in targets."""
+    if layer not in LAYER_LIMITS:
+        return []
+    forbidden, error = LAYER_LIMITS[layer]
+    return [error for target in targets if any(name in target for name in forbidden)]
+
+
+def screen_name_violations(stem: str) -> list[str]:
+    """Errors for a file in a screens package, whose name says it holds a screen."""
+    return [] if stem.endswith("Screen") else ["screen files must end in Screen.kt"]
+
+
+def service_violations(code: str) -> list[str]:
+    """Errors for elements and components, which take values and callbacks."""
+    if re.search(SERVICE_TYPES, code):
+        return ["elements/components take values and callbacks, not services or navigation"]
+    return []

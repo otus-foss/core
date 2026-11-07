@@ -9,13 +9,16 @@ from source_code import (
     CATCH_ALL_PACKAGES,
     COMPOSABLE,
     DATA_APIS,
+    FEATURE_LAYERS,
     PLATFORM_APIS,
-    SERVICE_TYPES,
     UI_APIS,
     is_production,
     kotlin_header_violations,
+    layer_violations,
     literal_color,
     reference_code,
+    screen_name_violations,
+    service_violations,
     source_code,
     source_package,
     suppression_violations,
@@ -30,8 +33,8 @@ UI_LAYERS = frozenset({"elements", "components"})
 PLAIN_LAYERS = frozenset({"html"})
 UI_SCOPES = frozenset({"shared", "mail", "calendar"})
 PACKAGE_SEGMENT = r"[A-Za-z_]\w*"
-FEATURE_LAYERS = {"domain", "data", "presentation"}
 FEATURE_UI_MODULES = frozenset({"accounts", "avatar-ui", "settings"})
+UI_MODULE = "designsystem"
 # Design-system code may format dates, but must not reach protocol, storage, or feature modules.
 UI_ALLOWED_MODULES = frozenset({"dateformat"})
 
@@ -46,7 +49,7 @@ def module_base(module: str) -> str:
 
 
 def is_ui_module(module: str) -> bool:
-    return module == "designsystem" or module.startswith("designsystem-")
+    return module == UI_MODULE
 
 
 def scoped_ui_location(location: list[str]) -> bool:
@@ -79,23 +82,14 @@ def library_references(code: str) -> list[str]:
     return re.findall(r"(?<![\w.])" + re.escape(NAMESPACE) + r"\.([A-Za-z_][\w.]*)", code)
 
 
-def ui_reference_violations(
-    location: list[str], references: list[str], ui_modules: frozenset[str]
-) -> list[str]:
+def ui_reference_violations(location: list[str], references: list[str]) -> list[str]:
     errors = []
     scope = location[0] if location else None
     layer = ui_layer(location)
-    # Split modules have longer namespaces, such as designsystem.controls.
-    namespaces = sorted(
-        (module_namespace(name) for name in ui_modules | {"designsystem"}),
-        key=len,
-        reverse=True,
-    )
     for reference in references:
-        namespace = next((name for name in namespaces if reference.startswith(name + ".")), None)
-        if namespace is None:
+        if not reference.startswith(UI_MODULE + "."):
             continue
-        target = reference.removeprefix(namespace + ".").split(".")
+        target = reference.removeprefix(UI_MODULE + ".").split(".")
         target_scope = target[0]
         if (
             not (len(target) > 1 and theme_location(target))
@@ -117,7 +111,7 @@ def ui_reference_violations(
     return errors
 
 
-def violations(path: Path, text: str, ui_modules: frozenset[str] = frozenset()) -> list[str]:
+def violations(path: Path, text: str) -> list[str]:
     """Errors for one file of a library module; path starts with the module directory."""
     errors = file_length_violations(path, text) + suppression_violations(text)
     if path.suffix != ".kt":
@@ -150,13 +144,9 @@ def violations(path: Path, text: str, ui_modules: frozenset[str] = frozenset()) 
     if not (in_theme and location[:2] == ["theme", "motion"]):
         errors.extend(motion_violations(code, builds_tweens=True))
     references = library_references(code)
+    errors.extend(ui_reference_violations(location if is_ui_module(module) else [], references))
     if is_ui_module(module):
-        ui_modules = ui_modules | {module}
-    errors.extend(
-        ui_reference_violations(location if is_ui_module(module) else [], references, ui_modules)
-    )
-    if is_ui_module(module):
-        errors.extend(ui_violations(location, code, references, ui_modules))
+        errors.extend(ui_violations(location, code, references))
     else:
         composable = re.search(COMPOSABLE, code)
         if module not in FEATURE_UI_MODULES and (uses(code, UI_APIS) or composable):
@@ -182,14 +172,10 @@ def feature_violations(path: Path, base: str, location: list[str], code: str) ->
         and location[1:2] not in (["components"], ["screens"])
     ):
         errors.append("composables belong in presentation/components or presentation/screens")
-    if (
-        location[1:2] == ["screens"]
-        and layer == ["presentation"]
-        and not path.stem.endswith("Screen")
-    ):
-        errors.append("screen files must end in Screen.kt")
-    if location[1:2] == ["components"] and re.search(SERVICE_TYPES, code):
-        errors.append("elements/components take values and callbacks, not services or navigation")
+    if layer == ["presentation"] and location[1:2] == ["screens"]:
+        errors += screen_name_violations(path.stem)
+    if location[1:2] == ["components"]:
+        errors += service_violations(code)
     if layer == ["presentation"] and uses(code, DATA_APIS):
         errors.append("UI must not access network or database APIs")
     if layer == ["domain"] and uses(code, ("com.otus.designsystem.",)):
@@ -202,20 +188,15 @@ def feature_violations(path: Path, base: str, location: list[str], code: str) ->
     )
     if uses(code, other_features):
         errors.append("shared features cannot depend directly on another shared feature")
-    for reference in re.findall(r"\b" + re.escape(base) + r"\.([A-Za-z_][\w.]*)", code):
-        target = reference.split(".")[:1]
-        if layer == ["domain"] and target in (["data"], ["presentation"]):
-            errors.append("domain cannot depend on data or presentation")
-        if layer == ["presentation"] and target == ["data"]:
-            errors.append("presentation cannot depend on data implementations")
-        if layer == ["data"] and target == ["presentation"]:
-            errors.append("data cannot depend on presentation")
+    targets = [
+        reference.split(".")[:1]
+        for reference in re.findall(r"\b" + re.escape(base) + r"\.([A-Za-z_][\w.]*)", code)
+    ]
+    errors += layer_violations(layer[0] if layer else None, targets)
     return errors
 
 
-def ui_violations(
-    location: list[str], code: str, references: list[str], ui_modules: frozenset[str]
-) -> list[str]:
+def ui_violations(location: list[str], code: str, references: list[str]) -> list[str]:
     errors = []
     if not theme_location(location) and not scoped_ui_location(location):
         errors.append(
@@ -225,11 +206,11 @@ def ui_violations(
     if uses(code, DATA_APIS):
         errors.append("UI must not access network or database APIs")
     layer = ui_layer(location)
-    if layer in (["elements"], ["components"]) and re.search(SERVICE_TYPES, code):
-        errors.append("elements/components take values and callbacks, not services or navigation")
+    if layer in (["elements"], ["components"]):
+        errors += service_violations(code)
     if layer and layer[0] in PLAIN_LAYERS and re.search(COMPOSABLE, code):
         errors.append("plain Kotlin packages such as html declare no composables")
-    allowed = [module_namespace(module) for module in ui_modules | UI_ALLOWED_MODULES]
+    allowed = [module_namespace(module) for module in {UI_MODULE, *UI_ALLOWED_MODULES}]
     for namespace in references:
         if not any(namespace == name or namespace.startswith(name + ".") for name in allowed):
             errors.append("design-system modules may depend only on design-system and dateformat")
@@ -250,7 +231,6 @@ def visual_resource_violations(path: Path) -> list[str]:
 
 def library_violations(root: Path, modules: list[str]) -> list[str]:
     """Every error in the library modules under root, each prefixed with its file."""
-    ui_modules = frozenset(name for name in modules if is_ui_module(name))
     failures = []
     for module in modules:
         for path in sorted((root / module / "src").rglob("*")):
@@ -261,6 +241,6 @@ def library_violations(root: Path, modules: list[str]) -> list[str]:
             if path.suffix == ".xml":
                 failures += [f"{relative}: {e}" for e in suppression_violations(path.read_text())]
             if path.suffix in {".kt", ".swift"}:
-                errors = violations(relative, path.read_text(), ui_modules)
+                errors = violations(relative, path.read_text())
                 failures += [f"{relative}: {error}" for error in errors]
     return failures
