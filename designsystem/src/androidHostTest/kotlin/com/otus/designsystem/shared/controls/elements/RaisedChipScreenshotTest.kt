@@ -41,18 +41,18 @@ class RaisedChipScreenshotTest {
 @Composable
 private fun Chips() {
     Column {
-        Chip("Unread", {}, selected = true, look = ChipLook.Raised) {
+        Chip("Unread", {}, selected = true, style = ChipStyle(look = ChipLook.Raised)) {
             Symbol(Res.drawable.symbol_mark_email_unread, size = ControlTokens.chipIconSize)
         }
-        Chip("Last 7 days", {}, role = ChipRole.Radio, look = ChipLook.Raised)
+        Chip("Last 7 days", {}, style = ChipStyle(ChipRole.Radio, ChipLook.Raised))
         Chip(ChipLabel("Invoices", "Finance"), {
-        }, selected = true, look = ChipLook.Raised) {
+        }, selected = true, style = ChipStyle(look = ChipLook.Raised)) {
             FolderGlyph(
                 FolderColor.Yellow,
                 size = ControlTokens.chipIconSize,
             )
         }
-        Chip("All folders…", {}, role = ChipRole.Button, look = ChipLook.Raised) {
+        Chip("All folders…", {}, style = ChipStyle(ChipRole.Button, ChipLook.Raised)) {
             FolderGlyph(FolderColor.Default, size = ControlTokens.chipIconSize)
         }
     }

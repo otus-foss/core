@@ -36,8 +36,9 @@ import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 /**
  * A minimized [ActionBar]: [RoundPrimary] at the bar's end, as far from the screen's end edge as
  * from its bottom edge. It stays in place while the keyboard moves. It fades and scales out once
- * [hidden] or when the keyboard starts opening, and back in once the closing keyboard drops below it. A new primary's icon swaps in place; see [rememberFrontBar].
- * With [more], a [BarMoreButton] at the bar's start opens them; it scales in when they arrive.
+ * [hidden] or when the keyboard starts opening, and back in once the closing keyboard drops below
+ * it. A new primary's icon swaps in place; see [rememberFrontBar]. With [more], a [BarMoreButton]
+ * at the bar's start opens them; it scales in when they arrive.
  */
 @Composable
 internal fun MinimizedBar(

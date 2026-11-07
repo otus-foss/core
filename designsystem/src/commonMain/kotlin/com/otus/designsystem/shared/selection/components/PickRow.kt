@@ -25,6 +25,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
+import com.otus.designsystem.shared.rows.components.RowDensity
 import com.otus.designsystem.theme.colors.OtusAlpha
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
@@ -38,9 +39,9 @@ import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
  * A choice in a list, sheet, or menu: an optional [leading] avatar or icon, the one-line [title], a
- * smaller `text2` [subtitle] of up to [subtitleLines] lines, a one-line `text3` [detail] at the end,
- * such as an address, and the [mark]. A null [onClick] shows the row disabled. [height] is the
- * row's least height.
+ * smaller one-line `text2` [subtitle], and the [mark]. A null [onClick] shows the row disabled. A
+ * [RowDensity.Compact] row is one touch target tall; a regular one takes the height its mark's
+ * style asks for.
  */
 @Composable
 public fun PickRow(
@@ -49,18 +50,33 @@ public fun PickRow(
     mark: PickMark,
     onClick: (() -> Unit)?,
     modifier: Modifier = Modifier,
-    detail: String? = null,
-    height: Dp = mark.style.rowHeight(subtitle != null),
-    subtitleLines: Int = 1,
+    density: RowDensity = RowDensity.Regular,
     leading: (@Composable () -> Unit)? = null,
+) {
+    val height = if (density == RowDensity.Compact) Sizes.touchTarget else mark.style.rowHeight(subtitle != null)
+    PickRowFrame(mark, onClick, modifier.heightIn(min = height), leading) { PickRowText(title, subtitle) }
+}
+
+/**
+ * A person to pick: the [avatar], the [name], and a one-line `text3` [address] at the end when it
+ * adds to the name.
+ */
+@Composable
+public fun PersonPickRow(
+    name: String,
+    address: String?,
+    mark: PickMark,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    avatar: @Composable () -> Unit,
 ) {
     PickRowFrame(
         mark,
         onClick,
-        modifier.heightIn(min = height),
-        leading,
-        trailing = detail?.let { { PickDetail(it) } },
-    ) { PickRowText(title, subtitle, subtitleLines) }
+        modifier.heightIn(min = mark.style.rowHeight(hasSubtitle = false)),
+        avatar,
+        trailing = address?.let { { PickDetail(it) } },
+    ) { PickRowText(name, subtitle = null) }
 }
 
 /** The [title] and smaller `text2` [subtitle] of a [PickRow]. */
@@ -68,7 +84,6 @@ public fun PickRow(
 private fun PickRowText(
     title: String,
     subtitle: String?,
-    subtitleLines: Int,
 ) {
     Text(title, style = panelTextStyle(), maxLines = 1, overflow = TextOverflow.Ellipsis)
     if (subtitle != null) {
@@ -77,7 +92,7 @@ private fun PickRowText(
             style = panelTextStyle(),
             color = OtusColors.text2,
             fontSize = TypeScale.detail,
-            maxLines = subtitleLines,
+            maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
     }

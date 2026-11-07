@@ -25,7 +25,7 @@ import kotlin.time.TimeSource
 
 /**
  * A [SheetFrame] that picks from a list: [search], such as a `PickerSearch`, stays above the
- * [content], and [footnote] explains the choice in `text2` at the end. [done] finishes the sheet,
+ * [content], which may end with a [SheetFootnote]. [done] finishes the sheet,
  * such as by applying the caller's draft. With [onClear], Clear sits opposite Done, and a second
  * Clear tap within the double-tap timeout also runs [done]. The sheet scrolls the content and is
  * as tall as it; content that [scrolls] itself, such as a lazy list, gets the sheet's whole height.
@@ -37,7 +37,6 @@ public fun ListSheet(
     done: UiAction = UiAction("Done", onClick = onDismiss),
     onClear: (() -> Unit)? = null,
     search: (@Composable () -> Unit)? = null,
-    footnote: String? = null,
     scrolls: Boolean = false,
     content: @Composable ColumnScope.() -> Unit,
 ) {
@@ -54,19 +53,23 @@ public fun ListSheet(
             verticalArrangement = Arrangement.spacedBy(SheetTokens.gap),
         ) {
             search?.invoke()
-            Column(Modifier.weight(1f, fill = scrolls).listScroll(scrolls).selectableGroup()) {
-                content()
-                if (footnote != null) {
-                    Text(
-                        footnote,
-                        Modifier.padding(horizontal = SheetTokens.gap, vertical = SheetTokens.gap),
-                        color = OtusColors.text2,
-                        fontSize = SheetTokens.detailSize,
-                    )
-                }
-            }
+            Column(
+                Modifier.weight(1f, fill = scrolls).listScroll(scrolls).selectableGroup(),
+                content = content,
+            )
         }
     }
+}
+
+/** A `text2` note at the end of a [ListSheet]'s list that explains the choice. */
+@Composable
+public fun SheetFootnote(text: String) {
+    Text(
+        text,
+        Modifier.padding(horizontal = SheetTokens.gap, vertical = SheetTokens.gap),
+        color = OtusColors.text2,
+        fontSize = SheetTokens.detailSize,
+    )
 }
 
 @Composable

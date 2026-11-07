@@ -4,6 +4,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.otus.designsystem.shared.controls.elements.ChipFrame
+import com.otus.designsystem.shared.controls.elements.ChipFrameStyle
 import com.otus.designsystem.shared.controls.elements.ChipText
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.theme.colors.OtusColors
@@ -25,7 +26,7 @@ internal fun SidebarPill(
     modifier: Modifier = Modifier,
     count: String? = null,
 ) {
-    ChipFrame(onClick, modifier, selected, enabled = true, fill = OtusColors.bgRegular) {
+    ChipFrame(onClick, modifier, selected, enabled = true, style = ChipFrameStyle(OtusColors.bgRegular)) {
         Symbol(icon)
         ChipText(label)
         if (count != null) {

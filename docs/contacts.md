@@ -94,8 +94,7 @@ Limits:
   top-level property that differs and removes the ones `after` dropped. Whole properties keep the
   patch valid on any server, since a path into a property needs its parent there.
 - `ContactCardFilter` holds the FilterCondition of RFC 9610, section 3.3.1. `toFilter()` turns it
-  into a `JmapFilter`, which combines with other filters through `allOf`, `anyOf`, `noneOf`, `and`,
-  and `or`.
+  into a `JmapFilter`, which combines with other filters through `allOf`, `anyOf`, and `noneOf`.
 - `AddressBook` holds a book's properties, with `AddressBookRights` for `myRights` and for each
   `shareWith` entry. `AddressBookOrder` sorts books for display, and `AddressBookType` is the data
   type for `GetMethod` and `ChangesMethod`.

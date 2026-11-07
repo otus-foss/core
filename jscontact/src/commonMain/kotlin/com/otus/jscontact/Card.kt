@@ -14,9 +14,9 @@ import kotlin.time.Instant
  * A JSContact Card: the contact information of a person, organization, or other entity (RFC 9553,
  * section 2), with the JMAP ContactCard properties [id] and [addressBookIds] (RFC 9610, section 3).
  *
- * A JMAP `/get` with `properties` returns only some properties, so every property decodes as optional,
- * the mandatory [uid] included. Encoding always writes `"@type": "Card"` and [version]. `Id[X]` maps keep their keys, which must survive every edit
- * (section 1.4.1).
+ * A JMAP `/get` with `properties` returns only some properties, so every property decodes as
+ * optional, the mandatory [uid] included. Encoding always writes `"@type": "Card"` and [version].
+ * `Id[X]` maps keep their keys, which must survive every edit (section 1.4.1).
  */
 @OptIn(ExperimentalSerializationApi::class)
 @KeepGeneratedSerializer

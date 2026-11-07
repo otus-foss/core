@@ -87,7 +87,6 @@ class ReadBodyScreenshotTest {
                     "Contacts, people you've written to and senders you allowed. Everyone else asks first.",
                     PickMark(selected = true, atStart = true),
                     {},
-                    subtitleLines = 3,
                 )
                 PickRow("Never", "Always ask, for every mail.", PickMark(selected = false, atStart = true), {})
             }

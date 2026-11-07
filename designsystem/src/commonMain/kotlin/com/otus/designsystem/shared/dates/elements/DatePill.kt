@@ -6,6 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import com.otus.designsystem.shared.controls.elements.ChipFrame
+import com.otus.designsystem.shared.controls.elements.ChipFrameStyle
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.typography.panelTextStyle
 
@@ -27,7 +28,7 @@ public fun DatePill(
         modifier.semantics { contentDescription = description },
         selected = null,
         enabled = true,
-        fill = OtusColors.bgDark,
+        style = ChipFrameStyle(OtusColors.bgDark),
     ) {
         Text(label, style = panelTextStyle(), color = OtusColors.text2, maxLines = 1, softWrap = false)
     }

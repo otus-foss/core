@@ -2,7 +2,7 @@ package com.otus.jmap.contacts
 
 import com.otus.jmap.JmapSort
 import com.otus.jmap.QueryMethod
-import com.otus.jmap.and
+import com.otus.jmap.allOf
 import com.otus.jmap.noneOf
 import com.otus.jscontact.CardKind
 import kotlinx.serialization.json.JsonObject
@@ -107,8 +107,10 @@ class ContactCardFilterTest {
     @Test
     fun conditionsCombineWithFilterOperators() {
         val filter =
-            ContactCardFilter(inAddressBook = PERSONAL).toFilter() and
-                noneOf(ContactCardFilter(kind = CardKind.Group).toFilter())
+            allOf(
+                ContactCardFilter(inAddressBook = PERSONAL).toFilter(),
+                noneOf(ContactCardFilter(kind = CardKind.Group).toFilter()),
+            )
         val query = QueryMethod(ContactCardType, "a0x9", filter, listOf(JmapSort("name/surname")))
         assertEquals(
             parseObject(

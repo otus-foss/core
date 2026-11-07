@@ -13,6 +13,7 @@ import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_expand_less
 import com.otus.designsystem.resources.symbol_expand_more
 import com.otus.designsystem.shared.controls.elements.ChipFrame
+import com.otus.designsystem.shared.controls.elements.ChipFrameStyle
 import com.otus.designsystem.shared.controls.elements.ChipLayout
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.theme.colors.OtusColors
@@ -39,7 +40,7 @@ public fun AddressPill(
         modifier.semantics { contentDescription = description },
         selected = null,
         enabled = true,
-        fill = OtusColors.bgDark,
+        style = ChipFrameStyle(OtusColors.bgDark),
         layout = ChipLayout(avatarFirst = true),
     ) {
         avatar()

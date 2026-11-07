@@ -54,7 +54,7 @@ private val DateFormatter.dayFirst: Boolean
     get() =
         when (preference) {
             DateFormatPreference.DayMonthYearDots, DateFormatPreference.DayMonthYearSlashes -> true
-            DateFormatPreference.DeviceLocale -> formatDayMonth(LAST_DAY_OF_YEAR).startsWith("31")
+            DateFormatPreference.DeviceLocale -> formatDayMonth(DAY_FIRST_PROBE).startsWith(PROBE_DAY.toString())
             else -> false
         }
 
@@ -69,4 +69,8 @@ internal const val TODAY = "Today"
 internal const val YESTERDAY = "Yesterday"
 private const val SHORT_NAME = 3
 private const val DAYS_IN_WEEK = 7
-private val LAST_DAY_OF_YEAR = LocalDate(2000, 12, 31)
+
+/** A day whose number no month has, so a day-month text shows which comes first. */
+private const val PROBE_DAY = 31
+private const val PROBE_YEAR = 2000
+private val DAY_FIRST_PROBE = LocalDate(PROBE_YEAR, Month.DECEMBER, PROBE_DAY)

@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Design system: `Chip` takes a `ChipStyle` (role and look) instead of `role` and `look`, and a
+  chip's detail is part of its `ChipLabel`. `PickRow` takes a `RowDensity` instead of `height` and
+  `subtitleLines`; `PersonPickRow` draws a person with the address at the end. `ListSheet` drops
+  `footnote`; end the list with `SheetFootnote`. Breaking for every caller of those parameters.
+- Settings: Breaking: rows drop `unavailable`; `row.waitingOn(reason)` wraps a row that waits on
+  another setting (`WaitingRowSpec`). `SettingsIndexScope.keywords` also takes a list.
+- JMAP: Breaking: remove the infix `JmapFilter.and` and `or`; `allOf` and `anyOf` build the same
+  filters.
 - Settings: the Appearance page is a `SettingsSectionSpec` list, `appearanceSections(...)`, that
   takes the app's own rows, and `appIconRow` is the App icon row; the page and settings search
   both read them. Breaking: `AppearanceSettingsScreen` takes those sections, and

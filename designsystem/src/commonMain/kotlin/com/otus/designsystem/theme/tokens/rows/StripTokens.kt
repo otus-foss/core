@@ -6,7 +6,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 
-/** Strips and strip cards, such as the read view's strips above its action bar: their insets, height, title, and the button and plain action at their end. */
+/**
+ * Strips and strip cards, such as the read view's strips above its action bar: their insets,
+ * height, title, and the button and plain action at their end.
+ */
 public object StripTokens {
     /** A strip card: its corner, and its content inset from the start and end. */
     public val radius: Dp = ActionBarTokens.radius

@@ -36,7 +36,7 @@ class DropdownPickRowScreenshotTest {
         compose.screenshot("dropdown_row_people") {
             Column(Modifier.width(344.dp)) {
                 people.forEach { (person, address) ->
-                    PickRow(person.name, null, PickMark(false, style = PickStyle.Card), {}, detail = address) {
+                    PersonPickRow(person.name, address, PickMark(false, style = PickStyle.Card), {}) {
                         PersonAvatar(person.avatar, AvatarTokens.menuSize)
                     }
                 }

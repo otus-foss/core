@@ -16,6 +16,7 @@ import com.otus.designsystem.shared.controls.elements.Chip
 import com.otus.designsystem.shared.controls.elements.ChipLabel
 import com.otus.designsystem.shared.controls.elements.ChipLook
 import com.otus.designsystem.shared.controls.elements.ChipRole
+import com.otus.designsystem.shared.controls.elements.ChipStyle
 import com.otus.designsystem.shared.folders.elements.FolderGlyph
 import com.otus.designsystem.shared.overlays.components.WithBackDispatcher
 import com.otus.designsystem.theme.colors.FolderColor
@@ -61,8 +62,8 @@ class FilterPanelScreenshotTest {
                     footer = { FilterPanelFooter("Show 30 conversations", {}) },
                 ) {
                     FilterSection("Type", Modifier.padding(horizontal = FilterTokens.bodyInset)) {
-                        Chip("Newsletters", {}, selected = false, look = ChipLook.Raised)
-                        Chip("Calendar invites", {}, selected = true, look = ChipLook.Raised)
+                        Chip("Newsletters", {}, selected = false, style = ChipStyle(look = ChipLook.Raised))
+                        Chip("Calendar invites", {}, selected = true, style = ChipStyle(look = ChipLook.Raised))
                     }
                 }
             }
@@ -116,19 +117,19 @@ class FilterPanelScreenshotTest {
 private fun Sections() {
     Column(Modifier.padding(horizontal = FilterTokens.bodyInset)) {
         FilterSection("Show") {
-            Chip("Unread", {}, selected = true, look = ChipLook.Raised)
-            Chip("Flagged", {}, selected = false, look = ChipLook.Raised)
-            Chip("Waiting for reply", {}, selected = false, look = ChipLook.Raised)
+            Chip("Unread", {}, selected = true, style = ChipStyle(look = ChipLook.Raised))
+            Chip("Flagged", {}, selected = false, style = ChipStyle(look = ChipLook.Raised))
+            Chip("Waiting for reply", {}, selected = false, style = ChipStyle(look = ChipLook.Raised))
         }
         FilterSection("In folder", Modifier.padding(top = FilterTokens.sectionGap)) {
             Chip(ChipLabel("Acme", "Clients"), {
-            }, selected = true, look = ChipLook.Raised) {
+            }, selected = true, style = ChipStyle(look = ChipLook.Raised)) {
                 FolderGlyph(
                     FolderColor.Blue,
                     size = ControlTokens.chipIconSize,
                 )
             }
-            Chip("All folders…", {}, role = ChipRole.Button, selected = false, look = ChipLook.Raised) {
+            Chip("All folders…", {}, selected = false, style = ChipStyle(ChipRole.Button, ChipLook.Raised)) {
                 FolderGlyph(FolderColor.Default, size = ControlTokens.chipIconSize)
             }
         }

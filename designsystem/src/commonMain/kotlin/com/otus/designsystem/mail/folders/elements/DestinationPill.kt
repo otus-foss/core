@@ -8,6 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import com.otus.designsystem.shared.controls.elements.ChipFrame
+import com.otus.designsystem.shared.controls.elements.ChipFrameStyle
 import com.otus.designsystem.shared.controls.elements.ChipLayout
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.theme.colors.OtusColors
@@ -35,7 +36,7 @@ public fun DestinationPill(
         modifier,
         selected = selected,
         enabled = true,
-        fill = OtusColors.bgRegular,
+        style = ChipFrameStyle(OtusColors.bgRegular),
         layout = ChipLayout(height = MoveTokens.pillHeight, start = MoveTokens.pillStart, end = MoveTokens.pillEnd),
     ) {
         Row(

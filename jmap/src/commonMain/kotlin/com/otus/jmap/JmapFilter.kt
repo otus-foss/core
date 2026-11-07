@@ -76,18 +76,3 @@ public fun anyOf(vararg filters: JmapFilter): JmapFilter = anyOf(filters.toList(
 public fun noneOf(filters: List<JmapFilter>): JmapFilter = JmapFilter.Operator(FilterOperator.NOT, filters)
 
 public fun noneOf(vararg filters: JmapFilter): JmapFilter = noneOf(filters.toList())
-
-/** Matches when both filters match. A chain such as `a and b and c` stays one flat `AND`. */
-public infix fun JmapFilter.and(other: JmapFilter): JmapFilter = joined(FilterOperator.AND, other)
-
-/** Matches when either filter matches. A chain such as `a or b or c` stays one flat `OR`. */
-public infix fun JmapFilter.or(other: JmapFilter): JmapFilter = joined(FilterOperator.OR, other)
-
-private fun JmapFilter.joined(
-    operator: FilterOperator,
-    other: JmapFilter,
-): JmapFilter = JmapFilter.Operator(operator, operands(operator) + other.operands(operator))
-
-// AND and OR are associative, so merging nested operators of the same kind keeps the meaning.
-private fun JmapFilter.operands(operator: FilterOperator): List<JmapFilter> =
-    if (this is JmapFilter.Operator && this.operator == operator) conditions else listOf(this)

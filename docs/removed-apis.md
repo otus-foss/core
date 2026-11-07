@@ -33,6 +33,7 @@ that has it, on `origin/main` of otus-meta unless the entry names another branch
 | `appearanceIndex`, `appIconIndex` | `settings` | 2026-11-07 | `d98e4a45` | Listed the Appearance page and the App icon row for settings search; `appearanceSections` and `appIconRow` declare them once for the page and search. |
 | `AppIconSetting` | `settings` | 2026-11-07 | `d98e4a45` | Drew the App icon row and its sheet; `appIconRow` is the row as a `ChoiceRowSpec`. |
 | `FolderGlyphKind`, `FolderGlyph(kind)`, `RowFolderIcon.kind` | `designsystem` | 2026-11-07 | `d98e4a45` | Asked a folder glyph for the inbox symbol; `icon = symbol_inbox` with no color draws the same. |
+| `JmapFilter.and`, `JmapFilter.or` | `jmap` | 2026-11-07 | `d98e4a45` | Infix filter operators that kept chains of one operator flat; `allOf` and `anyOf` build the same filters. |
 | `DateFormatPreference.fromStorageValue` | `dateformat` | 2026-11-07 | `d98e4a45` | Read a saved date format; `DateFormatSettingsState` reads it, and only a test called this. |
 
 `ContactCardFilter` stays: the `avatar` module searches cards with it.

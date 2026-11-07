@@ -8,6 +8,7 @@ import androidx.compose.foundation.gestures.AnchoredDragScope
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.TargetedFlingBehavior
 import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -76,28 +77,8 @@ public fun SwipeActions(
     // Keeps the action a release ran on the backdrop until the row is back at rest, even if the row's
     // actions change. While it is set, no release can run another action.
     var running by remember { mutableStateOf<RunningSwipe?>(null) }
-    val scope = rememberCoroutineScope()
-    val currentStartToEnd by rememberUpdatedState(startToEnd)
-    val currentEndToStart by rememberUpdatedState(endToStart)
     val fling =
-        remember(state, threshold, motionScale) {
-            thresholdFlingBehavior(state, threshold, motionScale) { side ->
-                val action =
-                    side.pick(currentStartToEnd, currentEndToStart)?.takeIf { running == null }
-                        ?: return@thresholdFlingBehavior false
-                // Set before the launch, so a second release in the same frame cannot also commit.
-                running = RunningSwipe(side, action)
-                scope.launch {
-                    try {
-                        runSwipe(state, side, action, flash, motionScale)
-                    } finally {
-                        running = null
-                    }
-                    if (action.dismisses) state.returnUnlessRemoved(motionScale)
-                }
-                true
-            }
-        }
+        rememberSwipeRelease(state, threshold, flash, startToEnd, endToStart, { running }) { running = it }
     LaunchedEffect(settledBy) {
         snapshotFlow { running }.first { it == null }
         if (state.settledValue != SwipeAnchor.Settled) state.returnToRest(motionScale)
@@ -129,6 +110,44 @@ public fun SwipeActions(
             }
         }
         SwipeForeground(rowOffset, content)
+    }
+}
+
+/**
+ * What releasing a drag past the threshold does: runs the side's action once, unless one is
+ * [running], and keeps it [running] until the row is back at rest.
+ */
+@Composable
+private fun rememberSwipeRelease(
+    state: AnchoredDraggableState<SwipeAnchor>,
+    threshold: Float,
+    flash: Animatable<Float, *>,
+    startToEnd: SwipeAction?,
+    endToStart: SwipeAction?,
+    running: () -> RunningSwipe?,
+    onRunning: (RunningSwipe?) -> Unit,
+): TargetedFlingBehavior {
+    val motionScale = LocalMotionScale.current
+    val scope = rememberCoroutineScope()
+    val currentStartToEnd by rememberUpdatedState(startToEnd)
+    val currentEndToStart by rememberUpdatedState(endToStart)
+    return remember(state, threshold, motionScale) {
+        thresholdFlingBehavior(state, threshold, motionScale) { side ->
+            val action =
+                side.pick(currentStartToEnd, currentEndToStart)?.takeIf { running() == null }
+                    ?: return@thresholdFlingBehavior false
+            // Set before the launch, so a second release in the same frame cannot also commit.
+            onRunning(RunningSwipe(side, action))
+            scope.launch {
+                try {
+                    runSwipe(state, side, action, flash, motionScale)
+                } finally {
+                    onRunning(null)
+                }
+                if (action.dismisses) state.returnUnlessRemoved(motionScale)
+            }
+            true
+        }
     }
 }
 
@@ -167,10 +186,9 @@ private class RunningSwipe(
 /**
  * Runs [action] after a release toward [side]. The row slides to that side's anchor while the
  * action flashes. A dismissing action runs after its flash and leaves the row at the anchor for its
- * list to remove, or for [returnToRest] once its state changes or [returnUnlessRemoved] times out. Any other action runs at once and
- * the row returns to rest.
- * The slides outrank user drags, so a touch cannot stop the row halfway and release it past the
- * threshold a second time.
+ * list to remove, or for [returnToRest] once its state changes or [returnUnlessRemoved] times out.
+ * Any other action runs at once and the row returns to rest. The slides outrank user drags, so a
+ * touch cannot stop the row halfway and release it past the threshold a second time.
  */
 internal suspend fun runSwipe(
     state: AnchoredDraggableState<SwipeAnchor>,

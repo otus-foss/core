@@ -1,7 +1,6 @@
 package com.otus.avatar
 
 import com.otus.jmap.login.LoginLifecycle
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 
@@ -31,7 +30,7 @@ public class AvatarService(
         val started = cache.begin()
         val contact =
             cache.load(contactKey(normalized, options), started) {
-                fetches.withPermit { contactOrNull(normalized, options) }
+                fetches.withPermit { contacts.storedAvatar(normalized, options) }
             }
         return if (contact.style.wantsIcon()) {
             withWebsiteIcon(normalized, fallback, contact, options, started)
@@ -140,16 +139,6 @@ public class AvatarService(
 
     override suspend fun removed(loginId: String): Unit = removeAccount(loginId)
 
-    private suspend fun contactOrNull(
-        request: AvatarRequest,
-        options: AvatarOptions,
-    ): StoredAvatar? =
-        when (val found = nullOnFailure { contacts.avatar(request, options.externalContactImages) }) {
-            is ContactAvatar.Photo -> avatarOrNull { found.image }?.let { StoredAvatar(it, 0) }
-            is ContactAvatar.Styled -> found.toStored()
-            null -> null
-        }
-
     private companion object {
         const val MAX_CONCURRENT_FETCHES = 8
 
@@ -160,6 +149,16 @@ public class AvatarService(
         const val WEBSITE_MISS_LIFETIME = 24 * 60 * 60 * 1000L
     }
 }
+
+private suspend fun ContactAvatarSource.storedAvatar(
+    request: AvatarRequest,
+    options: AvatarOptions,
+): StoredAvatar? =
+    when (val found = nullOnFailure { avatar(request, options.externalContactImages) }) {
+        is ContactAvatar.Photo -> avatarOrNull { found.image }?.let { StoredAvatar(it, 0) }
+        is ContactAvatar.Styled -> found.toStored()
+        null -> null
+    }
 
 /** A [AvatarMark.Website] style asks for the website icon even with website icons off. */
 private fun iconOptions(
@@ -188,31 +187,3 @@ private fun domainKey(
     domain: String,
     options: AvatarOptions,
 ) = AvatarCacheKey(null, "domain:${options.iconProxy?.let { it.iconUrl ?: "none" } ?: "direct"}:$domain")
-
-/** Optional avatar failures never hide mail/events, and cancellation always propagates. */
-internal suspend fun avatarOrNull(load: suspend () -> AvatarImage?): AvatarImage? =
-    nullOnFailure(load)?.takeIf { it.bytes.isNotEmpty() && it.bytes.size <= MAX_AVATAR_BYTES && !it.isPixel() }
-
-/** A 1×1 PNG, which icon services such as Bulwark answer for a domain without an icon. */
-private fun AvatarImage.isPixel(): Boolean {
-    if (bytes.size < PNG_IHDR_END || !PNG_SIGNATURE.indices.all { bytes[it] == PNG_SIGNATURE[it] }) return false
-    val width = bigEndianInt(PNG_WIDTH_OFFSET)
-    val height = bigEndianInt(PNG_WIDTH_OFFSET + Int.SIZE_BYTES)
-    return width <= 1 || height <= 1
-}
-
-private fun AvatarImage.bigEndianInt(offset: Int): Int =
-    (0 until Int.SIZE_BYTES).fold(0) { value, index ->
-        (value shl Byte.SIZE_BITS) or (bytes[offset + index].toInt() and BYTE_MASK)
-    }
-
-private val PNG_SIGNATURE = byteArrayOf(0x89.toByte(), 'P'.code.toByte(), 'N'.code.toByte(), 'G'.code.toByte())
-private const val PNG_WIDTH_OFFSET = 16
-private const val PNG_IHDR_END = 24
-private const val BYTE_MASK = 0xFF
-
-internal suspend fun <T> nullOnFailure(load: suspend () -> T?): T? =
-    runCatching { load() }.getOrElse {
-        if (it is CancellationException) throw it
-        null
-    }

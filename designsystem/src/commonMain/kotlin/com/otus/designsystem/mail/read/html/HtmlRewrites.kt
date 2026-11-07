@@ -1,10 +1,6 @@
 package com.otus.designsystem.mail.read.html
 
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.TextUnit
 import com.otus.designsystem.theme.colors.OtusPalette
-import com.otus.designsystem.theme.colors.toHex
 import com.otus.designsystem.theme.tokens.content.ReadTokens
 
 /**
@@ -96,22 +92,6 @@ internal fun placeholderStyle(
     )
 }
 
-/** A CSS rule whose [declarations] win over the message's own style sheets. */
-internal fun cssRule(
-    selector: String,
-    vararg declarations: String,
-): String = declarations.joinToString(";", "$selector{", "}") { "$it!important" }
-
-/** A size in CSS pixels, which match density-independent pixels at the view's default zoom. */
-internal fun Dp.css(): String = value.cssNumber() + PX
-
-internal fun TextUnit.css(): String = value.cssNumber() + PX
-
-internal fun Color.css(): String = toHex().lowercase()
-
-private fun Float.cssNumber(): String = if (this % 1f == 0f) toInt().toString() else toString()
-
-private const val PX = "px"
 private const val BLOCKED = "blocked"
 
 private val REMOTE = Regex("""(?i)^\s*(?:https?:)?//""")

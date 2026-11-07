@@ -96,6 +96,11 @@ public class SettingsIndexScope internal constructor(
 
     /** Other words people use for this page, which search matches as it matches options. */
     public fun keywords(vararg words: String) {
+        keywords(words.toList())
+    }
+
+    /** The [keywords] of this page as a list. */
+    public fun keywords(words: List<String>) {
         pageKeywords += words
     }
 

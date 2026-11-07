@@ -58,7 +58,10 @@ public data class RowTextPart(
  */
 public enum class RowMark { Answered, Attachment, Invite, Flagged, ReadLater }
 
-/** A folder an item is in, drawn as [icon] or in [color]; see [com.otus.designsystem.shared.folders.elements.FolderGlyph]. */
+/**
+ * A folder an item is in, drawn as [icon] or in [color]; see
+ * [com.otus.designsystem.shared.folders.elements.FolderGlyph].
+ */
 public data class RowFolderIcon(
     public val color: FolderColor?,
     public val icon: DrawableResource = Res.drawable.symbol_folder,

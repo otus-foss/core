@@ -65,18 +65,24 @@ internal class MailLaunchTimeline(
         /** Where [Loop] has settled, in the same pose [Intro] ends in, so one can follow the other. */
         const val LOOP_SETTLED: Float = 0.41f
 
-        /** Two blinks, each 6% of the run, closing to 8% height. */
+        /** How far a blink closes the eyes, as a fraction of their height. */
+        private const val BLINK_SHUT = 0.08f
+
+        /** How long a blink takes to close, and again to open, as a fraction of the run. */
+        private const val BLINK_HALF = 0.02f
+
+        /** Two blinks, each closing to [BLINK_SHUT] height and open again after twice [BLINK_HALF]. */
         private fun blinks(
             first: Float,
             second: Float,
         ) = KeyframeTrack(
             MotionCurve.Standard,
             1f at first,
-            0.08f at first + 0.02f,
-            1f at first + 0.04f,
+            BLINK_SHUT at first + BLINK_HALF,
+            1f at first + 2 * BLINK_HALF,
             1f at second,
-            0.08f at second + 0.02f,
-            1f at second + 0.04f,
+            BLINK_SHUT at second + BLINK_HALF,
+            1f at second + 2 * BLINK_HALF,
         )
     }
 }

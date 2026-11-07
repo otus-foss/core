@@ -39,10 +39,20 @@ public fun SettingSpecRow(
     row: SettingRowSpec,
     modifier: Modifier = Modifier,
 ) {
+    SpecRow(row, modifier, waiting = null)
+}
+
+@Composable
+private fun SpecRow(
+    row: SettingRowSpec,
+    modifier: Modifier,
+    waiting: String?,
+) {
     when (row) {
-        is ToggleRowSpec -> ToggleSpecRow(row, modifier)
-        is ChoiceRowSpec -> ChoiceSpecRow(row, modifier)
-        is PageRowSpec -> PageSpecRow(row, modifier)
+        is ToggleRowSpec -> ToggleSpecRow(row, modifier, waiting)
+        is ChoiceRowSpec -> ChoiceSpecRow(row, modifier, waiting)
+        is PageRowSpec -> PageSpecRow(row, modifier, waiting)
+        is WaitingRowSpec -> SpecRow(row.row, modifier, row.reason)
     }
 }
 
@@ -50,14 +60,15 @@ public fun SettingSpecRow(
 private fun ToggleSpecRow(
     row: ToggleRowSpec,
     modifier: Modifier,
+    waiting: String?,
 ) {
-    DependentSettings(enabled = row.unavailable == null) {
+    DependentSettings(enabled = waiting == null) {
         SettingToggleRow(
             row.title,
             row.checked,
             row.onCheckedChange,
             modifier,
-            description = row.shownDescription,
+            description = waiting ?: row.description,
             icon = row.icon,
             info = row.info,
         )
@@ -68,10 +79,13 @@ private fun ToggleSpecRow(
 private fun ChoiceSpecRow(
     row: ChoiceRowSpec,
     modifier: Modifier,
+    waiting: String?,
 ) {
     var choosing by rememberSaveable { mutableStateOf(false) }
-    DependentSettings(enabled = row.unavailable == null) {
-        SettingRow(row.title, { choosing = true }, modifier, row.shownDescription, row.icon) { ValueButton(row.value) }
+    DependentSettings(enabled = waiting == null) {
+        SettingRow(row.title, { choosing = true }, modifier, waiting ?: row.description, row.icon) {
+            ValueButton(row.value)
+        }
     }
     if (choosing) row.sheet { choosing = false }
 }
@@ -80,11 +94,9 @@ private fun ChoiceSpecRow(
 private fun PageSpecRow(
     row: PageRowSpec,
     modifier: Modifier,
+    waiting: String?,
 ) {
-    DependentSettings(enabled = row.unavailable == null) {
-        val description = row.unavailable ?: row.value ?: row.description
-        SettingPageRow(row.title, { row.open(null) }, modifier, description, row.icon)
+    DependentSettings(enabled = waiting == null) {
+        SettingPageRow(row.title, { row.open(null) }, modifier, waiting ?: row.value ?: row.description, row.icon)
     }
 }
-
-private val SettingRowSpec.shownDescription: String? get() = unavailable ?: description

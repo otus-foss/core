@@ -113,10 +113,10 @@ parameter only when a caller needs it.
 - **Sheet or popup.** Tasks and choices open a sheet. A popup is only for a warning or an
   irreversible confirmation (`ConfirmDialog`, `Confirmation`).
 - **Sheets.** `SheetFrame` is the one sheet chrome: a title with Done, or with `closeButton` a ✕
-  and the confirm button at the bottom. `ListSheet` adds a search slot, a footnote, and Clear for
-  sheets that list things. `ChoiceSheet` picks one option, at once or on Done with `saveOnDone`.
+  and the confirm button at the bottom. `ListSheet` adds a search slot and Clear for sheets that
+  list things, whose list may end with a `SheetFootnote`. `ChoiceSheet` picks one option, at once or on Done with `saveOnDone`.
 - **Rows that pick.** `PickRow` with a `PickMark` (radio, checkbox, check, check circle, or card) is
-  the one choice row.
+  the one choice row; `PersonPickRow` is its form for a person, with the address at the end.
 - **Actions.** `UiAction` (label, symbol, enabled, onClick) is the one action value. Surfaces wrap
   it with their own extras: `BarAction` adds a menu, `SwipeAction` whether the row leaves, and
   `OptionsItem.Action` whether the entry opens a page.
@@ -124,7 +124,9 @@ parameter only when a caller needs it.
   `PopupPlacement.kt`, which keeps them inside the window.
 - **Dismissing.** Sheets, panel sheets, and toasts close by one `DismissRule`: past a distance or
   faster than a fling.
-- **Chips.** `Chip` is the one selectable chip; `ChipLook.Raised` sits on a `bgDark` surface.
+- **Chips.** `Chip` is the one selectable chip. Its `ChipStyle` sets how it toggles (`ChipRole`)
+  and its fill (`ChipLook.Raised` sits on a `bgDark` surface); a `ChipLabel` can carry a prefix and
+  a detail after a divider line.
 
 ## Motion
 

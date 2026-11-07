@@ -20,20 +20,18 @@ class JmapFilterTest {
             ),
             anyOf(music, video).toJson(),
         )
-        assertEquals(anyOf(music, video), music or video)
     }
 
     @Test
-    fun operatorsNestAndChainsOfOneOperatorStayFlat() {
-        assertEquals(allOf(music, video, piano), music and video and piano)
-        assertEquals(allOf(music, video, piano), music and (video and piano))
-        assertEquals(allOf(anyOf(music, video), piano), (music or video) and piano)
+    fun operatorsNestAndOneFilterStaysItself() {
+        assertEquals(music, allOf(listOf(music)))
+        assertEquals(music, anyOf(listOf(music)))
         assertEquals(
             parseObject(
                 """{"operator": "AND", "conditions": [{"operator": "OR", "conditions":
                 [{"hasKeyword": "music"}, {"hasKeyword": "video"}]}, {"hasKeyword": "piano"}]}""",
             ),
-            ((music or video) and piano).toJson(),
+            allOf(anyOf(music, video), piano).toJson(),
         )
     }
 

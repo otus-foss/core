@@ -50,8 +50,7 @@ Developed and checked against Stalwart. It moved here from otus-mail at version 
 - `JmapFilter` is the `filter` of a `/query` or `/queryChanges` (section 5.5): a type-specific
   `JmapFilter.Condition`, or a `JmapFilter.Operator` that combines filters with `AND`, `OR`, or
   `NOT`. `filterCondition(name, value)` builds a condition. `allOf`, `anyOf`, and `noneOf` take
-  filters or a list, `and` and `or` chain them, and a chain such as `a and b and c` stays one flat
-  `AND`. `allOf` and `anyOf` of a single filter return it unchanged, which means the same.
+  filters or a list. `allOf` and `anyOf` of a single filter return it unchanged, which means the same.
   `QueryMethod` and `QueryChangesMethod` take a `JmapFilter`. A condition with an `operator`
   property throws.
 - `jmapPatch { set(value, "keywords", "chopin"); remove("name") }` builds a `/set` PatchObject

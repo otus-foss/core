@@ -25,7 +25,7 @@ public fun ButtonPill(
         modifier.semantics { contentDescription = description },
         selected = null,
         enabled = true,
-        fill = fill,
+        style = ChipFrameStyle(fill),
     ) {
         leading?.invoke()
         ChipText(label)

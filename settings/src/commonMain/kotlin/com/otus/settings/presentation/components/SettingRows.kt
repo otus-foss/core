@@ -18,15 +18,14 @@ public class SettingsSectionSpec(
 
 /**
  * One row of a settings page, as the page shows it and search finds it. The row shows [description]
- * under its title, or [unavailable] in its place while the row is disabled because it waits on
- * another setting. [keywords] are other words search finds it by.
+ * under its title; [keywords] are other words search finds it by. [waitingOn] dims a row that waits
+ * on another setting.
  */
 public sealed interface SettingRowSpec {
     public val title: String
     public val icon: DrawableResource?
     public val description: String?
     public val keywords: List<String>
-    public val unavailable: String?
 }
 
 /** A row that turns something on or off; [info] explains it on request. */
@@ -38,7 +37,6 @@ public class ToggleRowSpec(
     override val description: String? = null,
     public val info: InfoText? = null,
     override val keywords: List<String> = emptyList(),
-    override val unavailable: String? = null,
 ) : SettingRowSpec
 
 /**
@@ -53,7 +51,6 @@ public class ChoiceRowSpec(
     override val icon: DrawableResource? = null,
     override val description: String? = null,
     override val keywords: List<String> = emptyList(),
-    override val unavailable: String? = null,
 ) : SettingRowSpec
 
 /**
@@ -67,7 +64,6 @@ public class PageRowSpec(
     override val description: String? = null,
     override val icon: DrawableResource? = null,
     override val keywords: List<String> = emptyList(),
-    override val unavailable: String? = null,
     public val content: () -> List<SettingsSectionSpec> = { emptyList() },
 ) : SettingRowSpec
 
@@ -81,20 +77,28 @@ public fun SettingsIndexScope.sections(sections: List<SettingsSectionSpec>) {
     }
 }
 
+/** [row], dimmed in place while it waits on another setting, with [reason] in place of its description. */
+public class WaitingRowSpec(
+    public val row: SettingRowSpec,
+    public val reason: String,
+) : SettingRowSpec by row
+
+/** This row waiting on another setting while [reason] is not null, or else the row itself. */
+public fun SettingRowSpec.waitingOn(reason: String?): SettingRowSpec = reason?.let { WaitingRowSpec(this, it) } ?: this
+
 /** Lists [row] for search, with the reason it waits on while it is unavailable. */
 public fun SettingsIndexScope.row(row: SettingRowSpec) {
-    unavailable(row.unavailable) {
-        when (row) {
-            is ToggleRowSpec -> toggle(row.title, row.checked, row.icon, row.keywords)
-            is ChoiceRowSpec -> setting(row.title, row.value, row.options, row.icon, row.keywords)
-            is PageRowSpec -> pageRow(row)
-        }
+    when (row) {
+        is ToggleRowSpec -> toggle(row.title, row.checked, row.icon, row.keywords)
+        is ChoiceRowSpec -> setting(row.title, row.value, row.options, row.icon, row.keywords)
+        is PageRowSpec -> pageRow(row)
+        is WaitingRowSpec -> unavailable(row.reason) { this.row(row.row) }
     }
 }
 
 private fun SettingsIndexScope.pageRow(row: PageRowSpec) {
     page(row.title, row.open, row.icon, summary = row.description, value = row.value) {
-        keywords(*row.keywords.toTypedArray())
+        keywords(row.keywords)
         sections(row.content())
     }
 }

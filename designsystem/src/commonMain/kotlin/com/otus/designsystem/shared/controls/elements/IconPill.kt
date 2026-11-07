@@ -30,7 +30,7 @@ public fun IconPill(
         modifier.semantics { contentDescription = description },
         selected,
         enabled = true,
-        fill = fill,
+        style = ChipFrameStyle(fill),
         layout = ChipLayout(ChipWidth.Circle, height = size),
     ) { Symbol(icon) }
 }

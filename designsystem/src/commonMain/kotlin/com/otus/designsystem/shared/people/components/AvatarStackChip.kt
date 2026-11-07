@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import com.otus.designsystem.shared.controls.elements.Chip
+import com.otus.designsystem.shared.controls.elements.ChipLabel
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.controls.ControlTokens
 import com.otus.designsystem.theme.tokens.core.Spacing
@@ -32,11 +33,10 @@ public fun AvatarStackChip(
     prefix: String? = null,
 ) {
     Chip(
-        label,
+        ChipLabel(label, detail = detail),
         onClick,
         modifier.semantics { contentDescription = description },
         selected = true,
-        detail = detail,
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(Spacing.iconGap),

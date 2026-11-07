@@ -9,12 +9,14 @@ import com.otus.designsystem.theme.colors.OtusColors
 
 /**
  * What a [Chip] says: its [text], an optional `text3` [prefix] before it, such as the parent
- * folders of a folder whose name repeats, and what screen readers hear, by default both, such as
- * a folder's full path.
+ * folders of a folder whose name repeats, a [detail] after a short divider line, such as the
+ * mailboxes beside an account, and what screen readers hear, by default prefix and text, such as
+ * a folder's full path. A null [text] leaves only the chip's leading content and the detail.
  */
 public data class ChipLabel(
-    val text: String,
+    val text: String?,
     val prefix: String? = null,
+    val detail: String? = null,
     val spoken: String = listOfNotNull(prefix, text).joinToString(", "),
 )
 
@@ -38,6 +40,6 @@ internal fun ChipLabel.annotated(): AnnotatedString {
     return buildAnnotatedString {
         val prefix = label.prefix
         if (prefix != null) withStyle(SpanStyle(color = faint)) { append("$prefix / ") }
-        append(label.text)
+        append(label.text.orEmpty())
     }
 }
