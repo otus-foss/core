@@ -15,6 +15,7 @@ val catalog = libs
 extensions.configure<ApplicationExtension> {
     namespace = appId
     compileSdk = catalog.sdk("compileSdk")
+    buildToolsVersion = catalog.version("android-buildTools")
     defaultConfig {
         applicationId = appId
         minSdk = catalog.sdk("minSdk")

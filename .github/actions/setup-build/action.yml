@@ -1,7 +1,7 @@
 name: Set up the build
 description: >-
   Java, Gradle, the Android SDK, and the pinned Python quality tools, for a repository checked out
-  at the given directory.
+  at the given directory. The SDK platform and build tools come from otus-meta's version catalog.
 inputs:
   directory:
     description: The repository's checkout, relative to the workspace
@@ -12,6 +12,10 @@ inputs:
   python:
     description: "Install requirements-quality.txt"
     default: "true"
+outputs:
+  build-tools:
+    description: The installed build tools' directory, with zipalign and apksigner
+    value: ${{ steps.sdk.outputs.build-tools }}
 runs:
   using: composite
   steps:
@@ -34,6 +38,15 @@ runs:
       with:
         packages: platform-tools
     - if: inputs.android == 'true'
+      id: sdk
       shell: bash
-      run: sdkmanager 'platforms;android-37.0' 'build-tools;36.0.0'
+      env:
+        CATALOG: ${{ github.action_path }}/../../../gradle/libs.versions.toml
+      run: |
+        version() { sed -nE "s/^android-$1 = \"(.+)\"$/\\1/p" "$CATALOG"; }
+        compile=$(version compileSdk)
+        tools=$(version buildTools)
+        if [ -z "$compile" ] || [ -z "$tools" ]; then echo "no SDK versions in $CATALOG" >&2; exit 1; fi
+        sdkmanager "platforms;android-$compile.0" "build-tools;$tools"
+        echo "build-tools=$ANDROID_HOME/build-tools/$tools" >> "$GITHUB_OUTPUT"
     - uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4

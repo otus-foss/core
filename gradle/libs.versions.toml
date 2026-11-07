@@ -8,6 +8,8 @@ compose-multiplatform = "1.11.1"
 android-compileSdk = "37"
 android-targetSdk = "37"
 android-minSdk = "24"
+# CI installs this build-tools release and signs the nightly with its apksigner.
+android-buildTools = "36.0.0"
 androidx-activity = "1.13.0"
 
 robolectric = "4.17"
