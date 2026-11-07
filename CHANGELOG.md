@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- `actionBarInset()` keeps the bar `barInset` from the sides instead of adding the navigation bar
+  height, so it lines up with the page. `FormattingBar` no longer widens itself over the keyboard.
 - `fillRail()` leaves out the rail's inset at both ends, so the last chip in a filled rail is no
   longer clipped by the edge fade.
 - `IconPill` takes a `fill`, `bgRegular` by default, so it can match the pills beside it.
