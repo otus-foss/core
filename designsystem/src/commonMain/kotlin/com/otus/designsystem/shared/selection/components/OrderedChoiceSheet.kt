@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.UiAction
+import com.otus.designsystem.shared.folders.elements.nestedByPath
 import com.otus.designsystem.shared.overlays.components.ListSheet
 import com.otus.designsystem.shared.reorder.components.ReorderableColumn
 import com.otus.designsystem.shared.reorder.components.ReorderableScope
@@ -102,13 +103,13 @@ private fun <T> AvailableChoices(
 ) {
     choices.groupBy { it.group }.forEach { (group, options) ->
         Caption(group)
-        options.forEach { choice ->
+        options.nestedByPath { it.path }.forEach { (choice, name, depth) ->
             PickRow(
-                choice.name,
+                name,
                 null,
                 PickMark(false, multiple = true, style = PickStyle.Card),
                 { onAdd(choice.key) },
-                modifier = Modifier.nestIndent(PageTokens.nestIndent, choice.depth),
+                modifier = Modifier.nestIndent(PageTokens.nestIndent, depth),
                 leading = { Symbol(choice.icon) },
             )
         }

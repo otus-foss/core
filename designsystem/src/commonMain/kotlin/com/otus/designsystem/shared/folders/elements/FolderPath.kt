@@ -66,4 +66,4 @@ public fun FolderPath(
     }
 }
 
-private const val SEPARATOR = " / "
+internal const val SEPARATOR = " / "

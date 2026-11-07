@@ -8,6 +8,9 @@
   `footnote`; end the list with `SheetFootnote`. Breaking for every caller of those parameters.
 - Settings: Breaking: rows drop `unavailable`; `row.waitingOn(reason)` wraps a row that waits on
   another setting (`WaitingRowSpec`). `SettingsIndexScope.keywords` also takes a list.
+- Design system: `OrderedChoiceSheet` nests the offered choices itself, by each `OrderedChoice`'s
+  `path`, so a folder whose parent is already chosen names that parent again. Breaking: `path`
+  replaces `name` and `depth`. Add `nestedByPath` and `Nested`, which Mail used to keep.
 - JMAP: Breaking: remove the infix `JmapFilter.and` and `or`; `allOf` and `anyOf` build the same
   filters.
 - Settings: the Appearance page is a `SettingsSectionSpec` list, `appearanceSections(...)`, that
