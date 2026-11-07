@@ -29,5 +29,6 @@ that has it, on `origin/main` of otus-meta unless the entry names another branch
 | `PanelSearchField`, `SearchHitRow`, `PanelTokens.searchHitHeight`, `PanelTokens.searchHitGap` | `designsystem` | 2026-11-07 | `2b8a290b` | A search field in the control panel and a row for a message it found; Mail's inbox search sheet, their only caller, went with the one search UI. |
 | `FilterTokens.pickAvatarSize` | `designsystem` | 2026-11-07 | `2b8a290b` | The 36 dp avatar size of a filter page's people rows. |
 | `Spacing.xxs`, `Spacing.m`, `Spacing.xxl` | `designsystem` | 2026-11-07 | `6e4baf53` on `refactor/untangle` | The 2, 8, and 24 dp steps of the spacing scale, which no token used. |
+| `ComposeTokens.fromAvatarSize`, `ComposeTokens.fromLabelMaxWidth`, `ComposeTokens.dropdownAvatarSize` | `designsystem` | 2026-11-07 | `refactor/untangle` | The Send-from pill's avatar and label width and an address dropdown's avatar; `SenderTokens` and `AvatarTokens.menuSize` hold them for every screen that shows a sender. |
 
 `ContactCardFilter` stays: the `avatar` module searches cards with it.

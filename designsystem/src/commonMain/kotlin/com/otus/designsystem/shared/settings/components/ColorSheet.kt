@@ -25,6 +25,7 @@ import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.input.elements.InputField
 import com.otus.designsystem.shared.overlays.components.SheetFrame
 import com.otus.designsystem.shared.overlays.components.SheetHeaderAction
+import com.otus.designsystem.shared.overlays.elements.sheetInset
 import com.otus.designsystem.shared.reorder.components.HALF
 import com.otus.designsystem.shared.settings.elements.ColorSlider
 import com.otus.designsystem.theme.colors.Hsl
@@ -82,7 +83,7 @@ public fun ColorSheet(
         Column(
             Modifier
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = SheetTokens.inset)
+                .sheetInset()
                 .padding(bottom = SheetTokens.inset),
             verticalArrangement = Arrangement.spacedBy(SheetTokens.inset),
         ) {

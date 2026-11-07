@@ -25,6 +25,7 @@ import com.otus.designsystem.shared.controls.elements.LocalIconTint
 import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.folders.elements.FolderColorSwatch
 import com.otus.designsystem.shared.overlays.components.SheetFrame
+import com.otus.designsystem.shared.overlays.elements.sheetBodyInset
 import com.otus.designsystem.shared.people.components.NamedAvatar
 import com.otus.designsystem.shared.people.components.PersonText
 import com.otus.designsystem.shared.rows.components.topHairline
@@ -79,7 +80,7 @@ public fun <T> ChoiceSheet(
         Column(
             Modifier
                 .verticalScroll(rememberScrollState())
-                .padding(start = SheetTokens.inset, end = SheetTokens.inset, bottom = SheetTokens.inset)
+                .sheetBodyInset()
                 // One radio group across the default's group and the rest.
                 .selectableGroup(),
             verticalArrangement = Arrangement.spacedBy(ChoiceSheetTokens.groupGap),

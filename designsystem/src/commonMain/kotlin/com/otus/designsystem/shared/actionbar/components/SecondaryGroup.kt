@@ -17,10 +17,10 @@ import androidx.compose.ui.layout.onSizeChanged
 import com.otus.designsystem.shared.actionbar.elements.BarAddButton
 import com.otus.designsystem.shared.actionbar.elements.BarIconButton
 import com.otus.designsystem.shared.controls.elements.UiAction
-import com.otus.designsystem.shared.panels.elements.darkSurface
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
+import com.otus.designsystem.theme.shapes.darkSurface
 import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 
 /**

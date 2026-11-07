@@ -18,6 +18,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import com.otus.designsystem.shared.overlays.components.SheetFrame
+import com.otus.designsystem.shared.overlays.elements.sheetBodyInset
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.core.Sizes
@@ -41,7 +42,7 @@ public fun ChangeLogHistorySheet(
         Column(
             Modifier
                 .verticalScroll(rememberScrollState())
-                .padding(start = SheetTokens.inset, end = SheetTokens.inset, bottom = SheetTokens.inset),
+                .sheetBodyInset(),
         ) {
             val (installed, newer) = releases.partition { it.installed }
             newer.forEach { Release(it) }

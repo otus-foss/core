@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -22,6 +21,7 @@ import androidx.compose.ui.semantics.Role
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_chevron_right
 import com.otus.designsystem.shared.controls.elements.Symbol
+import com.otus.designsystem.shared.overlays.elements.sheetInset
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.shapes.strokeBorder
@@ -74,7 +74,7 @@ public fun GroupRow(
             .fillMaxWidth()
             .heightIn(min = SheetTokens.rowHeight)
             .clickable(role = Role.Button, onClick = onClick)
-            .padding(horizontal = SheetTokens.inset),
+            .sheetInset(),
         horizontalArrangement = Arrangement.spacedBy(SheetTokens.inset),
         verticalAlignment = Alignment.CenterVertically,
     ) {

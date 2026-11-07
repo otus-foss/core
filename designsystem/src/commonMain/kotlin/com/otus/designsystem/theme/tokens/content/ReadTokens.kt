@@ -4,6 +4,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.layout.CornerTokens
 import com.otus.designsystem.theme.typography.TypeScale
 
@@ -81,6 +82,9 @@ public object ReadTokens {
     public val quoteGap: Dp = 16.dp
     public val quoteHeaderGap: Dp = 8.dp
     public val quoteInitialsSize: TextUnit = 9.sp
+
+    /** Space between the parts of a Read page: the header, the body, and the files under it. */
+    public val partGap: Dp = Spacing.l
 
     /** A blocked remote image without a size of its own, its dashed border, corner, and mark. */
     public val placeholderHeight: Dp = 120.dp

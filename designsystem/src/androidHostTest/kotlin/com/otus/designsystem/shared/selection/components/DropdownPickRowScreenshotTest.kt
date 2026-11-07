@@ -8,7 +8,7 @@ import androidx.compose.ui.unit.dp
 import com.otus.designsystem.screenshot.screenshot
 import com.otus.designsystem.shared.people.components.DemoPeople
 import com.otus.designsystem.shared.people.components.PersonAvatar
-import com.otus.designsystem.theme.tokens.editing.ComposeTokens
+import com.otus.designsystem.theme.tokens.people.AvatarTokens
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -37,7 +37,7 @@ class DropdownPickRowScreenshotTest {
             Column(Modifier.width(344.dp)) {
                 people.forEach { (person, address) ->
                     PickRow(person.name, null, PickMark(false, style = PickStyle.Card), {}, detail = address) {
-                        PersonAvatar(person.avatar, ComposeTokens.dropdownAvatarSize)
+                        PersonAvatar(person.avatar, AvatarTokens.menuSize)
                     }
                 }
             }

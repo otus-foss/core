@@ -16,6 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalViewConfiguration
 import com.otus.designsystem.shared.controls.elements.UiAction
+import com.otus.designsystem.shared.overlays.elements.sheetBodyInset
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import kotlin.time.Duration.Companion.milliseconds
@@ -49,7 +50,7 @@ public fun ListSheet(
         Column(
             Modifier
                 .weight(1f, fill = scrolls)
-                .padding(start = SheetTokens.inset, end = SheetTokens.inset, bottom = SheetTokens.inset),
+                .sheetBodyInset(),
             verticalArrangement = Arrangement.spacedBy(SheetTokens.gap),
         ) {
             search?.invoke()

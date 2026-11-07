@@ -20,12 +20,7 @@ public object ComposeTokens {
     public val recipientRadius: Dp = CornerTokens.chip
     public val recipientGap: Dp = 6.dp
 
-    /** The panel's Send-from pill: its avatar, and the width past which its address ends in an ellipsis. */
-    public val fromAvatarSize: Dp = 28.dp
-    public val fromLabelMaxWidth: Dp = 180.dp
-
-    /** A row in a dropdown of addresses: its avatar and the smaller line under the address. */
-    public val dropdownAvatarSize: Dp = 32.dp
+    /** The smaller line under an address in a dropdown of addresses. */
     public val detailSize: TextUnit = TypeScale.detail
 
     /** The formatting row docked above the keyboard. */

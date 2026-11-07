@@ -30,6 +30,7 @@ import com.otus.designsystem.resources.symbol_close
 import com.otus.designsystem.shared.controls.elements.IconButton
 import com.otus.designsystem.shared.controls.elements.IconButtonLook
 import com.otus.designsystem.shared.controls.elements.Symbol
+import com.otus.designsystem.shared.overlays.elements.Scrim
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.core.Sizes
@@ -52,7 +53,7 @@ internal fun DialogFrame(
     Dialog(onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         CompositionLocalProvider(LocalDensity provides density) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                SheetScrim(title, visible = 1f, onClick = onDismiss)
+                Scrim("Dismiss $title", visible = 1f, onClick = onDismiss)
                 DialogSurface(title, onDismiss.takeIf { closeButton }, content)
             }
         }

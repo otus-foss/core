@@ -18,6 +18,9 @@ public object AvatarTokens {
     /** The width a featured face and its name take, so names line up under their faces. */
     public val featuredWidth: Dp = 80.dp
 
+    /** A person in a row of a dropdown or picker, such as an address to send from. */
+    public val menuSize: Dp = 32.dp
+
     /** A symbol fills this share of its avatar's width. */
     public const val SYMBOL_SCALE: Float = 0.5f
 

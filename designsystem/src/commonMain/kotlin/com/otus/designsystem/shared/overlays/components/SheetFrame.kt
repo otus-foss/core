@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -22,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -34,6 +32,7 @@ import com.otus.designsystem.shared.controls.elements.IconButtonLook
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
+import com.otus.designsystem.shared.overlays.elements.sheetInset
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.tokens.core.Sizes
@@ -77,22 +76,6 @@ public fun SheetFrame(
             content()
         }
     }
-}
-
-/** The dimmed backdrop of a sheet or dialog at [visible] strength; tapping it runs [onClick]. */
-@Composable
-internal fun SheetScrim(
-    title: String,
-    visible: Float,
-    onClick: () -> Unit,
-) {
-    Box(
-        Modifier
-            .fillMaxSize()
-            .background(OtusColors.scrim.copy(alpha = SheetTokens.SCRIM_ALPHA * visible))
-            .semantics { contentDescription = "Dismiss $title" }
-            .clickable(remember { MutableInteractionSource() }, indication = null, onClick = onClick),
-    )
 }
 
 /**
@@ -159,7 +142,7 @@ public fun SheetHeaderAction(
             .heightIn(min = Sizes.touchTarget)
             .clickable(interactions, indication = null, enabled = enabled, role = Role.Button, onClick = onClick)
             .controlPressFeedback(interactions, SmoothCornerShape(SheetTokens.rowRadius))
-            .padding(horizontal = SheetTokens.inset),
+            .sheetInset(),
         contentAlignment = Alignment.Center,
     ) { Text(label, color = if (enabled) color else OtusColors.text3, fontWeight = FontWeight.SemiBold) }
 }

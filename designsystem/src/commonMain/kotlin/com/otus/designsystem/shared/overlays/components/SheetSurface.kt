@@ -34,6 +34,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.otus.designsystem.shared.overlays.elements.Scrim
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.LocalMotionScale
 import com.otus.designsystem.theme.motion.MotionCurve
@@ -78,7 +79,7 @@ internal fun SheetSurface(
     Dialog(close, properties = sheetDialogProperties()) {
         CompositionLocalProvider(LocalDensity provides density) {
             BoxWithConstraints(Modifier.fillMaxSize()) {
-                SheetScrim(title, visible = 1f - position.hidden, onClick = close)
+                Scrim("Dismiss $title", visible = 1f - position.hidden, onClick = close)
                 Surface(
                     Modifier
                         .align(Alignment.BottomCenter)

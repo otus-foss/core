@@ -16,7 +16,7 @@ import com.otus.designsystem.shared.controls.elements.ChipFrame
 import com.otus.designsystem.shared.controls.elements.ChipLayout
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.editing.ComposeTokens
+import com.otus.designsystem.theme.tokens.people.SenderTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
@@ -30,7 +30,7 @@ public fun AddressPill(
     description: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    labelMaxWidth: Dp = ComposeTokens.fromLabelMaxWidth,
+    labelMaxWidth: Dp = SenderTokens.labelMaxWidth,
     expanded: Boolean = false,
     avatar: @Composable () -> Unit,
 ) {

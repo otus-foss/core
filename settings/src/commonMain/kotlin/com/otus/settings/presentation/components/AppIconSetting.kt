@@ -1,6 +1,5 @@
 package com.otus.settings.presentation.components
 
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
@@ -13,11 +12,11 @@ import androidx.compose.ui.Modifier
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_owl
 import com.otus.designsystem.shared.overlays.components.SheetFrame
+import com.otus.designsystem.shared.overlays.elements.sheetBodyInset
 import com.otus.designsystem.shared.selection.components.IconChoice
 import com.otus.designsystem.shared.settings.components.SettingRow
 import com.otus.designsystem.shared.settings.elements.ValueButton
 import com.otus.designsystem.theme.brand.AppIconStyle
-import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.settings.presentation.AppIconSettingsState
 
 /**
@@ -43,7 +42,7 @@ public fun AppIconSetting(
                 AppIconStyle.entries,
                 Modifier
                     .verticalScroll(rememberScrollState())
-                    .padding(start = SheetTokens.inset, end = SheetTokens.inset, bottom = SheetTokens.inset)
+                    .sheetBodyInset()
                     .selectableGroup(),
                 columns = ICON_COLUMNS,
             ) { style, modifier ->
