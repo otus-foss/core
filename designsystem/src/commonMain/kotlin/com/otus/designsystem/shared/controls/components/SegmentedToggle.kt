@@ -1,6 +1,7 @@
 package com.otus.designsystem.shared.controls.components
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -17,21 +18,30 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.motion.MotionCurve
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
 import com.otus.designsystem.theme.tokens.controls.ControlTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
- * A row of [options] in one track, one of them [selected] with a `selectedFill` fill, such as
- * Copy from and Copy to; none while [selected] is -1. Each label stays on one line at [fontSize],
+ * A row of [options] in one track, one of them [selected] with a `selectedFill` pill, such as
+ * Copy from and Copy to; none while [selected] is -1. The pill slides to a new selection, easing
+ * in and out at the user's animation speed. Each label stays on one line at [fontSize],
  * in a segment as wide as its share of the labels' length, so a longer label gets more room.
  * [height] is the track's, such as
  * [com.otus.designsystem.theme.tokens.controls.ControlTokens.segmentHeight] in a filter panel.
+ * [track] fills the track and the unselected segments: the page color on a raised panel, or the
+ * raised color on a page, so the track always shows.
  */
 @Composable
 public fun SegmentedToggle(
@@ -41,36 +51,49 @@ public fun SegmentedToggle(
     modifier: Modifier = Modifier,
     fontSize: TextUnit = TextUnit.Unspecified,
     height: Dp = ControlTokens.toggleHeight,
+    track: Color = OtusColors.bgRegular,
 ) {
+    val shares = options.map { it.length.coerceAtLeast(1).toFloat() }
+    val edges = shares.runningFold(0f, Float::plus).map { it / shares.sum() }
+    val slide = motionTween<Float>(MotionSpeed.Normal, MotionCurve.Standard)
+    val left by animateFloatAsState(edges.getOrElse(selected) { 0f }, slide, label = "Segment pill start")
+    val right by animateFloatAsState(edges.getOrElse(selected + 1) { 0f }, slide, label = "Segment pill end")
     Row(
         modifier
             .fillMaxWidth()
             .height(height)
             .clip(CircleShape)
-            .background(OtusColors.bgRegular)
+            .background(track)
             .padding(ControlTokens.toggleInset)
-            .selectableGroup(),
+            .drawBehind {
+                if (selected < 0) return@drawBehind
+                drawRoundRect(
+                    OtusColors.selectedFill,
+                    topLeft = Offset(left * size.width, 0f),
+                    size = Size((right - left) * size.width, size.height),
+                    cornerRadius = CornerRadius(size.height / 2),
+                )
+            }.selectableGroup(),
     ) {
         options.forEachIndexed { index, option ->
             val chosen = index == selected
-            val fill by animateColorAsState(
-                if (chosen) OtusColors.selectedFill else OtusColors.bgRegular,
-                motionTween(MotionSpeed.Fast),
-                label = "Segment fill",
+            val color by animateColorAsState(
+                if (chosen) OtusColors.text1 else OtusColors.text2,
+                motionTween(MotionSpeed.Normal, MotionCurve.Standard),
+                label = "Segment label",
             )
             Box(
                 Modifier
-                    .weight(option.length.coerceAtLeast(1).toFloat())
+                    .weight(shares[index])
                     .fillMaxHeight()
                     .clip(CircleShape)
-                    .background(fill)
                     .selectable(chosen, role = Role.Tab) { onSelect(index) },
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
                     option,
                     style = panelTextStyle(),
-                    color = if (chosen) OtusColors.text1 else OtusColors.text2,
+                    color = color,
                     fontSize = fontSize,
                     maxLines = 1,
                     softWrap = false,

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -21,8 +22,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.zIndex
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
@@ -57,6 +60,36 @@ public fun PageScaffold(
     search: PageSearch? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
+    PageLayout(PageHeader(title, navigationLabel, onNavigation, chips, search), footer, backdrop = null, content)
+}
+
+/**
+ * Something drawn edge to edge at the top of a [Subpage]'s body, which scrolls with it. Its top
+ * tucks under the panel's rounded corners, so it reads as the panel's continuation.
+ * [panelOverlay] draws over the panel at its size, such as to turn it into something else.
+ */
+public class PageBackdrop(
+    public val content: @Composable () -> Unit,
+    public val panelOverlay: @Composable BoxScope.() -> Unit = {},
+)
+
+/** The panel's parts: the title, the chevron's label and action, and the optional chips and search. */
+private class PageHeader(
+    val title: String,
+    val navigationLabel: String,
+    val onNavigation: () -> Unit,
+    val chips: (@Composable ContextPanelScope.() -> Unit)?,
+    val search: PageSearch?,
+)
+
+@Composable
+private fun PageLayout(
+    header: PageHeader,
+    footer: (@Composable ColumnScope.() -> Unit)?,
+    backdrop: PageBackdrop?,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    val search = header.search
     var searching by rememberSaveable { mutableStateOf(false) }
     val expansion = rememberSearchExpansion(searching)
     val closeSearch = {
@@ -72,33 +105,22 @@ public fun PageScaffold(
     }
     ProvideTextStyle(panelTextStyle()) {
         Column(Modifier.fillMaxSize().belowControlPanel()) {
-            ContextPanel(
-                placement = if (chips != null) ChipPlacement.Overlapping else ChipPlacement.None,
-                navigation = { PanelNavigation(navigationLabel, onNavigation) },
-                chips = chips ?: {},
-            ) {
-                if (search == null) {
-                    PanelTitle(title, Modifier.padding(start = PanelTokens.titleStart))
-                } else {
-                    ExpandingSearch(
-                        title,
-                        search,
-                        searching,
-                        { if (it) searching = true else closeSearch() },
-                        expansion,
+            Box(Modifier.zIndex(1f)) {
+                PagePanel(header, searching, { if (it) searching = true else closeSearch() }, expansion)
+                backdrop?.panelOverlay?.invoke(this)
+            }
+            Box(Modifier.weight(1f).then(if (backdrop != null) Modifier.underPanelCorners() else Modifier)) {
+                Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+                    backdrop?.content?.invoke()
+                    Column(
+                        Modifier
+                            .fillMaxWidth()
+                            .pageSideInset()
+                            .padding(vertical = PageTokens.contentInset),
+                        verticalArrangement = Arrangement.spacedBy(PageTokens.rowGap),
+                        content = content,
                     )
                 }
-            }
-            Box(Modifier.weight(1f).pageSideInset()) {
-                Column(
-                    Modifier
-                        .fillMaxSize()
-                        .verticalScroll(
-                            rememberScrollState(),
-                        ).padding(vertical = PageTokens.contentInset),
-                    verticalArrangement = Arrangement.spacedBy(PageTokens.rowGap),
-                    content = content,
-                )
                 if (search != null && search.query.isEmpty()) SearchDim(expansion, closeSearch)
             }
             if (footer != null) {
@@ -111,6 +133,43 @@ public fun PageScaffold(
         }
     }
 }
+
+/** The control panel with the chevron, then the title or, with a search, the search that grows over it. */
+@Composable
+private fun PagePanel(
+    header: PageHeader,
+    searching: Boolean,
+    onSearching: (Boolean) -> Unit,
+    expansion: () -> Float,
+) {
+    ContextPanel(
+        placement = if (header.chips != null) ChipPlacement.Overlapping else ChipPlacement.None,
+        navigation = { PanelNavigation(header.navigationLabel, header.onNavigation) },
+        chips = header.chips ?: {},
+    ) {
+        val search = header.search
+        if (search == null) {
+            PanelTitle(header.title, Modifier.padding(start = PanelTokens.titleStart))
+        } else {
+            ExpandingSearch(header.title, search, searching, onSearching, expansion)
+        }
+    }
+}
+
+/** Moves the body up under the panel's rounded corners and makes it that much taller. */
+private fun Modifier.underPanelCorners(): Modifier =
+    layout { measurable, constraints ->
+        val overlap = PanelTokens.bottomRadius.roundToPx()
+        val placeable =
+            measurable.measure(
+                constraints.copy(
+                    minHeight = constraints.minHeight + overlap,
+                    maxHeight =
+                        constraints.maxHeight + overlap,
+                ),
+            )
+        layout(placeable.width, placeable.height - overlap) { placeable.place(0, -overlap) }
+    }
 
 /** Dims the body while the search field is open and empty; a tap there closes the search. */
 @Composable
@@ -130,7 +189,7 @@ private fun BoxScope.SearchDim(
 
 /**
  * A child page. The chevron and the system back gesture both return to its parent. [chips],
- * [footer], and [search] work as on [PageScaffold].
+ * [footer], and [search] work as on [PageScaffold]; a [backdrop] runs edge to edge under the panel.
  */
 @Composable
 public fun Subpage(
@@ -139,21 +198,14 @@ public fun Subpage(
     chips: (@Composable ContextPanelScope.() -> Unit)? = null,
     footer: (@Composable ColumnScope.() -> Unit)? = null,
     search: PageSearch? = null,
+    backdrop: PageBackdrop? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     NavigationBackHandler(
         state = rememberNavigationEventState(currentInfo = NavigationEventInfo.None),
         onBackCompleted = onBack,
     )
-    PageScaffold(
-        title,
-        navigationLabel = "Back",
-        onNavigation = onBack,
-        chips = chips,
-        footer = footer,
-        search = search,
-        content = content,
-    )
+    PageLayout(PageHeader(title, "Back", onBack, chips, search), footer, backdrop, content)
 }
 
 /** A titled group of rows on a page. */

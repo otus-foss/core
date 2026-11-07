@@ -23,6 +23,8 @@ internal fun themeActions(
     onDialog: (ThemeDialog) -> Unit,
 ): List<UiAction> {
     val custom = option.custom
+    // The device's colors change with the wallpaper, so there is nothing fixed to copy.
+    if (option.system) return emptyList()
     return buildList {
         if (custom != null) add(UiAction("Rename") { onDialog(ThemeDialog.Rename(custom)) })
         add(UiAction("Duplicate") { onChange(option.choice.withCopy(choice.copyName(option))) })

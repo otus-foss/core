@@ -70,6 +70,29 @@
 
 - Avatars: the module bundles the Public Suffix List, and `PublicSuffixDomainResolver()` reads it
   by default, so apps no longer ship their own copy. A custom loader still works.
+
+- `IconPill` takes a `fill`, `bgRegular` by default, so it can match the pills beside it.
+  `DetailsTable` now sits on a raised `darkSurface` card with the images banner's radius and inset.
+- Add a System theme: `SystemTheme` holds the device's colors, `ThemeChoice.withSystem()` selects
+  them, and `ThemeSettingsState(store, system)` takes the current ones each launch. On Android,
+  `Context.systemTheme()` reads the Material You colors in the device's light or dark mode, or
+  null before Android 12. The theme page shows a System card where the device has colors, and
+  hides the accent and Colors while it is selected. A saved choice adds a `system` part.
+- `SegmentedToggle` slides one pill to the new segment, easing in and out at the user's animation
+  speed, and takes a `track` color for the track and unselected segments.
+
+- Theme page: the preview is now a phone, `ThemePhonePreview(palette, expansion)`, drawn from any
+  `OtusPalette`, so colors can be tried before they apply. It runs edge to edge under the control
+  panel with a frame and bezel. A tap or drag down grows it with a `PhoneExpansion`
+  (`rememberPhoneExpansion()`), and `ThemePhonePanel` fades the page's panel into the phone's; a
+  tap, drag up, or back shrinks it. Breaking: `ThemeSettingsScreen` takes `preview: OtusPalette`
+  and a `controls` slot instead of a `preview` composable; Mail passes the colors its hue picker
+  is trying.
+- `Subpage` takes a `PageBackdrop`: content that runs edge to edge under the panel's rounded
+  corners, and a `panelOverlay` drawn over the panel at its size.
+- `SwatchStack` takes a `size`.
+- Theme cards show only the theme's name, without a description.
+
 - `LetterIndex` keeps the pressed letter in place: its row opens level with the heading that
   `letterIndexHandle` or its "Show letters" action opened it from, and the other letters line up
   above and below it. Rows keep `LetterIndexTokens.rowHeight` instead of shrinking to fit. Letters

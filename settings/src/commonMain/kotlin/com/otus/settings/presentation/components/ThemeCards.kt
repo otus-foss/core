@@ -22,7 +22,6 @@ internal fun ThemeCards(
     CardGrid(choice.options, Modifier.selectableGroup()) { option, modifier ->
         ThemeCard(
             title = option.title,
-            description = option.description,
             sketch = option.choice.palette,
             selected = option.selected,
             onClick = { onSelect(option.choice) },

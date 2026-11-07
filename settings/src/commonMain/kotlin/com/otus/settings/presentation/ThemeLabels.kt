@@ -17,15 +17,6 @@ internal val CustomTheme.title: String
 internal val ThemeBase.title: String
     get() = name
 
-internal val ThemeBase.description: String
-    get() =
-        when (this) {
-            ThemeBase.Otus -> "Soft dark, the default"
-            ThemeBase.Ink -> "Darker, gentler contrast"
-            ThemeBase.Light -> "Bright pages"
-            ThemeBase.Black -> "True black, for OLED"
-        }
-
 internal val AccentPreset.title: String
     get() = if (this == AccentPreset.OtusBlue) "Otus blue" else name
 
