@@ -1,6 +1,11 @@
 package com.otus.designsystem.mail.read.elements
 
 import androidx.compose.ui.graphics.Color
+import com.otus.designsystem.mail.read.html.HtmlQuote
+import com.otus.designsystem.mail.read.html.RenderKey
+import com.otus.designsystem.mail.read.html.isShowImagesLink
+import com.otus.designsystem.mail.read.html.newRenderKey
+import com.otus.designsystem.mail.read.html.sealedHtml
 import com.otus.designsystem.theme.colors.OtusPalette
 import kotlin.test.Test
 import kotlin.test.assertContains

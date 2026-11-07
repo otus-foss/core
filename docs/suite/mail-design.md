@@ -33,7 +33,9 @@ Define the palette centrally as named Compose theme tokens. Use semantic compone
 
 Exact component assignments, interaction states, and foreground/background pairings still need design verification. In particular, do not assume every text/accent pairing has sufficient contrast merely because both colors are supplied.
 
-Both apps now use this palette in a dark-only Compose theme. Default text is text-1 (#EBECED) at full opacity; background and default surfaces use bg-regular (#161617). Secondary text colors are opt-in. System appearance does not select a different theme.
+In both apps this palette is the default Otus theme; the user can pick another theme and accent, and only the System theme follows the device's light or dark mode. Default text is text-1 (#EBECED) at full opacity; background and default surfaces use bg-regular (#161617). Secondary text colors are opt-in.
+
+Android draws each app's launch window before Compose starts, from `androidApp/src/main/res/values/colors.xml`. Meta's `tools/launch_colors.py` writes that file from the Otus theme's `bg-regular`, `text-1`, and `accent-regular`, and the architecture check fails when it drifts.
 
 ## Context panel decisions
 

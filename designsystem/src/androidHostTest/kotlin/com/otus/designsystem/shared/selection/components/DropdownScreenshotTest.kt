@@ -8,6 +8,8 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.unit.dp
 import com.otus.designsystem.screenshot.screenScreenshot
+import com.otus.designsystem.shared.rows.elements.Caption
+import com.otus.designsystem.shared.rows.elements.listCaptionInset
 import com.otus.designsystem.theme.colors.ThemeBase
 import com.otus.designsystem.theme.colors.ThemeChoice
 import com.otus.designsystem.theme.tokens.overlays.MenuTokens
@@ -55,8 +57,10 @@ class DropdownScreenshotTest {
                         )
                     },
                 ) {
-                    ListCaption("Work")
-                    addresses.forEach { DropdownRow(it, selected = false, onClick = {}) }
+                    Caption("Work", Modifier.listCaptionInset())
+                    addresses.forEach {
+                        PickRow(it, null, PickMark(false, style = PickStyle.Card), {})
+                    }
                 }
             }
         }

@@ -3,7 +3,8 @@ package com.otus.designsystem.mail.inbox.components
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
-import com.otus.designsystem.shared.folders.elements.FolderGlyphKind
+import com.otus.designsystem.resources.Res
+import com.otus.designsystem.resources.symbol_folder
 import com.otus.designsystem.theme.colors.FolderColor
 import org.jetbrains.compose.resources.DrawableResource
 
@@ -57,10 +58,13 @@ public data class RowTextPart(
  */
 public enum class RowMark { Answered, Attachment, Invite, Flagged, ReadLater }
 
-/** A folder an item is in; see [com.otus.designsystem.shared.folders.elements.FolderGlyph]. */
+/**
+ * A folder an item is in, drawn as [icon] or in [color]; see
+ * [com.otus.designsystem.shared.folders.elements.FolderGlyph].
+ */
 public data class RowFolderIcon(
-    public val kind: FolderGlyphKind,
     public val color: FolderColor?,
+    public val icon: DrawableResource = Res.drawable.symbol_folder,
 )
 
 /** How a [CompactContentRow] line draws its text. */

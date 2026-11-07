@@ -15,7 +15,7 @@ import androidx.compose.ui.semantics.semantics
 import com.otus.designsystem.shared.dates.elements.CalendarDay
 import com.otus.designsystem.shared.dates.elements.CalendarDaySelection
 import com.otus.designsystem.shared.dates.elements.calendarMonthBackground
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.selection.CalendarTokens
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
@@ -42,7 +42,7 @@ internal fun CalendarWeek(
             if (date in targets.allowedDates) {
                 CalendarDateCell(date, start, end, weekday, onDate, Modifier.weight(1f))
             } else {
-                Box(Modifier.weight(1f).heightIn(min = PanelTokens.touchTarget))
+                Box(Modifier.weight(1f).heightIn(min = Sizes.touchTarget))
             }
         }
     }

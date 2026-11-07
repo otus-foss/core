@@ -1,20 +1,11 @@
 package com.otus.designsystem.shared.controls.elements
 
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
-import com.otus.designsystem.resources.Res
-import com.otus.designsystem.resources.symbol_expand_less
-import com.otus.designsystem.resources.symbol_expand_more
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.editing.ComposeTokens
-import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
  * A pill that acts, such as "+ Cc", with an optional [leading] icon, filled with [fill]. Screen
@@ -34,44 +25,9 @@ public fun ButtonPill(
         modifier.semantics { contentDescription = description },
         selected = null,
         enabled = true,
-        fill = fill,
+        style = ChipFrameStyle(fill),
     ) {
         leading?.invoke()
         ChipText(label)
-    }
-}
-
-/**
- * The address a message is sent from as a pill: its [avatar], the [address], which ends with an
- * ellipsis past [labelMaxWidth], and a down chevron, since tapping it opens the choice. The
- * chevron points up while what it opens is [expanded]. Screen readers read [description].
- */
-@Composable
-public fun AddressPill(
-    address: String,
-    description: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    labelMaxWidth: Dp = ComposeTokens.fromLabelMaxWidth,
-    expanded: Boolean = false,
-    avatar: @Composable () -> Unit,
-) {
-    ChipFrame(
-        onClick,
-        modifier.semantics { contentDescription = description },
-        selected = null,
-        enabled = true,
-        fill = OtusColors.bgDark,
-        layout = ChipLayout(avatarFirst = true),
-    ) {
-        avatar()
-        Text(
-            address,
-            Modifier.widthIn(max = labelMaxWidth),
-            style = panelTextStyle().copy(color = Color.Unspecified),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
-        Symbol(if (expanded) Res.drawable.symbol_expand_less else Res.drawable.symbol_expand_more)
     }
 }

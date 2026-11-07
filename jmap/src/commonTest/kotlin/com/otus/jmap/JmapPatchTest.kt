@@ -1,5 +1,6 @@
 package com.otus.jmap
 
+import com.otus.json.types.patchPath
 import kotlinx.serialization.json.JsonPrimitive
 import kotlin.test.Test
 import kotlin.test.assertEquals

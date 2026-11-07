@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -22,9 +21,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_chevron_right
 import com.otus.designsystem.shared.controls.elements.Symbol
+import com.otus.designsystem.shared.overlays.elements.sheetInset
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.tokens.selection.FilterTokens
+import com.otus.designsystem.theme.typography.TypeScale
 import com.otus.designsystem.theme.typography.panelTextStyle
 import org.jetbrains.compose.resources.DrawableResource
 
@@ -56,7 +57,7 @@ public fun FilterValueRow(
                     true
                 }
             }.clickable(onClick = onClick)
-            .padding(horizontal = SheetTokens.inset),
+            .sheetInset(),
         horizontalArrangement = Arrangement.spacedBy(SheetTokens.gap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -67,7 +68,7 @@ public fun FilterValueRow(
             Modifier.weight(1f),
             style = panelTextStyle(),
             color = if (set) OtusColors.text2 else OtusColors.text3,
-            fontSize = FilterTokens.chipTextSize,
+            fontSize = TypeScale.label,
             textAlign = TextAlign.End,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,

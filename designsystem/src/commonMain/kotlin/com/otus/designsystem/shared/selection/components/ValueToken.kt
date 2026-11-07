@@ -17,7 +17,7 @@ import com.otus.designsystem.shared.people.components.SmallAvatar
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.shapes.strokeBorder
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.people.SummaryTokens
 import com.otus.designsystem.theme.tokens.settings.SettingTokens
 import org.jetbrains.compose.resources.DrawableResource
@@ -29,7 +29,7 @@ import org.jetbrains.compose.resources.DrawableResource
  * values end in an ellipsis. It only shows the value; [ValuePicker] lets the user change it.
  */
 @Composable
-public fun ValueToken(
+internal fun ValueToken(
     value: String,
     modifier: Modifier = Modifier,
     keyword: String? = null,
@@ -56,11 +56,9 @@ internal fun ValueOutline(
 }
 
 /**
- * The `bgLight` stroke around a [ValueToken], [ValuePicker], or
- * [RuleChip][com.otus.designsystem.shared.filters.components.RuleChip].
+ * The `bgLight` stroke around a [ValueToken], a [ValuePicker], or a rule chip.
  */
-internal fun Modifier.valueOutline(shape: Shape): Modifier =
-    strokeBorder(PanelTokens.borderWidth, OtusColors.bgLight, shape)
+internal fun Modifier.valueOutline(shape: Shape): Modifier = strokeBorder(Sizes.borderWidth, OtusColors.bgLight, shape)
 
 /**
  * The keyword, avatar or icon, and value inside a [ValueOutline]. A disabled label dims its

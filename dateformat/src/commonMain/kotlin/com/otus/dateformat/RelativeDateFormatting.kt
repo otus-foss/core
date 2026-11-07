@@ -13,8 +13,8 @@ public fun DateFormatter.formatRelative(
     today: LocalDate = currentLocalDate(),
 ): String =
     when (date) {
-        today -> "Today"
-        today.minus(1, DateTimeUnit.DAY) -> "Yesterday"
+        today -> TODAY
+        today.minus(1, DateTimeUnit.DAY) -> YESTERDAY
         else -> format(date)
     }
 

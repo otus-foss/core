@@ -17,7 +17,7 @@ public class QueryChangesMethod(
     type: JmapType<*>,
     accountId: String,
     private val sinceQueryState: String,
-    private val filter: JsonObject? = null,
+    private val filter: JmapFilter? = null,
     private val sort: List<JmapSort> = emptyList(),
     private val maxChanges: Int? = null,
     private val extra: Map<String, JsonElement> = emptyMap(),
@@ -29,7 +29,7 @@ public class QueryChangesMethod(
     override fun arguments(): JsonObject =
         buildJsonObject {
             put("accountId", JsonPrimitive(accountId))
-            if (filter != null) put("filter", filter)
+            if (filter != null) put("filter", filter.toJson())
             if (sort.isNotEmpty()) put("sort", sortJson(sort))
             put("sinceQueryState", JsonPrimitive(sinceQueryState))
             if (maxChanges != null) put("maxChanges", JsonPrimitive(maxChanges))

@@ -38,8 +38,8 @@ import com.otus.designsystem.shared.rows.components.RowDensity
 import com.otus.designsystem.shared.rows.components.topHairline
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.layout.PageTokens
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.tokens.settings.SettingTokens
 import org.jetbrains.compose.resources.DrawableResource
@@ -52,7 +52,7 @@ import kotlin.math.min
  * above it, so the first row in its parent, such as at the top of a page, has none. With [onClick]
  * the whole row is one button; without it, only its trailing controls act. A
  * [RowDensity.Compact] row drops the hairline and fits one line in
- * [PanelTokens.compactRowHeight]; a taller trailing control reaches into its padding instead of
+ * [Sizes.compactRowHeight]; a taller trailing control reaches into its padding instead of
  * making it taller. Inside [DependentSettings] that is not enabled, the row is dimmed and ignores
  * taps.
  */
@@ -178,7 +178,7 @@ private fun SettingRowLayout(
     var first by remember { mutableStateOf(false) }
     val separation =
         if (compact) {
-            Modifier.heightIn(min = PanelTokens.compactRowHeight)
+            Modifier.heightIn(min = Sizes.compactRowHeight)
         } else {
             Modifier
                 .onPlaced { first = it.positionInParent().y < 1f }
@@ -211,7 +211,7 @@ private fun SettingRowLayout(
                 }
             }
             // The row pads its content, so the control may only claim the height inside that padding.
-            val inner = PanelTokens.compactRowHeight - SettingTokens.compactRowPadding * 2
+            val inner = Sizes.compactRowHeight - SettingTokens.compactRowPadding * 2
             if (compact) Box(Modifier.overlapHeight(inner)) { trailing() } else trailing()
         }
     }
@@ -250,6 +250,6 @@ private fun SettingTitle(
             overflow = TextOverflow.Ellipsis,
         )
         // The button's touch target reaches into the row's padding rather than making it taller.
-        if (title.info != null) InfoTip(title.info, Modifier.overlapHeight(PanelTokens.iconSize))
+        if (title.info != null) InfoTip(title.info, Modifier.overlapHeight(Sizes.iconSize))
     }
 }

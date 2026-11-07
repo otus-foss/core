@@ -2,18 +2,10 @@ package com.otus.settings.presentation
 
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import com.otus.designsystem.theme.colors.OtusPalette
 import com.otus.designsystem.theme.colors.SystemTheme
 import com.otus.designsystem.theme.colors.ThemeChoice
-
-/** Keeps the encoded [ThemeChoice] between launches, such as in platform preferences. */
-public interface ThemePreferenceStore {
-    public fun read(): String?
-
-    public fun write(value: String)
-}
+import com.otus.storage.StoredChoice
 
 /**
  * The user's theme and accent. Pass [palette] to `OtusTheme` so every screen follows it; the
@@ -21,18 +13,16 @@ public interface ThemePreferenceStore {
  * You colors, where it has them; they are never stored, so pass the current ones each launch.
  */
 public class ThemeSettingsState(
-    private val store: ThemePreferenceStore? = null,
+    store: StoredChoice,
     system: SystemTheme? = null,
-    initialChoice: ThemeChoice = (store?.read()?.let(::decodeThemeChoice) ?: ThemeChoice()).copy(system = system),
-) {
-    public var choice: ThemeChoice by mutableStateOf(initialChoice)
-        private set
+) : StoredChoiceState<ThemeChoice>(
+        store,
+        ThemeChoice(system = system),
+        { decodeThemeChoice(it).copy(system = system) },
+        { it.encode() },
+    ) {
+    public val choice: ThemeChoice get() = value
 
     /** Every color of [choice], worked out again only when it changes. */
-    public val palette: OtusPalette by derivedStateOf { choice.palette }
-
-    public fun select(choice: ThemeChoice) {
-        store?.write(choice.encode())
-        this.choice = choice
-    }
+    public val palette: OtusPalette by derivedStateOf { value.palette }
 }

@@ -1,0 +1,52 @@
+name: Comment the changed screenshots
+description: >-
+  Shows each screenshot a pull request adds or changes, old beside new, from the commits
+  themselves, so the images stay put after a merge. Warns when UI code changes without a
+  screenshot. Needs pull-requests write permission.
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        GH_REPO: ${{ github.repository }}
+        PR: ${{ github.event.pull_request.number }}
+        BASE: ${{ github.event.pull_request.base.sha }}
+        HEAD: ${{ github.event.pull_request.head.sha }}
+      run: |
+        gh api --paginate "repos/$GH_REPO/pulls/$PR/files" \
+          --jq '.[] | "\(.status) \(.filename) \(.previous_filename // .filename)"' > files.txt
+        shots=$(grep -E '^[a-z]+ [^ ]*screenshots/[^ ]*\.png ' files.txt || true)
+        marker="<!-- otus-screenshots -->"
+        comment=$(gh api "repos/$GH_REPO/issues/$PR/comments" --paginate \
+          --jq ".[] | select(.body | startswith(\"$marker\")) | .id" | head -1)
+        if [ -z "$shots" ]; then
+          if grep -qE '^[a-z]+ [^ ]*src/commonMain/[^ ]*(presentation|designsystem)/[^ ]*\.kt ' files.txt; then
+            echo "::warning title=No screenshots::This pull request changes UI code but no screenshot. Add or re-record a screenshot test for the changed screen."
+          fi
+          if [ -n "$comment" ]; then gh api -X DELETE "repos/$GH_REPO/issues/comments/$comment"; fi
+          exit 0
+        fi
+        url="https://github.com/$GH_REPO/blob"
+        {
+          echo "$marker"
+          echo "### Screenshots"
+          echo
+          echo "| Screen | Before | After |"
+          echo "| --- | --- | --- |"
+          echo "$shots" | head -40 | while read -r status file previous; do
+            name=$(basename "$file" .png)
+            case "$status" in
+              added) echo "| $name, new | | ![]($url/$HEAD/$file?raw=true) |" ;;
+              removed) echo "| $name, removed | ![]($url/$BASE/$file?raw=true) | |" ;;
+              *) echo "| $name | ![]($url/$BASE/$previous?raw=true) | ![]($url/$HEAD/$file?raw=true) |" ;;
+            esac
+          done
+          total=$(echo "$shots" | wc -l)
+          if [ "$total" -gt 40 ]; then echo; echo "And $((total - 40)) more in the Files tab."; fi
+        } > body.md
+        if [ -n "$comment" ]; then
+          gh api -X PATCH "repos/$GH_REPO/issues/comments/$comment" -F body=@body.md > /dev/null
+        else
+          gh pr comment "$PR" --body-file body.md
+        fi

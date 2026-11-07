@@ -17,8 +17,8 @@ import com.otus.designsystem.shared.feedback.components.InfoText
 import com.otus.designsystem.shared.feedback.components.InfoTip
 import com.otus.designsystem.shared.people.components.ChipAvatar
 import com.otus.designsystem.shared.people.components.PersonAvatar
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.layout.PageTokens
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.settings.SettingTokens
 
 /**
@@ -51,7 +51,7 @@ public fun SettingsSection(
             )
             // The button's touch target reaches past the title's line rather than making the header taller.
             if (info != null) {
-                InfoTip(info, Modifier.offset(x = -InfoTipOverhang).overlapHeight(PanelTokens.iconSize))
+                InfoTip(info, Modifier.offset(x = -InfoTipOverhang).overlapHeight(Sizes.iconSize))
             }
         }
         content()
@@ -59,4 +59,4 @@ public fun SettingsSection(
 }
 
 /** How far the info button's touch target reaches past its question mark toward the title. */
-private val InfoTipOverhang = (PanelTokens.touchTarget - PanelTokens.iconSize) / 2
+private val InfoTipOverhang = (Sizes.touchTarget - Sizes.iconSize) / 2

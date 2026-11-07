@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.settings.ThemeTokens
 
 /**
@@ -32,7 +32,7 @@ public fun SwatchStack(
                 Modifier
                     .size(size)
                     .background(it, CircleShape)
-                    .border(PanelTokens.borderWidth, OtusColors.bgLight, CircleShape),
+                    .border(Sizes.borderWidth, OtusColors.bgLight, CircleShape),
             )
         }
     }

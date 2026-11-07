@@ -15,8 +15,8 @@ import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.shapes.strokeBorder
-import com.otus.designsystem.theme.tokens.content.ReadTokens
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.rows.StripTokens
 
 /**
  * The card of a strip above the action bar, such as the thread or attachment strip: full width,
@@ -26,7 +26,7 @@ import com.otus.designsystem.theme.tokens.layout.PanelTokens
  * [UnfoldingStripCard] instead, since a second animation would trail behind the finger.
  */
 @Composable
-public fun StripCard(
+internal fun StripCard(
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit,
 ) {
@@ -42,11 +42,11 @@ public fun StripCard(
 
 /** A strip card's full width, rounded `bgDark` fill, and `strokeBgDark` border, without the size animation. */
 internal fun Modifier.stripCardFrame(): Modifier {
-    val shape = SmoothCornerShape(ReadTokens.stripRadius)
+    val shape = SmoothCornerShape(StripTokens.radius)
     return fillMaxWidth()
         .clip(shape)
         .background(OtusColors.bgDark)
-        .strokeBorder(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape)
+        .strokeBorder(Sizes.borderWidth, OtusColors.strokeBgDark, shape)
 }
 
 /** False inside an [UnfoldingStripCard]'s folded form, whose card already frames the strip drawn there. */

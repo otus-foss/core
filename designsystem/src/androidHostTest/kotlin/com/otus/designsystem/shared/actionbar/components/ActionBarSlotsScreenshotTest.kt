@@ -15,7 +15,7 @@ import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_more_horiz
 import com.otus.designsystem.screenshot.screenScreenshot
 import com.otus.designsystem.screenshot.screenshot
-import com.otus.designsystem.shared.overlays.components.MenuAction
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.people.components.DemoActions.secondary
 import com.otus.designsystem.shared.people.components.DemoActions.write
 import com.otus.designsystem.theme.colors.ThemeBase
@@ -78,8 +78,13 @@ class ActionBarSlotsScreenshotTest {
 
     private fun menuAction(calls: MutableList<String> = mutableListOf()) =
         BarAction(
-            "All actions",
-            Res.drawable.symbol_more_horiz,
-            menu = listOf("Archive", "Flag", "Move", "Delete").map { MenuAction(it) { calls += it.lowercase() } },
-        ) { calls += "all" }
+            UiAction("All actions", Res.drawable.symbol_more_horiz) { calls += "all" },
+            menu =
+                listOf("Archive", "Flag", "Move", "Delete").map {
+                    UiAction(it) {
+                        calls +=
+                            it.lowercase()
+                    }
+                },
+        )
 }

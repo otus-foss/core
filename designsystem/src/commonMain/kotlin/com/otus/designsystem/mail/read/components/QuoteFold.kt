@@ -39,7 +39,8 @@ import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
 import com.otus.designsystem.theme.tokens.content.ReadTokens
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
@@ -125,9 +126,9 @@ private fun QuoteToggle(
 ) {
     Row(
         Modifier
-            .heightIn(min = PanelTokens.touchTarget)
+            .heightIn(min = Sizes.touchTarget)
             .clickable(role = Role.Button, onClick = onToggle),
-        horizontalArrangement = Arrangement.spacedBy(PanelTokens.iconGap),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.iconGap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         CompositionLocalProvider(LocalContentColor provides OtusColors.text2) {

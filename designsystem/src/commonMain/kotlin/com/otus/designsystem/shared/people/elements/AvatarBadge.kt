@@ -16,8 +16,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.text.font.FontWeight
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
-import com.otus.designsystem.theme.tokens.rows.InboxTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.people.AvatarTokens
 import org.jetbrains.compose.resources.DrawableResource
 
 /**
@@ -36,7 +36,7 @@ public fun BadgedAvatar(
             Box(
                 Modifier
                     .align(Alignment.BottomEnd)
-                    .offset(-InboxTokens.badgeOffset, -InboxTokens.badgeOffset),
+                    .offset(-AvatarTokens.badgeOffset, -AvatarTokens.badgeOffset),
             ) { badge() }
         }
     }
@@ -47,7 +47,7 @@ public fun BadgedAvatar(
  * cuts it out of the avatar under it. It is decoration: the row's description names the account.
  */
 @Composable
-public fun AvatarBadge(
+internal fun AvatarBadge(
     initials: String,
     colorIndex: Int,
     modifier: Modifier = Modifier,
@@ -58,18 +58,18 @@ public fun AvatarBadge(
 ) {
     Box(
         modifier
-            .size(InboxTokens.badgeSize)
+            .size(AvatarTokens.badgeSize)
             .background(OtusColors.bgRegular, CircleShape)
-            .padding(InboxTokens.badgeRing)
-            .border(PanelTokens.borderWidth, OtusColors.bgLight, CircleShape)
-            .padding(PanelTokens.borderWidth)
+            .padding(AvatarTokens.badgeRing)
+            .border(Sizes.borderWidth, OtusColors.bgLight, CircleShape)
+            .padding(Sizes.borderWidth)
             .clip(CircleShape)
             .background(fill),
         contentAlignment = Alignment.Center,
     ) {
         when {
             image != null -> AvatarPhoto(image, Modifier.matchParentSize())
-            symbol != null -> AvatarSymbol(symbol, InboxTokens.badgeSize, content)
+            symbol != null -> AvatarSymbol(symbol, AvatarTokens.badgeSize, content)
             else -> BadgeInitials(initials, content)
         }
     }
@@ -83,8 +83,8 @@ private fun BadgeInitials(
     Text(
         initials,
         color = color,
-        fontSize = InboxTokens.badgeInitialsSize,
-        lineHeight = InboxTokens.badgeInitialsSize,
+        fontSize = AvatarTokens.badgeInitialsSize,
+        lineHeight = AvatarTokens.badgeInitialsSize,
         fontWeight = FontWeight.SemiBold,
         maxLines = 1,
     )

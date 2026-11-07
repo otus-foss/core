@@ -16,7 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 
@@ -47,14 +48,14 @@ public fun ActionButton(
             },
         border =
             BorderStroke(
-                PanelTokens.borderWidth,
+                Sizes.borderWidth,
                 if (primary && enabled) OtusColors.accentRegular else OtusColors.strokeBgDark,
             ),
     ) {
         Box(
             Modifier
-                .heightIn(min = PanelTokens.touchTarget)
-                .padding(horizontal = contentPadding, vertical = PanelTokens.iconGap),
+                .heightIn(min = Sizes.touchTarget)
+                .padding(horizontal = contentPadding, vertical = Spacing.iconGap),
             contentAlignment = Alignment.Center,
         ) {
             if (labelContent == null) {

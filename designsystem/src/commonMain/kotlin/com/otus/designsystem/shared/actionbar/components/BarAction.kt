@@ -1,23 +1,21 @@
 package com.otus.designsystem.shared.actionbar.components
 
-import com.otus.designsystem.shared.overlays.components.MenuAction
+import com.otus.designsystem.shared.controls.elements.UiAction
 import org.jetbrains.compose.resources.DrawableResource
 
 /**
- * One action in an [ActionBar]. A secondary action shows only its [symbol] and names itself with
- * [label] to accessibility services and in a long-press tooltip; the primary shows its label when
- * the bar has no context. A disabled action keeps its place. An action with a [menu] opens it in a
- * [ContextMenu][com.otus.designsystem.shared.overlays.components.ContextMenu] above the button
- * instead of running [onClick].
+ * One [action] in an [ActionBar]. A secondary action shows only its symbol, which it must have,
+ * and names itself with its label to accessibility services and in a long-press tooltip; the
+ * primary shows its label when the bar has no context. A disabled action keeps its place. An action
+ * with a [menu] opens it in a [ContextMenu][com.otus.designsystem.shared.overlays.components.ContextMenu]
+ * above the button instead of running its own click.
  */
 public class BarAction(
-    public val label: String,
-    public val symbol: DrawableResource,
-    public val enabled: Boolean = true,
-    public val mirrorInRtl: Boolean = false,
-    public val menu: List<MenuAction> = emptyList(),
-    public val onClick: () -> Unit,
-)
+    public val action: UiAction,
+    public val menu: List<UiAction> = emptyList(),
+) {
+    internal val symbol: DrawableResource = checkNotNull(action.symbol) { "A bar action needs a symbol" }
+}
 
 /**
  * What the primary action applies to, shown in the shell beside it: a [token] and a [subtitle]
@@ -33,5 +31,5 @@ public class BarContext(
     public val token: BarToken,
     public val description: String = subtitle,
     public val lead: String? = null,
-    public val choices: List<MenuAction> = emptyList(),
+    public val choices: List<UiAction> = emptyList(),
 )

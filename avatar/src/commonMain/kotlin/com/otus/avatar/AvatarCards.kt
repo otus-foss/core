@@ -1,7 +1,10 @@
 package com.otus.avatar
 
 import com.otus.jscontact.Card
+import com.otus.jscontact.Media
+import com.otus.jscontact.MediaKind
 import kotlinx.serialization.json.JsonObject
+import kotlin.io.encoding.Base64
 
 /** The `media` key under which Otus keeps the photo of one of the user's own avatars. */
 public const val AVATAR_PHOTO_KEY: String = "otus"
@@ -32,3 +35,25 @@ public fun Card.withAvatarStyle(style: AvatarStyle?): Card {
     val withProperties = JsonObject((vCard as? JsonObject).orEmpty() + (VCARD_PROPERTIES to properties))
     return copy(extra = extra + (VCARD_PROPERTY to withProperties))
 }
+
+/**
+ * This card with [avatar] as its look, so every contact app shows the same: a photo replaces its
+ * photos, under [photoKey], and its style; a style replaces its photos; null takes both away. Media
+ * that are not photos stay.
+ */
+public fun Card.withAvatar(
+    avatar: ContactAvatar?,
+    photoKey: String = AVATAR_PHOTO_KEY,
+): Card =
+    copy(
+        media =
+            media
+                .orEmpty()
+                .filterValues { it.kind != MediaKind.Photo }
+                .plus(listOfNotNull((avatar as? ContactAvatar.Photo)?.let { photoKey to it.toMedia() }))
+                .takeIf { it.isNotEmpty() },
+    ).withAvatarStyle((avatar as? ContactAvatar.Styled)?.style)
+
+/** The photo as an inline `data:` URI: Stalwart refuses a `blobId` in `media`, and every contact app shows it. */
+public fun ContactAvatar.Photo.toMedia(): Media =
+    Media(MediaKind.Photo, uri = "data:$mediaType;base64,${Base64.encode(image.bytes)}", mediaType = mediaType)

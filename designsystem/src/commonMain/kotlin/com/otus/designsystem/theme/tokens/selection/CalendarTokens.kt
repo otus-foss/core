@@ -8,7 +8,7 @@ import androidx.compose.ui.unit.sp
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.layout.CornerTokens
 
-public object CalendarTokens {
+internal object CalendarTokens {
     public const val MONTH_COLUMN_WEIGHT: Float = 2f
     public const val YEAR_COLUMN_WEIGHT: Float = 1.25f
     public const val CONTROLS_HEIGHT_FRACTION: Float = 0.35f
@@ -32,4 +32,7 @@ public object CalendarTokens {
     /** How far a range's end days step from the range's `selectedFill` toward `text1`. */
     public const val ENDPOINT_STEP: Float = 0.25f
     public const val HALF_TURN: Float = 180f
+
+    /** A date range calendar shown inline on a filter page: its heading, weekdays, and about four weeks. */
+    public val rangeCalendarHeight: Dp = 360.dp
 }

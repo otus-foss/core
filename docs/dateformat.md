@@ -1,8 +1,8 @@
 # Date formatting
 
 The `dateformat` module (`com.otus.dateformat`, artifact `com.otus:dateformat`) formats dates for
-display and stores the user's date-format preference. It has no UI. It moved here from otus-mail in
-version 0.2.0.
+display. It has no UI and stores nothing: the `settings` module keeps the user's choice. It moved
+here from otus-mail in version 0.2.0.
 
 ## Choices and defaults
 
@@ -33,7 +33,7 @@ the locale changes.
 ## API
 
 `DateFormatter` accepts a `DateFormatPreference` and an optional locale identifier. It formats
-`LocalDate`, ISO date strings, and ranges. `formatDayMonth` leaves out the year, for places where the
+`LocalDate` values and ranges. `formatDayMonth` leaves out the year, for places where the
 reader knows it, such as this year's mail. It has no Compose, feature, storage, or account dependencies.
 Malformed ISO input is rejected; do not feed user-entered dates to this API without validation.
 
@@ -43,19 +43,41 @@ val label = formatter.format(LocalDate(2026, 10, 4)) // 04/10/2026
 val short = formatter.formatDayMonth(LocalDate(2026, 10, 4)) // 04/10
 ```
 
+### Names and times
+
+Labels that read better with words than numbers come from here too, so both apps name dates the
+same way:
+
+- `formatNamedDay(date, withYear)` writes the day with the short English month, such as `Oct 8`,
+  `8 Oct`, `Oct 8, 2026`, or `8 Oct 2026`. The day comes first for a day-first format, and for the
+  device locale when its numeric day-month order puts the day first, such as en-GB or de-DE.
+- `shortWeekday(day)` writes `Mon`; `clockTime(time)` writes the 24-hour time with the hour
+  unpadded, such as `8:05`.
+- `formatRelative` writes `Today` and `Yesterday`, and `formatRecentDay(date, today)` writes
+  `Yesterday` or the weekday of the five days before it, as mail lists name recent days.
+
+Names are English in every locale for now.
+
+### In Compose
+
+`settings` holds `rememberDateFormatter(settings)`, which builds a formatter again only when the
+choice or the locale changes, and `LocalDateFormatter`, which an app provides around its pages.
+`dateformat` stays free of Compose.
+
 ## Preference storage
 
-Android stores a stable choice ID in app-private SharedPreferences through
-`AndroidDateFormatPreferenceStore(context)`; iOS uses NSUserDefaults through
-`IosDateFormatPreferenceStore()`. Missing or unknown IDs fall back to device formatting. Selecting
-DeviceLocale saves the automatic choice rather than the currently resolved pattern, so later phone
-locale changes still apply. Each installed app has its own preference; nothing is shared between
-apps.
+`DateFormatSettingsState` in `settings` keeps the choice in a `StoredChoice` from `storage`, as a
+stable choice ID. Missing or unknown IDs fall back to device formatting. Selecting DeviceLocale
+saves the automatic choice rather than the currently resolved pattern, so later phone locale
+changes still apply. Each installed app has its own preference; nothing is shared between apps.
+Mail keeps the file `otus_date_format` and key `date_format` on Android, and `otus.date_format`
+on iOS, as before 2026-11-06.
 
 ## Validation
 
-Common tests cover every choice with and without the year, ranges, and relative labels. `AndroidDateFormattingTest` runs
-under Robolectric and covers locale regions, locale changes, and stored preferences. iOS adapters
+Common tests cover every choice with and without the year, ranges, relative labels, and names
+(`DateNamesTest`). `AndroidDateFormattingTest` runs under Robolectric and covers locale regions
+and locale changes. iOS adapters
 run in the macOS CI job.
 
 Platform references:

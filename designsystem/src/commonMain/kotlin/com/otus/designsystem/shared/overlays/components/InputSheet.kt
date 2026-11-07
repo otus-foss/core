@@ -11,7 +11,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.input.elements.InputField
+import com.otus.designsystem.shared.input.elements.InputNote
+import com.otus.designsystem.shared.overlays.elements.sheetInset
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 
 /**
@@ -36,22 +39,21 @@ public fun InputSheet(
     SheetFrame(
         title,
         onDismiss,
-        onDone = {
-            onConfirm(value)
-            onDismiss()
-        },
-        doneEnabled = error == null,
-        doneLabel = confirmLabel,
+        done =
+            UiAction(confirmLabel, enabled = error == null, onClick = {
+                onConfirm(value)
+                onDismiss()
+            }),
     ) {
         InputField(
             label,
             value,
             { value = it },
             Modifier
-                .padding(horizontal = SheetTokens.inset)
+                .sheetInset()
                 .padding(bottom = SheetTokens.inset)
                 .focusRequester(focus),
-            supportingText = error.takeIf { value != initial },
+            note = error.takeIf { value != initial }?.let(::InputNote),
         )
     }
 }

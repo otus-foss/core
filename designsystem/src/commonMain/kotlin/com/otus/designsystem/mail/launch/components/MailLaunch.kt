@@ -36,8 +36,6 @@ import com.otus.designsystem.resources.brand_mail_eye_right_shine
 import com.otus.designsystem.resources.brand_mail_owl
 import com.otus.designsystem.theme.brand.AppIconStyle
 import com.otus.designsystem.theme.brand.BrandTokens
-import com.otus.designsystem.theme.brand.MailLaunchArt
-import com.otus.designsystem.theme.brand.offset
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.LocalMotionScale
 import com.otus.designsystem.theme.motion.Motion

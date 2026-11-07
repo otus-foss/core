@@ -32,9 +32,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Constraints
 import com.otus.designsystem.shared.controls.elements.ActionButton
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.controls.ControlTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 import kotlin.math.roundToInt
@@ -42,22 +45,20 @@ import kotlin.math.roundToInt
 /**
  * A way out and a way forward in one pill, such as Cancel and Delete. [secondary] sits in the
  * outlined track; the wider [primary] pill fills its end and widens for a long label. Each half
- * greys out while it is not enabled. While [primaryBusy], a progress ring follows the primary
- * label, and screen readers announce a changed primary label politely.
+ * greys out while it is not enabled. Screen readers announce a changed primary label politely.
  */
 @Composable
 public fun ButtonPair(
-    secondary: PairButton,
-    primary: PairButton,
+    secondary: UiAction,
+    primary: UiAction,
     modifier: Modifier = Modifier,
-    primaryBusy: Boolean = false,
 ) {
     // The track paints behind its buttons and clips nothing, so the primary pill's outline stays on top.
     Layout(
         {
             SecondaryHalf(secondary)
             ActionButton(primary.label, primary.onClick, primary = true, enabled = primary.enabled) {
-                PrimaryLabel(primary.label, primary.enabled, primaryBusy)
+                PrimaryLabel(primary.label, primary.enabled, busy = false)
             }
         },
         modifier
@@ -89,7 +90,7 @@ internal fun pairPrimaryWidth(
     secondaryNeeds: Int,
     primaryNeeds: Int,
 ): Int {
-    val share = (width * PanelTokens.PAIR_PRIMARY_SHARE).roundToInt()
+    val share = (width * ControlTokens.PAIR_PRIMARY_SHARE).roundToInt()
     return if (secondaryNeeds + primaryNeeds <= width) {
         share.coerceIn(primaryNeeds, width - secondaryNeeds)
     } else {
@@ -100,7 +101,7 @@ internal fun pairPrimaryWidth(
 /** The track's fill and outline, drawn under its buttons, where `Modifier.border` would draw over them. */
 private fun Modifier.pairTrack(): Modifier =
     drawBehind {
-        val stroke = PanelTokens.borderWidth.toPx()
+        val stroke = Sizes.borderWidth.toPx()
         drawRoundRect(OtusColors.bgDark, cornerRadius = CornerRadius(size.height / 2))
         drawRoundRect(
             OtusColors.strokeBgDark,
@@ -120,7 +121,7 @@ internal fun PrimaryLabel(
 ) {
     val color = if (enabled) OtusColors.text1 else OtusColors.text3
     Row(
-        horizontalArrangement = Arrangement.spacedBy(PanelTokens.chipGap),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.inlineGap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -133,16 +134,16 @@ internal fun PrimaryLabel(
         )
         if (busy) {
             CircularProgressIndicator(
-                Modifier.size(PanelTokens.progressSize),
+                Modifier.size(ControlTokens.progressSize),
                 color = color,
-                strokeWidth = PanelTokens.progressStroke,
+                strokeWidth = ControlTokens.progressStroke,
             )
         }
     }
 }
 
 @Composable
-private fun SecondaryHalf(button: PairButton) {
+private fun SecondaryHalf(button: UiAction) {
     val interactions = remember { MutableInteractionSource() }
     Box(
         Modifier
@@ -154,7 +155,7 @@ private fun SecondaryHalf(button: PairButton) {
                 role = Role.Button,
                 onClick = button.onClick,
             ).controlPressFeedback(interactions, UnderPrimary)
-            .padding(horizontal = SheetTokens.inset, vertical = PanelTokens.iconGap),
+            .padding(horizontal = SheetTokens.inset, vertical = Spacing.iconGap),
         contentAlignment = Alignment.Center,
     ) {
         Text(

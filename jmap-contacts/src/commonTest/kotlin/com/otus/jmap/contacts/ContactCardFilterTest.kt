@@ -2,7 +2,7 @@ package com.otus.jmap.contacts
 
 import com.otus.jmap.JmapSort
 import com.otus.jmap.QueryMethod
-import com.otus.jmap.and
+import com.otus.jmap.allOf
 import com.otus.jmap.noneOf
 import com.otus.jscontact.CardKind
 import kotlinx.serialization.json.JsonObject
@@ -107,9 +107,11 @@ class ContactCardFilterTest {
     @Test
     fun conditionsCombineWithFilterOperators() {
         val filter =
-            ContactCardFilter(inAddressBook = PERSONAL).toFilter() and
-                noneOf(ContactCardFilter(kind = CardKind.Group).toFilter())
-        val query = QueryMethod(ContactCardType, "a0x9", filter.toJson(), listOf(ContactCardSort.nameSurname()))
+            allOf(
+                ContactCardFilter(inAddressBook = PERSONAL).toFilter(),
+                noneOf(ContactCardFilter(kind = CardKind.Group).toFilter()),
+            )
+        val query = QueryMethod(ContactCardType, "a0x9", filter, listOf(JmapSort("name/surname")))
         assertEquals(
             parseObject(
                 """{"accountId": "a0x9", "filter": {"operator": "AND", "conditions": [
@@ -117,27 +119,6 @@ class ContactCardFilterTest {
                 "sort": [{"property": "name/surname", "isAscending": true}]}""",
             ),
             query.arguments(),
-        )
-    }
-
-    @Test
-    fun everySortPropertyHasItsRfcName() {
-        // RFC 9610, section 3.3.2.
-        assertEquals(
-            listOf(
-                JmapSort("created", isAscending = false),
-                JmapSort("updated"),
-                JmapSort("name/given", collation = "i;unicode-casemap"),
-                JmapSort("name/surname", isAscending = false),
-                JmapSort("name/surname2"),
-            ),
-            listOf(
-                ContactCardSort.created(isAscending = false),
-                ContactCardSort.updated(),
-                ContactCardSort.nameGiven(collation = "i;unicode-casemap"),
-                ContactCardSort.nameSurname(isAscending = false),
-                ContactCardSort.nameSurname2(),
-            ),
         )
     }
 }

@@ -11,6 +11,7 @@ import com.otus.designsystem.shared.actionbar.components.ActionBar
 import com.otus.designsystem.shared.actionbar.components.BarAction
 import com.otus.designsystem.shared.controls.components.PrimaryLabel
 import com.otus.designsystem.shared.controls.elements.ActionButton
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.overlays.components.SheetHeaderAction
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.selection.FilterTokens
@@ -50,10 +51,17 @@ public fun FilterShowBar(
     resetEnabled: Boolean = true,
 ) {
     ActionBar(
-        BarAction(applyLabel, Res.drawable.symbol_filter_list, applyEnabled, onClick = onApply),
+        BarAction(UiAction(applyLabel, Res.drawable.symbol_filter_list, enabled = applyEnabled, onClick = onApply)),
         secondary =
             listOf(
-                BarAction("Reset filters", Res.drawable.symbol_filter_list_off, resetEnabled, onClick = onReset),
+                BarAction(
+                    UiAction(
+                        "Reset filters",
+                        Res.drawable.symbol_filter_list_off,
+                        enabled = resetEnabled,
+                        onClick = onReset,
+                    ),
+                ),
             ),
     )
 }

@@ -31,8 +31,8 @@ Discover and respect the capabilities each account and server provides. Missing 
 
 Aim to reuse account handling, JMAP transport, contact models, and appropriate UI components while preserving independent app repositories and releases. Mail-specific workflows belong in Mail; calendar-specific workflows belong in Calendar.
 
-Shared libraries live in otus-meta and are published as versioned `com.otus:<module>` artifacts
-to GitHub Packages. Apps pin releases and may opt into a local composite build for development.
+Shared libraries live in otus-meta as `com.otus:<module>` modules. Both apps build them from an
+otus-meta checkout as a composite build and pin no version.
 Shared runtime account data and credentials still require an explicit platform design;
 library reuse alone does not provide them. See decision 0005.
 
@@ -67,11 +67,11 @@ generated initials always available.
 
 Mail colors are supplied in [mail design foundations](mail-design.md). That palette is the default theme; users can pick Ink, Light, or Black, any accent, and make custom themes (decision 0014). text-1 is the default text color. Detailed interaction designs remain open.
 
-Both apps include reusable date-format choices, locale-aware formatting, and app-private preference
-adapters. Mail uses them for displayed inbox dates and date-filter summaries. Its Settings ›
-Appearance page lets users choose the saved date format. Calendar settings remain
-unimplemented. See the repository-local [Mail guide](https://github.com/reazndev/otus-mail/blob/main/docs/date-formatting.md) and
-[Calendar guide](https://github.com/reazndev/otus-calendar/blob/main/docs/date-formatting.md).
+Meta's `dateformat` and `settings` provide date-format choices, locale-aware formatting, and
+app-private preference storage. Mail uses them for displayed inbox dates and date-filter
+summaries, and its Settings › Appearance page lets users choose the saved date format. Calendar
+has no dates or settings yet and does not depend on them. See the
+[Mail guide](https://github.com/reazndev/otus-mail/blob/main/docs/date-formatting.md).
 
 ## Decisions to resolve as implementation starts
 

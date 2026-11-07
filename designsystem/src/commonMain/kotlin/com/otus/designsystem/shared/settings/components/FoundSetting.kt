@@ -10,16 +10,18 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.drawOutline
+import com.otus.designsystem.shared.pages.components.LocalPageMotion
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.LocalMotionScale
 import com.otus.designsystem.theme.motion.Motion
 import com.otus.designsystem.theme.motion.MotionCurve
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 
 /**
  * The title of the setting a search opened this page for, or null. Its [SettingRow] scrolls into
@@ -34,10 +36,11 @@ internal fun Modifier.foundFlash(title: String): Modifier {
     val requester = remember { BringIntoViewRequester() }
     val flash = remember { Animatable(1f) }
     val scale = LocalMotionScale.current
+    val page = LocalPageMotion.current
     LaunchedEffect(Unit) {
+        // The page slides in first; the flash fades only once the page stands still, so it is seen.
+        page?.let { snapshotFlow { it.still }.first { still -> still } }
         requester.bringIntoView()
-        // The page slides in first, so the flash holds long enough to be seen once it settles.
-        delay(Motion.millis(MotionSpeed.Relaxed, scale) * FLASH_HOLD_SPANS.toLong())
         flash.animateTo(
             0f,
             tween(Motion.millis(MotionSpeed.Relaxed, scale) * FLASH_FADE_SPANS, easing = MotionCurve.Standard.easing),
@@ -50,5 +53,4 @@ internal fun Modifier.foundFlash(title: String): Modifier {
     }
 }
 
-private const val FLASH_HOLD_SPANS = 2
 private const val FLASH_FADE_SPANS = 3

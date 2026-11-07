@@ -25,12 +25,12 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntSize
 import com.otus.designsystem.shared.controls.elements.Symbol
-import com.otus.designsystem.shared.panels.elements.darkSurface
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.MotionCurve
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.shapes.darkSurface
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 
 /**
@@ -56,11 +56,11 @@ internal fun RoundPrimary(
         contentAlignment = Alignment.CenterEnd,
     ) {
         CompositionLocalProvider(
-            LocalContentColor provides if (primary.enabled) OtusColors.text1 else OtusColors.text3,
+            LocalContentColor provides if (primary.action.enabled) OtusColors.text1 else OtusColors.text3,
         ) {
-            ContextShell(front, primary.enabled, pill)
-            Circle(primary.enabled) {
-                front.face.Swapping { Symbol(it.symbol, it.mirrorInRtl, ActionBarTokens.symbolSize) }
+            ContextShell(front, primary.action.enabled, pill)
+            Circle(primary.action.enabled) {
+                front.face.Swapping { Symbol(it.symbol, size = ActionBarTokens.symbolSize) }
             }
         }
         menu.Menu(primary, end = true)
@@ -127,7 +127,7 @@ private fun Circle(
             .size(ActionBarTokens.height)
             .background(if (enabled) OtusColors.accentDark else OtusColors.bgDark, CircleShape)
             .border(
-                PanelTokens.borderWidth,
+                Sizes.borderWidth,
                 if (enabled) OtusColors.accentLight else OtusColors.strokeBgDark,
                 CircleShape,
             ),

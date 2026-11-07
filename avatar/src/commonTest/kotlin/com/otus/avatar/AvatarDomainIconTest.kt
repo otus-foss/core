@@ -171,7 +171,7 @@ class AvatarDomainIconTest {
     fun aWebsiteStyledContactWithAnUnusableProxyAsksNothing() =
         runTest {
             val urls = mutableListOf<String>()
-            val website = ContactAvatar.Styled(AvatarStyle("blue", AvatarMark.Website))
+            val website = ContactAvatar.Styled(AvatarStyle("Blue", AvatarMark.Website))
             val service =
                 AvatarService(
                     contacts = ContactAvatarSource { _, _ -> website },

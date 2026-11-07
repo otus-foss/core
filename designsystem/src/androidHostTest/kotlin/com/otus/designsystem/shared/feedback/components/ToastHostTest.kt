@@ -10,7 +10,7 @@ import androidx.compose.ui.test.swipeLeft
 import androidx.compose.ui.test.swipeRight
 import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 import androidx.navigationevent.compose.rememberNavigationEventDispatcherOwner
-import com.otus.designsystem.shared.feedback.elements.ToastAction
+import com.otus.designsystem.shared.controls.elements.UiAction
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -50,7 +50,7 @@ class ToastHostTest {
     @Test
     fun tappingTheActionRunsItAndClosesTheToast() {
         var undone = 0
-        state.show(ToastMessage("Email deleted", ToastAction("Undo") { undone++ }))
+        state.show(ToastMessage("Email deleted", UiAction("Undo") { undone++ }))
         showHost()
         compose.onNodeWithText("Undo").performClick()
         assertEquals(1, undone)
@@ -76,7 +76,7 @@ class ToastHostTest {
     @Test
     fun aShortSwipeSpringsBack() {
         var undone = false
-        state.show(ToastMessage("Email deleted", ToastAction("Undo") { undone = true }))
+        state.show(ToastMessage("Email deleted", UiAction("Undo") { undone = true }))
         showHost()
         compose.onNodeWithText("Email deleted").performTouchInput { swipeRight(centerX, centerX + width / 6f) }
         settle()
@@ -109,7 +109,7 @@ class ToastHostTest {
     @Test
     fun screenReadersHearTheSwipeActionsLabelAndCanRunIt() {
         var sent = false
-        state.show(ToastMessage("Sending…", ToastAction("Undo") {}, swipeAction = ToastAction("Send") { sent = true }))
+        state.show(ToastMessage("Sending…", UiAction("Undo") {}, swipeAction = UiAction("Send") { sent = true }))
         showHost()
         val actions = compose.onNodeWithText("Sending…").fetchSemanticsNode().config[SemanticsActions.CustomActions]
         compose.runOnIdle { actions.single { it.label == "Send" }.action() }

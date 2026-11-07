@@ -19,7 +19,6 @@ import com.otus.designsystem.shared.pages.components.PageScaffold
 import com.otus.designsystem.shared.people.components.ChipAvatar
 import com.otus.designsystem.shared.sidebar.elements.SidebarCount
 import com.otus.designsystem.shared.sidebar.elements.SidebarEntry
-import com.otus.designsystem.shared.sidebar.elements.SidebarHeading
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -80,7 +79,6 @@ class SidebarScreenshotTest {
         SidebarEntry("Drafts", Res.drawable.symbol_draft, selected = false, {}) { SidebarCount("2") }
         SidebarEntry("Sent", Res.drawable.symbol_send, selected = false, {})
         SidebarEntry("Archive", Res.drawable.symbol_archive, selected = false, {})
-        SidebarHeading("Folders", expanded = true, {})
         SidebarEntry("Receipts", Res.drawable.symbol_folder, selected = false, {})
         SidebarEntry("2026", Res.drawable.symbol_folder, selected = false, {}, depth = 1) { SidebarCount("3") }
         SidebarEntry("Travel", Res.drawable.symbol_folder, selected = false, {})

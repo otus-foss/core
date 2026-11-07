@@ -13,8 +13,8 @@ import com.otus.designsystem.resources.symbol_archive
 import com.otus.designsystem.resources.symbol_newspaper
 import com.otus.designsystem.resources.symbol_unsubscribe
 import com.otus.designsystem.screenshot.screenshot
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.feedback.components.InfoStrip
-import com.otus.designsystem.shared.feedback.components.StripAction
 import com.otus.designsystem.shared.folders.elements.FolderStack
 import com.otus.designsystem.shared.people.components.DemoPeople
 import com.otus.designsystem.shared.people.components.NamedAvatar
@@ -25,6 +25,7 @@ import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.colors.ThemeBase
 import com.otus.designsystem.theme.colors.ThemeChoice
 import com.otus.designsystem.theme.tokens.content.ReadTokens
+import com.otus.designsystem.theme.tokens.rows.StripTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 import org.junit.Rule
 import org.junit.runner.RunWith
@@ -93,13 +94,13 @@ class ReadStripScreenshotTest {
                     Res.drawable.symbol_newspaper,
                     "Sentry weekly digest",
                     "Mailing list · about once a week",
-                    StripAction("Unsubscribe", Res.drawable.symbol_unsubscribe) {},
+                    UiAction("Unsubscribe", Res.drawable.symbol_unsubscribe) {},
                 )
                 InfoStrip(
                     Res.drawable.symbol_newspaper,
                     "Unsubscribed",
                     "Takes up to 2 days · 23 older digests in your mail",
-                    StripAction("Archive all", Res.drawable.symbol_archive) {},
+                    UiAction("Archive all", Res.drawable.symbol_archive) {},
                 )
             }
         }
@@ -169,7 +170,7 @@ private fun FolderSlot() {
 @Composable
 private fun SlotRow(content: @Composable () -> Unit) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(ReadTokens.glyphGap),
+        horizontalArrangement = Arrangement.spacedBy(StripTokens.glyphGap),
         verticalAlignment = Alignment.CenterVertically,
     ) { content() }
 }

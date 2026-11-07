@@ -1,6 +1,5 @@
 package com.otus.avatar
 
-import com.otus.jmap.FilterOperator
 import com.otus.jmap.GetMethod
 import com.otus.jmap.GetResult
 import com.otus.jmap.JmapCall
@@ -11,9 +10,11 @@ import com.otus.jmap.JmapIds
 import com.otus.jmap.QueryMethod
 import com.otus.jmap.QueryResult
 import com.otus.jmap.allOf
+import com.otus.jmap.anyOf
 import com.otus.jmap.contacts.ContactCardFilter
+import com.otus.jmap.contacts.ContactCardType
+import com.otus.jscontact.Card
 import kotlinx.coroutines.withTimeoutOrNull
-import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 
 /**
@@ -27,7 +28,7 @@ internal suspend fun <T : Any> findContactAvatar(
     email: String,
     books: Set<String>,
     own: Set<String>,
-    load: suspend (ContactCard) -> T?,
+    load: suspend (Card) -> T?,
 ): T? =
     withTimeoutOrNull(CONTACT_SEARCH_TIMEOUT_MILLIS) {
         var position = 0L
@@ -41,7 +42,7 @@ internal suspend fun <T : Any> findContactAvatar(
             val found =
                 cards
                     .filter { it.isIn(books) && it.hasAddress(email) }
-                    .sortedWith(compareBy({ !it.isIn(own) }, { !it.isOtusAvatar }, { it.id }))
+                    .sortedWith(compareBy({ !it.isIn(own) }, { !it.isAvatarCard }, { it.id }))
                     .firstNotNullOfOrNull { load(it) }
             if (found != null) return@withTimeoutOrNull found
             position += query.ids.size
@@ -49,8 +50,11 @@ internal suspend fun <T : Any> findContactAvatar(
         null
     }
 
-private fun ContactCard.hasAddress(email: String): Boolean =
-    emails.values.any { avatarEmailKey(it.address) == avatarEmailKey(email) }
+private fun Card.hasAddress(email: String): Boolean =
+    emails.orEmpty().values.any { avatarEmailKey(it.address) == avatarEmailKey(email) }
+
+/** Whether this card sits in one of [books]. */
+internal fun Card.isIn(books: Set<String>): Boolean = addressBookIds.orEmpty().any { it.value && it.key in books }
 
 private suspend fun contactPage(
     connection: JmapConnection,
@@ -58,10 +62,10 @@ private suspend fun contactPage(
     email: String,
     books: Set<String>,
     position: Long,
-): Pair<QueryResult, List<ContactCard>> =
+): Pair<QueryResult, List<Card>> =
     withCardProperties { properties ->
         lateinit var query: JmapCall<QueryResult>
-        lateinit var get: JmapCall<GetResult<ContactCard>>
+        lateinit var get: JmapCall<GetResult<Card>>
         val response =
             connection.send {
                 query =
@@ -96,11 +100,11 @@ internal suspend fun <T> withCardProperties(load: suspend (List<String>) -> T): 
 private fun contactFilter(
     email: String,
     books: Set<String>,
-): JsonObject =
+): JmapFilter =
     allOf(
         ContactCardFilter(email = email).toFilter(),
-        JmapFilter.Operator(FilterOperator.OR, books.sorted().map { ContactCardFilter(inAddressBook = it).toFilter() }),
-    ).toJson()
+        anyOf(books.sorted().map { ContactCardFilter(inAddressBook = it).toFilter() }),
+    )
 
 private const val CONTACT_PAGE_SIZE = 32
 private val CARD_PROPERTIES = listOf("id", "addressBookIds", "emails", "media")

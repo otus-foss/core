@@ -1,35 +1,10 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 // The Otus design system: theme tokens, elements, and components driven by values and callbacks.
-// Published as com.otus:designsystem.
 plugins {
-    `maven-publish`
-    alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidMultiplatformLibrary)
-    alias(libs.plugins.composeMultiplatform)
-    alias(libs.plugins.composeCompiler)
+    id("otus.kmp-compose-library")
+    id("otus.screenshots")
 }
 
 kotlin {
-    explicitApi()
-    compilerOptions { allWarningsAsErrors.set(true) }
-    iosArm64()
-    iosSimulatorArm64()
-    android {
-        namespace = "com.otus.designsystem"
-        compileSdk =
-            libs.versions.android.compileSdk
-                .get()
-                .toInt()
-        minSdk =
-            libs.versions.android.minSdk
-                .get()
-                .toInt()
-        compilerOptions { jvmTarget = JvmTarget.JVM_11 }
-        androidResources { enable = true }
-        withHostTest { isIncludeAndroidResources = true }
-        lint { ignoreTestSources = true }
-    }
     sourceSets {
         commonMain.dependencies {
             api(libs.compose.runtime)
@@ -66,25 +41,9 @@ compose.resources {
     packageOfResClass = "com.otus.designsystem.resources"
 }
 
-// Screenshot tests compare against the PNGs in src/androidHostTest/screenshots. Pass
-// -Proborazzi.record to write new ones instead; see docs/designsystem.md#screenshot-tests.
-val screenshots = layout.projectDirectory.dir("src/androidHostTest/screenshots")
-val recordScreenshots = providers.gradleProperty("roborazzi.record").isPresent
-tasks.withType<Test>().configureEach {
-    inputs
-        .dir(screenshots)
-        .withPropertyName("screenshots")
-        .withPathSensitivity(PathSensitivity.RELATIVE)
-        .optional()
-    systemProperty(if (recordScreenshots) "roborazzi.test.record" else "roborazzi.test.verify", "true")
-    if (recordScreenshots) {
-        outputs.upToDateWhen { false }
-        outputs.doNotCacheIf("Recording writes baselines outside the test outputs") { true }
-    }
-}
-
-// The published iOS metadata sees JetBrains' and Google's Compose klibs together and warns about
-// duplicate unique names. Every iOS target still compiles these sources with warnings as errors.
+// The iOS metadata compilation, which CI's ios metadata part runs on Linux, sees JetBrains' and
+// Google's Compose klibs together and warns about duplicate unique names. Every iOS target still
+// compiles these sources with warnings as errors.
 // See docs/decisions/0006-native-metadata-warnings.md.
 tasks
     .matching { it.name == "compileIosMainKotlinMetadata" }

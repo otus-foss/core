@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Surface
@@ -23,18 +24,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.controls.ControlTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
- * A compact pill inside a non-overlapping, minimum 48 dp touch target.
+ * A compact pill inside a non-overlapping, minimum 48 dp touch target, `selectedFill` while
+ * [selected]. [style] sets its fill while off and how it toggles and reads to screen readers; a
+ * [ChipRole.Button] ignores [selected].
  *
  * A null [label] shows only [leading]; give the chip a content description through [modifier].
- * [detail] follows after a short divider line, such as the mailboxes beside an account.
  */
 @Composable
 public fun Chip(
@@ -43,25 +50,79 @@ public fun Chip(
     modifier: Modifier = Modifier,
     selected: Boolean = false,
     enabled: Boolean = true,
-    detail: String? = null,
+    style: ChipStyle = ChipStyle(),
     leading: (@Composable () -> Unit)? = null,
 ) {
-    ChipFrame(onClick, modifier, selected, enabled, OtusColors.bgDark) {
+    Chip(ChipLabel(label), onClick, modifier, selected, enabled, style, leading)
+}
+
+/** A [Chip] whose [label] may have a `text3` prefix or a detail after a divider line. */
+@Composable
+public fun Chip(
+    label: ChipLabel,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    selected: Boolean = false,
+    enabled: Boolean = true,
+    style: ChipStyle = ChipStyle(),
+    leading: (@Composable () -> Unit)? = null,
+) {
+    val on = selected && style.role != ChipRole.Button
+    ChipFrame(
+        onClick,
+        modifier.spokenAs(label),
+        selected = on.takeUnless { style.role == ChipRole.Button },
+        enabled = enabled,
+        style = style.frame,
+    ) {
         leading?.invoke()
-        if (label != null) ChipText(label)
-        if (detail != null) {
-            ChipDivider(selected)
-            ChipText(detail)
+        if (label.text != null) ChipText(label.annotated())
+        if (label.detail != null) {
+            ChipDivider(on)
+            ChipText(AnnotatedString(label.detail))
         }
     }
 }
 
+/** How a [Chip] toggles and reads ([role]) and what its fill is while off ([look]). */
+public data class ChipStyle(
+    val role: ChipRole = ChipRole.Checkbox,
+    val look: ChipLook = ChipLook.Plain,
+)
+
+/** What the chip's fill is while it is off. */
+public enum class ChipLook {
+    /** `bgDark` with a `strokeBgDark` outline, on a page. */
+    Plain,
+
+    /** `bgRegular` with a `bgLight` outline, on a `bgDark` surface such as a filter panel. */
+    Raised,
+}
+
+/** Reads a prefixed label as its spoken form, such as a folder's full path. */
+private fun Modifier.spokenAs(label: ChipLabel): Modifier =
+    if (label.prefix == null) this else semantics(mergeDescendants = true) { contentDescription = label.spoken }
+
+private val ChipStyle.frame: ChipFrameStyle
+    @Composable get() =
+        if (look == ChipLook.Raised) {
+            ChipFrameStyle(OtusColors.bgRegular, OtusColors.bgLight, role)
+        } else {
+            ChipFrameStyle(OtusColors.bgDark, role = role)
+        }
+
+/** A [ChipFrame]'s [fill], the [outline] that strokes it while unselected, and how it toggles. */
+internal data class ChipFrameStyle(
+    val fill: Color,
+    val outline: Color = OtusColors.strokeBgDark,
+    val role: ChipRole = ChipRole.Checkbox,
+)
+
 /**
- * The pill and its 48 dp touch target, shared by [Chip],
- * [SidebarPill][com.otus.designsystem.shared.sidebar.elements.SidebarPill], [IconPill], and the
- * button pills; [fill] fills it while unselected. [layout] sets how wide the pill is and where
- * its content starts. A chip with a [selected] state reads as a checkbox; one without, a null, is
- * a button.
+ * The pill and its 48 dp touch target, shared by [Chip], [IconPill], and the other pills, in
+ * [style] while unselected. [layout] sets how wide the pill is and where
+ * its content starts. A chip with a [selected] state toggles as the style's role says; one without, a null,
+ * is a button.
  */
 @Composable
 internal fun ChipFrame(
@@ -69,15 +130,15 @@ internal fun ChipFrame(
     modifier: Modifier,
     selected: Boolean?,
     enabled: Boolean,
-    fill: Color,
+    style: ChipFrameStyle,
     layout: ChipLayout = ChipLayout(),
     content: @Composable RowScope.() -> Unit,
 ) {
     val interactions = remember { MutableInteractionSource() }
     Box(
         modifier
-            .sizeIn(minWidth = PanelTokens.touchTarget, minHeight = PanelTokens.touchTarget)
-            .chipAction(interactions, selected, enabled, onClick),
+            .sizeIn(minWidth = Sizes.touchTarget, minHeight = Sizes.touchTarget)
+            .chipAction(interactions, selected, enabled, style.role, onClick),
         contentAlignment = Alignment.Center,
     ) {
         Surface(
@@ -87,12 +148,12 @@ internal fun ChipFrame(
                     .reportControlVisualBounds()
                     .controlPressFeedback(interactions),
             shape = CircleShape,
-            color = if (selected == true) OtusColors.selectedFill else fill,
+            color = if (selected == true) OtusColors.selectedFill else style.fill,
             contentColor = if (enabled) OtusColors.text1 else OtusColors.text3,
             border =
                 BorderStroke(
-                    PanelTokens.borderWidth,
-                    if (selected == true) OtusColors.selectedFill else OtusColors.strokeBgDark,
+                    Sizes.borderWidth,
+                    if (selected == true) OtusColors.selectedFill else style.outline,
                 ),
         ) {
             Row(
@@ -107,6 +168,11 @@ internal fun ChipFrame(
 
 @Composable
 internal fun ChipText(text: String) {
+    ChipText(AnnotatedString(text))
+}
+
+@Composable
+internal fun ChipText(text: AnnotatedString) {
     Text(text, style = panelTextStyle().copy(color = Color.Unspecified), maxLines = 1)
 }
 
@@ -115,84 +181,36 @@ internal fun ChipText(text: String) {
 internal fun ChipDivider(selected: Boolean) {
     Box(
         Modifier
-            .padding(horizontal = PanelTokens.iconGap)
-            .size(PanelTokens.borderWidth, PanelTokens.chipDividerHeight)
+            .padding(horizontal = Spacing.iconGap)
+            .size(Sizes.borderWidth, ControlTokens.chipDividerHeight)
             .background(if (selected) OtusColors.text3 else OtusColors.bgLight),
     )
-}
-
-/**
- * How a [ChipFrame] is laid out: its [width], whether a round avatar comes first, close to the
- * start edge, its [height], and the content inset from its [start] and [end].
- */
-internal data class ChipLayout(
-    val width: ChipWidth = ChipWidth.Content,
-    val avatarFirst: Boolean = false,
-    val height: Dp = PanelTokens.chipHeight,
-    val start: Dp = PanelTokens.chipPadding,
-    val end: Dp = PanelTokens.chipPadding,
-)
-
-private fun ChipLayout.fillModifier(): Modifier = if (width == ChipWidth.Fill) Modifier.fillMaxWidth() else Modifier
-
-/** Sizes and pads the pill's content row. */
-private fun ChipLayout.contentModifier(): Modifier =
-    if (width == ChipWidth.Circle) {
-        Modifier.size(height)
-    } else {
-        fillModifier()
-            .heightIn(min = height)
-            .padding(
-                start = if (avatarFirst) PanelTokens.iconGap else start,
-                end = end,
-                top = PanelTokens.iconGap,
-                bottom = PanelTokens.iconGap,
-            )
-    }
-
-private fun ChipLayout.arrangement(): Arrangement.Horizontal =
-    if (width == ChipWidth.Fill) LastAtEnd else Arrangement.spacedBy(PanelTokens.iconGap, Alignment.CenterHorizontally)
-
-/** How wide a [ChipFrame] is. */
-internal enum class ChipWidth {
-    /** As wide as its content. */
-    Content,
-
-    /** As wide as it is tall, like an [IconButton]. */
-    Circle,
-
-    /** The width its modifier gives it, with its last item at the end. */
-    Fill,
-}
-
-/** Packs items from the start [PanelTokens.iconGap] apart, except the last, which sits at the end. */
-private object LastAtEnd : Arrangement.Horizontal {
-    override val spacing = PanelTokens.iconGap
-
-    override fun Density.arrange(
-        totalSize: Int,
-        sizes: IntArray,
-        layoutDirection: LayoutDirection,
-        outPositions: IntArray,
-    ) {
-        val gap = spacing.roundToPx()
-        var start = 0
-        sizes.forEachIndexed { index, size ->
-            val position = if (index == sizes.lastIndex) totalSize - size else start
-            outPositions[index] = if (layoutDirection == LayoutDirection.Ltr) position else totalSize - position - size
-            start += size + gap
-        }
-    }
 }
 
 internal fun Modifier.chipAction(
     interactions: MutableInteractionSource,
     selected: Boolean?,
     enabled: Boolean,
+    role: ChipRole,
     onClick: () -> Unit,
 ): Modifier =
-    if (selected == null) {
-        clickable(interactions, indication = null, enabled = enabled, role = Role.Button, onClick = onClick)
-    } else {
-        toggleable(selected, interactions, indication = null, enabled = enabled, role = Role.Checkbox) { onClick() }
+    when {
+        selected == null -> {
+            clickable(interactions, indication = null, enabled = enabled, role = Role.Button, onClick = onClick)
+        }
+
+        role == ChipRole.Radio -> {
+            selectable(
+                selected,
+                interactions,
+                indication = null,
+                enabled = enabled,
+                role = Role.RadioButton,
+                onClick = onClick,
+            )
+        }
+
+        else -> {
+            toggleable(selected, interactions, indication = null, enabled = enabled, role = Role.Checkbox) { onClick() }
+        }
     }

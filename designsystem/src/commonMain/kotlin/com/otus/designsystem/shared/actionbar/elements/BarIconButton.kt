@@ -16,21 +16,23 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.IntRect
-import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.LayoutDirection
-import androidx.compose.ui.window.PopupPositionProvider
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
+import com.otus.designsystem.shared.overlays.elements.AbovePopup
+import com.otus.designsystem.shared.overlays.elements.PopupAlign
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
+import com.otus.designsystem.theme.tokens.controls.ControlTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.layout.PageTokens
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
+import com.otus.designsystem.theme.tokens.overlays.MenuTokens
 import org.jetbrains.compose.resources.DrawableResource
 
 /**
@@ -45,25 +47,25 @@ public fun BarIconButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    mirrorInRtl: Boolean = false,
 ) {
     val interactions = remember { MutableInteractionSource() }
+    val edge = with(LocalDensity.current) { MenuTokens.edge.roundToPx() }
     BasicTooltipBox(
-        positionProvider = AboveAnchor,
+        positionProvider = remember(edge) { AbovePopup(gap = 0, edge, PopupAlign.Center) },
         tooltip = { BarTooltip(label) },
         state = rememberBasicTooltipState(),
         modifier = modifier,
     ) {
         Box(
             Modifier
-                .size(PanelTokens.touchTarget)
+                .size(Sizes.touchTarget)
                 .semantics { contentDescription = label }
                 .clickable(interactions, indication = null, enabled = enabled, role = Role.Button, onClick = onClick)
                 .controlPressFeedback(interactions),
             contentAlignment = Alignment.Center,
         ) {
             CompositionLocalProvider(LocalContentColor provides if (enabled) OtusColors.text1 else OtusColors.text3) {
-                Symbol(symbol, mirrorInRtl, ActionBarTokens.symbolSize)
+                Symbol(symbol, size = ActionBarTokens.symbolSize)
             }
         }
     }
@@ -75,24 +77,7 @@ private fun BarTooltip(label: String) {
         label,
         Modifier
             .background(OtusColors.bgLight, SmoothCornerShape(PanelTokens.panelRadius))
-            .padding(horizontal = PanelTokens.chipPadding, vertical = PanelTokens.iconGap),
+            .padding(horizontal = ControlTokens.chipPadding, vertical = Spacing.iconGap),
         fontSize = PageTokens.captionSize,
     )
-}
-
-/** Centers the tooltip above its anchor, inside the window, with a small gap. */
-private object AboveAnchor : PopupPositionProvider {
-    override fun calculatePosition(
-        anchorBounds: IntRect,
-        windowSize: IntSize,
-        layoutDirection: LayoutDirection,
-        popupContentSize: IntSize,
-    ): IntOffset {
-        val x = anchorBounds.center.x - popupContentSize.width / 2
-        val y = anchorBounds.top - popupContentSize.height
-        return IntOffset(
-            x.coerceIn(0, (windowSize.width - popupContentSize.width).coerceAtLeast(0)),
-            y.coerceAtLeast(0),
-        )
-    }
 }

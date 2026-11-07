@@ -12,10 +12,4 @@ public enum class DateFormatPreference(
     MonthDayYearSlashes("mdy-slashes", "MM/DD/YYYY"),
     YearMonthDayDashes("ymd-dashes", "YYYY-MM-DD"),
     YearMonthDaySlashes("ymd-slashes", "YYYY/MM/DD"),
-    ;
-
-    public companion object {
-        public fun fromStorageValue(value: String?): DateFormatPreference =
-            entries.firstOrNull { it.storageValue == value } ?: DeviceLocale
-    }
 }

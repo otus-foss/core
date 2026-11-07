@@ -143,6 +143,7 @@ class GitHookTests(unittest.TestCase):
                 self.assertNotEqual(rejected.returncode, 0)
                 self.assertIn("Commit message rejected", rejected.stderr)
                 self.assertNotEqual(git("rev-parse", "--verify", "HEAD", check=False).returncode, 0)
+            # The hook only checks; attribution trailers stay (decision 0013).
             attributed = VALID + "\nCo-Authored-By: Claude <noreply@anthropic.com>\n"
             git("commit", "--allow-empty", "-m", attributed)
             self.assertEqual(git("log", "-1", "--format=%B").stdout.strip(), attributed.strip())

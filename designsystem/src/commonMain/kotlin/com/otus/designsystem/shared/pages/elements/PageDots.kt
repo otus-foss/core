@@ -20,23 +20,23 @@ import androidx.compose.ui.unit.dp
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
-import com.otus.designsystem.theme.tokens.content.ReadTokens
+import com.otus.designsystem.theme.tokens.layout.PageTokens
 
 /**
  * Where a page sits among [count] pages, newest first: the [current] page is a wide `text1` pill,
- * the others small `bgLight` dots. With more than [ReadTokens.DOT_WINDOW] pages it shows a window
+ * the others small `bgLight` dots. With more than [PageTokens.DOT_WINDOW] pages it shows a window
  * that keeps the current dot in view, and the outer dots shrink where more pages lie beyond them.
  * It has no semantics; the text beside it says the position.
  */
 @Composable
-public fun PageDots(
+internal fun PageDots(
     count: Int,
     current: Int,
     modifier: Modifier = Modifier,
 ) {
     Row(
         modifier,
-        horizontalArrangement = Arrangement.spacedBy(ReadTokens.dotGap),
+        horizontalArrangement = Arrangement.spacedBy(PageTokens.dotGap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         visibleDots(count, current).forEach { dot -> key(dot.index) { Dot(dot) } }
@@ -47,7 +47,7 @@ public fun PageDots(
 private fun Dot(dot: VisibleDot) {
     // Width and height animate as one value, so a dot that grows or shrinks stays round.
     val size by animateValueAsState(
-        DpSize(if (dot.current) ReadTokens.currentDotWidth else dot.size, dot.size),
+        DpSize(if (dot.current) PageTokens.currentDotWidth else dot.size, dot.size),
         DpSizeConverter,
         motionTween(MotionSpeed.Fast),
     )
@@ -71,12 +71,12 @@ internal data class VisibleDot(
     val size: Dp,
 )
 
-/** The dots in view for [current] of [count]: a window of at most [ReadTokens.DOT_WINDOW]. */
+/** The dots in view for [current] of [count]: a window of at most [PageTokens.DOT_WINDOW]. */
 internal fun visibleDots(
     count: Int,
     current: Int,
 ): List<VisibleDot> {
-    val window = minOf(count, ReadTokens.DOT_WINDOW)
+    val window = minOf(count, PageTokens.DOT_WINDOW)
     val first = (current - window / 2).coerceIn(0, count - window)
     val last = first + window - 1
     return (first..last).map { index ->
@@ -87,10 +87,10 @@ internal fun visibleDots(
             )
         val size =
             when (fromEdge) {
-                0 -> ReadTokens.edgeDot
-                1 -> ReadTokens.nearEdgeDot
-                else -> ReadTokens.dotSize
+                0 -> PageTokens.edgeDot
+                1 -> PageTokens.nearEdgeDot
+                else -> PageTokens.dotSize
             }
-        VisibleDot(index, index == current, if (index == current) ReadTokens.dotSize else size)
+        VisibleDot(index, index == current, if (index == current) PageTokens.dotSize else size)
     }
 }

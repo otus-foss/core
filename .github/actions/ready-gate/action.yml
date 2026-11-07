@@ -1,0 +1,23 @@
+name: Ready gate
+description: >-
+  Whether this run should check anything. A pull request runs once it is ready: when it opens as
+  ready, when a draft is marked ready, and on later pushes only while it has the "ci on every push"
+  label, which also starts a run when added. Draft pull requests never run. Pushes and runs started
+  by hand always do.
+outputs:
+  ready:
+    description: "true when the run should go ahead"
+    value: ${{ steps.gate.outputs.ready }}
+runs:
+  using: composite
+  steps:
+    - id: gate
+      shell: bash
+      env:
+        READY: >-
+          ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' ||
+          !github.event.pull_request.draft && (
+            github.event.action == 'opened' || github.event.action == 'ready_for_review' ||
+            github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'ci on every push') ||
+            github.event.action == 'labeled' && github.event.label.name == 'ci on every push') }}
+      run: echo "ready=$READY" >> "$GITHUB_OUTPUT"

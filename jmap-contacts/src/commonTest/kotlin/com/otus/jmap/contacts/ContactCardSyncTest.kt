@@ -1,24 +1,21 @@
 package com.otus.jmap.contacts
 
 import com.otus.jmap.AddedItem
-import com.otus.jmap.CopyMethod
-import com.otus.jmap.CopyResult
 import com.otus.jmap.GetMethod
 import com.otus.jmap.GetResult
 import com.otus.jmap.JmapCall
 import com.otus.jmap.JmapIds
+import com.otus.jmap.JmapSort
 import com.otus.jmap.QueryChangesMethod
 import com.otus.jmap.QueryChangesResult
 import com.otus.jmap.QueryMethod
 import com.otus.jmap.QueryResult
-import com.otus.jmap.SetError
 import com.otus.jmap.SetMethod
 import com.otus.jscontact.Card
 import com.otus.jscontact.EmailAddress
 import com.otus.jscontact.Name
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.buildJsonObject
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -35,8 +32,8 @@ class ContactCardSyncTest {
                        "oldQueryState": "q1", "newQueryState": "q2", "total": 3, "removed": ["c2"],
                        "added": [{"id": "c5", "index": 0}]}, "c0"]]}"""
                 }
-            val filter = ContactCardFilter(inAddressBook = PERSONAL).toFilter().toJson()
-            val sort = listOf(ContactCardSort.nameSurname())
+            val filter = ContactCardFilter(inAddressBook = PERSONAL).toFilter()
+            val sort = listOf(JmapSort("name/surname"))
             val method =
                 QueryChangesMethod(
                     ContactCardType,
@@ -61,42 +58,6 @@ class ContactCardSyncTest {
         }
 
     @Test
-    fun copyMovesACardFromASharedAccount() =
-        runTest {
-            val server =
-                ContactsServer {
-                    """{"methodResponses": [
-                       ["ContactCard/copy", {"fromAccountId": "team", "accountId": "a0x9", "oldState": "s1",
-                       "newState": "s2", "created": {"k1": {"id": "c9"}},
-                       "notCreated": {"k2": {"type": "alreadyExists", "existingId": "c3"}}}, "c0"],
-                       ["ContactCard/set", {"accountId": "team", "oldState": "t1", "newState": "t2",
-                       "destroyed": ["c7"]}, "c0"]]}"""
-                }
-            val create =
-                mapOf(
-                    "k1" to copyOf("c7"),
-                    // The target account already holds a card with this one's uid (RFC 9610, section 3).
-                    "k2" to copyOf("c8"),
-                )
-            lateinit var copy: JmapCall<CopyResult>
-            val move = CopyMethod(ContactCardType, "team", "a0x9", create, onSuccessDestroyOriginal = true)
-            val response = server.send { copy = call(move) }
-            assertEquals("c9", response[copy].createdId("k1"))
-            assertEquals(SetError("alreadyExists", existingId = "c3"), response[copy].notCreated["k2"])
-            val destroy = response.responses(copy).last()
-            val destroyed = SetMethod(ContactCardType, "team", destroy = listOf("c7")).decode(destroy.arguments)
-            assertEquals(listOf("c7"), destroyed.destroyed)
-            assertEquals(
-                parseObject(
-                    """{"fromAccountId": "team", "accountId": "a0x9", "onSuccessDestroyOriginal": true,
-                    "create": {"k1": {"id": "c7", "addressBookIds": {"$PERSONAL": true}},
-                    "k2": {"id": "c8", "addressBookIds": {"$PERSONAL": true}}}}""",
-                ),
-                server.singleCall()[1],
-            )
-        }
-
-    @Test
     fun queryAndGetReadPartialCards() =
         runTest {
             val server =
@@ -110,10 +71,10 @@ class ContactCardSyncTest {
                 }
             lateinit var query: JmapCall<QueryResult>
             lateinit var get: JmapCall<GetResult<Card>>
-            val filter = ContactCardFilter(email = "joe").toFilter().toJson()
+            val filter = ContactCardFilter(email = "joe").toFilter()
             val response =
                 server.send {
-                    query = call(QueryMethod(ContactCardType, "a0x9", filter, listOf(ContactCardSort.created()), 10))
+                    query = call(QueryMethod(ContactCardType, "a0x9", filter, listOf(JmapSort("created")), 10))
                     val ids = JmapIds.Result(query.resultOf("/ids"))
                     get = call(GetMethod(ContactCardType, "a0x9", ids, listOf("id", "name", "emails")))
                 }
@@ -125,7 +86,7 @@ class ContactCardSyncTest {
         }
 
     @Test
-    fun setCreatesFromACardAndUpdatesByPatch() =
+    fun setCreatesFromACardAndUpdatesTheChangedProperties() =
         runTest {
             val server =
                 ContactsServer {
@@ -134,7 +95,8 @@ class ContactCardSyncTest {
                 }
             val card = Card(uid = "urn:uuid:4f5e", name = Name(full = "Ada"), addressBookIds = mapOf(PERSONAL to true))
             val create = mapOf("k1" to card.toCreation())
-            val update = mapOf("c1" to contactCardPatch { addressBookIds.add(AUTOSAVED) })
+            val moved = card.copy(id = "c1", addressBookIds = mapOf(PERSONAL to true, AUTOSAVED to true))
+            val update = mapOf("c1" to cardPatch(card.copy(id = "c1"), moved))
             val result = server.request { call(SetMethod(ContactCardType, "a0x9", create, update)) }
             assertEquals("c9", result.createdId("k1"))
             assertEquals(
@@ -155,10 +117,4 @@ class ContactCardSyncTest {
             Card(uid = "u1", addressBookIds = mapOf("b1" to false)),
         ).forEach { card -> assertFailsWith<IllegalArgumentException>("$card") { card.toCreation() } }
     }
-
-    private fun copyOf(id: String) =
-        buildJsonObject {
-            put("id", JsonPrimitive(id))
-            put("addressBookIds", buildJsonObject { put(PERSONAL, JsonPrimitive(true)) })
-        }
 }

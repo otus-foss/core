@@ -38,7 +38,8 @@ import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.rows.components.topHairline
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.content.ReadTokens
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.rows.StripTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
@@ -71,7 +72,7 @@ internal fun FileTile(
             .size(size)
             .clip(CircleShape)
             .background(OtusColors.bgRegular)
-            .border(PanelTokens.borderWidth, OtusColors.bgLight, CircleShape),
+            .border(Sizes.borderWidth, OtusColors.bgLight, CircleShape),
         contentAlignment = Alignment.Center,
     ) {
         val thumbnail = file.thumbnail
@@ -121,16 +122,16 @@ internal fun FileRow(
             .heightIn(min = ReadTokens.fileRowHeight)
             .topHairline(OtusColors.strokeBgDark)
             .clickable(role = Role.Button, onClick = onOpen)
-            .padding(start = ReadTokens.stripStart + ReadTokens.stripGap / 2, end = ReadTokens.stripEnd / 2),
-        horizontalArrangement = Arrangement.spacedBy(ReadTokens.stripGap),
+            .padding(start = StripTokens.start + StripTokens.gap / 2, end = StripTokens.end / 2),
+        horizontalArrangement = Arrangement.spacedBy(StripTokens.gap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        FileTile(file, ReadTokens.fileTileSize, PanelTokens.iconSize)
+        FileTile(file, ReadTokens.fileTileSize, Sizes.iconSize)
         Column(Modifier.weight(1f)) {
             Text(
                 file.name,
                 style = panelTextStyle(),
-                fontSize = ReadTokens.titleSize,
+                fontSize = StripTokens.titleSize,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -146,7 +147,7 @@ internal fun FileRow(
         // The default ripple, as on Save all, also shows a quick tap inside the scrolling file list.
         Box(
             Modifier
-                .size(PanelTokens.touchTarget)
+                .size(Sizes.touchTarget)
                 .clip(CircleShape)
                 .clickable(role = Role.Button, onClick = onSave)
                 .semantics { contentDescription = "Save ${file.name}" },

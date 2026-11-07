@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Text
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.unit.dp
-import com.otus.designsystem.mail.folders.components.FolderName
-import com.otus.designsystem.mail.folders.components.FolderPickRow
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_archive
 import com.otus.designsystem.resources.symbol_flag
@@ -15,6 +13,7 @@ import com.otus.designsystem.resources.symbol_hide_image
 import com.otus.designsystem.resources.symbol_image
 import com.otus.designsystem.resources.symbol_notifications_off
 import com.otus.designsystem.screenshot.screenshot
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.dates.elements.DatePill
 import com.otus.designsystem.shared.folders.elements.FolderPath
 import com.otus.designsystem.shared.overlays.components.OptionsItem
@@ -23,11 +22,9 @@ import com.otus.designsystem.shared.people.components.DemoPeople
 import com.otus.designsystem.shared.people.components.PersonChip
 import com.otus.designsystem.shared.people.components.Recipient
 import com.otus.designsystem.shared.rows.components.DetailLine
-import com.otus.designsystem.shared.rows.components.DetailsTable
+import com.otus.designsystem.shared.rows.components.DetailRows
 import com.otus.designsystem.shared.selection.components.PickMark
 import com.otus.designsystem.shared.selection.components.PickRow
-import com.otus.designsystem.shared.selection.components.PickRowLayout
-import com.otus.designsystem.theme.colors.FolderColor
 import com.otus.designsystem.theme.typography.panelTextStyle
 import org.junit.Rule
 import org.junit.runner.RunWith
@@ -50,20 +47,20 @@ class ReadBodyScreenshotTest {
                 ImageBanner(
                     Res.drawable.symbol_hide_image,
                     "Images blocked for privacy",
-                    listOf(BannerAction("Show") {}),
+                    listOf(UiAction("Show") {}),
                 )
                 ImageBanner(
                     Res.drawable.symbol_image,
                     "Images shown",
-                    listOf(BannerAction("Hide") {}, BannerAction("Always") {}),
+                    listOf(UiAction("Hide") {}, UiAction("Always") {}),
                 )
             }
         }
 
     @Test
     fun details() =
-        compose.screenshot("details_table") {
-            DetailsTable(
+        compose.screenshot("detail_rows") {
+            DetailRows(
                 listOf(
                     DetailLine("From") { Text("Grace Hopper", style = panelTextStyle()) },
                     DetailLine("Date") { DatePill("12 Oct", "12 Oct 2026, 09:14", {}) },
@@ -82,25 +79,6 @@ class ReadBodyScreenshotTest {
         }
 
     @Test
-    fun folderPicks() =
-        compose.screenshot("folder_pick_row") {
-            Column {
-                FolderPickRow(DemoRead.clients, checked = true, {}, detail = "you're here")
-                FolderPickRow(DemoRead.invoices, checked = true, {})
-                FolderPickRow(DemoRead.archive, checked = false, {})
-                FolderPickRow(
-                    FolderName(
-                        listOf("Freelancing", "Clients", "Long running invoices"),
-                        FolderColor.Pink,
-                        system = false,
-                    ),
-                    checked = false,
-                    {},
-                )
-            }
-        }
-
-    @Test
     fun choicePicks() =
         compose.screenshot("pick_row_radio_first") {
             Column {
@@ -109,7 +87,6 @@ class ReadBodyScreenshotTest {
                     "Contacts, people you've written to and senders you allowed. Everyone else asks first.",
                     PickMark(selected = true, atStart = true),
                     {},
-                    layout = PickRowLayout(subtitleLines = 3),
                 )
                 PickRow("Never", "Always ask, for every mail.", PickMark(selected = false, atStart = true), {})
             }
@@ -127,14 +104,13 @@ class ReadBodyScreenshotTest {
         compose.screenshot("options_list_read") {
             OptionsList(
                 listOf(
-                    OptionsItem.Action("Forward", Res.drawable.symbol_forward, {}),
-                    OptionsItem.Action("Flag", Res.drawable.symbol_flag, {}),
+                    OptionsItem.Action(UiAction("Forward", Res.drawable.symbol_forward, onClick = {})),
+                    OptionsItem.Action(UiAction("Flag", Res.drawable.symbol_flag, onClick = {})),
                     OptionsItem.Divider,
                     OptionsItem.Caption("Whole conversation"),
                     OptionsItem.Action(
-                        "Move to…",
-                        Res.drawable.symbol_archive,
-                        {},
+                        UiAction("Move to…", Res.drawable.symbol_archive, onClick = {
+                        }),
                         opens = true,
                         detail = "Usually Invoices",
                     ),

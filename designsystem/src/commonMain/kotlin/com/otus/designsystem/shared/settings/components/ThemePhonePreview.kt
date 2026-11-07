@@ -45,6 +45,8 @@ import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.colors.OtusPalette
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.shapes.strokeBorder
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.settings.ThemeTokens
 import org.jetbrains.compose.resources.DrawableResource
@@ -96,7 +98,7 @@ public fun ThemePhonePreview(
                 .padding(ThemeTokens.previewPadding),
             verticalArrangement = Arrangement.spacedBy(ThemeTokens.previewGap),
         ) {
-            Row(horizontalArrangement = Arrangement.spacedBy(PanelTokens.chipGap)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(Spacing.inlineGap)) {
                 SketchPill("People", Res.drawable.symbol_person, palette, selected = true)
                 SketchPill("Date", Res.drawable.symbol_calendar_add_on, palette, selected = false)
             }
@@ -124,7 +126,7 @@ private fun SketchPill(
         Modifier
             .height(ThemeTokens.customPillHeight)
             .background(if (selected) palette.selectedFill else palette.bgRegular, CircleShape)
-            .strokeBorder(PanelTokens.borderWidth, palette.strokeBgDark, CircleShape)
+            .strokeBorder(Sizes.borderWidth, palette.strokeBgDark, CircleShape)
             .padding(horizontal = ThemeTokens.customPillPadding),
         horizontalArrangement = Arrangement.spacedBy(ThemeTokens.previewIconGap),
         verticalAlignment = Alignment.CenterVertically,
@@ -214,13 +216,13 @@ private fun SketchMessage(
 private fun SketchBar(palette: OtusPalette) {
     Row(
         Modifier.fillMaxWidth().height(ThemeTokens.previewBarHeight),
-        horizontalArrangement = Arrangement.spacedBy(PanelTokens.chipGap),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.inlineGap),
     ) {
         Row(
             Modifier
                 .fillMaxHeight()
                 .background(palette.bgDark, CircleShape)
-                .strokeBorder(PanelTokens.borderWidth, palette.strokeBgDark, CircleShape)
+                .strokeBorder(Sizes.borderWidth, palette.strokeBgDark, CircleShape)
                 .padding(horizontal = ThemeTokens.previewBarPadding),
             horizontalArrangement = Arrangement.spacedBy(ThemeTokens.previewBarPadding),
             verticalAlignment = Alignment.CenterVertically,

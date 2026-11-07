@@ -1,34 +1,23 @@
 package com.otus.designsystem.shared.selection.components
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
-import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntRect
@@ -36,16 +25,14 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.window.PopupPositionProvider
 import com.otus.designsystem.shared.overlays.components.MenuPopup
-import com.otus.designsystem.shared.overlays.components.keptInside
 import com.otus.designsystem.shared.overlays.components.menuSurface
-import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.shared.overlays.elements.PopupAlign
+import com.otus.designsystem.shared.overlays.elements.keptInside
+import com.otus.designsystem.shared.overlays.elements.popupStart
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
-import com.otus.designsystem.theme.shapes.SmoothCornerShape
-import com.otus.designsystem.theme.tokens.editing.ComposeTokens
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.MenuTokens
-import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
  * A list that opens under the element it is called from, such as the addresses under a Send-from
@@ -102,77 +89,6 @@ public fun Dropdown(
 }
 
 /**
- * A choice in a [Dropdown]: an optional [leading] avatar, the [title], a smaller `text3`
- * [subtitle] under it, and a one-line `text3` [detail] at its end, such as a size or an address.
- * The [selected] row is filled with `bgRegular`, without a mark.
- */
-@Composable
-public fun DropdownRow(
-    title: String,
-    selected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    subtitle: String? = null,
-    detail: String? = null,
-    leading: (@Composable () -> Unit)? = null,
-) {
-    val shape = SmoothCornerShape(MenuTokens.radius - MenuTokens.inset)
-    Row(
-        modifier
-            .fillMaxWidth()
-            .heightIn(min = PanelTokens.touchTarget)
-            .background(if (selected) OtusColors.bgRegular else OtusColors.bgDark, shape)
-            .selectable(selected, onClick = onClick)
-            .padding(horizontal = MenuTokens.rowPadding - MenuTokens.inset, vertical = PanelTokens.iconGap),
-        horizontalArrangement = Arrangement.spacedBy(MenuTokens.rowPadding - MenuTokens.inset),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        leading?.invoke()
-        Column(Modifier.weight(1f)) {
-            Text(title, style = panelTextStyle(), maxLines = 1, overflow = TextOverflow.Ellipsis)
-            if (subtitle != null) {
-                Text(
-                    subtitle,
-                    style = panelTextStyle(),
-                    color = OtusColors.text3,
-                    fontSize = ComposeTokens.detailSize,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-        }
-        if (detail != null) {
-            Text(
-                detail,
-                Modifier.widthIn(max = MenuTokens.detailMaxWidth),
-                style = panelTextStyle(),
-                color = OtusColors.text3,
-                fontSize = ComposeTokens.detailSize,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
-    }
-}
-
-/** A small `text3` heading over a group of rows in a dropdown or a list, such as an account's name. */
-@Composable
-public fun ListCaption(text: String) {
-    Text(
-        text,
-        Modifier
-            .padding(horizontal = MenuTokens.rowPadding - MenuTokens.inset)
-            .padding(top = MenuTokens.rowPadding - MenuTokens.inset, bottom = PanelTokens.iconGap)
-            .semantics { heading() },
-        style = panelTextStyle(),
-        color = OtusColors.text3,
-        fontSize = ComposeTokens.detailSize,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-    )
-}
-
-/**
  * Puts the popup under the anchor, or above it when only that fits, [edge] pixels inside the window's
  * sides. [room] is the height the popup may take: the space below while it holds at least [minRoom],
  * else the larger side.
@@ -195,8 +111,8 @@ private class BelowAnchor(
         val roomBelow = windowSize.height - edge - anchorBounds.bottom - gap
         val roomAbove = anchorBounds.top - gap - edge
         room = if (roomBelow >= minRoom) roomBelow else maxOf(roomBelow, roomAbove)
-        val atEnd = alignEnd != (layoutDirection == LayoutDirection.Rtl)
-        val x = if (atEnd) anchorBounds.right - popupContentSize.width else anchorBounds.left
+        val align = if (alignEnd) PopupAlign.End else PopupAlign.Start
+        val x = anchorBounds.popupStart(align, popupContentSize.width, layoutDirection)
         val below = anchorBounds.bottom + gap
         val above = anchorBounds.top - gap - popupContentSize.height
         val fitsBelow = below + popupContentSize.height <= windowSize.height - edge

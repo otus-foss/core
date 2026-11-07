@@ -1,5 +1,6 @@
 package com.otus.jscontact
 
+import com.otus.json.types.UtcDateSerializer
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KeepGeneratedSerializer
 import kotlinx.serialization.Serializable
@@ -16,7 +17,7 @@ public data class Note(
     /** The text of the note. */
     val note: String,
     /** When the note was written. */
-    @Serializable(with = UtcDateTimeSerializer::class)
+    @Serializable(with = UtcDateSerializer::class)
     val created: Instant? = null,
     val author: Author? = null,
     /** Unknown and vendor-specific properties, kept as received (RFC 9553, section 1.7.4). */

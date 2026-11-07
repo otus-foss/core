@@ -15,7 +15,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.typography.panelTextStyle
 
 @Composable
@@ -33,7 +33,7 @@ public fun SearchField(
         modifier =
             modifier
                 .fillMaxWidth()
-                .heightIn(min = PanelTokens.touchTarget)
+                .heightIn(min = Sizes.touchTarget)
                 .semantics { contentDescription = placeholder },
         singleLine = true,
         textStyle = style,

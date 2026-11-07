@@ -27,13 +27,15 @@ import androidx.compose.ui.unit.dp
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.selection.CalendarTokens
+import com.otus.designsystem.theme.typography.TypeScale
 import com.otus.designsystem.theme.typography.panelTextStyle
 
 /** Plain calendar cell with a rectangular range band and softly squared endpoints. */
 @Composable
-public fun CalendarDay(
+internal fun CalendarDay(
     label: String,
     description: String,
     selection: CalendarDaySelection,
@@ -46,8 +48,8 @@ public fun CalendarDay(
     val minimumHeight =
         with(LocalDensity.current) {
             maxOf(
-                PanelTokens.touchTarget,
-                PanelTokens.lineHeight.toDp() + CalendarTokens.monthLabelLineHeight.toDp() * 2 +
+                Sizes.touchTarget,
+                TypeScale.bodyLineHeight.toDp() + CalendarTokens.monthLabelLineHeight.toDp() * 2 +
                     CalendarTokens.markerEdgeInset * 2,
             )
         }
@@ -73,7 +75,7 @@ public fun CalendarDay(
                 },
                 shape,
             ).controlPressFeedback(interactions, shape)
-            .padding(vertical = PanelTokens.iconGap),
+            .padding(vertical = Spacing.iconGap),
         contentAlignment = Alignment.Center,
     ) {
         val style = panelTextStyle()
@@ -91,7 +93,7 @@ private fun CalendarMonthLabel(
     style: TextStyle,
 ) {
     val height = with(LocalDensity.current) { CalendarTokens.monthLabelLineHeight.toDp() }
-    val offset = with(LocalDensity.current) { (PanelTokens.lineHeight.toDp() + height) / 2 }
+    val offset = with(LocalDensity.current) { (TypeScale.bodyLineHeight.toDp() + height) / 2 }
     Text(
         label,
         modifier = Modifier.offset(y = -offset).height(height),
@@ -101,7 +103,7 @@ private fun CalendarMonthLabel(
     )
 }
 
-public data class CalendarDaySelection(
+internal data class CalendarDaySelection(
     val inRange: Boolean,
     val endpoint: Boolean,
     val connectsPrevious: Boolean = false,

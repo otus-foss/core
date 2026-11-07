@@ -1,13 +1,14 @@
 package com.otus.designsystem.theme.tokens.rows
 
 import androidx.compose.ui.unit.dp
+import com.otus.designsystem.theme.tokens.core.Spacing
 
 internal object SwipeTokens {
     /** Drag distance past which releasing runs the revealed action. The same drag is needed every time. */
     val threshold = 96.dp
 
     /** Space between the row edge and the revealed icon, and between the icon and its label. */
-    val inset = 16.dp
+    val inset = Spacing.gutter
     val gap = 8.dp
 
     /** How far the icon slides in from the edge while it grows to full size at the threshold. */
@@ -19,6 +20,6 @@ internal object SwipeTokens {
     /** Opacity of the text-colored flash over the accent when a release commits. */
     const val FLASH_ALPHA = 0.24f
 
-    /** How long a dismissed row may stay before it returns to rest, measured from the end of its slide. */
+    /** How long a dismissed row that its list keeps may stay revealed, measured from the end of its slide. */
     const val DISMISS_RESTORE_MILLIS = 1_000L
 }

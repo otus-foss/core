@@ -107,3 +107,16 @@ Recorded on 2026-11-01 to correct the status and limits above, which are no long
   [the contacts guide](../contacts.md) says. `avatar` depends on `jmap-contacts` and keeps its own
   small types for contact photo lookup.
 - Their tests are part of `checkAll`, like every library module's.
+
+## Amendment: one model, unused parts removed (2026-11-06)
+
+- The parts no app called went: `com.otus.jmap.sharing`, `CopyMethod`, `AddressBook/set` with its
+  patch and creation types, `contactCardPatch`, `ContactCardSort`, `ContactsCapability`, and card
+  validation. [Removed APIs](../removed-apis.md) names the commit to restore each from.
+- `avatar` reads cards and books as `Card` and `AddressBook`; its own small types and Mail's
+  `ContactCardObject` are gone, so one ContactCard model remains.
+- Updates go through `cardPatch(before, after)`, which came from Mail's contact editor and sets
+  whole changed properties.
+- `UtcDateSerializer` and the PatchObject path rules moved to the new `json-types` module, which
+  `jmap` and `jscontact` both use. One copy fixes the drift between the two date readers: a
+  seconds field such as `:600` is malformed, not a leap second.

@@ -10,6 +10,7 @@ import androidx.compose.ui.semantics.role
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_expand_more
 import com.otus.designsystem.shared.controls.elements.ChipFrame
+import com.otus.designsystem.shared.controls.elements.ChipFrameStyle
 import com.otus.designsystem.shared.controls.elements.ChipLayout
 import com.otus.designsystem.shared.controls.elements.ChipText
 import com.otus.designsystem.shared.controls.elements.ChipWidth
@@ -44,7 +45,7 @@ public fun PickerChip(
         },
         selected = false,
         enabled = true,
-        fill = OtusColors.bgDark,
+        style = ChipFrameStyle(OtusColors.bgDark),
         layout = ChipLayout(ChipWidth.Fill),
     ) {
         AvatarStack(avatars, ring = OtusColors.bgLight)

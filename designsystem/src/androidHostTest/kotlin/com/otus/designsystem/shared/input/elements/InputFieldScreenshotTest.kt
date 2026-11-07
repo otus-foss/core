@@ -36,7 +36,7 @@ class InputFieldScreenshotTest {
                 "ada@example.com",
                 {},
                 WIDTH,
-                supportingText = "Replies go to this address",
+                note = InputNote("Replies go to this address"),
                 kind = InputKind.Email,
             )
         }
@@ -51,6 +51,32 @@ class InputFieldScreenshotTest {
     fun longValue() =
         compose.screenshot("input_field_long_value") {
             InputField("Server", "https://jmap.mail.analytical-engine.example.com/.well-known/jmap", {}, WIDTH)
+        }
+
+    @Test
+    fun valid() =
+        compose.screenshot("input_field_valid") {
+            InputField(
+                "Server",
+                "mail.example.org",
+                {},
+                WIDTH,
+                note = InputNote("Connects to https://mail.example.org/.well-known/jmap", valid = true),
+                kind = InputKind.Url,
+            )
+        }
+
+    @Test
+    fun invalid() =
+        compose.screenshot("input_field_invalid") {
+            InputField(
+                "Server",
+                "asdf",
+                {},
+                WIDTH,
+                note = InputNote("This doesn't look like a server address.", valid = false),
+                kind = InputKind.Url,
+            )
         }
 
     private companion object {

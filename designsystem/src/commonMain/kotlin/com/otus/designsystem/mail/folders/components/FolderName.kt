@@ -21,7 +21,7 @@ public data class FolderName(
 
 /** The glyph of [folder] at [size]: tinted when it has a color, an outlined icon when it is a system folder. */
 @Composable
-public fun FolderNameGlyph(
+internal fun FolderNameGlyph(
     folder: FolderName,
     size: Dp,
 ) {

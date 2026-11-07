@@ -1,6 +1,6 @@
 package com.otus.accounts.data
 
-import com.otus.accounts.domain.AccountService
+import com.otus.accounts.testing.MailService
 import com.otus.accounts.testing.STALWART_SESSION
 import com.otus.jmap.JmapClient
 import com.otus.jmap.JmapConnections
@@ -38,7 +38,7 @@ class SavedAccountLookupTest {
     private fun repository(engine: MockEngine): JmapAccountRepository {
         hosts.forEach { store.save(JmapLogin(it, "https://$it/jmap/session", "ada@example.org", it), "secret") }
         val client = JmapClient(engine)
-        return JmapAccountRepository(client, JmapConnections(client, store), store, AccountService.Mail)
+        return JmapAccountRepository(client, JmapConnections(client, store), store, MailService)
     }
 
     @Test

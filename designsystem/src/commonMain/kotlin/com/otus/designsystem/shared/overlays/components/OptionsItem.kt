@@ -1,18 +1,17 @@
 package com.otus.designsystem.shared.overlays.components
 
+import com.otus.designsystem.shared.controls.elements.UiAction
 import org.jetbrains.compose.resources.DrawableResource
 
 /** One line of an [OptionsMenu]. */
 public sealed interface OptionsItem {
     /**
-     * Runs [onClick] and closes the menu; one that [opens] something more shows a chevron. A
+     * Runs the [action] and closes the menu; one that [opens] something more shows a chevron. A
      * [detail], such as "Usually Invoices", shows as a smaller second line. The [current] choice,
      * such as the label a field has now, fills with the accent.
      */
     public class Action(
-        public val label: String,
-        public val icon: DrawableResource,
-        public val onClick: () -> Unit,
+        public val action: UiAction,
         public val opens: Boolean = false,
         public val detail: String? = null,
         public val current: Boolean = false,
@@ -43,6 +42,5 @@ public sealed interface OptionsItem {
         public val text: String,
     ) : OptionsItem
 
-    /** A line between groups of items. */
     public data object Divider : OptionsItem
 }

@@ -20,7 +20,7 @@ import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.colors.readableOn
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.shapes.strokeBorder
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.settings.SettingTokens
 import com.otus.designsystem.theme.tokens.settings.ThemeTokens
 
@@ -44,7 +44,7 @@ public fun ValueButton(
         modifier
             .widthIn(max = SettingTokens.valueMaxWidth)
             .valueBackground(fill, shape)
-            .strokeBorder(PanelTokens.borderWidth, outline, shape)
+            .strokeBorder(Sizes.borderWidth, outline, shape)
             .padding(
                 start = if (swatch == null) SettingTokens.valuePaddingHorizontal else SettingTokens.valuePaddingSwatch,
                 end = SettingTokens.valuePaddingHorizontal,
@@ -59,7 +59,7 @@ public fun ValueButton(
                 Modifier
                     .size(ThemeTokens.valueDot)
                     .background(swatch, CircleShape)
-                    .border(PanelTokens.borderWidth, OtusColors.text2, CircleShape),
+                    .border(Sizes.borderWidth, OtusColors.text2, CircleShape),
             )
         }
         Text(

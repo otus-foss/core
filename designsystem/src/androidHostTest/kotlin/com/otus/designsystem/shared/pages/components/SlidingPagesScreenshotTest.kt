@@ -13,6 +13,7 @@ import com.otus.designsystem.screenshot.screenshot
 import com.otus.designsystem.shared.actionbar.components.ActionBar
 import com.otus.designsystem.shared.actionbar.components.ActionBarHost
 import com.otus.designsystem.shared.actionbar.components.BarAction
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.settings.components.SettingRow
 import org.junit.Rule
 import org.junit.runner.RunWith
@@ -58,10 +59,7 @@ class SlidingPagesScreenshotTest {
     private fun Page(depth: Int) =
         ActionBarHost(bar = {
             ActionBar(
-                BarAction(
-                    if (depth == 0) "Write" else "Save",
-                    Res.drawable.symbol_edit,
-                ) {},
+                BarAction(UiAction(if (depth == 0) "Write" else "Save", Res.drawable.symbol_edit) {}),
             )
         }) {
             PageScaffold(if (depth == 0) "Inbox" else "Settings", navigationLabel = "Back", onNavigation = {}) {

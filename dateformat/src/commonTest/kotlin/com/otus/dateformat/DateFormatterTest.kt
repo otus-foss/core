@@ -27,9 +27,9 @@ class DateFormatterTest {
     @Test
     fun yearBoundaryUsesCalendarYearRatherThanWeekYear() {
         val formatter = DateFormatter(DateFormatPreference.DayMonthYearSlashes)
-        assertEquals("31/12/2020", formatter.formatIsoDate("2020-12-31"))
-        assertEquals("01/01/2021", formatter.formatIsoDate("2021-01-01"))
-        assertEquals("29/02/2024", formatter.formatIsoDate("2024-02-29"))
+        assertEquals("31/12/2020", formatter.format(LocalDate.parse("2020-12-31")))
+        assertEquals("01/01/2021", formatter.format(LocalDate.parse("2021-01-01")))
+        assertEquals("29/02/2024", formatter.format(LocalDate.parse("2024-02-29")))
     }
 
     @Test
@@ -43,20 +43,10 @@ class DateFormatterTest {
     }
 
     @Test
-    fun missingOrUnrecognizedStoredPreferenceFallsBackToDeviceLocale() {
-        assertEquals(DateFormatPreference.DeviceLocale, DateFormatPreference.fromStorageValue(null))
-        assertEquals(DateFormatPreference.DeviceLocale, DateFormatPreference.fromStorageValue("old-unknown-value"))
-        assertEquals(
-            DateFormatPreference.DayMonthYearSlashes,
-            DateFormatPreference.fromStorageValue("dmy-slashes"),
-        )
-    }
-
-    @Test
     fun malformedIsoInputIsRejectedRatherThanGuessedAsAnotherDateOrder() {
         val formatter = DateFormatter(DateFormatPreference.DayMonthYearDots)
-        assertFailsWith<IllegalArgumentException> { formatter.formatIsoDate("31/12/2020") }
-        assertFailsWith<IllegalArgumentException> { formatter.formatIsoDate("2023-02-29") }
+        assertFailsWith<IllegalArgumentException> { formatter.format(LocalDate.parse("31/12/2020")) }
+        assertFailsWith<IllegalArgumentException> { formatter.format(LocalDate.parse("2023-02-29")) }
     }
 
     @Test

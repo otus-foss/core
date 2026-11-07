@@ -85,3 +85,45 @@ public sealed class JmapException(
         public val loginId: String,
     ) : JmapException("The saved credentials for this login cannot be read.")
 }
+
+/** What a failure means for the user, whatever the call: the coarse reading of a [JmapException]. */
+public enum class JmapErrorCategory {
+    /** The server rejected the credentials; the user signs in again. */
+    Auth,
+
+    /** The credentials work, but the server does not allow this access. */
+    Permission,
+
+    /** The saved secret cannot be read; the user signs in again. */
+    Credentials,
+
+    /** The server could not be reached; a later try may work. */
+    Offline,
+
+    /** The server or account lacks the capability the call needs. */
+    Unsupported,
+
+    /** Any other failure of the server or its answer. */
+    Server,
+}
+
+public val JmapException.category: JmapErrorCategory
+    get() =
+        when (this) {
+            is JmapException.Unauthorized -> JmapErrorCategory.Auth
+            is JmapException.Forbidden -> JmapErrorCategory.Permission
+            is JmapException.CredentialsUnavailable -> JmapErrorCategory.Credentials
+            is JmapException.Unreachable -> JmapErrorCategory.Offline
+            is JmapException.Unsupported -> JmapErrorCategory.Unsupported
+            else -> JmapErrorCategory.Server
+        }
+
+/**
+ * Whether the call waits for the next sync instead of failing for good: `serverUnavailable` (RFC
+ * 8620, section 3.6.2) is temporary, while `serverFail` may fail again and `serverPartialFail` asks
+ * for a resync. All three are the server's problem, not the call's, so a later try may succeed.
+ */
+public val JmapException.MethodError.isTemporary: Boolean
+    get() = type in TEMPORARY_METHOD_ERRORS
+
+private val TEMPORARY_METHOD_ERRORS = setOf("serverUnavailable", "serverFail", "serverPartialFail")

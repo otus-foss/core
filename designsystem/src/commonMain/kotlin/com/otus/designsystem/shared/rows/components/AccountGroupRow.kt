@@ -21,7 +21,7 @@ import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.shared.people.components.ChipAvatar
 import com.otus.designsystem.shared.people.components.SilentAvatarStack
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.overlays.ScopeSheetTokens
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.tokens.rows.FolderRowTokens
@@ -46,7 +46,7 @@ public fun AccountGroupRow(
     Row(
         modifier
             .fillMaxWidth()
-            .heightIn(min = PanelTokens.touchTarget)
+            .heightIn(min = Sizes.touchTarget)
             .semantics { heading() }
             .toggleable(expanded, interactions, indication = null, role = Role.Button, onValueChange = onExpandedChange)
             .controlPressFeedback(interactions)

@@ -75,6 +75,13 @@ class JmapContactAvatarSourceTest {
         }
 
     @Test
+    fun aBookWithoutIsSubscribedCountsAsSubscribed() =
+        runTest {
+            val fixture = ContactFixture(cardBook = "unmarked")
+            assertContentEquals(byteArrayOf(1, 2, 3), fixture.source.photoOf(request, false)?.bytes)
+        }
+
+    @Test
     fun inlineContactImageNeedsNoExternalPermission() =
         runTest {
             val fixture = ContactFixture(media = """{"kind":"photo","uri":"data:image/png;base64,AQID"}""")
@@ -124,7 +131,7 @@ class JmapContactAvatarSourceTest {
     @Test
     fun aWebsiteStyleCountsOnlyInTheUsersOwnBooks() =
         runTest {
-            val website = AvatarStyle("blue", AvatarMark.Website)
+            val website = AvatarStyle("Blue", AvatarMark.Website)
             val vCard = ""","vCard":{"properties":${avatarPropertiesWith(null, website)}}"""
             val shared = ContactFixture(mediaMap = "{}", cardExtra = vCard)
             assertNull(shared.source.avatar(request, false))
@@ -179,6 +186,7 @@ private class ContactFixture(
                         {"id":"visible","isSubscribed":true,"myRights":{"mayRead":true}},
                         {"id":"hidden","isSubscribed":false,"myRights":{"mayRead":true}},
                         {"id":"denied","isSubscribed":true,"myRights":{"mayRead":false}},
+                        {"id":"unmarked","myRights":{"mayRead":true}},
                         {"id":"own","myRights":{"mayRead":true,"mayWrite":true}}]},"c0"]]}"""
                             } else {
                                 """{"methodResponses":[["ContactCard/query",{"ids":["c"]},"c0"],
@@ -200,7 +208,7 @@ private class ContactFixture(
             }
         }
     private val store = adaLogins()
-    val source = JmapContactAvatarSource(JmapConnections(JmapClient(engine), store), store, images)
+    val source = JmapContactAvatarSource(JmapConnections(JmapClient(engine), store), images)
 }
 
 private const val CONTACT_SESSION = """

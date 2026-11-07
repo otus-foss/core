@@ -1,20 +1,21 @@
 package com.otus.settings.presentation
 
 import com.otus.designsystem.theme.brand.AppIconStyle
+import com.otus.storage.inMemoryChoice
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class AppIconSettingsStateTest {
     @Test
     fun aStyleIsAppliedAndRestoredForTheNextSession() {
-        val store = MemoryPreferenceStore()
+        val store = inMemoryChoice()
         AppIconSettingsState(store).select(AppIconStyle.Monochrome)
         assertEquals(AppIconStyle.Monochrome, AppIconSettingsState(store).style)
     }
 
     @Test
     fun withoutASavedStyleTheIconUsesTheAccent() {
-        assertEquals(AppIconStyle.Accent, AppIconSettingsState(MemoryPreferenceStore()).style)
-        assertEquals(AppIconStyle.Accent, decodeAppIconStyle("sparkly"))
+        assertEquals(AppIconStyle.Accent, AppIconSettingsState(inMemoryChoice()).style)
+        assertEquals(AppIconStyle.Accent, AppIconSettingsState(inMemoryChoice("sparkly")).style)
     }
 }

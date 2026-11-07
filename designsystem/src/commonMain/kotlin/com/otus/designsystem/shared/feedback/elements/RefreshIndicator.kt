@@ -20,10 +20,10 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
-import com.otus.designsystem.shared.panels.elements.darkSurface
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
+import com.otus.designsystem.theme.shapes.darkSurface
 import com.otus.designsystem.theme.tokens.feedback.RefreshTokens
 import kotlin.math.abs
 import kotlin.math.max

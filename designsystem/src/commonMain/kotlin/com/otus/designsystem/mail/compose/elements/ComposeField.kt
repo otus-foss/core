@@ -24,9 +24,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import com.otus.designsystem.shared.input.elements.InputKind
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.editing.ComposeTokens
 import com.otus.designsystem.theme.tokens.layout.PageTokens
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
@@ -87,7 +87,7 @@ internal fun ComposeLine(
     Row(
         modifier
             .fillMaxWidth()
-            .heightIn(min = PanelTokens.touchTarget)
+            .heightIn(min = Sizes.touchTarget)
             .bottomHairline()
             .padding(horizontal = PageTokens.textInset),
         horizontalArrangement = Arrangement.spacedBy(ComposeTokens.labelGap),
@@ -96,7 +96,7 @@ internal fun ComposeLine(
         // The field names itself, so the label is not read twice.
         Box(
             Modifier
-                .heightIn(min = PanelTokens.touchTarget)
+                .heightIn(min = Sizes.touchTarget)
                 .widthIn(min = ComposeTokens.labelWidth)
                 .clearAndSetSemantics {},
             contentAlignment = Alignment.CenterStart,

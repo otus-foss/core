@@ -4,9 +4,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.otus.designsystem.theme.typography.TypeScale
 
 /** The earlier messages of a thread above a reply's action bar, and the sheet that lists them. */
-public object ThreadTokens {
+internal object ThreadTokens {
     /** Up to this many messages show as rows; more fold into one summary row. */
     public const val ROW_LIMIT: Int = 3
 
@@ -19,7 +20,7 @@ public object ThreadTokens {
 
     /** The name, the date, and the summary's second line. */
     public val nameSize: TextUnit = 14.sp
-    public val detailSize: TextUnit = 12.sp
+    public val detailSize: TextUnit = TypeScale.detail
 
     /** A message row in the sheet: its avatar. */
     public val sheetAvatarSize: Dp = 32.dp

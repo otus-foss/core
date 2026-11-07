@@ -4,7 +4,9 @@ import com.otus.accounts.domain.AccountService
 import com.otus.accounts.domain.ConnectFailure
 import com.otus.accounts.domain.ConnectOutcome
 import com.otus.accounts.domain.JmapAccountDraft
+import com.otus.accounts.testing.MailService
 import com.otus.accounts.testing.STALWART_SESSION
+import com.otus.accounts.testing.TestLifecycle
 import com.otus.accounts.testing.stalwartLike
 import com.otus.jmap.JmapClient
 import com.otus.jmap.JmapConnections
@@ -34,7 +36,7 @@ class JmapAccountRepositoryTest {
 
     private fun repository(engine: MockEngine): JmapAccountRepository {
         val client = JmapClient(engine)
-        return JmapAccountRepository(client, JmapConnections(client, store), store, AccountService.Mail)
+        return JmapAccountRepository(client, JmapConnections(client, store), store, MailService)
     }
 
     @Test
@@ -103,8 +105,8 @@ class JmapAccountRepositoryTest {
                 client,
                 JmapConnections(client, store),
                 store,
-                AccountService.Mail,
-                beforeRemove = { secretAtHook = store.secret(it) },
+                MailService,
+                listOf(TestLifecycle(onRemoving = { secretAtHook = store.secret(it) })),
             ).remove("ada")
             assertIs<LoginSecret.Found>(secretAtHook)
             assertTrue(store.logins().isEmpty())
@@ -175,5 +177,14 @@ class JmapAccountRepositoryTest {
             assertEquals(setOf(confirm.origin), login.trustedOrigins)
             val connection = JmapConnections(JmapClient(engine), store).connection(login)
             assertContentEquals(byteArrayOf(7), connection.download("d333333", "photo", "image/png", 10).bytes)
+        }
+
+    @Test
+    fun checkingAServerNeedsNoCredentialsAndSavesNothing() =
+        runTest {
+            assertEquals(null, repository(stalwartLike()).checkServer(draft.sessionUrl))
+            val missing = MockEngine { respond("", HttpStatusCode.NotFound) }
+            assertEquals(ConnectFailure.NotJmap, repository(missing).checkServer(draft.sessionUrl))
+            assertTrue(store.logins().isEmpty())
         }
 }

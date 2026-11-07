@@ -21,9 +21,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.input.elements.InputField
 import com.otus.designsystem.shared.overlays.components.SheetFrame
 import com.otus.designsystem.shared.overlays.components.SheetHeaderAction
+import com.otus.designsystem.shared.overlays.elements.sheetInset
 import com.otus.designsystem.shared.reorder.components.HALF
 import com.otus.designsystem.shared.settings.elements.ColorSlider
 import com.otus.designsystem.theme.colors.Hsl
@@ -32,7 +34,7 @@ import com.otus.designsystem.theme.colors.hslColor
 import com.otus.designsystem.theme.colors.parseHexColor
 import com.otus.designsystem.theme.colors.toHex
 import com.otus.designsystem.theme.colors.toHsl
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.tokens.settings.ThemeTokens
 
@@ -63,10 +65,11 @@ public fun ColorSheet(
     SheetFrame(
         title,
         onDismiss = onDismiss,
-        onDone = {
-            if (resetting) onReset?.invoke() else onPick(color)
-            onDismiss()
-        },
+        done =
+            UiAction("Done", onClick = {
+                if (resetting) onReset?.invoke() else onPick(color)
+                onDismiss()
+            }),
         leadingAction =
             onReset?.let {
                 { done ->
@@ -80,7 +83,7 @@ public fun ColorSheet(
         Column(
             Modifier
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = SheetTokens.inset)
+                .sheetInset()
                 .padding(bottom = SheetTokens.inset),
             verticalArrangement = Arrangement.spacedBy(SheetTokens.inset),
         ) {
@@ -120,7 +123,7 @@ private fun HexRow(
             Modifier
                 .size(ThemeTokens.customColorSize)
                 .background(color, CircleShape)
-                .border(PanelTokens.borderWidth, OtusColors.bgLight, CircleShape),
+                .border(Sizes.borderWidth, OtusColors.bgLight, CircleShape),
         )
         InputField("Hex", hex, onHexChange, Modifier.weight(1f), placeholder = "#5A7EA4")
     }

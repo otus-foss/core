@@ -1,13 +1,17 @@
 package com.otus.avatar
 
+import com.otus.avatar.resources.Res
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 
-/** Loads a bundled, ASCII-normalized Public Suffix List once. No runtime network lookup is needed. */
+/**
+ * Loads an ASCII-normalized Public Suffix List once, by default the snapshot this module bundles.
+ * No runtime network lookup is needed.
+ */
 public class PublicSuffixDomainResolver(
-    private val loadRules: suspend () -> String,
+    private val loadRules: suspend () -> String = ::bundledPublicSuffixRules,
 ) : AvatarDomainResolver {
     private val lock = Mutex()
     private var rules: PublicSuffixRules? = null
@@ -25,6 +29,9 @@ public class PublicSuffixDomainResolver(
                 }
             }.registrableDomain(host)
 }
+
+/** The Public Suffix List snapshot in this module's resources; see docs/avatar.md. */
+internal suspend fun bundledPublicSuffixRules(): String = Res.readBytes("files/public_suffix_list.dat").decodeToString()
 
 /** PSL longest-rule matching, including private suffixes, wildcards, and exception rules. */
 internal class PublicSuffixRules(

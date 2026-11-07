@@ -50,7 +50,7 @@ import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.shapes.strokeBorder
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 import kotlin.math.roundToInt
 
@@ -71,7 +71,7 @@ internal fun PrimaryShell(
 ) {
     val shape = SmoothCornerShape(ActionBarTokens.radius)
     val menu = rememberBarMenu()
-    val shown = entry.shownContext(context, primary.label)
+    val shown = entry.shownContext(context, primary.action.label)
     val animation = rememberCollapse(context != null, entry)
     val progress = { entry.blend(animation.value) { it.progress } }
     val fadeStart = ActionBarTokens.CONTEXT_FADE_START
@@ -82,15 +82,15 @@ internal fun PrimaryShell(
             .primaryButton(primary, context, menu, shape),
     ) {
         // Drawn before the action, so the action's accent border covers it where the two meet.
-        Box(Modifier.matchParentSize().strokeBorder(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape))
+        Box(Modifier.matchParentSize().strokeBorder(Sizes.borderWidth, OtusColors.strokeBgDark, shape))
         CompositionLocalProvider(
-            LocalContentColor provides if (primary.enabled) OtusColors.text1 else OtusColors.text3,
+            LocalContentColor provides if (primary.action.enabled) OtusColors.text1 else OtusColors.text3,
         ) {
             if (shown != null) {
                 ContextContent(
                     shown.title,
                     shown.context,
-                    if (primary.enabled) OtusColors.text2 else OtusColors.text3,
+                    if (primary.action.enabled) OtusColors.text2 else OtusColors.text3,
                     Modifier
                         .align(Alignment.CenterStart)
                         .graphicsLayer { alpha = ((progress() - fadeStart) / (1f - fadeStart)).coerceIn(0f, 1f) }
@@ -195,18 +195,18 @@ private fun Action(
                 .align(Alignment.CenterEnd)
                 .fillMaxHeight()
                 .fillMaxWidth()
-                .background(if (primary.enabled) OtusColors.accentDark else OtusColors.bgDark, shape)
+                .background(if (primary.action.enabled) OtusColors.accentDark else OtusColors.bgDark, shape)
                 // A disabled action loses its accent entirely, so it reads as part of the shell.
                 .strokeBorder(
-                    PanelTokens.borderWidth,
-                    if (primary.enabled) OtusColors.accentRegular else OtusColors.strokeBgDark,
+                    Sizes.borderWidth,
+                    if (primary.action.enabled) OtusColors.accentRegular else OtusColors.strokeBgDark,
                     shape,
                 ),
         ) {
             Box(
                 Modifier.align(Alignment.CenterEnd).width(ActionBarTokens.collapsedActionWidth).fillMaxHeight(),
                 contentAlignment = Alignment.Center,
-            ) { face.Swapping { Symbol(it.symbol, it.mirrorInRtl, ActionBarTokens.symbolSize) } }
+            ) { face.Swapping { Symbol(it.symbol, size = ActionBarTokens.symbolSize) } }
         }
     }
 }

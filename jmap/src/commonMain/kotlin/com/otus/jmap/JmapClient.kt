@@ -29,7 +29,14 @@ public class JmapClient(
     engine: HttpClientEngine? = null,
     internal val policy: JmapPolicy = JmapPolicy(),
 ) : AutoCloseable {
-    internal val http = if (engine == null) HttpClient { configure() } else HttpClient(engine) { configure() }
+    internal val http =
+        if (engine ==
+            null
+        ) {
+            HttpClient { configure(policy) }
+        } else {
+            HttpClient(engine) { configure(policy) }
+        }
     internal val urls = JmapUrls(policy)
 
     /**
@@ -45,7 +52,7 @@ public class JmapClient(
      * [name] fills the template's `{name}`, the file name a server gives in `Content-Disposition`;
      * it defaults to `download`. A blob the server does not have throws [JmapException.BlobNotFound].
      */
-    public suspend fun download(
+    internal suspend fun download(
         session: JmapSession,
         auth: JmapAuth,
         accountId: String,
@@ -57,7 +64,7 @@ public class JmapClient(
         JmapDownloads(http, urls, policy).download(session, auth, accountId, blobId, mediaType, maxBytes, name)
 
     /** Authenticated blob upload (RFC 8620, section 6.1), within the server's `maxSizeUpload`. */
-    public suspend fun upload(
+    internal suspend fun upload(
         session: JmapSession,
         auth: JmapAuth,
         accountId: String,
@@ -82,19 +89,34 @@ public class JmapClient(
         trustedOrigins: Set<String> = emptySet(),
         requireTrustedBlobOrigins: Boolean = false,
     ): JmapSession {
-        var target = urls.parse(url)
-        val trusted = trustedOrigins + target.origin()
+        val start = urls.parse(url)
+        val trusted = trustedOrigins + start.origin()
+        val (target, response) = getFollowingRedirects(start) { hop -> auth.takeIf { hop.origin() in trusted } }
+        val session = urls.parseSession(target.requireTrusted(trusted), response, trusted)
+        if (requireTrustedBlobOrigins) urls.requireTrustedBlobOrigins(session)
+        return session
+    }
+
+    /**
+     * Whether [url] answers like a JMAP session resource when asked without credentials, following
+     * redirects such as `/.well-known/jmap`. Throws [JmapException.Unreachable] when nothing answers.
+     */
+    public suspend fun isJmapServer(url: String): Boolean =
+        getFollowingRedirects(urls.parse(url)) { null }
+            .second
+            .looksLikeSession()
+
+    /** The URL that finally answered a GET of [start], and its answer; [auth] picks each hop's credentials. */
+    private suspend fun getFollowingRedirects(
+        start: Url,
+        auth: (Url) -> JmapAuth?,
+    ): Pair<Url, RawResponse> {
+        var target = start
         repeat(policy.maxRedirects + 1) {
-            val authorized = target.origin() in trusted
-            val response = exchange(HttpMethod.Get, target, auth.takeIf { authorized }, body = null)
+            val response = exchange(HttpMethod.Get, target, auth(target), body = null)
             val location = response.location
-            if (response.status in REDIRECT_STATUSES && location != null) {
-                target = urls.resolve(target, location)
-            } else {
-                val session = parseSession(target.requireTrusted(trusted), response, trusted)
-                if (requireTrustedBlobOrigins) urls.requireTrustedBlobOrigins(session)
-                return session
-            }
+            if (response.status !in REDIRECT_STATUSES || location == null) return target to response
+            target = urls.resolve(target, location)
         }
         throw JmapException.TooManyRedirects()
     }
@@ -134,36 +156,6 @@ public class JmapClient(
         return jmapDecoding { parseResponse(decode(response)) }
     }
 
-    private fun parseSession(
-        url: Url,
-        response: RawResponse,
-        trusted: Set<String>,
-    ): JmapSession {
-        val dto = jmapDecoding { JmapJson.decodeFromJsonElement(SessionDto.serializer(), decode(response)) }
-        return JmapSession(
-            sessionUrl = url.toString(),
-            apiUrl = urls.resolve(url, dto.apiUrl).requireTrusted(trusted).toString(),
-            username = dto.username,
-            capabilities = dto.capabilities.keys,
-            accounts =
-                dto.accounts.mapValues { (_, account) ->
-                    JmapAccount(
-                        account.name,
-                        account.isPersonal,
-                        account.isReadOnly,
-                        account.accountCapabilities.keys,
-                        account.accountCapabilities.capabilityObjects(),
-                    )
-                },
-            primaryAccounts = dto.primaryAccounts,
-            state = dto.state,
-            trustedOrigins = trusted,
-            downloadUrl = dto.downloadUrl,
-            uploadUrl = dto.uploadUrl,
-            capabilityObjects = dto.capabilities.capabilityObjects(),
-        )
-    }
-
     private suspend fun exchange(
         method: HttpMethod,
         target: Url,
@@ -192,19 +184,51 @@ public class JmapClient(
             throw JmapException.Unreachable(error)
         }
 
-    private fun HttpClientConfig<*>.configure() {
-        followRedirects = false
-        expectSuccess = false
-        install(HttpTimeout) {
-            connectTimeoutMillis = policy.connectTimeoutMillis
-            requestTimeoutMillis = policy.requestTimeoutMillis
-            socketTimeoutMillis = policy.socketTimeoutMillis
-        }
-    }
-
     private companion object {
         val REDIRECT_STATUSES = setOf(301, 302, 303, 307, 308)
     }
+}
+
+/** Redirects are followed by hand, so each hop's credentials can be chosen; [policy] sets the timeouts. */
+private fun HttpClientConfig<*>.configure(policy: JmapPolicy) {
+    followRedirects = false
+    expectSuccess = false
+    install(HttpTimeout) {
+        connectTimeoutMillis = policy.connectTimeoutMillis
+        requestTimeoutMillis = policy.requestTimeoutMillis
+        socketTimeoutMillis = policy.socketTimeoutMillis
+    }
+}
+
+/** The session [response] describes, fetched from [url]; its `apiUrl` must be on a [trusted] origin. */
+private fun JmapUrls.parseSession(
+    url: Url,
+    response: RawResponse,
+    trusted: Set<String>,
+): JmapSession {
+    val dto = jmapDecoding { JmapJson.decodeFromJsonElement(SessionDto.serializer(), decode(response)) }
+    return JmapSession(
+        sessionUrl = url.toString(),
+        apiUrl = resolve(url, dto.apiUrl).requireTrusted(trusted).toString(),
+        username = dto.username,
+        capabilities = dto.capabilities.keys,
+        accounts =
+            dto.accounts.mapValues { (_, account) ->
+                JmapAccount(
+                    account.name,
+                    account.isPersonal,
+                    account.isReadOnly,
+                    account.accountCapabilities.keys,
+                    account.accountCapabilities.capabilityObjects(),
+                )
+            },
+        primaryAccounts = dto.primaryAccounts,
+        state = dto.state,
+        trustedOrigins = trusted,
+        downloadUrl = dto.downloadUrl,
+        uploadUrl = dto.uploadUrl,
+        capabilityObjects = dto.capabilities.capabilityObjects(),
+    )
 }
 
 /**

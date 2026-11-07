@@ -22,7 +22,7 @@ class ChipScreenshotTest {
     @Test
     fun selectedWithDetail() =
         compose.screenshot("chip_selected_detail") {
-            Chip("Work", {}, selected = true, detail = "3")
+            Chip(ChipLabel("Work", detail = "3"), {}, selected = true)
         }
 
     @Test

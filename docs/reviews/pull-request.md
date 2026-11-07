@@ -78,9 +78,8 @@ Missing roadmap work is not a regression unless the PR promises or depends on it
 
 ## Validate and finish
 
-- Run validation according to the shared guide and selected mode at the frozen revisions. When
-  relevant, compare source-composite behavior with the intended released dependency path.
-  Passing with Meta source does not prove the pinned publication can build Mail.
+- Run validation according to the shared guide and selected mode at the frozen revisions. Mail
+  builds against Meta's source: the Meta branch with the PR's branch name, else `main`.
 - Map CI results to the tested head or synthetic merge SHA and effective Meta SHA. Check whether
   later commits arrived after the one-time CI run. Report disabled/missing platform checks.
 - Re-read the diff and candidate findings after validation. Recheck PR heads and bases. If they

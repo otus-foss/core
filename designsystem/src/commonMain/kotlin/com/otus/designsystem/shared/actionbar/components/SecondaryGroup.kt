@@ -16,11 +16,11 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import com.otus.designsystem.shared.actionbar.elements.BarAddButton
 import com.otus.designsystem.shared.actionbar.elements.BarIconButton
-import com.otus.designsystem.shared.overlays.components.MenuAction
-import com.otus.designsystem.shared.panels.elements.darkSurface
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
+import com.otus.designsystem.theme.shapes.darkSurface
 import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 
 /**
@@ -32,7 +32,7 @@ import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 internal fun SecondaryGroup(
     actions: List<BarAction>,
     onAdd: (() -> Unit)?,
-    allActions: List<MenuAction>,
+    allActions: List<UiAction>,
     modifier: Modifier,
 ) {
     val shape = SmoothCornerShape(ActionBarTokens.radius)
@@ -52,14 +52,14 @@ internal fun SecondaryGroup(
             .darkSurface(shape),
     ) {
         GroupIcons(actions, onAdd, Modifier.align(Alignment.CenterStart).graphicsLayer { alpha = hidden }) {
-            if (it.menu.isEmpty()) it.onClick() else menu.open(it.menu)
+            if (it.menu.isEmpty()) it.action.onClick() else menu.open(it.menu)
         }
         menu.Shown {
             // A tap on the open menu's group closes it first, and runs the action if it has no menu.
             val add = onAdd?.let { run -> { menu.close().also { run() } } }
             GroupIcons(actions, add, Modifier.align(Alignment.CenterStart)) {
                 menu.close()
-                if (it.menu.isEmpty()) it.onClick()
+                if (it.menu.isEmpty()) it.action.onClick()
             }
         }
     }
@@ -80,7 +80,7 @@ private fun GroupIcons(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         actions.forEach {
-            BarIconButton(it.label, it.symbol, { onClick(it) }, enabled = it.enabled, mirrorInRtl = it.mirrorInRtl)
+            BarIconButton(it.action.label, it.symbol, { onClick(it) }, enabled = it.action.enabled)
         }
         if (onAdd != null) BarAddButton("Add action", onAdd)
     }

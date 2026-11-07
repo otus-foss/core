@@ -9,6 +9,7 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.otus.designsystem.screenshot.screenScreenshot
+import com.otus.designsystem.shared.controls.elements.UiAction
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -25,7 +26,7 @@ class ContextMenuScreenshotTest {
     val compose = createComposeRule()
 
     private val actions =
-        listOf("Rename", "Duplicate", "Delete theme").map { MenuAction(it, onClick = {}) }
+        listOf("Rename", "Duplicate", "Delete theme").map { UiAction(it, onClick = {}) }
 
     @Test
     fun atPoint() = compose.screenScreenshot("context_menu") { Page(Offset(120f, 300f)) }
@@ -38,7 +39,7 @@ class ContextMenuScreenshotTest {
     fun choosingDismissesThenRuns() {
         val calls = mutableListOf<String>()
         compose.setContent {
-            ContextMenu(listOf(MenuAction("Rename") { calls += "rename" }), Offset.Zero) { calls += "dismiss" }
+            ContextMenu(listOf(UiAction("Rename") { calls += "rename" }), Offset.Zero) { calls += "dismiss" }
         }
         compose.onNodeWithText("Rename").performClick()
         assertEquals(listOf("dismiss", "rename"), calls)

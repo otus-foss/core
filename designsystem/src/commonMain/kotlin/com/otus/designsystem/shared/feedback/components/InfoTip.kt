@@ -23,10 +23,10 @@ import androidx.compose.ui.semantics.semantics
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_help
 import com.otus.designsystem.shared.controls.elements.Symbol
-import com.otus.designsystem.shared.overlays.components.ClosableSheet
+import com.otus.designsystem.shared.overlays.components.SheetFrame
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.feedback.InfoTipTokens
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 
 /**
@@ -42,7 +42,7 @@ public fun InfoTip(
     // No circle behind it: only the question mark shows, inside a full touch target.
     Box(
         modifier
-            .size(PanelTokens.touchTarget)
+            .size(Sizes.touchTarget)
             .clickable(role = Role.Button, onClickLabel = "Open") { open = true }
             .semantics { contentDescription = "About ${info.title}" },
         contentAlignment = Alignment.Center,
@@ -52,7 +52,7 @@ public fun InfoTip(
         }
     }
     if (open) {
-        ClosableSheet(info.title, { open = false }) {
+        SheetFrame(info.title, { open = false }, done = null, closeButton = true) {
             Column(
                 Modifier.fillMaxWidth().padding(
                     start = SheetTokens.inset,

@@ -27,8 +27,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
-import com.otus.designsystem.theme.tokens.layout.SidebarTokens
 import com.otus.designsystem.theme.tokens.rows.LetterIndexTokens
+import com.otus.designsystem.theme.typography.TypeScale
 import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
@@ -68,8 +68,8 @@ internal fun LetterRow(
                     BlurredEdgeTreatment.Unbounded,
                 ).background(
                     if (current) OtusColors.selectedFill else Color.Transparent,
-                    SmoothCornerShape(SidebarTokens.entryRadius),
-                ).padding(horizontal = SidebarTokens.entryPadding),
+                    SmoothCornerShape(LetterIndexTokens.highlightRadius),
+                ).padding(horizontal = LetterIndexTokens.rowPadding),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             if (atEnd) LetterDetail(letter, current)
@@ -78,7 +78,7 @@ internal fun LetterRow(
                 Modifier.width(LetterIndexTokens.letterColumn),
                 style = panelTextStyle(),
                 color = if (current) OtusColors.text1 else OtusColors.text2,
-                fontSize = SidebarTokens.detailSize,
+                fontSize = TypeScale.detail,
                 fontWeight = FontWeight.SemiBold,
                 textAlign = if (atEnd) TextAlign.End else TextAlign.Start,
                 maxLines = 1,
@@ -98,7 +98,7 @@ private fun LetterDetail(
         letter.preview.takeIf { current } ?: letter.count.toString(),
         style = panelTextStyle(),
         color = if (current) OtusColors.text2 else OtusColors.text3,
-        fontSize = SidebarTokens.detailSize,
+        fontSize = TypeScale.detail,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
     )

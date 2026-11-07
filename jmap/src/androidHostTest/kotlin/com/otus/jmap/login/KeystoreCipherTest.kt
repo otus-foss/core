@@ -47,28 +47,24 @@ class KeystoreCipherTest {
     @Test
     fun concurrentFirstUseLoadsTheKeyOnce() {
         val loads = AtomicInteger()
-        val start = CountDownLatch(1)
+        val release = CountDownLatch(1)
         val cipher =
             KeystoreCipher("alias") {
                 loads.incrementAndGet()
-                Thread.sleep(LOAD_MILLIS)
+                release.await()
                 SecretKeySpec(ByteArray(KEY_BYTES), "AES")
             }
-        val workers =
-            List(THREADS) { index ->
-                thread {
-                    start.await()
-                    cipher.seal("secret $index")
-                }
-            }
-        start.countDown()
+        val workers = List(THREADS) { index -> thread { cipher.seal("secret $index") } }
+        // Every worker stops in the key load or waits for the one that is in it; only then can one finish.
+        while (workers.any { it.state !in STOPPED }) Thread.yield()
+        release.countDown()
         workers.forEach(Thread::join)
         assertEquals(1, loads.get())
     }
 
     private companion object {
         const val THREADS = 4
-        const val LOAD_MILLIS = 100L
+        val STOPPED = setOf(Thread.State.BLOCKED, Thread.State.WAITING, Thread.State.TERMINATED)
         const val KEY_BYTES = 32
     }
 }

@@ -47,8 +47,9 @@ import com.otus.designsystem.shared.panels.components.drawEdgeFade
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.shapes.strokeBorder
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.editing.ComposeTokens
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 import org.jetbrains.compose.resources.DrawableResource
 
@@ -69,7 +70,7 @@ public fun FormattingBar(
     leading: (@Composable () -> Unit)? = null,
     trailing: (@Composable () -> Unit)? = null,
 ) {
-    val shape = SmoothCornerShape(ComposeTokens.formatBarRadius)
+    val shape = SmoothCornerShape(ActionBarTokens.formatBarRadius)
     val parts = LocalBarParts.current
     Box(
         parts.group
@@ -79,7 +80,7 @@ public fun FormattingBar(
             .background(OtusColors.bgDark, shape),
     ) {
         // Drawn before the buttons, so the Send's accent border covers it where the two meet.
-        Box(Modifier.matchParentSize().strokeBorder(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape))
+        Box(Modifier.matchParentSize().strokeBorder(Sizes.borderWidth, OtusColors.strokeBgDark, shape))
         FormattingRow(text, onLink, leading, trailing?.let { { Box(parts.primary) { it() } } })
     }
 }
@@ -122,8 +123,8 @@ private fun FormattingRow(
 private fun LeadingDivider() {
     Box(
         Modifier
-            .padding(horizontal = PanelTokens.iconGap)
-            .size(PanelTokens.borderWidth, ComposeTokens.formatDividerHeight)
+            .padding(horizontal = Spacing.iconGap)
+            .size(Sizes.borderWidth, ComposeTokens.formatDividerHeight)
             .background(OtusColors.bgLight),
     )
 }
@@ -149,7 +150,7 @@ public fun FormatButton(
     val shape = SmoothCornerShape(ComposeTokens.formatButtonRadius)
     Box(
         Modifier
-            .size(PanelTokens.touchTarget)
+            .size(Sizes.touchTarget)
             .semantics {
                 contentDescription = description
                 selected = active
@@ -193,7 +194,7 @@ public fun CompactSendButton(
             contentColor = if (enabled) OtusColors.text1 else OtusColors.text3,
             border =
                 BorderStroke(
-                    PanelTokens.borderWidth,
+                    Sizes.borderWidth,
                     if (enabled) OtusColors.accentRegular else OtusColors.strokeBgDark,
                 ),
         ) {
@@ -207,7 +208,7 @@ public fun CompactSendButton(
 private fun Modifier.scrollFade(scroll: ScrollState): Modifier =
     graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }.drawWithContent {
         drawContent()
-        val fade = PanelTokens.fadeWidth.toPx().coerceAtMost(size.width / 2)
+        val fade = Sizes.edgeFade.toPx().coerceAtMost(size.width / 2)
         drawEdgeFade((scroll.value / fade).coerceIn(0f, 1f), fade, atEnd = false)
         drawEdgeFade(((scroll.maxValue - scroll.value) / fade).coerceIn(0f, 1f), fade, atEnd = true)
     }

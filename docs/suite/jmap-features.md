@@ -63,7 +63,7 @@ uncommitted `feat/action-bar` Mail worktree. The library notes on contacts, shar
 | `urn:ietf:params:jmap:mdn` | RFC 9007 | No plan | |
 | `urn:ietf:params:jmap:websocket` | RFC 8887 | No plan | Push uses Web Push and EventSource. See [push](#push-and-sync). |
 | `urn:ietf:params:jmap:webpush-vapid` | RFC 9749 | In progress | Mail `feat/google-push` passes the server key to its embedded Google distributor and replaces registration when the key changes. |
-| `urn:ietf:params:jmap:principals` and sharing | RFC 9670 | Planned | Shared calendars ([Calendar #9](https://github.com/reazndev/otus-calendar/issues/9)). The `jmap` library has the Principal and ShareNotification types and the `principals` and `principals:owner` capabilities, and `jmap-contacts` patches AddressBook `shareWith`. No app uses them yet. |
+| `urn:ietf:params:jmap:principals` and sharing | RFC 9670 | Planned | Shared calendars ([Calendar #9](https://github.com/reazndev/otus-calendar/issues/9)). The Principal and ShareNotification types, the `principals` capabilities, and AddressBook `shareWith` patches were removed as unused; see [removed APIs](../removed-apis.md) to restore them. |
 | Tasks | IETF draft | No plan | The roadmap defers a task manager. `TaskList/get` appears only in library tests. |
 
 ## Session and core
@@ -79,7 +79,7 @@ uncommitted `feat/action-bar` Mail worktree. The library notes on contacts, shar
 | Blob download | Used | Contact photos. Attachments are planned. |
 | `/changes` | Planned | [Mail #15](https://github.com/reazndev/otus-mail/issues/15). Today every load refetches. |
 | `/queryChanges` | Planned | Mail #15, where the server supports it. The library has `QueryChangesMethod` on Meta `feat/jmap-contacts`; no app calls it. |
-| `/copy` | No plan | No cross-account copy or move in the apps. The library has `CopyMethod` on Meta `feat/jmap-contacts`; no app calls it. |
+| `/copy` | No plan | No cross-account copy or move in the apps. `CopyMethod` was removed as unused; see [removed APIs](../removed-apis.md). |
 | `Core/echo` | Library tests only | |
 | `maxCallsInRequest` and other request limits | Planned | The library does not enforce them. Mail #12 plans to respect them. |
 
@@ -170,14 +170,14 @@ module call these methods through their own small contact types.
 | `AddressBook/get` | Used | Lists books for the photo lookup. |
 | `ContactCard/query` with `email` filter | Used | Exact address match, per book. |
 | `ContactCard/query` with `text` filter | In progress | Recipient suggestions while typing, on Mail `feat/send`. |
-| `ContactCard/query`, other filters and sorts | No plan | The library has every condition of RFC 9610, section 3.3.1, and every sort of section 3.3.2. |
+| `ContactCard/query`, other filters and sorts | No plan | The library has every condition of RFC 9610, section 3.3.1. Its sorts (`ContactCardSort`) were removed as unused; see [removed APIs](../removed-apis.md). |
 | `ContactCard/get` | Used | Properties: `id`, `addressBookIds`, `emails`, `media`, and `vCard`, which holds the avatar style; retried without `vCard` on `invalidArguments`. Photos come from a blob or a data URI. |
 | `ContactCard/set` | Used | Creates or updates the self card of an own address: a `photo` media entry with a `data:` URI, or the `x-otus-avatar` vCard property in `vCard.properties`. Other card changes are planned. |
-| `AddressBook/set` | Planned | [Mail #8](https://github.com/reazndev/otus-mail/issues/8), [Mail #6](https://github.com/reazndev/otus-mail/issues/6), [Mail #19](https://github.com/reazndev/otus-mail/issues/19). The library has `contactCardPatch`, `Card.toCreation`, and `AddressBookSetMethod`. |
+| `AddressBook/set` | Planned | [Mail #8](https://github.com/reazndev/otus-mail/issues/8), [Mail #6](https://github.com/reazndev/otus-mail/issues/6), [Mail #19](https://github.com/reazndev/otus-mail/issues/19). The library has `cardPatch` and `Card.toCreation`; `AddressBookSetMethod` was removed as unused, see [removed APIs](../removed-apis.md). |
 | Recipient and attendee suggestions | Planned | Mail #26 and [Calendar #7](https://github.com/reazndev/otus-calendar/issues/7). Compose recipients are plain text today. |
 | `ContactCard/changes`, `AddressBook/changes`, `ContactCard/queryChanges` | Planned | Mail #19. |
-| `ContactCard/copy` | No plan | Cards stay in their account. The library has `CopyMethod`. |
-| Address book sharing (`shareWith`, Principals) | No plan | The library patches `shareWith` one Principal at a time and reads Principals (RFC 9670). |
+| `ContactCard/copy` | No plan | Cards stay in their account. `CopyMethod` was removed as unused; see [removed APIs](../removed-apis.md). |
+| Address book sharing (`shareWith`, Principals) | No plan | The library's `shareWith` patches and Principals (RFC 9670) were removed as unused; see [removed APIs](../removed-apis.md). |
 
 The contact photo lookup and own-address avatars are the only contact features. They do not sync or store contacts.
 

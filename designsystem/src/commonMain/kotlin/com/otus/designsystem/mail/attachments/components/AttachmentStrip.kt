@@ -25,6 +25,7 @@ import com.otus.designsystem.shared.rows.components.stripCardFrame
 import com.otus.designsystem.shared.rows.components.unfoldedForm
 import com.otus.designsystem.shared.rows.components.unfolding
 import com.otus.designsystem.theme.tokens.content.ReadTokens
+import com.otus.designsystem.theme.tokens.rows.StripTokens
 
 /**
  * The files of a message in a strip above the action bar, never inline in its text. Folded, it
@@ -77,8 +78,8 @@ private fun FoldedLine(
             .fillMaxWidth()
             .heightIn(min = ReadTokens.attachmentHeight)
             .clickable(onClickLabel = "Show attachments", role = Role.Button, onClick = onToggle)
-            .padding(start = ReadTokens.stripStart, end = ReadTokens.slimEnd),
-        horizontalArrangement = Arrangement.spacedBy(ReadTokens.stripGap),
+            .padding(start = StripTokens.start, end = ReadTokens.slimEnd),
+        horizontalArrangement = Arrangement.spacedBy(StripTokens.gap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         ThumbStack(files)
@@ -101,7 +102,7 @@ private fun AttachmentHeader(
             .padding(start = ReadTokens.slimStart, end = ReadTokens.slimEnd),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        SummaryText(summary, ReadTokens.titleSize, bold = true, Modifier.weight(1f))
+        SummaryText(summary, StripTokens.titleSize, bold = true, Modifier.weight(1f))
         PlainAction("Save all", Res.drawable.symbol_download, onSaveAll)
         StripChevron(up = false)
     }

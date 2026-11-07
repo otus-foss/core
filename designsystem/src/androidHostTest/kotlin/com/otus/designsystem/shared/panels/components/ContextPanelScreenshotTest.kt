@@ -10,6 +10,7 @@ import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_tune
 import com.otus.designsystem.screenshot.screenshot
 import com.otus.designsystem.shared.controls.elements.Chip
+import com.otus.designsystem.shared.controls.elements.ChipLabel
 import com.otus.designsystem.shared.controls.elements.IconButton
 import com.otus.designsystem.shared.controls.elements.IconButtonLook
 import com.otus.designsystem.shared.controls.elements.Symbol
@@ -105,7 +106,7 @@ class ContextPanelScreenshotTest {
 
     @Composable
     private fun ContextPanelScope.Pills() {
-        item("unread") { Chip("Unread", {}, selected = true, detail = "4") }
+        item("unread") { Chip(ChipLabel("Unread", detail = "4"), {}, selected = true) }
         item("files") { Chip("Files", {}) }
         item("later") { Chip("Later", {}) }
     }

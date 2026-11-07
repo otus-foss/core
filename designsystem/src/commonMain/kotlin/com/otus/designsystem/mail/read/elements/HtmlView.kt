@@ -5,11 +5,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.LayoutDirection
+import com.otus.designsystem.mail.read.html.HtmlQuote
+import com.otus.designsystem.mail.read.html.HtmlScan
+import com.otus.designsystem.mail.read.html.RenderKey
+import com.otus.designsystem.mail.read.html.css
+import com.otus.designsystem.mail.read.html.inertLinks
+import com.otus.designsystem.mail.read.html.placeholderStyle
+import com.otus.designsystem.mail.read.html.policyHead
+import com.otus.designsystem.mail.read.html.quoteFold
+import com.otus.designsystem.mail.read.html.scanHtml
+import com.otus.designsystem.mail.read.html.sealedHtml
+import com.otus.designsystem.mail.read.html.withImagePlaceholders
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.colors.OtusPalette
-import com.otus.designsystem.theme.colors.toHex
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.math.roundToInt
@@ -95,14 +104,9 @@ internal fun sandboxedHtml(
     quote: HtmlQuote? = null,
     spacers: HtmlSpacers = HtmlSpacers(),
 ): String {
-    val remote = if (loadRemote) " http: https:" else ""
-    val policy =
-        "default-src 'none'; img-src data:$remote; style-src 'unsafe-inline'$remote; " +
-            "font-src data:$remote; form-action 'none'"
-    val prefetch = if (loadRemote) "" else "<meta http-equiv=\"x-dns-prefetch-control\" content=\"off\">"
     val document = if (quote == null) html else sealedHtml(html) + quoteFold(quote, palette, key)
     val blocked = !loadRemote && placeholders
-    val inert = if (loadRemote) document else document.replace(LINK_TAG, "<otus-inert-link")
+    val inert = if (loadRemote) document else inertLinks(document)
     val body = if (blocked) withImagePlaceholders(inert, key) else inert
     val margin = if (hasOwnLayout(html)) "0" else "0 ${spacers.right}px 0 ${spacers.left}px"
     val page =
@@ -112,8 +116,7 @@ internal fun sandboxedHtml(
             val scheme = if (palette.isLight) "light" else "dark"
             ":root{color-scheme:$scheme}body{color:${palette.text1.css()}}a{color:${palette.accentLight.css()}}"
         }
-    return "<meta http-equiv=\"Content-Security-Policy\" content=\"$policy\">" +
-        prefetch +
+    return policyHead(loadRemote) +
         "<meta name=\"viewport\" content=\"width=device-width\">" +
         "<style>body{margin:$margin;overflow-wrap:anywhere}img{max-width:100%;height:auto}$page" +
         (if (blocked) placeholderStyle(palette, key) else "") +
@@ -172,11 +175,6 @@ private val CSS_BACKGROUND = Regex("""(?i)(?:^|[\s;{])background(?:-color|-image
 
 private val COLOR_ATTRIBUTES = setOf("color", "bgcolor")
 private val CSS_COLOR = Regex("""(?i)(?:^|[\s;{])(?:color|background(?:-color)?)\s*:""")
-
-internal fun Color.css(): String = toHex().lowercase()
-
-/** An HTML `<link>` start tag: the tag name ends at whitespace, `/`, or `>`, in any case. */
-private val LINK_TAG = Regex("<link(?=[\\s/>])", RegexOption.IGNORE_CASE)
 
 /** Whether [HtmlView] passes [url] on: web, mail, and phone links, never app or file links. */
 internal fun isOpenableLink(url: String): Boolean = url.substringBefore(':').lowercase() in OPENABLE_SCHEMES

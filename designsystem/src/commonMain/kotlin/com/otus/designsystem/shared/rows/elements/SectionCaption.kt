@@ -12,7 +12,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.layout.SidebarTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 
@@ -27,7 +27,7 @@ public fun SectionCaption(
     action: (@Composable () -> Unit)? = null,
 ) {
     Row(
-        modifier.fillMaxWidth().heightIn(min = PanelTokens.touchTarget),
+        modifier.fillMaxWidth().heightIn(min = Sizes.touchTarget),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(

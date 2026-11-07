@@ -10,8 +10,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.otus.designsystem.shared.controls.components.ButtonPair
-import com.otus.designsystem.shared.controls.components.PairButton
 import com.otus.designsystem.shared.controls.elements.ActionButton
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.theme.tokens.selection.CalendarTokens
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.YearMonth
@@ -65,7 +65,7 @@ public fun BirthdayPicker(
         if (onRemove == null) {
             ActionButton("Done", done, Modifier.fillMaxWidth(), primary = true)
         } else {
-            ButtonPair(PairButton("Remove", onRemove), PairButton("Done", done))
+            ButtonPair(UiAction("Remove", onClick = onRemove), UiAction("Done", onClick = done))
         }
     }
 }

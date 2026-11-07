@@ -25,7 +25,7 @@ import com.otus.designsystem.theme.tokens.settings.SettingTokens
  * colors, for a row that ignores taps.
  */
 @Composable
-public fun ToggleSwitch(
+internal fun ToggleSwitch(
     checked: Boolean,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,

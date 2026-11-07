@@ -32,12 +32,12 @@ import com.otus.designsystem.resources.symbol_close
 import com.otus.designsystem.resources.symbol_palette
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
-import com.otus.designsystem.shared.panels.elements.darkSurface
 import com.otus.designsystem.theme.colors.FolderColor
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
+import com.otus.designsystem.theme.shapes.darkSurface
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.feedback.NudgeTokens
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
 
 /**
  * A card above a list that offers a color for a folder that has none. [title] and [body] read as
@@ -103,7 +103,7 @@ private fun CloseButton(onClick: () -> Unit) {
     Box(Modifier.size(NudgeTokens.iconSize).wrapContentSize(unbounded = true)) {
         Box(
             Modifier
-                .size(PanelTokens.touchTarget)
+                .size(Sizes.touchTarget)
                 .semantics { contentDescription = "Dismiss" }
                 .clickable(interactions, indication = null, role = Role.Button, onClick = onClick)
                 .controlPressFeedback(interactions),

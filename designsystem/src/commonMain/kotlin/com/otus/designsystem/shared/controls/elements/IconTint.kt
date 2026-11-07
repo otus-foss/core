@@ -10,16 +10,14 @@ import androidx.compose.ui.unit.Dp
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_folder
 import com.otus.designsystem.resources.symbol_folder_fill
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import org.jetbrains.compose.resources.DrawableResource
 
 /**
  * Colors the leading icon of the rows inside it, such as a folder's
  * [com.otus.designsystem.theme.colors.FolderColor.tint]. Null keeps each row's own icon color. Text,
- * backgrounds, the selected state, trailing icons, and disabled icons keep their colors.
- * [SidebarEntry][com.otus.designsystem.shared.sidebar.elements.SidebarEntry],
- * [ActionRow][com.otus.designsystem.shared.rows.elements.ActionRow], `SettingRow`, `SettingToggleRow`,
- * `ValuePicker`, and `ValueToken` read it; a `ChoiceRow` takes its own `iconTint`.
+ * backgrounds, the selected state, trailing icons, and disabled icons keep their colors. Rows
+ * that draw a [LeadingSymbol] read it.
  */
 public val LocalIconTint: ProvidableCompositionLocal<Color?> = compositionLocalOf { null }
 
@@ -30,7 +28,7 @@ public val LocalIconTint: ProvidableCompositionLocal<Color?> = compositionLocalO
 @Composable
 internal fun LeadingSymbol(
     resource: DrawableResource,
-    size: Dp = PanelTokens.iconSize,
+    size: Dp = Sizes.iconSize,
     enabled: Boolean = true,
 ) {
     val tint = LocalIconTint.current.takeIf { enabled }

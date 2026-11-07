@@ -1,6 +1,8 @@
 package com.otus.jscontact
 
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonObject
 
 /**
  * The JSON configuration for JSContact data (RFC 9553, section 1.3). Every JSContact class keeps
@@ -13,3 +15,6 @@ public val JsContactJson: Json =
         explicitNulls = false
         encodeDefaults = false
     }
+
+/** The card's JSContact JSON in [JsContactJson]'s form, with `@type`, `version`, and unknown properties. */
+public fun Card.toJsonObject(): JsonObject = JsContactJson.encodeToJsonElement(Card.serializer(), this).jsonObject

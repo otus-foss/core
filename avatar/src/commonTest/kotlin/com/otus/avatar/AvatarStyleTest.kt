@@ -21,6 +21,15 @@ class AvatarStyleTest {
     }
 
     @Test
+    fun aPresetSavedInAnyCaseReadsAsTheCapitalizedIdOlderBuildsRead() {
+        val saved = """{"properties": [["x-otus-avatar", {}, "text", "{\"color\": \"blue\", \"letters\": \"AL\"}"]]}"""
+        assertEquals(AvatarStyle("Blue", AvatarMark.Letters("AL")), avatarStyleIn(Json.parseToJsonElement(saved)))
+        assertEquals(AvatarColor.Purple, AvatarColor.of("Purple"))
+        assertEquals("Purple", AvatarColor.Purple.id)
+        assertNull(AvatarColor.of("#4D6F92"))
+    }
+
+    @Test
     fun savingAStyleKeepsTheCardsOtherVCardProperties() {
         val vCard =
             Json.parseToJsonElement(

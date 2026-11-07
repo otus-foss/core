@@ -7,6 +7,7 @@ import com.otus.designsystem.resources.symbol_edit
 import com.otus.designsystem.resources.symbol_flag
 import com.otus.designsystem.resources.symbol_send
 import com.otus.designsystem.shared.actionbar.components.BarAction
+import com.otus.designsystem.shared.controls.elements.UiAction
 
 /** Made-up people for the component screenshots, so no image shows real personal data. */
 internal object DemoPeople {
@@ -28,13 +29,13 @@ internal object DemoPeople {
 
 /** Action bar actions shared by the bar screenshots. */
 internal object DemoActions {
-    val write = BarAction("Compose", Res.drawable.symbol_edit) {}
-    val send = BarAction("Send", Res.drawable.symbol_send) {}
-    val move = BarAction("Move", Res.drawable.symbol_drive_file_move) {}
+    val write = BarAction(UiAction("Compose", Res.drawable.symbol_edit) {})
+    val send = BarAction(UiAction("Send", Res.drawable.symbol_send) {})
+    val move = BarAction(UiAction("Move", Res.drawable.symbol_drive_file_move) {})
     val secondary =
         listOf(
-            BarAction("Archive", Res.drawable.symbol_archive) {},
+            BarAction(UiAction("Archive", Res.drawable.symbol_archive) {}),
             move,
-            BarAction("Flag", Res.drawable.symbol_flag) {},
+            BarAction(UiAction("Flag", Res.drawable.symbol_flag) {}),
         )
 }

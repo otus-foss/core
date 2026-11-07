@@ -1,0 +1,52 @@
+name: Set up the build
+description: >-
+  Java, Gradle, the Android SDK, and the pinned Python quality tools, for a repository checked out
+  at the given directory. The SDK platform and build tools come from otus-meta's version catalog.
+inputs:
+  directory:
+    description: The repository's checkout, relative to the workspace
+    default: "."
+  android:
+    description: "Install the Android SDK packages"
+    default: "true"
+  python:
+    description: "Install requirements-quality.txt"
+    default: "true"
+outputs:
+  build-tools:
+    description: The installed build tools' directory, with zipalign and apksigner
+    value: ${{ steps.sdk.outputs.build-tools }}
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+      with:
+        distribution: temurin
+        java-version: "21"
+    - if: inputs.python == 'true'
+      uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+      with:
+        python-version: "3.13"
+        cache: pip
+        cache-dependency-path: ${{ inputs.directory }}/requirements-quality.txt
+    - if: inputs.python == 'true'
+      shell: bash
+      working-directory: ${{ inputs.directory }}
+      run: python3 -m pip install -r requirements-quality.txt
+    - if: inputs.android == 'true'
+      uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd # v4.0.4
+      with:
+        packages: platform-tools
+    - if: inputs.android == 'true'
+      id: sdk
+      shell: bash
+      env:
+        CATALOG: ${{ github.action_path }}/../../../gradle/libs.versions.toml
+      run: |
+        version() { sed -nE "s/^android-$1 = \"(.+)\"$/\\1/p" "$CATALOG"; }
+        compile=$(version compileSdk)
+        tools=$(version buildTools)
+        if [ -z "$compile" ] || [ -z "$tools" ]; then echo "no SDK versions in $CATALOG" >&2; exit 1; fi
+        sdkmanager "platforms;android-$compile.0" "build-tools;$tools"
+        echo "build-tools=$ANDROID_HOME/build-tools/$tools" >> "$GITHUB_OUTPUT"
+    - uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4

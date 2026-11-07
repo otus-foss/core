@@ -25,7 +25,7 @@ import com.otus.designsystem.shared.folders.elements.FolderToggle
 import com.otus.designsystem.shared.rows.elements.nestIndent
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.layout.SidebarTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 
@@ -52,7 +52,7 @@ public fun SidebarFolderEntry(
     Row(
         modifier
             .fillMaxWidth()
-            .heightIn(min = PanelTokens.compactRowHeight)
+            .heightIn(min = Sizes.compactRowHeight)
             .semantics { this.selected = selected }
             .combinedClickable(
                 interactions,

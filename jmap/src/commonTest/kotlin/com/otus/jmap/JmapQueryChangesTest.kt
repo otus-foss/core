@@ -7,7 +7,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class JmapQueryChangesTest {
-    private val musicOrVideo = anyOf(hasKeyword("music"), hasKeyword("video")).toJson()
+    private val musicOrVideo = anyOf(hasKeyword("music"), hasKeyword("video"))
 
     @Test
     fun sendsTheFilterAndSortOfTheCachedQuery() {

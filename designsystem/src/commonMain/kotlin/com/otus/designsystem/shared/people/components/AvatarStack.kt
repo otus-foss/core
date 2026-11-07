@@ -15,33 +15,36 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.controls.ControlTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.core.Spacing
+import com.otus.designsystem.theme.typography.TypeScale
 import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
- * Up to [PanelTokens.CHIP_AVATAR_LIMIT] overlapping avatars, each outlined in [ring] so the one
+ * Up to [ControlTokens.CHIP_AVATAR_LIMIT] overlapping avatars, each outlined in [ring] so the one
  * below shows where it starts, then an optional 14 sp `text2` [label], such as a first name or
  * "+3". With a [description], screen readers read it in place of the avatars and label. Larger
  * avatars of [size] overlap in proportion.
  */
 @Composable
-public fun AvatarStack(
+internal fun AvatarStack(
     avatars: List<ChipAvatar>,
     modifier: Modifier = Modifier,
     label: String? = null,
     description: String? = null,
     ring: Color = OtusColors.bgRegular,
-    size: Dp = PanelTokens.iconSize,
+    size: Dp = Sizes.iconSize,
 ) {
-    val overlap = PanelTokens.chipAvatarOverlap * (size / PanelTokens.iconSize)
+    val overlap = ControlTokens.chipAvatarOverlap * (size / Sizes.iconSize)
     Row(
         description?.let { modifier.semantics(mergeDescendants = true) { contentDescription = it } } ?: modifier,
-        horizontalArrangement = Arrangement.spacedBy(PanelTokens.iconGap),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.iconGap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(horizontalArrangement = Arrangement.spacedBy(-overlap)) {
-            avatars.take(PanelTokens.CHIP_AVATAR_LIMIT).forEach { avatar ->
-                PersonAvatar(avatar, size, Modifier.border(PanelTokens.borderWidth, ring, CircleShape))
+            avatars.take(ControlTokens.CHIP_AVATAR_LIMIT).forEach { avatar ->
+                PersonAvatar(avatar, size, Modifier.border(Sizes.borderWidth, ring, CircleShape))
             }
         }
         if (label != null) {
@@ -49,7 +52,7 @@ public fun AvatarStack(
                 label,
                 style = panelTextStyle(),
                 color = OtusColors.text2,
-                fontSize = PanelTokens.countSize,
+                fontSize = TypeScale.label,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )

@@ -16,14 +16,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.contentType
+import androidx.compose.ui.semantics.error
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import com.otus.designsystem.resources.Res
+import com.otus.designsystem.resources.symbol_check
+import com.otus.designsystem.resources.symbol_report
 import com.otus.designsystem.shared.controls.elements.Symbol
-import com.otus.designsystem.shared.panels.elements.darkSurface
+import com.otus.designsystem.theme.colors.FolderColor
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.shapes.darkSurface
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 import org.jetbrains.compose.resources.DrawableResource
@@ -36,9 +43,9 @@ import org.jetbrains.compose.resources.DrawableResource
 internal fun Modifier.inputFrame(endsWithButton: Boolean): Modifier {
     val shape = SmoothCornerShape(SheetTokens.rowRadius)
     return fillMaxWidth()
-        .heightIn(min = PanelTokens.touchTarget)
+        .heightIn(min = Sizes.touchTarget)
         .darkSurface(shape)
-        .padding(start = SheetTokens.gap, end = if (endsWithButton) PanelTokens.iconGap else SheetTokens.gap)
+        .padding(start = SheetTokens.gap, end = if (endsWithButton) Spacing.iconGap else SheetTokens.gap)
 }
 
 /** A field's `text2` icon before its text, such as a note's. */
@@ -46,6 +53,21 @@ internal fun Modifier.inputFrame(endsWithButton: Boolean): Modifier {
 internal fun InputIcon(icon: DrawableResource) {
     CompositionLocalProvider(LocalContentColor provides OtusColors.text2) {
         Box(Modifier.padding(end = SheetTokens.gap)) { Symbol(icon) }
+    }
+}
+
+/**
+ * A green check when [valid], or a red warning mark, at a field's end. The mark is drawn only; the
+ * field reads its state to screen readers. The palette has no status colors, so it
+ * takes the Green and Red folder shades, which reach 3:1 contrast on `bgDark` in every theme.
+ */
+@Composable
+private fun ValidityMark(valid: Boolean) {
+    val color = if (valid) FolderColor.Green else FolderColor.Red
+    CompositionLocalProvider(LocalContentColor provides (color.tint ?: OtusColors.text2)) {
+        Box(Modifier.padding(start = SheetTokens.gap)) {
+            Symbol(if (valid) Res.drawable.symbol_check else Res.drawable.symbol_report)
+        }
     }
 }
 
@@ -71,6 +93,11 @@ internal fun InputBox(
                 contentDescription = description
                 val type = look.kind.contentType
                 if (type != null) contentType = type
+                when (look.valid) {
+                    true -> stateDescription = "Valid"
+                    false -> error("Not valid")
+                    null -> Unit
+                }
             },
         singleLine = true,
         textStyle = style,
@@ -86,6 +113,8 @@ internal fun InputBox(
                     if (value.isEmpty()) Text(look.placeholder, style = style, color = OtusColors.text3, maxLines = 1)
                     field()
                 }
+                val valid = look.valid
+                if (valid != null) ValidityMark(valid)
                 if (onRemove != null) RemoveFieldButton("Remove $description", onRemove)
             }
         },

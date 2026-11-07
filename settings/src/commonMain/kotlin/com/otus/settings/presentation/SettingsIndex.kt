@@ -61,7 +61,7 @@ public fun settingsIndex(build: SettingsIndexScope.() -> Unit): List<SettingsIte
 
 /**
  * A page while the index is built, or the settings home for top-level pages. Its settings open it
- * on themselves and use its icon unless they name their own.
+ * on themselves and use its icon unless they name their own; a null icon names none.
  */
 @SettingsIndexDsl
 public class SettingsIndexScope internal constructor(
@@ -81,21 +81,26 @@ public class SettingsIndexScope internal constructor(
     public fun page(
         title: String,
         open: (setting: String?) -> Unit,
-        icon: DrawableResource? = this.icon,
+        icon: DrawableResource? = null,
         summary: String? = null,
         value: String? = null,
         options: List<String> = emptyList(),
         content: SettingsIndexScope.() -> Unit = {},
     ) {
-        val child = SettingsPage(page?.path.orEmpty() + title, icon, open)
+        val child = SettingsPage(page?.path.orEmpty() + title, icon ?: this.icon, open)
         val inside = SettingsIndexScope(child, mutableListOf()).apply(content)
         val facts = ItemFacts(value, options, inside.pageKeywords, waiting)
-        items += SettingsItem(title, page, section ?: summary, icon, facts, opens = child)
+        items += SettingsItem(title, page, section ?: summary, child.icon, facts, opens = child)
         items += inside.items
     }
 
     /** Other words people use for this page, which search matches as it matches options. */
     public fun keywords(vararg words: String) {
+        keywords(words.toList())
+    }
+
+    /** The [keywords] of this page as a list. */
+    public fun keywords(words: List<String>) {
         pageKeywords += words
     }
 
@@ -129,17 +134,18 @@ public class SettingsIndexScope internal constructor(
         title: String,
         value: String? = null,
         options: List<String> = emptyList(),
-        icon: DrawableResource? = this.icon,
+        icon: DrawableResource? = null,
         keywords: List<String> = emptyList(),
     ) {
-        items += SettingsItem(title, page, section, icon, ItemFacts(value, options, keywords, waiting), opens = null)
+        val facts = ItemFacts(value, options, keywords, waiting)
+        items += SettingsItem(title, page, section, icon ?: this.icon, facts, opens = null)
     }
 
     /** A setting that turns something on or off, with [keywords] as [setting] takes them. */
     public fun toggle(
         title: String,
         on: Boolean,
-        icon: DrawableResource? = this.icon,
+        icon: DrawableResource? = null,
         keywords: List<String> = emptyList(),
     ) {
         setting(title, if (on) "On" else "Off", icon = icon, keywords = keywords)

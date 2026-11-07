@@ -46,7 +46,7 @@ import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.LocalMotionScale
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.layout.SidebarTokens
 import kotlinx.coroutines.launch
 
@@ -131,7 +131,7 @@ public fun Sidebar(
 private fun Modifier.trailingStroke(): Modifier =
     drawWithContent {
         drawContent()
-        val width = PanelTokens.borderWidth.toPx()
+        val width = Sizes.borderWidth.toPx()
         val x = if (layoutDirection == LayoutDirection.Rtl) width / 2 else size.width - width / 2
         drawLine(OtusColors.strokeBgDark, Offset(x, 0f), Offset(x, size.height), width)
     }

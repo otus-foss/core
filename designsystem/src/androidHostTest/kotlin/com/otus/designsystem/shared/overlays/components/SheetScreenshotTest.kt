@@ -6,6 +6,7 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.unit.dp
 import com.otus.designsystem.screenshot.screenScreenshot
 import com.otus.designsystem.shared.controls.elements.Chip
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.rows.components.SummaryCard
 import com.otus.designsystem.shared.selection.components.PickerSearch
 import com.otus.designsystem.shared.settings.components.SettingToggleRow
@@ -34,12 +35,13 @@ class SheetScreenshotTest {
     @Test
     fun selectionSheet() =
         compose.screenScreenshot("selection_sheet_search") {
-            SelectionSheet(
+            ListSheet(
                 "From",
-                onDismiss = {},
+                {},
+                done = UiAction("Done", onClick = {}),
                 onClear = {},
-                onApply = {},
                 search = { PickerSearch("", {}, "Search people") },
+                scrolls = true,
             ) {
                 SettingToggleRow("Mira Chen", checked = true, {})
                 SettingToggleRow("Tomas Berg", checked = false, {})
@@ -50,7 +52,13 @@ class SheetScreenshotTest {
     @Test
     fun selectionSheetApplyDisabled() =
         compose.screenScreenshot("selection_sheet_apply_disabled") {
-            SelectionSheet("Folder", onDismiss = {}, onClear = {}, onApply = {}, applyEnabled = false) {
+            ListSheet(
+                "Folder",
+                {},
+                done = UiAction("Done", enabled = false, onClick = {}),
+                onClear = {},
+                scrolls = true,
+            ) {
                 Chip("Receipts", {})
             }
         }

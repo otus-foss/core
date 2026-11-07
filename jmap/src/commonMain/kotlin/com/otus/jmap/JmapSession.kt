@@ -1,6 +1,8 @@
 package com.otus.jmap
 
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -19,15 +21,6 @@ public object JmapCapability {
 
     /** The server signs Web Push messages with VAPID (RFC 9749). */
     public const val WEBPUSH_VAPID: String = "urn:ietf:params:jmap:webpush-vapid"
-
-    /** Principals and the sharing of data between them (RFC 9670, section 1.5.1). */
-    public const val PRINCIPALS: String = "urn:ietf:params:jmap:principals"
-
-    /**
-     * Names the principal that owns an account (RFC 9670, section 1.5.2). It appears only among an
-     * account's capabilities, never the session's, so no method is sent with it.
-     */
-    public const val PRINCIPALS_OWNER: String = "urn:ietf:params:jmap:principals:owner"
 }
 
 /**
@@ -59,6 +52,19 @@ public data class JmapSession(
     public val maxObjectsInSet: Long?
         get() = capabilityObjects[JmapCapability.CORE]?.unsigned("maxObjectsInSet")
 
+    /** The most method calls one request may hold (section 2), if the server says. */
+    public val maxCallsInRequest: Long?
+        get() = capabilityObjects[JmapCapability.CORE]?.unsigned("maxCallsInRequest")
+
+    /** Objects per `/get` call, which also sizes a page of `/query` ids: [maxObjectsInGet] up to [BATCH]. */
+    public val getBatch: Int get() = batch(maxObjectsInGet, BATCH)
+
+    /** Objects per `/set` call: [maxObjectsInSet] up to [BATCH]. */
+    public val setBatch: Int get() = batch(maxObjectsInSet, BATCH)
+
+    /** Method calls per request: [maxCallsInRequest] up to [CALL_BATCH]. */
+    public val callBatch: Int get() = batch(maxCallsInRequest, CALL_BATCH)
+
     /** The largest upload the server accepts, in octets (section 2), if the server says. */
     public val maxSizeUpload: Long?
         get() = capabilityObjects[JmapCapability.CORE]?.unsigned("maxSizeUpload")
@@ -71,11 +77,41 @@ public data class JmapSession(
         get() =
             capabilityObjects[JmapCapability.WEBPUSH_VAPID]?.string("applicationServerKey")?.takeIf { it.isNotEmpty() }
 
+    /**
+     * [accountId]'s object for [capability] read as [serializer]; null when the account does not
+     * offer it or its object does not read. The server still enforces what it advertises.
+     */
+    public fun <T> accountCapability(
+        accountId: String,
+        capability: String,
+        serializer: KSerializer<T>,
+    ): T? {
+        val advertised = accounts[accountId]?.capabilityObjects?.get(capability) ?: return null
+        return try {
+            JmapJson.decodeFromJsonElement(serializer, advertised)
+        } catch (expected: SerializationException) {
+            null
+        }
+    }
+
     /** The primary account for [capability], else the first account offering it, else null. */
     public fun accountFor(capability: String): String? =
         primaryAccounts[capability]?.takeIf { accounts[it]?.capabilities?.contains(capability) == true }
             ?: accounts.entries.firstOrNull { capability in it.value.capabilities }?.key
 }
+
+/**
+ * [advertised], or [default] when the server names no limit or a larger one. RFC 8620 suggests that
+ * servers allow at least 500 objects and 16 calls (section 2), so the defaults fit any of them and
+ * keep each request small.
+ */
+private fun batch(
+    advertised: Long?,
+    default: Int,
+): Int = advertised?.coerceIn(1L, default.toLong())?.toInt() ?: default
+
+private const val BATCH = 256
+private const val CALL_BATCH = 16
 
 public data class JmapAccount(
     val name: String,

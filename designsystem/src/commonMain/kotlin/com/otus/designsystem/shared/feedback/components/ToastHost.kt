@@ -38,8 +38,8 @@ import androidx.compose.ui.util.lerp
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.feedback.elements.Toast
-import com.otus.designsystem.shared.feedback.elements.ToastAction
 import com.otus.designsystem.shared.pages.components.aboveBottomBars
 import com.otus.designsystem.shared.panels.components.drawEdgeFade
 import com.otus.designsystem.shared.swipe.components.SwipeToDismiss
@@ -209,8 +209,8 @@ private fun ToastContent(
     // Running the action is the toast's purpose, so it leaves with it.
     val action =
         entry.message.action?.let { shown ->
-            ToastAction(shown.label) {
-                shown.onAction()
+            UiAction(shown.label) {
+                shown.onClick()
                 state.leave(entry, acted = true)
             }
         }

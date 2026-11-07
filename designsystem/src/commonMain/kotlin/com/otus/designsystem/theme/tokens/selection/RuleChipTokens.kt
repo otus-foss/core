@@ -4,13 +4,13 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.layout.CornerTokens
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.settings.SettingTokens
 
 /** Rule chips: a label column, an avatar or icon slot, and the value, in an outline. */
 internal object RuleChipTokens {
-    val height: Dp = PanelTokens.chipHeight
+    val height: Dp = Sizes.chipHeight
     val radius: Dp = SettingTokens.valueRadius
     val padding: Dp = SettingTokens.valuePaddingHorizontal
     val gap: Dp = 8.dp
@@ -22,7 +22,7 @@ internal object RuleChipTokens {
     const val MUTED_ALPHA: Float = 0.6f
     val labelSize: TextUnit = 12.sp
     val labelLineHeight: TextUnit = 16.sp
-    val slot: Dp = PanelTokens.iconSize
+    val slot: Dp = Sizes.iconSize
     val slotIcon: Dp = 18.dp
     val valueSize: TextUnit = 15.sp
     val valueLineHeight: TextUnit = 20.sp

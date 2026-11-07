@@ -1,6 +1,5 @@
 package com.otus.designsystem.shared.panels.components
 
-import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
@@ -28,7 +27,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.graphicsLayer
@@ -46,13 +44,15 @@ import androidx.compose.ui.util.lerp
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
+import com.otus.designsystem.shared.swipe.components.DismissRule
+import com.otus.designsystem.shared.swipe.components.settleBack
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.LocalMotionScale
-import com.otus.designsystem.theme.motion.Motion
 import com.otus.designsystem.theme.motion.MotionCurve
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
 import com.otus.designsystem.theme.shapes.toPath
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import kotlinx.coroutines.CoroutineScope
@@ -194,14 +194,11 @@ private class SheetLift(
 
     fun settle(velocity: Float) {
         returning?.cancel()
-        if (lift < -closeDistance || (lift < 0f && velocity < -closeFling)) {
+        if (DismissRule(closeDistance, closeFling).dismisses(-lift, -velocity)) {
             onDismiss()
             lift = 0f
         } else {
-            returning =
-                scope.launch {
-                    animate(lift, 0f, animationSpec = Motion.tween(scale = motionScale)) { value, _ -> lift = value }
-                }
+            returning = scope.launch { settleBack(lift, motionScale) { lift = it } }
         }
     }
 
@@ -241,7 +238,7 @@ private class SheetLift(
  */
 internal fun Modifier.panelEdge(): Modifier =
     clip(PanelTokens.bottomShape).drawBehind {
-        val border = PanelTokens.borderWidth.toPx()
+        val border = Sizes.borderWidth.toPx()
         val edge = Rect(-border, -border, size.width + border, size.height - border / 2)
         drawRect(OtusColors.bgDark)
         // Drawn past the top and sides, which the clip cuts away, so only the bottom stroke shows.

@@ -30,7 +30,7 @@ import com.otus.designsystem.theme.motion.MotionSpeed
  * Unchanged text does not animate. [LocalMotionScale] and the system animator scale set the pace.
  */
 @Composable
-public fun AnimatedText(
+internal fun AnimatedText(
     text: String,
     order: Int,
     modifier: Modifier = Modifier,

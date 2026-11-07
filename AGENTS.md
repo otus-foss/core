@@ -2,7 +2,7 @@
 
 ## Hosting
 
-GitHub hosts development, pull requests, issues, CI, and released packages. Use `origin` for
+GitHub hosts development, pull requests, issues, and CI. Meta publishes no packages (decision 0020). Use `origin` for
 GitHub. See [hosting and CI](docs/hosting.md).
 
 ## Required reading and commands
@@ -30,7 +30,8 @@ compiling for iOS. Read [the suite product goals](docs/suite/product-goals.md) a
 - Move existing code here when both apps need it or the user explicitly requests a suite
   extraction. Do not add speculative modules or placeholder files.
 - Enable explicit API mode and warnings as errors in every module. Public declarations are a
-  contract with both apps; change them only with a changelog entry and the right version bump.
+  contract with both apps; change them with a changelog entry and, when an app's call sites
+  break, a partner app branch of the same name that lands with it.
 - `designsystem` modules follow **elements → components**, with tokens in `theme` and values
   and callbacks at their public boundary. Put UI in `shared/<group>/elements` or `components`,
   or in `mail/<feature>/elements` or `components` for mail-specific rendering. Add a `calendar`
@@ -57,8 +58,10 @@ compiling for iOS. Read [the suite product goals](docs/suite/product-goals.md) a
   Domain code uses no UI, platform, networking, or database APIs.
 - Keep JMAP wire types separate from portable domain models. Check the JMAP specifications and
   advertised server capabilities before implementing protocol behavior.
-- Keep `gradle/libs.versions.toml` aligned with the apps. Do not publish with a Kotlin version
-  newer than the one the apps use.
+- `gradle/libs.versions.toml` is the catalog of all three repositories: the apps load it as `libs`
+  and keep only app-only versions in their own `gradle/app.versions.toml`. Change a shared
+  version here. `build-logic/`, `tools/`, `config/detekt.yml`, and `.github/actions/` serve the
+  apps too; check both apps when changing them.
 - Write fluent Kotlin when it reads better than the alternative. Express transformations as
   collection or sequence chains, such as `filter`, `map`, `associateBy`, and `firstNotNullOfOrNull`,
   or as builder lambdas such as `buildList`, `buildMap`, and `buildJsonObject`, instead of mutable
@@ -216,6 +219,8 @@ Inspect existing patterns first. Make focused changes, run the relevant checks, 
 environment blockers precisely. Add behavior tests for new logic and regression tests for fixes.
 Update `docs/architecture.md` when modules or boundaries change.
 
-Mail, Calendar, and this repository are separate Git repositories. Never assume a sibling checkout
-in CI. When a change here needs app changes, release it first, then update each app in its own
-repository. Do not publish a release, push tags, or change package access without a concrete task.
+Mail, Calendar, and this repository are separate Git repositories. The apps build Meta from
+source, from a sibling checkout or `otus.meta.path`, and their CI checks Meta out beside them.
+When a change here needs app changes, use the same branch name in each repository and merge Meta's
+pull request first; see `docs/consuming.md`. Do not push release tags without a concrete
+task.

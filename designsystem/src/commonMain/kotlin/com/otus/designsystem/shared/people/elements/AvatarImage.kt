@@ -20,7 +20,7 @@ public expect fun decodeImage(
 ): ImageBitmap?
 
 /** [decodeImage] at avatar size. */
-public fun decodeAvatarImage(bytes: ByteArray): ImageBitmap? = decodeImage(bytes, AVATAR_DECODE_SIZE)
+internal fun decodeAvatarImage(bytes: ByteArray): ImageBitmap? = decodeImage(bytes, AVATAR_DECODE_SIZE)
 
 /** Decodes off the main thread. Rows that scroll back into view reuse the decoded bitmap. */
 @Composable

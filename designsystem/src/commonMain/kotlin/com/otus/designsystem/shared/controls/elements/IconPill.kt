@@ -7,14 +7,12 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import org.jetbrains.compose.resources.DrawableResource
 
 /**
- * A round pill that shows only [icon] and turns an option on or off, to sit beside
- * [SidebarPill][com.otus.designsystem.shared.sidebar.elements.SidebarPill]s.
- * Screen readers read [description] as its name. [size] matches it to smaller pills beside it,
- * such as [DestinationPill][com.otus.designsystem.shared.folders.elements.DestinationPill]s.
+ * A round pill that shows only [icon] and turns an option on or off, to sit beside other pills.
+ * Screen readers read [description] as its name. [size] matches it to smaller pills beside it.
  * [fill] matches it to the pills beside it, such as `bgDark` on a panel of `bgDark` pills.
  */
 @Composable
@@ -24,7 +22,7 @@ public fun IconPill(
     selected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    size: Dp = PanelTokens.chipHeight,
+    size: Dp = Sizes.chipHeight,
     fill: Color = OtusColors.bgRegular,
 ) {
     ChipFrame(
@@ -32,7 +30,7 @@ public fun IconPill(
         modifier.semantics { contentDescription = description },
         selected,
         enabled = true,
-        fill = fill,
+        style = ChipFrameStyle(fill),
         layout = ChipLayout(ChipWidth.Circle, height = size),
     ) { Symbol(icon) }
 }

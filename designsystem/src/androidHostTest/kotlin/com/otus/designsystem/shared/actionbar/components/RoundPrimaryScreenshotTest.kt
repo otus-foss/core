@@ -10,6 +10,7 @@ import androidx.compose.ui.unit.dp
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_send
 import com.otus.designsystem.screenshot.screenshot
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.people.components.DemoActions.move
 import com.otus.designsystem.shared.people.components.DemoActions.send
 import com.otus.designsystem.shared.people.components.DemoPeople
@@ -33,7 +34,7 @@ class RoundPrimaryScreenshotTest {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp), horizontalAlignment = Alignment.End) {
                 RoundPrimary(send, context = null)
                 RoundPrimary(move, BarContext("messages", BarToken.Count(3), "3 messages"))
-                RoundPrimary(BarAction("Send", Res.drawable.symbol_send, enabled = false) {}, context = null)
+                RoundPrimary(BarAction(UiAction("Send", Res.drawable.symbol_send, enabled = false) {}), context = null)
             }
         }
 

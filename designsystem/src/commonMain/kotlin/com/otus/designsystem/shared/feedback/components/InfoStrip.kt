@@ -16,9 +16,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import com.otus.designsystem.shared.controls.elements.StripButton
 import com.otus.designsystem.shared.controls.elements.Symbol
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.rows.components.StripCard
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.content.ReadTokens
+import com.otus.designsystem.theme.tokens.rows.StripTokens
+import com.otus.designsystem.theme.typography.TypeScale
 import com.otus.designsystem.theme.typography.panelTextStyle
 import org.jetbrains.compose.resources.DrawableResource
 
@@ -32,23 +34,23 @@ public fun InfoStrip(
     icon: DrawableResource,
     title: String,
     subtitle: String?,
-    action: StripAction?,
+    action: UiAction?,
     modifier: Modifier = Modifier,
 ) {
     StripCard(modifier) {
         Row(
             Modifier
                 .fillMaxWidth()
-                .heightIn(min = ReadTokens.positionHeight)
-                .padding(start = ReadTokens.stripStart + ReadTokens.stripGap / 2, end = ReadTokens.stripEnd),
-            horizontalArrangement = Arrangement.spacedBy(ReadTokens.stripGap),
+                .heightIn(min = StripTokens.height)
+                .padding(start = StripTokens.start + StripTokens.gap / 2, end = StripTokens.end),
+            horizontalArrangement = Arrangement.spacedBy(StripTokens.gap),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             CompositionLocalProvider(LocalContentColor provides OtusColors.text2) {
-                Symbol(icon, size = ReadTokens.infoIconSize)
+                Symbol(icon, size = StripTokens.iconSize)
             }
             StripText(title, subtitle, Modifier.weight(1f))
-            if (action != null) StripButton(action.label, action.icon, ReadTokens.stripButtonHeight, action.onClick)
+            if (action != null) StripButton(action.label, action.symbol, StripTokens.buttonHeight, action.onClick)
         }
     }
 }
@@ -63,7 +65,7 @@ private fun StripText(
         Text(
             title,
             style = panelTextStyle(),
-            fontSize = ReadTokens.titleSize,
+            fontSize = StripTokens.titleSize,
             fontWeight = FontWeight.SemiBold,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -73,7 +75,7 @@ private fun StripText(
                 subtitle,
                 style = panelTextStyle(),
                 color = OtusColors.text3,
-                fontSize = ReadTokens.detailSize,
+                fontSize = TypeScale.detail,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )

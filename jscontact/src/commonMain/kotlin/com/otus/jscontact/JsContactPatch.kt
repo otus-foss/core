@@ -1,5 +1,7 @@
 package com.otus.jscontact
 
+import com.otus.json.types.overlappingPatchPath
+import com.otus.json.types.patchTokens
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
@@ -26,27 +28,15 @@ public object JsContactPatch {
         target: JsonObject,
         patch: JsonObject,
     ): JsonObject {
-        val pointers = patch.keys.associateWith(::referenceTokens)
-        val prefixes =
-            pointers.values
-                .flatMap { tokens -> (1 until tokens.size).map { tokens.subList(0, it) } }
-                .toSet()
-        val overlapping = pointers.entries.firstOrNull { it.value in prefixes }?.key
+        val overlapping = overlappingPatchPath(patch.keys)
         require(overlapping == null) { "Patch \"$overlapping\" is a prefix of another patch (RFC 9553, section 1.4.3)" }
         // Without overlaps no patch adds or removes another one's parent, so the order is irrelevant.
-        return pointers.entries.fold(target) { result, (key, tokens) ->
+        return patch.keys.associateWith(::patchTokens).entries.fold(target) { result, (key, tokens) ->
             requireNotNull(result.patchedMember(tokens.first(), tokens.drop(1), patch.getValue(key))) {
                 "Patch \"$key\" has no existing parent or array member to set (RFC 9553, section 1.4.3)"
             }
         }
     }
-}
-
-/** Splits a PatchObject key into unescaped reference tokens (RFC 6901, sections 3 and 4). */
-private fun referenceTokens(key: String): List<String> {
-    require(!BAD_ESCAPE.containsMatchIn(key)) { "Patch \"$key\" has a \"~\" not followed by 0 or 1 (RFC 6901)" }
-    // RFC 6901 section 4 decodes "~1" before "~0", so "~01" becomes "~1" and not "/".
-    return key.split('/').map { it.replace("~1", "/").replace("~0", "~") }
 }
 
 /** This element with [value] at [tokens], or null when the patch does not fit it. */
@@ -81,7 +71,5 @@ private fun JsonArray.patchedItem(
     val item = if (rest.isEmpty()) value.takeIf { it !is JsonNull } else this[index].patched(rest, value)
     return item?.let { replacement -> JsonArray(mapIndexed { i, old -> if (i == index) replacement else old }) }
 }
-
-private val BAD_ESCAPE = Regex("~(?![01])")
 
 private val ARRAY_INDEX = Regex("0|[1-9][0-9]*")

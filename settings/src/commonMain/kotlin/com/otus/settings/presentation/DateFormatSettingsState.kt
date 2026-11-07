@@ -1,21 +1,16 @@
 package com.otus.settings.presentation
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import com.otus.dateformat.DateFormatPreference
-import com.otus.dateformat.DateFormatPreferenceStore
+import com.otus.storage.StoredChoice
 
-/** A future settings screen consumes preference and calls select, without owning persistence. */
+/** The user's date format; the appearance page calls [select]. An unknown saved value follows the device. */
 public class DateFormatSettingsState(
-    private val store: DateFormatPreferenceStore? = null,
-    initialPreference: DateFormatPreference = store?.read() ?: DateFormatPreference.DeviceLocale,
-) {
-    public var preference: DateFormatPreference by mutableStateOf(initialPreference)
-        private set
-
-    public fun select(preference: DateFormatPreference) {
-        store?.write(preference)
-        this.preference = preference
-    }
+    store: StoredChoice,
+) : StoredChoiceState<DateFormatPreference>(
+        store,
+        DateFormatPreference.DeviceLocale,
+        { saved -> DateFormatPreference.entries.firstOrNull { it.storageValue == saved } },
+        { it.storageValue },
+    ) {
+    public val preference: DateFormatPreference get() = value
 }

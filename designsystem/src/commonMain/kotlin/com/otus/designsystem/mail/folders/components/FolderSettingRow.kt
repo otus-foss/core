@@ -28,8 +28,6 @@ import com.otus.designsystem.resources.symbol_folder
 import com.otus.designsystem.resources.symbol_settings
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
-import com.otus.designsystem.shared.filters.components.RuleChip
-import com.otus.designsystem.shared.filters.components.RuleChipLine
 import com.otus.designsystem.shared.folders.elements.FolderToggle
 import com.otus.designsystem.shared.overlays.components.onPressDown
 import com.otus.designsystem.shared.people.components.AvatarStack
@@ -43,7 +41,7 @@ import com.otus.designsystem.shared.sidebar.elements.SidebarCount
 import com.otus.designsystem.shared.sidebar.elements.SidebarFolder
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.tokens.rows.FolderRowTokens
 import com.otus.designsystem.theme.tokens.selection.RuleChipTokens
@@ -203,9 +201,9 @@ public fun FolderOwnerLine(
  */
 private fun Modifier.treeGuides(depth: Int): Modifier =
     drawBehind {
-        val width = PanelTokens.borderWidth.toPx()
+        val width = Sizes.borderWidth.toPx()
         repeat(depth.coerceAtMost(MAX_INDENT_STEPS)) { level ->
-            val center = (FolderRowTokens.nestIndent * level + PanelTokens.touchTarget / 2).toPx()
+            val center = (FolderRowTokens.nestIndent * level + Sizes.touchTarget / 2).toPx()
             val x = if (layoutDirection == LayoutDirection.Rtl) size.width - center else center
             drawLine(OtusColors.bgLight, Offset(x, 0f), Offset(x, size.height), width)
         }

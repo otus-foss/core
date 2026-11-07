@@ -44,6 +44,10 @@ internal class PageMotion(
 
     private fun pins(kind: PageChrome): Boolean = partner()?.chrome?.contains(kind) == true
 
+    /** Whether every slide this page is in has come to rest. */
+    val still: Boolean
+        get() = chain.all { it.fraction() == 0f }
+
     /** Whether any slide this page is in has [kind] on both pages. */
     fun pinned(kind: PageChrome): Boolean = chain.any { it.pins(kind) }
 

@@ -22,6 +22,7 @@ import com.otus.designsystem.theme.colors.ThemeBase
 import com.otus.designsystem.theme.colors.ThemeChoice
 import com.otus.designsystem.theme.colors.ThemeColor
 import com.otus.settings.presentation.ThemeSettingsState
+import com.otus.storage.inMemoryChoice
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -35,7 +36,7 @@ class ThemeSettingsScreenTest {
     @get:Rule
     val compose = createComposeRule()
 
-    private val state = ThemeSettingsState()
+    private val state = ThemeSettingsState(inMemoryChoice())
 
     @Test
     fun doneAppliesTheColorAndClosesTheSheet() {

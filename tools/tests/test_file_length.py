@@ -5,8 +5,8 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from check_architecture import violations
 from file_length import file_length_violations
+from library_rules import violations
 
 HEADER = "// otus-file-length: 420 -- Keep this protocol mapping together for review."
 

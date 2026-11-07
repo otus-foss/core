@@ -2,20 +2,129 @@
 
 ## Unreleased
 
-- `LetterIndex` can sit on either edge. Breaking: it takes `side: LetterIndexSide` and
-  `onSideChange`; a button in the other top corner switches sides on a tap or when a dragging
-  finger lifts on it. A heading's press zone follows the side.
-- The letter index scrolls within a thumb's reach: the edge zones sit about four rows above and
-  below the pressed heading, and every letter can scroll into that reach.
-- `IndexLetter` takes `names`; the current letter shows the first two in place of its count, or
-  only the first when it is longer than ten characters.
+- Design system: `DetailRows` replaces `DetailsTable` and draws the rows without a card, so they
+  sit straight on a panel. `grownStopHeight(content)` gives a grown panel stop's height for
+  measured content, and `GROWN_EXPANDED_STOP` names the expanded stop. `GrownPanelLayers` takes a
+  `shared` slot that both stops show and that stays still while one fades into the other. Breaking: `DetailsTable`,
+  `QuickPerson`, and the `QuickViewTokens.person*` tokens are gone; see docs/removed-apis.md.
+- Accounts: the setup form checks the server address as it is typed and marks it with a check or
+  a cross. Add `AccountRepository.checkServer(sessionUrl)` and `AccountsState.checkServer`, which
+  ask without credentials whether an address answers like a JMAP server. Breaking for any other
+  `AccountRepository`, which must implement it. `parseJmapServer` now rejects a bare word or a
+  trailing dot, and accepts an IP address, `localhost`, or a single name with a port.
+- JMAP: add `JmapClient.isJmapServer(url)`, which follows redirects as sign-in does and accepts a
+  401 or a session with the core capability.
+- Design system: `InputField` takes an `InputNote`, its text and whether the value is valid, and
+  marks a known valid or invalid value with a check or a cross at its end. Breaking: `note =
+  InputNote(text)` replaces `supportingText = text`.
+- Design system: `Chip` takes a `ChipStyle` (role and look) instead of `role` and `look`, and a
+  chip's detail is part of its `ChipLabel`. `PickRow` takes a `RowDensity` instead of `height` and
+  `subtitleLines`; `PersonPickRow` draws a person with the address at the end. `ListSheet` drops
+  `footnote`; end the list with `SheetFootnote`. Breaking for every caller of those parameters.
+- Settings: Breaking: rows drop `unavailable`; `row.waitingOn(reason)` wraps a row that waits on
+  another setting (`WaitingRowSpec`). `SettingsIndexScope.keywords` also takes a list.
+- Design system: `OrderedChoiceSheet` nests the offered choices itself, by each `OrderedChoice`'s
+  `path`, so a folder whose parent is already chosen names that parent again. Breaking: `path`
+  replaces `name` and `depth`. Add `nestedByPath` and `Nested`, which Mail used to keep.
+- JMAP: Breaking: remove the infix `JmapFilter.and` and `or`; `allOf` and `anyOf` build the same
+  filters.
+- Settings: the Appearance page is a `SettingsSectionSpec` list, `appearanceSections(...)`, that
+  takes the app's own rows, and `appIconRow` is the App icon row; the page and settings search
+  both read them. Breaking: `AppearanceSettingsScreen` takes those sections, and
+  `appearanceIndex`, `appIconIndex`, and `AppIconSetting` are gone; see docs/removed-apis.md.
+- json-types: add `Instant.toUtcDate()` and `String.toUtcDateOrNull()`, the writer and reader
+  `UtcDateSerializer` uses, so callers read a `:60` leap second the same way.
+- Avatars: add `Card.withAvatar(avatar, photoKey)` and `ContactAvatar.Photo.toMedia()`, the one
+  rule for putting a photo or style on a card. Removing every photo now patches `media` to null
+  instead of an empty map. `avatarStyleIn`, `avatarPropertiesWith`, `hasAvatarStyle`,
+  `AVATAR_STYLE_PROPERTY`, `avatarIconDomain`, and `isPublicAvatarUrl` are internal.
+- dateformat: add `Month.fullName`, which the date pickers use. Breaking: remove
+  `DateFormatPreference.fromStorageValue`.
+- Design system: `RowFolderIcon` takes an `icon` instead of a `FolderGlyphKind`, and
+  `folderSymbol` takes only a role. `LetterIndexScrollGuard` is public again for Mail's contacts.
+- Build: Meta publishes no packages any more (decision 0020). The `publish` workflow, the
+  publication checker, and `maven-publish` are gone; the apps build Meta from source.
+- JMAP: `JmapClient.download`, `upload`, and `downloadStream` are internal. Breaking: download and
+  upload through `JmapConnection`, which holds the session and credentials.
+- JSContact: `Card.toJsonObject()` is public, so callers stop encoding cards themselves.
+- Design system: add `offlineHtml`, the Read view's seal for a message with remote content off,
+  for printing. Breaking: remove `PanelSearchField`, `SearchHitRow`, their two `PanelTokens`,
+  `FilterTokens.pickAvatarSize`, and the unused `Spacing` steps `xxs`, `m`, and `xxl`; see
+  docs/removed-apis.md. `InfoStrip` reads `TypeScale.detail` instead of `ReadTokens.detailSize`.
+- Avatars: lookup counts an address book without `isSubscribed` as subscribed, as before the
+  shared `AddressBook` type.
+- Settings: add `SettingsSectionSpec` with `ToggleRowSpec`, `ChoiceRowSpec`, and `PageRowSpec`,
+  which `SettingSections` and `SettingSpecRow` show and `sections` and `row` add to the settings
+  index, so a page declares each searchable row once. A null `icon` in the index DSL now means the
+  page's icon.
+- Design system: add the core scales `Spacing`, `Sizes`, and `TypeScale` and the token objects
+  `ControlTokens`, `StripTokens`, `FolderTokens`, `PersonPillTokens`, and `PickTokens`. Breaking:
+  `PanelTokens` keeps only the control panel's values; read the touch target, icon, border, chip,
+  and text sizes from the scales, and the strip, folder, and quote-pill values from the new
+  objects instead of `ReadTokens`, `InboxTokens`, `ComposeTokens`, and `SignatureTokens`. Detail
+  text is 12 sp everywhere.
+- Design system: one component per job. Breaking: `PickRow` with `PickMark` and `PickStyle`
+  replaces `SelectionRow`, `DropdownRow`, and `FilterPickRow`; `ListSheet` replaces `ScopeSheet`
+  and `SelectionSheet`; `ChoiceSheet(saveOnDone)` replaces `RadioChoiceSheet`; `SheetFrame`
+  (`closeButton`) replaces `ClosableSheet`; `Chip` (with a `ChipStyle`) replaces `FilterChip`;
+  `UiAction` replaces `MenuAction`, `ToastAction`, `StripAction`, `BannerAction`, `PairButton`,
+  and `SheetConfirm`, and `BarAction`, `SwipeAction`, and `OptionsItem.Action` wrap it;
+  `Caption` replaces `ListCaption`. `SwipeActions` takes `settledBy` and returns a kept row as
+  soon as it changes; a row nothing changes still returns after a second.
+- Design system: add `dragToSelect`, `LoadMoreNearEnd`, `OrderedChoiceSheet`, `Confirmation`,
+  `hiddenWhen`, and the grown panel's layers and stages (`GrownPanelLayers`, `grownPanelHeight`),
+  moved from Mail.
+- Design system: Mail-only parts move under `mail/` (`AddressPill`, `DestinationPill`, the
+  sidebar mailbox tiles and tile editor, `RuleChip`, the filter folder rows, the launch art), and
+  the HTML scanner and sanitizer move to the plain Kotlin `mail.read.html` package with
+  `HtmlQuote`. `AppIconSetting` takes the app's icon as a slot. 58 declarations only the module
+  used are now internal. Unused components and symbols are removed; see docs/removed-apis.md.
 
-- `actionBarInset()` keeps the bar `barInset` from the sides instead of adding the navigation bar
-  height, so it lines up with the page. `FormattingBar` no longer widens itself over the keyboard.
-- `fillRail()` leaves out the rail's inset at both ends, so the last chip in a filled rail is no
-  longer clipped by the edge fade.
+- Add `json-types` with `UtcDateSerializer` (moved from `jmap`) and the PatchObject path rules
+  `patchPath`, `patchTokens`, and `overlappingPatchPath`, which `jmap` and `jscontact` share.
+  Breaking: import `UtcDateSerializer` and `patchPath` from `com.otus.json.types`. A seconds field
+  such as `:600` no longer reads as a leap second.
+- Add `storage` with `KeyValueStore`, `StringMapStore`, `StoredChoice`, `inMemoryChoice`,
+  `storedName`, and their Android and iOS stores. Breaking: the four `*PreferenceStore`
+  interfaces and their platform stores are gone; the settings states take a `StoredChoice` and
+  extend `StoredChoiceState<T>`. `PushSubscriptions` takes a `StringMapStore`.
+- JMAP: add `JmapConnections.account(login, capability)`, `account(loginId, capability)`,
+  `savedLogins()`, `JmapLoginAccount`, `JmapException.category`, `MethodError.isTemporary`,
+  `jmapCallOr`, `filterCondition`, list forms of `allOf`, `anyOf`, and `noneOf`, and the session's
+  `getBatch`, `setBatch`, `callBatch`, and `maxCallsInRequest`. Breaking: `QueryMethod` and
+  `QueryChangesMethod` take a `JmapFilter`; `allOf` and `anyOf` of one filter return it.
+- Add `LoginLifecycle` in `com.otus.jmap.login`. Breaking: `JmapAccountRepository` takes a list of
+  them instead of `beforeRemove` and `onAccountChanged`, and `AccountService.Mail` is gone.
+- Add `avatar-ui` with the avatar looks (`toChipAvatar`), `OwnAvatarsState`, and the own-avatar
+  editor, moved from `accounts`. Breaking: `AccountSetupScreen` takes `AccountAvatars` and an
+  editor slot, `ConnectedAccountRow` takes `ChipAvatar`s, and `accounts` no longer exposes
+  `avatar`. `ownAddresses` moved to `com.otus.accounts.domain`.
+- Avatars: styles store `AvatarColor` ids such as `Blue`, the names older builds read; any case reads.
+  `IconSource` and `avatarOptions` move here from Mail. `JmapContactAvatarSource` and
+  `JmapOwnAvatars` no longer take a `LoginStore`, and `AvatarService` is a `LoginLifecycle`.
+- Contacts: add `cardPatch(before, after)`. Breaking: remove `contactCardPatch`, `ContactCardSort`,
+  `ContactsCapability`, the AddressBook write APIs, `CopyMethod`, the `jmap.sharing` package, and
+  `Card.validate`; see docs/removed-apis.md.
+- dateformat: add `formatNamedDay`, `formatRecentDay`, `shortWeekday`, and `clockTime`; settings
+  adds `rememberDateFormatter` and `LocalDateFormatter`. Breaking: remove `formatIsoDate`.
+
+- Avatars: the module bundles the Public Suffix List, and `PublicSuffixDomainResolver()` reads it
+  by default, so apps no longer ship their own copy. A custom loader still works.
+
+- Design system: `LetterIndex` can sit on either edge. Breaking: it takes `side: LetterIndexSide`
+  and `onSideChange`; a button in the other top corner switches sides on a tap or when a dragging
+  finger lifts on it. A heading's press zone follows the side.
+- Design system: the letter index scrolls within a thumb's reach: the edge zones sit about four
+  rows above and below the pressed heading, and every letter can scroll into that reach.
+- Design system: `IndexLetter` takes `names`; the current letter shows the first two in place of
+  its count, or only the first when it is longer than ten characters.
+
+- Design system: a hosted action bar keeps `barInset` from the sides instead of adding the
+  navigation bar height, so it lines up with the page. `FormattingBar` no longer widens itself
+  over the keyboard.
+- Design system: `fillRail()` leaves out the rail's inset at both ends, so the last chip in a
+  filled rail is no longer clipped by the edge fade.
 - `IconPill` takes a `fill`, `bgRegular` by default, so it can match the pills beside it.
-  `DetailsTable` now sits on a raised `darkSurface` card with the images banner's radius and inset.
 - Add a System theme: `SystemTheme` holds the device's colors, `ThemeChoice.withSystem()` selects
   them, and `ThemeSettingsState(store, system)` takes the current ones each launch. On Android,
   `Context.systemTheme()` reads the Material You colors in the device's light or dark mode, or

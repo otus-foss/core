@@ -10,13 +10,9 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import com.otus.designsystem.resources.Res
-import com.otus.designsystem.resources.symbol_add
 import com.otus.designsystem.resources.symbol_folder
 import com.otus.designsystem.resources.symbol_inbox
 import com.otus.designsystem.screenshot.screenshot
-import com.otus.designsystem.shared.controls.elements.IconButton
-import com.otus.designsystem.shared.controls.elements.IconButtonLook
-import com.otus.designsystem.shared.controls.elements.Symbol
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -76,17 +72,6 @@ class SidebarEntryScreenshotTest {
                 WIDTH,
             ) {
                 SidebarCount("1,204")
-            }
-        }
-
-    @Test
-    fun headings() =
-        compose.screenshot("sidebar_heading") {
-            Column(WIDTH) {
-                SidebarHeading("Folders", expanded = true, onExpandedChange = {}, action = {
-                    IconButton("Add folder", {}, look = IconButtonLook.Plain) { Symbol(Res.drawable.symbol_add) }
-                })
-                SidebarHeading("Labels", expanded = false, onExpandedChange = {})
             }
         }
 

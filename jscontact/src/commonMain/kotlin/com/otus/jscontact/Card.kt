@@ -1,6 +1,6 @@
 package com.otus.jscontact
 
-import com.otus.jscontact.validation.cardProblems
+import com.otus.json.types.UtcDateSerializer
 import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KeepGeneratedSerializer
@@ -14,10 +14,9 @@ import kotlin.time.Instant
  * A JSContact Card: the contact information of a person, organization, or other entity (RFC 9553,
  * section 2), with the JMAP ContactCard properties [id] and [addressBookIds] (RFC 9610, section 3).
  *
- * A JMAP `/get` with `properties` returns only some properties, so every property decodes as optional,
- * the mandatory [uid] included, and [validate] reports what a complete Card lacks. Encoding always
- * writes `"@type": "Card"` and [version]. `Id[X]` maps keep their keys, which must survive every edit
- * (section 1.4.1).
+ * A JMAP `/get` with `properties` returns only some properties, so every property decodes as
+ * optional, the mandatory [uid] included. Encoding always writes `"@type": "Card"` and [version].
+ * `Id[X]` maps keep their keys, which must survive every edit (section 1.4.1).
  */
 @OptIn(ExperimentalSerializationApi::class)
 @KeepGeneratedSerializer
@@ -26,11 +25,11 @@ public data class Card(
     /**
      * The JSContact version of the properties and values (RFC 9553, section 2.1.2). The RFC makes it mandatory
      * and gives no default. This library fills in `1.0` when the JSON lacks it, so that partial JMAP `/get`
-     * results decode. As a result, [validate] cannot report a missing version.
+     * results decode.
      */
     @EncodeDefault val version: String = JSCONTACT_VERSION,
     /** When the Card was created (RFC 9553, section 2.1.3). */
-    @Serializable(with = UtcDateTimeSerializer::class)
+    @Serializable(with = UtcDateSerializer::class)
     val created: Instant? = null,
     /** The kind of entity. Absent means [CardKind.Individual] (RFC 9553, section 2.1.4). */
     val kind: CardKind? = null,
@@ -48,7 +47,7 @@ public data class Card(
      */
     val uid: String? = null,
     /** When the Card was last modified (RFC 9553, section 2.1.10). */
-    @Serializable(with = UtcDateTimeSerializer::class)
+    @Serializable(with = UtcDateSerializer::class)
     val updated: Instant? = null,
     /** The name of the entity (RFC 9553, section 2.2.1). */
     val name: Name? = null,
@@ -121,20 +120,9 @@ public data class Card(
      * - sets a value of the wrong JSON type, so the result does not decode.
      *
      * Rule 4 also forbids values that decode but break their property, such as a `pref` of 0, an invalid Id,
-     * or a null that removes `uid`. This function applies those, and [validate] reports each one at the
-     * localization's language tag.
+     * or a null that removes `uid`. This function applies those.
      */
     public fun localized(language: String): Card = localizedTo(language)
-
-    /**
-     * The rules of RFC 9553 and RFC 9610 this Card breaks, each with the JSON Pointer of the value at fault;
-     * empty when the Card is valid. It checks what decoding cannot: mandatory properties, values that
-     * depend on each other, ranges such as `pref` from 1 to 100, Ids, URIs, language tags, `true`-only sets,
-     * enumerated values that differ from a registered one only in case, the names of unknown and
-     * vendor-specific properties, and each localization applied to the Card. Unknown properties and values
-     * in a valid syntax pass, as sections 1.7.4 and 1.8 require.
-     */
-    public fun validate(): List<JsContactProblem> = cardProblems(this)
 
     internal object Serializer : JsContactSerializer<Card>(
         generatedSerializer(),

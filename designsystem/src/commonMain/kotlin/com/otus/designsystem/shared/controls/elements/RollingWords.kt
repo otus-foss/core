@@ -25,7 +25,7 @@ import com.otus.designsystem.theme.motion.LocalMotionScale
  * and words stay still.
  */
 @Composable
-public fun RollingWords(
+internal fun RollingWords(
     text: String,
     modifier: Modifier = Modifier,
     style: TextStyle = LocalTextStyle.current,

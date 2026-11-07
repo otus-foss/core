@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 /**
  * A named collection of ContactCards (RFC 9610, section 2). Every ContactCard belongs to at least
  * one. Show books in [AddressBookOrder], and hide unsubscribed ones and their cards until the user
- * asks for them. Change a book with [addressBookPatch] in an [AddressBookSetMethod].
+ * asks for them.
  */
 @Serializable
 public data class AddressBook(
@@ -21,8 +21,8 @@ public data class AddressBook(
     val sortOrder: Long = 0,
     /**
      * Whether clients pick this book when nothing else decides, such as for a new card. At most one
-     * book per account is the default, and there may be none. Server-set: change it with
-     * `onSuccessSetIsDefault` of [AddressBookSetMethod].
+     * book per account is the default, and there may be none. Server-set: `AddressBook/set` changes
+     * it with `onSuccessSetIsDefault`.
      */
     val isDefault: Boolean = false,
     /** Whether the user wants to see this book. The server may refuse a subscription with `forbidden`. */
@@ -66,8 +66,7 @@ public val AddressBookOrder: Comparator<AddressBook> =
 
 /**
  * The `AddressBook` data type (RFC 9610, sections 2 and 7.2) for the generic `/get` and `/changes`.
- * `AddressBook/get` accepts null `ids`, so `JmapIds.All` fetches every book (section 2.1). Send
- * `/set` through [AddressBookSetMethod], which carries the type's extra arguments.
+ * `AddressBook/get` accepts null `ids`, so `JmapIds.All` fetches every book (section 2.1).
  */
 public val AddressBookType: JmapType<AddressBook> =
     JmapType("AddressBook", JmapCapability.CONTACTS, AddressBook.serializer())

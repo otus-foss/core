@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.otus.designsystem.theme.colors.OtusPalette
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.shapes.toPath
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.settings.ThemeTokens
 
 /** The phone's metal frame and black bezel at the sides and rounded bottom, then its screen in [palette]. */
@@ -61,7 +61,7 @@ internal fun Modifier.edge(
     sides: Boolean,
 ): Modifier =
     drawWithCache {
-        val width = PanelTokens.borderWidth.toPx()
+        val width = Sizes.borderWidth.toPx()
         val inset = if (sides) width / 2 else -width
         val outline =
             shape.toPath(

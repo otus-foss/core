@@ -23,7 +23,8 @@ import com.otus.designsystem.theme.colors.OtusPalette
 import com.otus.designsystem.theme.colors.ThemeChoice
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.shapes.strokeBorder
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.settings.ThemeTokens
 import com.otus.settings.presentation.options
 
@@ -41,7 +42,7 @@ internal fun CustomAccentSheet(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 "How it looks in each theme",
-                Modifier.padding(horizontal = PanelTokens.iconGap),
+                Modifier.padding(horizontal = Spacing.iconGap),
                 color = OtusColors.text2,
             )
             InfoTip(AccentInfo)
@@ -63,7 +64,7 @@ private fun ThemePreview(
     Column(
         modifier
             .background(palette.bgRegular, shape)
-            .strokeBorder(PanelTokens.borderWidth, palette.strokeBgDark, shape)
+            .strokeBorder(Sizes.borderWidth, palette.strokeBgDark, shape)
             .padding(ThemeTokens.customPreviewPadding),
         verticalArrangement = Arrangement.spacedBy(ThemeTokens.cardGap),
     ) {
@@ -74,7 +75,7 @@ private fun ThemePreview(
             lineHeight = ThemeTokens.roleCaptionLineHeight,
         )
         Row(
-            horizontalArrangement = Arrangement.spacedBy(PanelTokens.chipGap),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.inlineGap),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             PreviewPill(palette)
@@ -89,7 +90,7 @@ private fun PreviewPill(palette: OtusPalette) {
         Modifier
             .height(ThemeTokens.customPillHeight)
             .background(palette.accentDark, CircleShape)
-            .border(PanelTokens.borderWidth, palette.accentLight, CircleShape)
+            .border(Sizes.borderWidth, palette.accentLight, CircleShape)
             .padding(horizontal = ThemeTokens.customPillPadding),
         contentAlignment = Alignment.Center,
     ) {

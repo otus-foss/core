@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonArray
@@ -23,10 +24,10 @@ import kotlin.test.assertTrue
 
 class JmapOwnAvatarsTest {
     private val photo = ContactAvatar.Photo(AvatarImage(byteArrayOf(1, 2, 3)), "image/png")
-    private val letters = ContactAvatar.Styled(AvatarStyle("blue", AvatarMark.Letters("AL")))
+    private val letters = ContactAvatar.Styled(AvatarStyle("Blue", AvatarMark.Letters("AL")))
 
     @Test
-    fun aPhotoOnACardWithoutMediaSetsTheWholeMap() =
+    fun aPhotoOnACardWithoutMediaSetsTheMap() =
         runTest {
             val server = SelfCardServer(card = """{"id":"c","addressBookIds":{"own":true},$ADA_EMAIL}""")
             server.avatars.save("ada", "ada@example.org", "Ada", photo)
@@ -48,8 +49,9 @@ class JmapOwnAvatarsTest {
             val server = SelfCardServer(card = """{"id":"c","addressBookIds":{"own":true},$ADA_EMAIL,$media}""")
             server.avatars.save("ada", "ada@example.org", "Ada", photo)
             val patch = server.update()
+            // Only the changed entries go out, so the logo the server returned is never sent back.
             assertEquals(setOf("media/p", "media/$AVATAR_PHOTO_KEY"), patch.keys)
-            assertEquals("null", patch.getValue("media/p").toString())
+            assertEquals(JsonNull, patch.getValue("media/p"))
         }
 
     @Test
@@ -71,7 +73,7 @@ class JmapOwnAvatarsTest {
             val server = SelfCardServer(card = card)
             server.avatars.save("ada", "ada@example.org", "Ada", null)
             val patch = server.update()
-            assertEquals("null", patch.getValue("media/$AVATAR_PHOTO_KEY").toString())
+            assertEquals(JsonNull, patch.getValue("media"))
             assertTrue(patch.getValue("vCard/properties").jsonArray.isEmpty())
         }
 
@@ -190,7 +192,7 @@ private class SelfCardServer(
         }
     private val logins = adaLogins()
     val avatars =
-        JmapOwnAvatars(JmapConnections(JmapClient(engine), logins), logins, AvatarService()) { AvatarOptions() }
+        JmapOwnAvatars(JmapConnections(JmapClient(engine), logins), AvatarService()) { AvatarOptions() }
 
     private fun result(
         method: String,

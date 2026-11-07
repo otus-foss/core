@@ -1,13 +1,13 @@
 package com.otus.designsystem.shared.feedback.components
 
-import com.otus.designsystem.shared.feedback.elements.ToastAction
+import com.otus.designsystem.shared.controls.elements.UiAction
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class ToastStateTest {
-    private val undo = ToastAction("Undo") {}
+    private val undo = UiAction("Undo") {}
 
     private fun ToastState.texts() = entries.map { it.message.text }
 
@@ -131,7 +131,7 @@ class ToastStateTest {
     fun aSwipeRunsTheSwipeActionInsteadOfTheCloseCallback() {
         val state = ToastState()
         val ran = mutableListOf<String>()
-        val send = ToastAction("Send") { ran += "send" }
+        val send = UiAction("Send") { ran += "send" }
         state.show(ToastMessage("Sending…", undo, onClose = { ran += "close" }, swipeAction = send))
         state.swipe(state.entries.single())
         assertEquals(listOf("send"), ran)

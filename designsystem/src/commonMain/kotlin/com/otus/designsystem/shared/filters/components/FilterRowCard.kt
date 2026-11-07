@@ -11,7 +11,7 @@ import androidx.compose.ui.draw.clip
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.shapes.strokeBorder
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.selection.FilterTokens
 
 /**
@@ -29,7 +29,7 @@ public fun FilterRowCard(
             .fillMaxWidth()
             .clip(shape)
             .background(OtusColors.bgRegular)
-            .strokeBorder(PanelTokens.borderWidth, OtusColors.strokeBgDark, shape),
+            .strokeBorder(Sizes.borderWidth, OtusColors.strokeBgDark, shape),
     ) {
         rows.forEachIndexed { index, row ->
             if (index > 0) CardDivider()
@@ -40,5 +40,5 @@ public fun FilterRowCard(
 
 @Composable
 private fun CardDivider() {
-    Box(Modifier.fillMaxWidth().height(PanelTokens.borderWidth).background(OtusColors.strokeBgDark))
+    Box(Modifier.fillMaxWidth().height(Sizes.borderWidth).background(OtusColors.strokeBgDark))
 }

@@ -4,11 +4,12 @@ import com.otus.jmap.GetMethod
 import com.otus.jmap.JmapCapability
 import com.otus.jmap.JmapConnection
 import com.otus.jmap.JmapConnections
-import com.otus.jmap.login.JmapLogin
-import com.otus.jmap.login.LoginStore
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
-import kotlinx.coroutines.withContext
+import com.otus.jmap.JmapType
+import com.otus.jmap.contacts.AddressBookRights
+import com.otus.jscontact.Card
+import com.otus.jscontact.Media
+import com.otus.jscontact.MediaKind
+import kotlinx.serialization.Serializable
 import kotlin.io.encoding.Base64
 
 /**
@@ -18,7 +19,6 @@ import kotlin.io.encoding.Base64
  */
 public class JmapContactAvatarSource(
     private val connections: JmapConnections,
-    private val logins: LoginStore,
     private val images: AvatarImageLoader,
 ) : ContactAvatarSource {
     override suspend fun avatar(
@@ -26,17 +26,15 @@ public class JmapContactAvatarSource(
         allowExternalImages: Boolean,
     ): ContactAvatar? =
         nullOnFailure {
-            val login = logins.savedLogin(request.accountKey) ?: return@nullOnFailure null
-            val connection = connections.connection(login)
-            val session = connection.session()
-            if (JmapCapability.CONTACTS !in session.capabilities) return@nullOnFailure null
             // Contacts may live in a separate JMAP account from mail, within the same login.
-            val account = session.accountFor(JmapCapability.CONTACTS) ?: return@nullOnFailure null
+            val contacts = connections.account(request.accountKey, JmapCapability.CONTACTS) ?: return@nullOnFailure null
+            val connection = contacts.connection
+            val account = contacts.id
             val books = readableBooks(connection, account)
             if (books.isEmpty()) return@nullOnFailure null
             val own = books.filter { it.myRights.mayWrite }.map { it.id }.toSet()
             findContactAvatar(connection, account, request.email, books.map { it.id }.toSet(), own) { card ->
-                card.style
+                card.avatarStyle
                     ?.takeIf { card.isIn(own) || it.mark != AvatarMark.Website }
                     ?.let(ContactAvatar::Styled)
                     ?: loadCard(connection, account, card, allowExternalImages)
@@ -47,22 +45,25 @@ public class JmapContactAvatarSource(
     private suspend fun readableBooks(
         connection: JmapConnection,
         account: String,
-    ): List<AvatarAddressBook> =
+    ): List<LookupBook> =
         connection
-            .call(GetMethod(AddressBookType, account))
+            .call(GetMethod(LookupBookType, account, properties = listOf("id", "isSubscribed", "myRights")))
             .list
             .filter { it.myRights.mayRead && (it.isSubscribed || it.myRights.mayWrite) }
 
     private suspend fun loadCard(
         connection: JmapConnection,
         account: String,
-        card: ContactCard,
+        card: Card,
         external: Boolean,
     ): ContactAvatar.Photo? =
-        card.media.values
-            .filter { it.kind == "photo" || it.kind == "logo" }
-            .sortedWith(compareBy({ it.kind != "photo" }, { it.pref ?: Int.MAX_VALUE }, { it.blobId ?: it.uri }))
-            .firstNotNullOfOrNull { photo ->
+        card.media
+            .orEmpty()
+            .values
+            .filter { it.kind == MediaKind.Photo || it.kind == MediaKind.Logo }
+            .sortedWith(
+                compareBy({ it.kind != MediaKind.Photo }, { it.pref ?: Int.MAX_VALUE }, { it.blobId ?: it.uri }),
+            ).firstNotNullOfOrNull { photo ->
                 avatarOrNull { load(connection, account, photo, external) }?.let {
                     ContactAvatar.Photo(it, photo.mediaType ?: DEFAULT_PHOTO_TYPE)
                 }
@@ -71,15 +72,16 @@ public class JmapContactAvatarSource(
     private suspend fun load(
         connection: JmapConnection,
         account: String,
-        media: ContactMedia,
+        media: Media,
         external: Boolean,
     ): AvatarImage? {
-        if (media.blobId != null && media.mediaType in CONTACT_RASTER_TYPES) {
+        val blobId = media.blobId
+        if (blobId != null && media.mediaType in CONTACT_RASTER_TYPES) {
             val mediaType = requireNotNull(media.mediaType)
             val blob =
                 connection.download(
                     account,
-                    media.blobId,
+                    blobId,
                     mediaType,
                     MAX_AVATAR_BYTES,
                     name = AVATAR_DOWNLOAD_NAME,
@@ -88,17 +90,13 @@ public class JmapContactAvatarSource(
         }
         val uri = media.uri
         return when {
-            uri == null -> null
+            uri.isEmpty() -> null
             uri.startsWith("data:") -> inlineContactImage(uri)
             external -> images.load(uri)
             else -> null
         }
     }
 }
-
-/** The saved login with [id], read off the main thread, or null when there is none. */
-internal suspend fun LoginStore.savedLogin(id: String): JmapLogin? =
-    withContext(Dispatchers.IO) { logins().firstOrNull { it.id == id } }
 
 /** Some servers keep data URIs instead of returning a blobId. Bound input before Base64 decoding. */
 private fun inlineContactImage(uri: String): AvatarImage? {
@@ -116,6 +114,19 @@ private fun inlineContactImage(uri: String): AvatarImage? {
         null
     }
 }
+
+/**
+ * The parts of an AddressBook that avatar lookup reads. RFC 9610 requires `isSubscribed`, but a
+ * server that omits it still shows the book's cards, so a missing value counts as subscribed here.
+ */
+@Serializable
+private data class LookupBook(
+    val id: String,
+    val isSubscribed: Boolean = true,
+    val myRights: AddressBookRights = AddressBookRights(),
+)
+
+private val LookupBookType = JmapType("AddressBook", JmapCapability.CONTACTS, LookupBook.serializer())
 
 private const val MAX_INLINE_IMAGE_CHARS = 700_000
 private const val AVATAR_DOWNLOAD_NAME = "avatar"

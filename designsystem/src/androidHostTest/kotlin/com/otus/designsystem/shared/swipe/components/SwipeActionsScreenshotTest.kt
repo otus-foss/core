@@ -20,6 +20,7 @@ import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_archive
 import com.otus.designsystem.resources.symbol_delete
 import com.otus.designsystem.screenshot.screenshot
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.tokens.rows.EntryTokens
 import com.otus.designsystem.theme.tokens.rows.InboxTokens
@@ -77,8 +78,8 @@ class SwipeActionsScreenshotTest {
         subject: String,
         modifier: Modifier = Modifier,
     ) = SwipeActions(
-        SwipeAction("Archive", Res.drawable.symbol_archive) {},
-        SwipeAction("Delete", Res.drawable.symbol_delete, dismisses = true) {},
+        SwipeAction(UiAction("Archive", Res.drawable.symbol_archive) {}),
+        SwipeAction(UiAction("Delete", Res.drawable.symbol_delete) {}, dismisses = true),
         modifier,
     ) {
         Column(

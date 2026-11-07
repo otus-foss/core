@@ -29,7 +29,7 @@ import com.otus.designsystem.resources.symbol_check
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.settings.ThemeTokens
 
 /**
@@ -47,7 +47,7 @@ public fun ColorSwatch(
     val interactions = remember { MutableInteractionSource() }
     Box(
         modifier
-            .size(ThemeTokens.swatchTargetWidth, PanelTokens.touchTarget)
+            .size(ThemeTokens.swatchTargetWidth, Sizes.touchTarget)
             .selectable(selected, interactions, indication = null, role = Role.RadioButton, onClick = onClick)
             .controlPressFeedback(interactions, CircleShape)
             .semantics { contentDescription = label },
@@ -82,7 +82,7 @@ public fun AddSwatch(
     val outline = OtusColors.bgLight
     Box(
         modifier
-            .size(ThemeTokens.swatchTargetWidth, PanelTokens.touchTarget)
+            .size(ThemeTokens.swatchTargetWidth, Sizes.touchTarget)
             .clickable(interactions, indication = null, role = Role.Button, onClick = onClick)
             .controlPressFeedback(interactions, CircleShape)
             .semantics { contentDescription = label },
@@ -90,7 +90,7 @@ public fun AddSwatch(
     ) {
         Box(
             Modifier.size(ThemeTokens.swatchSize).drawBehind {
-                val width = PanelTokens.borderWidth.toPx()
+                val width = Sizes.borderWidth.toPx()
                 drawCircle(
                     outline,
                     radius = (size.minDimension - width) / 2,

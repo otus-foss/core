@@ -41,13 +41,13 @@ import androidx.compose.ui.util.lerp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
-import com.otus.designsystem.shared.overlays.components.MenuAction
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.overlays.components.MenuRows
-import com.otus.designsystem.shared.panels.elements.darkSurface
 import com.otus.designsystem.theme.motion.LocalMotionScale
 import com.otus.designsystem.theme.motion.Motion
 import com.otus.designsystem.theme.motion.MotionCurve
 import com.otus.designsystem.theme.motion.MotionSpeed
+import com.otus.designsystem.theme.shapes.darkSurface
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.ActionBarTokens
 import kotlinx.coroutines.CoroutineScope
@@ -64,7 +64,7 @@ internal class GroupMenu(
     private val scope: CoroutineScope,
 ) {
     /** The rows shown, empty while the menu is closed. */
-    var actions by mutableStateOf(emptyList<MenuAction>())
+    var actions by mutableStateOf(emptyList<UiAction>())
         private set
 
     /** Whether the menu is on its way closed, when its rows fade faster than it folds. */
@@ -82,7 +82,7 @@ internal class GroupMenu(
     var density = 1f
     var motionScale = 1f
 
-    fun open(menu: List<MenuAction>) {
+    fun open(menu: List<UiAction>) {
         show(menu)
         scope.launch { progress.animateTo(1f, paced(1f - progress.value, MotionCurve.Enter)) }
     }
@@ -97,7 +97,7 @@ internal class GroupMenu(
 
     /** Grows [menu] by a drag of [delta] pixels, negative upward, in step with the finger. */
     fun drag(
-        menu: List<MenuAction>,
+        menu: List<UiAction>,
         delta: Float,
     ) {
         if (actions.isEmpty()) show(menu)
@@ -145,7 +145,7 @@ internal class GroupMenu(
         curve: MotionCurve,
     ): AnimationSpec<Float> = Motion.paced(((gap + panel.height) * share / density).dp, curve, motionScale)
 
-    private fun show(menu: List<MenuAction>) {
+    private fun show(menu: List<UiAction>) {
         actions = menu
         closing = false
     }
@@ -170,7 +170,7 @@ internal fun rememberGroupMenu(): GroupMenu {
 @Composable
 internal fun Modifier.pullsUp(
     menu: GroupMenu,
-    actions: List<MenuAction>,
+    actions: List<UiAction>,
 ): Modifier =
     draggable(
         rememberDraggableState { menu.drag(actions, it) },

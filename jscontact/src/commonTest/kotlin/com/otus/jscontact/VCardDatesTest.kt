@@ -13,7 +13,6 @@ class VCardDatesTest {
         lines.forEach { line ->
             val card = card("FN:Jane", line)
             assertNull(card.anniversaries, line)
-            assertEquals(emptyList(), card.validate(), line)
         }
     }
 
@@ -31,7 +30,7 @@ class VCardDatesTest {
         }
     }
 
-    /** The one Card of a vCard 4.0 entry with [lines] between BEGIN and END, with a uid so that it validates. */
+    /** The one Card of a vCard 4.0 entry with [lines] between BEGIN and END, with a uid. */
     private fun card(vararg lines: String): Card =
         VCard
             .parse((listOf("BEGIN:VCARD", "VERSION:4.0", "UID:urn:uuid:1") + lines + "END:VCARD").joinToString("\r\n"))

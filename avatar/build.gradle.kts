@@ -1,41 +1,25 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
-// Account-scoped avatar lookup: JMAP contact photos, optional domain icons, and bounded caches.
-// No UI; apps decode images and supply public-suffix data. Published as com.otus:avatar.
+// Account-scoped avatar lookup: JMAP contact photos, optional domain icons, and bounded caches. No
+// UI; apps decode images. Compose resources only package the bundled Public Suffix List, so the
+// code reads it without importing any Compose API.
 plugins {
-    `maven-publish`
-    alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidMultiplatformLibrary)
+    id("otus.kmp-compose-library")
     alias(libs.plugins.kotlinSerialization)
 }
 
 kotlin {
-    explicitApi()
-    compilerOptions { allWarningsAsErrors.set(true) }
-    iosArm64()
-    iosSimulatorArm64()
-    android {
-        namespace = "com.otus.avatar"
-        compileSdk =
-            libs.versions.android.compileSdk
-                .get()
-                .toInt()
-        minSdk =
-            libs.versions.android.minSdk
-                .get()
-                .toInt()
-        compilerOptions { jvmTarget = JvmTarget.JVM_11 }
-        withHostTest {}
-        lint { ignoreTestSources = true }
-    }
+    compilerOptions { optIn.add("org.jetbrains.compose.resources.ExperimentalResourceApi") }
     sourceSets {
         commonMain.dependencies {
             api(projects.jmap)
             implementation(projects.jmapContacts)
+            implementation(projects.storage)
             api(libs.ktor.client.core)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.io)
             implementation(libs.kotlinx.serialization.json)
+            // The Compose compiler, which the resources plugin needs, requires the runtime.
+            implementation(libs.compose.runtime)
+            implementation(libs.compose.resources)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
@@ -45,3 +29,5 @@ kotlin {
         getByName("androidHostTest").dependencies { implementation(libs.robolectric) }
     }
 }
+
+compose.resources { packageOfResClass = "com.otus.avatar.resources" }

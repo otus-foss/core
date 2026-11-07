@@ -45,8 +45,8 @@ import com.otus.designsystem.theme.motion.Motion
 import com.otus.designsystem.theme.motion.MotionCurve
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.feedback.ToastTokens
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -92,7 +92,7 @@ public fun SwipeToDismiss(
                 enabled,
                 onDragStarted = { settle?.cancel() },
                 onDragStopped = {
-                    val dismissing = abs(offset) >= width * ToastTokens.DISMISS_FRACTION
+                    val dismissing = DismissRule(width * ToastTokens.DISMISS_FRACTION).dismisses(abs(offset), 0f)
                     settle =
                         scope.launch {
                             if (dismissing) {
@@ -105,7 +105,7 @@ public fun SwipeToDismiss(
                                     onDismiss = { currentOnDismiss() },
                                 )
                             } else {
-                                slide(offset, 0f, MotionCurve.Standard, motionScale) { offset = it }
+                                settleBack(offset, motionScale) { offset = it }
                             }
                         }
                 },
@@ -188,7 +188,7 @@ private fun Modifier.dismissPill(
         val reach = abs(offset) + stretch + size.height / 2f
         val left = if (fromLeft) -stretch else size.width + stretch - reach
         val round = CornerRadius(size.height / 2f)
-        val border = PanelTokens.borderWidth.toPx()
+        val border = Sizes.borderWidth.toPx()
 
         fun pill(inset: Float) =
             Path().apply {

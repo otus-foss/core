@@ -28,7 +28,6 @@ import org.jetbrains.compose.resources.DrawableResource
 /** What a bar's primary shows: its symbol and label. */
 internal data class PrimaryFace(
     val symbol: DrawableResource,
-    val mirrorInRtl: Boolean,
     val label: String,
 )
 
@@ -54,7 +53,7 @@ internal fun rememberFrontBar(
     primary: BarAction,
     context: BarContext?,
 ): FrontBar {
-    val own = PrimaryFace(primary.symbol, primary.mirrorInRtl, primary.label)
+    val own = PrimaryFace(primary.symbol, primary.action.label)
     val hosted = LocalHostedBar.current
     val slot = remember { FrontBars.Slot(own, context) }
     // This bar's own values while it is in front, since its slot catches up only after composing.

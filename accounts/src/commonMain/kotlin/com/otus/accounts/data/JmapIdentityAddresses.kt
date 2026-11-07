@@ -13,20 +13,21 @@ import com.otus.jmap.login.LoginStoreException
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 
-/** Identities describe sending addresses, not every alias that receives mail. RFC 8621, section 6. */
+/**
+ * The sending addresses of [login]'s account for [service], from its identities (RFC 8621, section
+ * 6), which describe sending addresses, not every alias that receives mail. None when that account
+ * cannot submit mail.
+ */
 internal suspend fun identityAddresses(
     login: JmapLogin,
     service: AccountService,
     connections: JmapConnections,
-): List<String> {
-    if (service.capability != JmapCapability.MAIL) return emptyList()
-    return try {
-        val connection = connections.connection(login)
-        val session = connection.session()
-        session
-            .accountFor(service.capability)
-            ?.takeIf { session.canSubmitFrom(it) }
-            ?.let { identityEmails(connection, it) }
+): List<String> =
+    try {
+        val account = connections.account(login, service.capability)
+        account
+            .takeIf { account.session.canSubmitFrom(account.id) }
+            ?.let { identityEmails(account.connection, account.id) }
             .orEmpty()
     } catch (expected: JmapException) {
         // Optional address discovery must not hide a saved account when its server is unavailable.
@@ -34,9 +35,8 @@ internal suspend fun identityAddresses(
     } catch (expected: LoginStoreException) {
         emptyList()
     }
-}
 
-/** Submission may belong to a different account; only show identities for this mail account. */
+/** Submission may belong to a different account; only show identities for this account. */
 private fun JmapSession.canSubmitFrom(accountId: String): Boolean =
     JmapCapability.SUBMISSION in capabilities &&
         JmapCapability.SUBMISSION in accounts[accountId]?.capabilities.orEmpty()

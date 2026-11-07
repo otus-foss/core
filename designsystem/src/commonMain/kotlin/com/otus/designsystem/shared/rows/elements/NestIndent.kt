@@ -15,4 +15,4 @@ public fun Modifier.nestIndent(
 ): Modifier = padding(start = step * depth.coerceIn(0, MAX_INDENT_STEPS))
 
 /** The deepest indent, four steps: the fifth level of a tree. */
-public const val MAX_INDENT_STEPS: Int = 4
+internal const val MAX_INDENT_STEPS: Int = 4

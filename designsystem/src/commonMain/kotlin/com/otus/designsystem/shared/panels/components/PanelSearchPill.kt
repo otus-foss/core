@@ -34,6 +34,7 @@ import com.otus.designsystem.shared.controls.elements.IconButtonLook
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.input.elements.SearchField
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 
@@ -59,7 +60,7 @@ public fun PanelSearchPill(
     Box(
         modifier
             .fillMaxWidth()
-            .heightIn(min = PanelTokens.touchTarget)
+            .heightIn(min = Sizes.touchTarget)
             .tappable(search == null, label, interactions, onClick),
         contentAlignment = Alignment.CenterStart,
     ) { PillContent(label, filter, filterShown, collapse, search) }

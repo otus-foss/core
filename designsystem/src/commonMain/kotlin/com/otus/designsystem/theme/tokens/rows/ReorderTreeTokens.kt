@@ -2,8 +2,8 @@ package com.otus.designsystem.theme.tokens.rows
 
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.layout.PageTokens
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
 
 /** The drop line of a reorderable tree, lined up with the folder icons of its folder rows. */
 internal object ReorderTreeTokens {
@@ -11,7 +11,7 @@ internal object ReorderTreeTokens {
     val indentStep: Dp = FolderRowTokens.nestIndent
 
     /** Where a top-level line starts: the start of the folder icon centered in its touch target. */
-    val lineStart: Dp = (PanelTokens.touchTarget - PanelTokens.iconSize) / 2
+    val lineStart: Dp = (Sizes.touchTarget - Sizes.iconSize) / 2
     val lineEnd: Dp = PageTokens.textInset
     val lineThickness: Dp = 2.dp
 

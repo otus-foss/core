@@ -1,14 +1,16 @@
 package com.otus.accounts.data
 
-import com.otus.accounts.domain.AccountService
 import com.otus.accounts.domain.AccountStorageException
 import com.otus.accounts.domain.ConnectFailure
 import com.otus.accounts.domain.ConnectOutcome
 import com.otus.accounts.domain.JmapAccountDraft
+import com.otus.accounts.testing.MailService
+import com.otus.accounts.testing.TestLifecycle
 import com.otus.accounts.testing.stalwartLike
 import com.otus.jmap.JmapClient
 import com.otus.jmap.JmapConnections
 import com.otus.jmap.login.JmapLogin
+import com.otus.jmap.login.LoginLifecycleException
 import com.otus.jmap.login.LoginSecret
 import com.otus.jmap.login.LoginStore
 import com.otus.jmap.login.LoginStoreException
@@ -26,7 +28,7 @@ class AccountStorageFailureTest {
             },
         )
     private val connections = JmapConnections(client, store)
-    private val repository = JmapAccountRepository(client, connections, store, AccountService.Mail)
+    private val repository = JmapAccountRepository(client, connections, store, MailService)
 
     @Test
     fun accountReadsAndRemovalsExposeDomainErrors() =
@@ -34,6 +36,15 @@ class AccountStorageFailureTest {
             store.failRead = true
             assertFailsWith<AccountStorageException> { repository.accounts() }
             assertFailsWith<AccountStorageException> { repository.remove("a") }
+        }
+
+    @Test
+    fun aLifecycleThatCannotFinishStopsTheRemovalAsAStorageFailure() =
+        runTest {
+            val stopping =
+                TestLifecycle(onRemoving = { throw LoginLifecycleException(IllegalStateException("cache locked")) })
+            val removal = JmapAccountRepository(client, connections, store, MailService, listOf(stopping))
+            assertFailsWith<AccountStorageException> { removal.remove("a") }
         }
 
     @Test

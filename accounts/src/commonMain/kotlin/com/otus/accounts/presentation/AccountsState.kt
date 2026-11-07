@@ -82,6 +82,9 @@ public class AccountsState(
             }
     }
 
+    /** Why [sessionUrl] can't be a JMAP server, or null when it can. */
+    public suspend fun checkServer(sessionUrl: String): ConnectFailure? = repository.checkServer(sessionUrl)
+
     /** Retries the pending sign-in, trusting only the host the user just approved. */
     public fun trustHost() {
         val (draft, origin) = pending ?: return

@@ -25,8 +25,8 @@ import com.otus.designsystem.shared.people.components.ChipAvatar
 import com.otus.designsystem.shared.people.components.ExpandingAvatar
 import com.otus.designsystem.shared.people.components.PersonAvatar
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.layout.PageTokens
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.people.ContactTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 
@@ -73,7 +73,7 @@ private fun EditableAvatar(
             Modifier
                 .size(ContactTokens.photoBadgeSize)
                 .background(OtusColors.bgRegular, CircleShape)
-                .border(PanelTokens.borderWidth, OtusColors.strokeBgDark, CircleShape),
+                .border(Sizes.borderWidth, OtusColors.strokeBgDark, CircleShape),
             contentAlignment = Alignment.Center,
         ) {
             CompositionLocalProvider(LocalContentColor provides OtusColors.text1) {

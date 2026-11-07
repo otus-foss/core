@@ -30,8 +30,9 @@ import com.otus.designsystem.shared.controls.elements.ChipDivider
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.content.ReadTokens
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.controls.ControlTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.people.PersonPillTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
@@ -64,7 +65,7 @@ internal fun PersonPill(
         val interactions = remember { MutableInteractionSource() }
         Box(
             modifier
-                .sizeIn(minWidth = PanelTokens.touchTarget, minHeight = PanelTokens.touchTarget)
+                .sizeIn(minWidth = Sizes.touchTarget, minHeight = Sizes.touchTarget)
                 .clickable(interactions, indication = null, role = Role.Button, onClick = onClick),
             contentAlignment = Alignment.Center,
         ) {
@@ -99,10 +100,10 @@ internal fun PersonPillFrame(
         modifier
             .height(size.height)
             .background(if (small) OtusColors.bgDark else Color.Transparent, CircleShape)
-            .border(PanelTokens.borderWidth, OtusColors.bgLight, CircleShape)
+            .border(Sizes.borderWidth, OtusColors.bgLight, CircleShape)
             .then(action)
             .semantics { if (description != null) contentDescription = description }
-            .padding(start = size.start, end = PanelTokens.chipPadding),
+            .padding(start = size.start, end = ControlTokens.chipPadding),
         horizontalArrangement = Arrangement.spacedBy(size.gap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -156,7 +157,7 @@ internal fun DateToggle(
                 .clickable(role = Role.Button, onClick = onToggle)
                 .semantics { contentDescription = if (expanded) "Show short date" else "Show full date" }
                 .rotate(if (expanded) HALF_TURN else 0f),
-        ) { Symbol(Res.drawable.symbol_chevron_right, mirrorInRtl = true, size = ReadTokens.dateToggleSize) }
+        ) { Symbol(Res.drawable.symbol_chevron_right, mirrorInRtl = true, size = PersonPillTokens.dateToggleSize) }
     }
 }
 

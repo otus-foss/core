@@ -26,10 +26,12 @@ import com.otus.designsystem.shared.people.components.PersonChip
 import com.otus.designsystem.shared.people.components.Recipient
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
-import com.otus.designsystem.theme.tokens.content.ReadTokens
+import com.otus.designsystem.theme.tokens.controls.ControlTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.editing.ComposeTokens
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
+import com.otus.designsystem.theme.tokens.people.PersonPillTokens
+import com.otus.designsystem.theme.tokens.rows.StripTokens
 
 /**
  * A folder the sheet suggests, such as where a sender's mail usually goes: the [person] pill, an
@@ -53,12 +55,12 @@ public fun SuggestedFolderRow(
                 contentDescription = description
                 role = Role.Button
             }.padding(vertical = SheetTokens.gap),
-        horizontalArrangement = Arrangement.spacedBy(ReadTokens.glyphGap),
+        horizontalArrangement = Arrangement.spacedBy(StripTokens.glyphGap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         PersonChip(person, Modifier.weight(1f, fill = false))
         CompositionLocalProvider(LocalContentColor provides OtusColors.text3) {
-            Symbol(Res.drawable.symbol_chevron_right, size = PanelTokens.iconSize)
+            Symbol(Res.drawable.symbol_chevron_right, size = Sizes.iconSize)
         }
         FolderPill(folder, Modifier.weight(1f, fill = false))
     }
@@ -72,13 +74,13 @@ private fun FolderPill(
 ) {
     Row(
         modifier
-            .height(ComposeTokens.recipientHeight)
-            .border(PanelTokens.borderWidth, OtusColors.bgLight, CircleShape)
-            .padding(horizontal = PanelTokens.chipPadding),
-        horizontalArrangement = Arrangement.spacedBy(ReadTokens.glyphGap),
+            .height(PersonPillTokens.recipientHeight)
+            .border(Sizes.borderWidth, OtusColors.bgLight, CircleShape)
+            .padding(horizontal = ControlTokens.chipPadding),
+        horizontalArrangement = Arrangement.spacedBy(StripTokens.glyphGap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        FolderNameGlyph(folder, ReadTokens.chevronSize)
+        FolderNameGlyph(folder, StripTokens.chevronSize)
         FolderPath(folder.path, fontSize = ComposeTokens.detailSize)
     }
 }

@@ -8,7 +8,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNull
-import kotlin.test.assertTrue
 import kotlin.time.Instant
 
 class CardTest {
@@ -29,7 +28,6 @@ class CardTest {
                     ),
             )
         assertEquals(expected, RoundTrip.assertCardRoundTrip(CARD_FIGURE_6))
-        assertEquals(emptyList(), expected.validate())
     }
 
     @Test
@@ -59,7 +57,6 @@ class CardTest {
         val email = card.emails?.get("0")
         assertEquals("joe.bloggs@example.com", email?.address)
         assertEquals(mapOf(ContactContext.Private to true), email?.contexts)
-        assertEquals(listOf("/uid"), card.validate().map { it.path })
     }
 
     @Test
@@ -68,7 +65,6 @@ class CardTest {
         assertEquals(Card(id = "c1", name = Name(full = "Grace")), card)
         assertNull(card.uid)
         assertEquals("1.0", card.version)
-        assertEquals(listOf("/uid"), card.validate().map { it.path })
     }
 
     @Test
@@ -89,7 +85,6 @@ class CardTest {
         assertIs<PartialDate>(card.anniversaries?.get("k8")?.date)
         assertEquals("o2", card.titles?.get("k2")?.organizationId)
         assertEquals(CalendarKind.FreeBusy, card.calendars?.get("project-a")?.kind)
-        assertEquals(emptyList<JsContactProblem>(), card.validate())
     }
 
     @Test
@@ -131,7 +126,6 @@ class CardTest {
                 ?.extra
                 ?.keys,
         )
-        assertEquals(emptyList<JsContactProblem>(), card.validate())
     }
 
     @Test
@@ -144,7 +138,6 @@ class CardTest {
                 .jsonObject
                 .getValue("yue")
         assertEquals<JsonElement?>(patch, card.localizations?.get("yue"))
-        assertTrue(card.validate().none { it.path.startsWith("/localizations") }, card.validate().toString())
     }
 }
 

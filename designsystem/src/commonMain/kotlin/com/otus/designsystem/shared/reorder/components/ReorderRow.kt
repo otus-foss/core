@@ -19,7 +19,7 @@ import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_drag_indicator
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 
 /** One row of a [ReorderableColumn] or [ReorderableTree]: its drag gestures and its Move up and Move down actions. */
 internal class ReorderRow(
@@ -33,7 +33,7 @@ internal class ReorderRow(
     override fun DragHandle(label: String) {
         Box(
             Modifier
-                .size(PanelTokens.touchTarget, PanelTokens.compactRowHeight)
+                .size(Sizes.touchTarget, Sizes.compactRowHeight)
                 .semantics {
                     contentDescription = "Reorder $label"
                     customActions = moveActions()

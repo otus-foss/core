@@ -40,12 +40,12 @@ import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
- * A top-level [ScopeSheet] choice, such as every account, an account, or a pinned address. A
- * row with a subtitle is a group, so its title is SemiBold. A group with nested [ScopeChildRow]s
- * passes [expanded] and gets a chevron that calls [onExpandedChange]; the caller shows the
- * nested rows in a [Collapsible][com.otus.designsystem.shared.rows.components.Collapsible]. The
- * [chosen] row gets a `selectedFill` fill. A long press calls [onLongClick], which pins or unpins
- * the choice.
+ * A top-level [ListSheet][com.otus.designsystem.shared.overlays.components.ListSheet] choice, such
+ * as every account, an account, or a pinned address. A row with a subtitle is a group, so its title
+ * is SemiBold. A group with nested [ScopeChildRow]s passes [expanded] and gets a chevron that calls
+ * [onExpandedChange]; the caller shows the nested rows in a
+ * [Collapsible][com.otus.designsystem.shared.rows.components.Collapsible]. The [chosen] row gets a
+ * `selectedFill` fill. A long press calls [onLongClick], which pins or unpins the choice.
  */
 @Composable
 public fun ScopeRow(
@@ -63,8 +63,8 @@ public fun ScopeRow(
 }
 
 /**
- * A [ScopeSheet] choice nested under a [ScopeRow], such as one address of an account. It is
- * shorter, with a smaller avatar.
+ * A [ListSheet][com.otus.designsystem.shared.overlays.components.ListSheet] choice nested under a
+ * [ScopeRow], such as one address of an account. It is shorter, with a smaller avatar.
  */
 @Composable
 public fun ScopeChildRow(

@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 
 /**
  * Up to two icons at the end of a row, each centered in a touch-target-wide slot with no gap
@@ -20,7 +20,7 @@ public fun TrailingIcons(
 ) {
     Row {
         listOfNotNull(first, last).forEach { icon ->
-            Box(Modifier.size(PanelTokens.touchTarget), contentAlignment = Alignment.Center) { icon() }
+            Box(Modifier.size(Sizes.touchTarget), contentAlignment = Alignment.Center) { icon() }
         }
     }
 }

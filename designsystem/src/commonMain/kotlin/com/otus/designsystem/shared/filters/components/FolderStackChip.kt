@@ -10,12 +10,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import com.otus.designsystem.shared.controls.elements.Chip
-import com.otus.designsystem.shared.filters.elements.ChipLabel
-import com.otus.designsystem.shared.filters.elements.annotated
+import com.otus.designsystem.shared.controls.elements.ChipLabel
+import com.otus.designsystem.shared.controls.elements.annotated
 import com.otus.designsystem.shared.folders.elements.FolderGlyph
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.selection.FilterTokens
+import com.otus.designsystem.theme.typography.TypeScale
 import com.otus.designsystem.theme.typography.panelTextStyle
 
 /**
@@ -34,17 +36,17 @@ public fun FolderStackChip(
 ) {
     Chip(label = null, onClick, modifier.semantics { contentDescription = description }, selected = true) {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(PanelTokens.iconGap),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.iconGap),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Row(horizontalArrangement = Arrangement.spacedBy(-FilterTokens.folderStackOverlap)) {
                 folders.take(FilterTokens.FOLDER_STACK_LIMIT).forEach {
-                    FolderGlyph(it.color, icon = it.icon, size = PanelTokens.iconSize)
+                    FolderGlyph(it.color, icon = it.icon, size = Sizes.iconSize)
                 }
             }
             Text(label.annotated(), style = panelTextStyle().copy(color = Color.Unspecified), maxLines = 1)
             if (more != null) {
-                Text(more, style = panelTextStyle(), color = OtusColors.text2, fontSize = PanelTokens.countSize)
+                Text(more, style = panelTextStyle(), color = OtusColors.text2, fontSize = TypeScale.label)
             }
         }
     }

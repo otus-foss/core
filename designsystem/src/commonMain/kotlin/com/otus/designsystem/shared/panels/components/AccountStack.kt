@@ -26,6 +26,8 @@ import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.shared.people.components.ChipAvatar
 import com.otus.designsystem.shared.people.components.PersonAvatar
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.tokens.controls.ControlTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 import kotlin.math.roundToInt
@@ -45,12 +47,12 @@ public fun AccountStack(
     collapse: () -> Float = { 0f },
 ) {
     val interactions = remember { MutableInteractionSource() }
-    val shown = avatars.take(PanelTokens.CHIP_AVATAR_LIMIT)
+    val shown = avatars.take(ControlTokens.CHIP_AVATAR_LIMIT)
     val hidden = avatars.size - 1
     Box(
         modifier
-            .heightIn(min = PanelTokens.touchTarget)
-            .widthIn(min = PanelTokens.touchTarget)
+            .heightIn(min = Sizes.touchTarget)
+            .widthIn(min = Sizes.touchTarget)
             .semantics { contentDescription = description }
             .clickable(interactions, indication = null, role = Role.Button, onClick = onClick)
             .padding(start = PanelTokens.headerGap, end = PanelTokens.stackEnd),

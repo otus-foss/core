@@ -3,7 +3,6 @@ package com.otus.jmap.contacts
 import com.otus.jmap.GetMethod
 import com.otus.jmap.GetResult
 import com.otus.jmap.JmapCall
-import com.otus.jmap.JmapException
 import com.otus.jscontact.Card
 import com.otus.jscontact.ContactContext
 import com.otus.jscontact.EmailAddress
@@ -12,7 +11,6 @@ import com.otus.jscontact.NameComponentKind
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -51,41 +49,12 @@ class ContactsExamplesTest {
             )
             // The example card lacks the uid that JSContact makes mandatory, as a partial fetch would.
             assertNull(card.uid)
-            assertTrue(card.validate().any { it.path == "/uid" }, "${card.validate()}")
         }
 
     @Test
     fun theRfcBooksDisplayPersonalFirst() {
         assertEquals(listOf(personal, autosaved), listOf(autosaved, personal).sortedWith(AddressBookOrder))
     }
-
-    @Test
-    fun changingTheDefaultSendsFigure3() =
-        runTest {
-            val server = ContactsServer { responseOf(FIGURE_4_CORRECTED) }
-            val result = server.request { call(AddressBookSetMethod("a0x9", onSuccessSetIsDefault = AUTOSAVED)) }
-            assertEquals(numbered(FIGURE_3), normalized(server.methodCalls()))
-            assertEquals("~4144", result.oldState)
-            assertEquals("~4148", result.newState)
-            assertEquals(
-                mapOf(
-                    AUTOSAVED to parseObject("""{"isDefault": true}"""),
-                    PERSONAL to parseObject("""{"isDefault": false}"""),
-                ),
-                result.updated,
-            )
-        }
-
-    @Test
-    fun figure4NestsItsStatesInUpdatedAndIsRejected() =
-        runTest {
-            // Figure 4 puts oldState and newState inside updated and leaves out the required newState.
-            // Reading "~4144" as an updated AddressBook would be wrong, so the response is not JMAP.
-            val server = ContactsServer { responseOf(FIGURE_4) }
-            assertFailsWith<JmapException.NotJmap> {
-                server.request { call(AddressBookSetMethod("a0x9", onSuccessSetIsDefault = AUTOSAVED)) }
-            }
-        }
 
     private val personal =
         AddressBook(

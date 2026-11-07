@@ -4,8 +4,8 @@ import com.otus.jmap.JmapConnections
 import com.otus.jmap.JmapException
 import com.otus.jmap.PushMessage
 import com.otus.jmap.login.JmapLogin
-import com.otus.jmap.login.LoginStore
 import com.otus.jmap.login.LoginStoreException
+import com.otus.storage.StringMapStore
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -28,11 +28,15 @@ import kotlin.time.Duration.Companion.seconds
  * [deviceClientId] identifies this app on this device to the server. It lets [sync] delete
  * subscriptions this app made before it lost its saved state, such as after a reinstall.
  * [types] are the data type names to push, such as `EmailDelivery`.
+ *
+ * [store] keeps each login's push record, keyed by login id. It holds no account credentials, but
+ * it does hold each endpoint's Web Push keys, including the `auth` secret, with which anyone who
+ * knows the endpoint URL can send pushes the app accepts. Keep it in app-private storage that is
+ * excluded from backups.
  */
 public class PushSubscriptions(
     private val connections: JmapConnections,
-    private val logins: LoginStore,
-    private val store: PushStateStore,
+    private val store: StringMapStore,
     private val deviceClientId: String,
     private val types: List<String>,
     private val clock: Clock = Clock.System,
@@ -137,12 +141,10 @@ public class PushSubscriptions(
 
     /** Null when storage cannot be read, so neither a sync nor removing an account fails here. */
     private suspend fun savedLogins(): List<JmapLogin>? =
-        withContext(Dispatchers.IO) {
-            try {
-                logins.logins()
-            } catch (_: LoginStoreException) {
-                null
-            }
+        try {
+            connections.savedLogins()
+        } catch (_: LoginStoreException) {
+            null
         }
 
     private suspend fun change(

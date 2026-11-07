@@ -35,6 +35,8 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import com.otus.designsystem.shared.controls.elements.LocalControlVisualBounds
 import com.otus.designsystem.theme.motion.LocalMotionScale
 import com.otus.designsystem.theme.motion.Motion
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 
 /** Wrap each chip in [item] so its measured position drives its own cutout. */
@@ -106,7 +108,7 @@ public class ContextPanelScope internal constructor(
                 }
             Row(
                 Modifier.graphicsLayer { alpha = fade.value },
-                horizontalArrangement = Arrangement.spacedBy(PanelTokens.chipGap),
+                horizontalArrangement = Arrangement.spacedBy(Spacing.inlineGap),
             ) { scope.content(state) }
         }
     }
@@ -127,7 +129,7 @@ internal fun PanelChipRail(
                 drawContent()
                 // Fade by the pills' actual overflow. Scroll extent lags a resizing group, and an on/off
                 // fade would snap when overflow begins or ends.
-                val fade = PanelTokens.fadeWidth.toPx().coerceAtMost(size.width / 2)
+                val fade = Sizes.edgeFade.toPx().coerceAtMost(size.width / 2)
                 val overflow = geometry.railOverflow()
                 drawEdgeFade((overflow.left / fade).coerceIn(0f, 1f), fade, atEnd = false)
                 drawEdgeFade((overflow.right / fade).coerceIn(0f, 1f), fade, atEnd = true)
@@ -141,7 +143,7 @@ internal fun PanelChipRail(
                 .fillMaxWidth()
                 .horizontalScroll(scroll, overscrollEffect = null)
                 .padding(horizontal = PanelTokens.panelInset),
-            horizontalArrangement = Arrangement.spacedBy(PanelTokens.chipGap),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.inlineGap),
         ) { content() }
     }
 }

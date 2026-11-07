@@ -117,11 +117,11 @@ day when it has none or does not answer, which is why `domainIcons` is off by de
 may keep it off. An icon proxy's misses are retried after five minutes, because the proxy, not the
 sender's website, sees those requests.
 
-`PublicSuffixDomainResolver` accepts an injected suspend loader for the rules. Mail wiring reads
-`files/public_suffix_list.dat` from packaged Compose resources. The parser is common Kotlin,
-loads once off the UI thread, and never downloads rules at runtime. Without an injected resolver,
-the service treats the whole hostname as the website domain. Calendar includes the same parser and resource
-in its own older copy until it adopts this module. IDNs require an ASCII hostname supplied by the caller.
+`PublicSuffixDomainResolver()` reads the list this module bundles as a Compose resource,
+`files/public_suffix_list.dat`; tests pass their own loader. The parser is common Kotlin, loads
+once off the UI thread, and never downloads rules at runtime. Without a resolver, the service
+treats the whole hostname as the website domain. IDNs require an ASCII hostname supplied by the
+caller.
 
 The list snapshot is `2026-10-01_23-02-52_UTC`, upstream commit
 `6cd82aff889e3d64e5e03bc5c1f43da1934a960a`, from
@@ -129,7 +129,8 @@ The list snapshot is `2026-10-01_23-02-52_UTC`, upstream commit
 `e0fe072d26b0536525badea237953ff451c9f8e64c9d02c6daa81a4491d2fc66`.
 Rules are lowercased and converted label by label to ASCII IDNA while retaining wildcard and
 exception markers. Original comments and the MPL 2.0 notice remain; the license ships as
-`public_suffix_list_MPL-2.0.txt`. Each app bundles the list and supplies it to the resolver; refresh both apps' copies together.
+`public_suffix_list_MPL-2.0.txt` beside it in `avatar/src/commonMain/composeResources/files`.
+Refresh the list there; the apps carry no copy.
 ICO display depends on the platform decoder; Android tests cover PNG and bitmap-encoded entries.
 
 The public loader follows at most three redirects, checking each target for HTTPS, a public
@@ -169,16 +170,20 @@ in each platform's HTTP engine, which the module does not have yet.
 ## Use in the apps
 
 Each app creates one `AvatarService` per process and passes its own login IDs as `accountKey`.
-The app chooses which remote requests to allow through `AvatarOptions`, supplies the Public Suffix
-List bytes, and names any `IconProxy`. `JmapContactAvatarSource` uses the app's
-`JmapConnections` and `LoginStore`, so contact lookups never cross apps. Calendar still carries an
-older copy of this code until it adopts the module.
+The app chooses which remote requests to allow through `AvatarOptions` and names any `IconProxy`;
+`avatarOptions(websiteIcons, source, bulwarkAddress)` builds them from an `IconSource` choice
+(Websites, DuckDuckGo, or the user's Bulwark server). `JmapContactAvatarSource` finds each login's
+contacts account through the app's `JmapConnections`, so contact lookups never cross apps. Contact
+cards and address books are jmap-contacts' `Card` and `AddressBook`. `AvatarService` is a
+`LoginLifecycle`: register it with the account repository, and a login's cached avatars clear when
+it connects again or goes. The disk cache names its files with `storedName` from `storage`.
+Calendar does not use the module yet.
 
 Contact queries ask for `id`, `addressBookIds`, `emails`, `media`, and `vCard`. Stalwart returns a
 card's extra vCard properties, where the style lives, only when `vCard` is asked for by name; a
 server that rejects `vCard` with `invalidArguments` gets the query again without it. They search
 readable address books that are subscribed or writable, because Stalwart leaves the user's own
-books unsubscribed, and fetch up to 32 candidates per
+books unsubscribed (a book without `isSubscribed` counts as subscribed), and fetch up to 32 candidates per
 page. Each candidate must contain the exact normalized email address; server searches may also
 match email labels. On each page, cards in the user's writable books come first, then cards whose
 avatar Otus wrote, so a shared card never hides the user's own. Lookup continues across pages until it finds a usable photo or reaches an empty
@@ -212,21 +217,23 @@ iOS runtime validation requires macOS/Xcode.
 `OwnAvatars` reads and saves the avatar of one of the user's own addresses, and `JmapOwnAvatars`
 keeps it on a self card: a contact card in the user's own address book with that address. Saving
 finds a card with the address in a writable book, preferring one whose avatar Otus wrote, or
-creates one in the default book with the address and the account name. A patch path needs its
-parent on the server (RFC 8620, section 5.3), so a card without `media` or `vCard` gets the whole
-map or object instead.
+creates one in the default book with the address and the account name. The update is
+`cardPatch(before, after)`, which sends `media` and `vCard` whole, since a patch path needs its
+parent on the server (RFC 8620, section 5.3).
 
 - A photo is a JSContact `media` entry of kind `photo` with a `data:` URI, so other contact apps
   show it too. Stalwart refuses a `blobId` in `media` ("blobIds in media is not supported"). Saving a
   photo replaces the card's other photos and drops the style.
-- An `AvatarStyle` is a color and an `AvatarMark`. The color is a folder color name or a custom
-  `#RRGGBB`. The mark is up to `MAX_AVATAR_LETTERS` letters, an icon name from `AvatarSymbols`, or
+- An `AvatarStyle` is a color and an `AvatarMark`. The color is an `AvatarColor` id, such as
+  `Blue`, or a custom `#RRGGBB`. Ids never change, so a renamed design-system color does not
+  change saved avatars. The ids are the capitalized names older builds wrote and still read;
+  reading accepts any case. The mark is up to `MAX_AVATAR_LETTERS` letters, an icon name from `AvatarSymbols`, or
   `Website`. `Website` shows the website icon of the address's domain even when
   `AvatarOptions.domainIcons` is off, because the user picked it for their own address;
   `ResolvedAvatar` then has both the icon and the style. Lookups honor `Website` only on cards in
   books the user may write, so a shared card cannot turn website icons on. A style is stored as the vCard extension
   property `AVATAR_STYLE_PROPERTY` (`x-otus-avatar`) in the card's `vCard.properties` (RFC 9555),
-  with a JSON text value such as `{"color": "Blue", "icon": "work"}`. Stalwart refuses unknown
+  with a JSON text value such as `{"color": "blue", "icon": "work"}`. Stalwart refuses unknown
   top-level card properties ("Invalid property."), so a JSContact vendor property does not work there.
   Saving a style removes the card's photos, so every app agrees there is none. Other contact apps
   keep the property but show no avatar.
@@ -234,6 +241,18 @@ map or object instead.
 - `OwnAvatarException` names why a save failed: `NoContacts`, `ReadOnly`, or `Failed`.
 
 A save clears the login's cached avatars, so the next `resolve` reads the new one. The disk cache
-stores a style as its JSON. The apps map color names to `FolderColor` and mark names to
-`AvatarSymbols`, so the module stays free of UI types. An `AvatarPhotoPicker` from the app supplies
-photos, already cropped and small enough to upload.
+stores a style as its JSON. An `AvatarPhotoPicker` from the app supplies photos, already cropped
+and small enough to upload.
+
+## avatar-ui
+
+`com.otus:avatar-ui` draws avatars with the design system, so `avatar` stays free of UI types and
+`accounts` free of avatars:
+
+- `ResolvedAvatar.toChipAvatar()`, `AvatarStyle.toChipAvatar()`, and `toChipAvatarOr(name, email)`
+  turn a result or a style into the design system's `ChipAvatar`. Each `AvatarColor` maps to a
+  `FolderColor` by name in code, and mark names map to `AvatarSymbols`.
+- `OwnAvatarsState` holds the shown avatar of each own address, with optimistic saves that roll
+  back on failure. It takes each account as an `OwnAccount(id, name, addresses)`.
+- `OwnAvatarEditor` opens `AvatarSheet` for one address, or `AccountAvatarEditor` for all of an
+  account's addresses. Apps pass it as the account page's editor slot.

@@ -10,14 +10,38 @@ import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.contentOrNull
 
 /**
- * An avatar the user built in Otus instead of a photo: a color and what sits on it. [color] is a
- * name each app maps to a theme color, such as `Blue`, or a custom `#RRGGBB`. The names in [mark]
- * are keys each app maps to its own symbols, so this type holds no UI values.
+ * An avatar the user built in Otus instead of a photo: a color and what sits on it. [color] is the
+ * [AvatarColor.id] of a preset, such as `Blue`, or a custom `#RRGGBB`. The names in [mark] are keys
+ * each app maps to its own symbols, so this type holds no UI values.
  */
 public data class AvatarStyle(
     val color: String,
     val mark: AvatarMark,
 )
+
+/**
+ * The preset colors of an [AvatarStyle]. A card stores the [id], which never changes, so the colors
+ * of saved avatars do not follow renames in the design system. The ids are the capitalized names
+ * older builds wrote and still read, such as `Blue`.
+ */
+public enum class AvatarColor(
+    public val id: String,
+) {
+    Red("Red"),
+    Orange("Orange"),
+    Yellow("Yellow"),
+    Green("Green"),
+    Teal("Teal"),
+    Blue("Blue"),
+    Purple("Purple"),
+    Pink("Pink"),
+    ;
+
+    public companion object {
+        /** The preset [stored] names, in any case, or null for a custom color. */
+        public fun of(stored: String): AvatarColor? = entries.firstOrNull { it.id.equals(stored, ignoreCase = true) }
+    }
+}
 
 /** What an [AvatarStyle] draws on its color. */
 public sealed interface AvatarMark {
@@ -46,10 +70,10 @@ public const val MAX_AVATAR_LETTERS: Int = 3
  * that stores vCards, such as Stalwart, keeps; Stalwart rejects unknown top-level card properties.
  * Other contact apps keep the property but ignore it.
  */
-public const val AVATAR_STYLE_PROPERTY: String = "x-otus-avatar"
+internal const val AVATAR_STYLE_PROPERTY: String = "x-otus-avatar"
 
 /** The style in the `vCard` value of a card, or null when it holds none Otus can read. */
-public fun avatarStyleIn(vCard: JsonElement?): AvatarStyle? =
+internal fun avatarStyleIn(vCard: JsonElement?): AvatarStyle? =
     vCard
         .avatarProperties()
         .firstOrNull { it.isAvatarStyle() }
@@ -61,7 +85,7 @@ public fun avatarStyleIn(vCard: JsonElement?): AvatarStyle? =
  * The `vCard.properties` of a card after setting [style] in [vCard], keeping its other properties.
  * A null [style] removes it.
  */
-public fun avatarPropertiesWith(
+internal fun avatarPropertiesWith(
     vCard: JsonElement?,
     style: AvatarStyle?,
 ): JsonArray {
@@ -79,7 +103,7 @@ public fun avatarPropertiesWith(
 }
 
 /** Whether the `vCard` value of a card holds a style. */
-public fun hasAvatarStyle(vCard: JsonElement?): Boolean = vCard.avatarProperties().any { it.isAvatarStyle() }
+internal fun hasAvatarStyle(vCard: JsonElement?): Boolean = vCard.avatarProperties().any { it.isAvatarStyle() }
 
 private fun JsonElement?.avatarProperties(): List<JsonArray> =
     ((this as? JsonObject)?.get(VCARD_PROPERTIES) as? JsonArray).orEmpty().filterIsInstance<JsonArray>()
@@ -120,7 +144,7 @@ private fun AvatarStyleDto.toStyle(): AvatarStyle? {
             icon != null -> AvatarMark.Icon(icon)
             else -> null
         }
-    return mark?.takeIf { color.isNotBlank() }?.let { AvatarStyle(color, it) }
+    return mark?.takeIf { color.isNotBlank() }?.let { AvatarStyle(AvatarColor.of(color)?.id ?: color, it) }
 }
 
 private val StyleJson = Json { ignoreUnknownKeys = true }

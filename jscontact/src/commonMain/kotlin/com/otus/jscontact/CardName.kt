@@ -9,7 +9,7 @@ import kotlin.jvm.JvmInline
 
 /**
  * The name of the entity a Card represents (RFC 9553, section 2.2.1.1). At least one of
- * [components] and [full] must be set. `Card.validate` checks the rules that span several properties.
+ * [components] and [full] must be set.
  */
 @OptIn(ExperimentalSerializationApi::class)
 @KeepGeneratedSerializer

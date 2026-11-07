@@ -19,14 +19,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.findRootCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalDensity
 import com.otus.designsystem.shared.actionbar.elements.BarAddButton
-import com.otus.designsystem.shared.overlays.components.MenuAction
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.pages.components.PageChrome
 import com.otus.designsystem.shared.pages.components.ReportClearance
 import com.otus.designsystem.shared.pages.components.pinnedChrome
@@ -55,7 +54,7 @@ public fun ActionBar(
     context: BarContext? = null,
     minimized: BarMinimized? = null,
     onAdd: (() -> Unit)? = null,
-    allActions: List<MenuAction> = emptyList(),
+    allActions: List<UiAction> = emptyList(),
 ) {
     require(secondary.size <= MAX_SECONDARY) { "An action bar holds at most $MAX_SECONDARY secondary actions" }
     if (minimized != null) {
@@ -101,7 +100,7 @@ public fun ActionBar(
  */
 public class BarMinimized(
     public val hidden: Boolean = false,
-    public val more: List<MenuAction> = emptyList(),
+    public val more: List<UiAction> = emptyList(),
 )
 
 /** Most secondary actions an [ActionBar] shows. */
@@ -150,6 +149,6 @@ public fun ActionBarHost(
  * and keyboard, and the same distance from the sides as the rest of the page.
  */
 @Composable
-public fun Modifier.actionBarInset(): Modifier =
+internal fun Modifier.actionBarInset(): Modifier =
     windowInsetsPadding(WindowInsets.navigationBars.union(WindowInsets.ime))
         .padding(ActionBarTokens.barInset)

@@ -15,7 +15,7 @@ class JmapQueryTest {
             QueryMethod(
                 TODO_TYPE,
                 "x",
-                filter = (hasKeyword("music") or hasKeyword("video")).toJson(),
+                filter = anyOf(hasKeyword("music"), hasKeyword("video")),
                 sort = listOf(JmapSort("title")),
                 limit = 10,
                 extra = mapOf("position" to JsonPrimitive(0)),

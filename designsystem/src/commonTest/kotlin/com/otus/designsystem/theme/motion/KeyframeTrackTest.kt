@@ -1,6 +1,6 @@
 package com.otus.designsystem.theme.motion
 
-import com.otus.designsystem.theme.brand.MailLaunchTimeline
+import com.otus.designsystem.mail.launch.components.MailLaunchTimeline
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

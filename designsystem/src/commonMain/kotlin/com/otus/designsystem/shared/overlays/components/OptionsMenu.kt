@@ -24,12 +24,13 @@ import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_chevron_right
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.ToggleSwitch
+import com.otus.designsystem.shared.rows.elements.Caption
+import com.otus.designsystem.shared.rows.elements.listCaptionInset
 import com.otus.designsystem.shared.selection.components.Dropdown
-import com.otus.designsystem.shared.selection.components.ListCaption
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
-import com.otus.designsystem.theme.tokens.editing.ComposeTokens
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
+import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.overlays.MenuTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 import org.jetbrains.compose.resources.DrawableResource
@@ -44,7 +45,7 @@ public fun OptionsMenu(
     items: List<OptionsItem>,
     onDismiss: () -> Unit,
 ) {
-    Dropdown(onDismiss, alignEnd = true, width = ComposeTokens.optionsMenuWidth, unrolls = false) {
+    Dropdown(onDismiss, alignEnd = true, width = MenuTokens.optionsMenuWidth, unrolls = false) {
         OptionsList(items, onDismiss)
     }
 }
@@ -55,7 +56,7 @@ public fun OptionsMenu(
  * An action runs [onDone] before its own click, to close what holds it.
  */
 @Composable
-public fun OptionsList(
+internal fun OptionsList(
     items: List<OptionsItem>,
     onDone: () -> Unit,
 ) {
@@ -64,7 +65,7 @@ public fun OptionsList(
             when (item) {
                 is OptionsItem.Action -> ActionOption(item, onDone)
                 is OptionsItem.Toggle -> ToggleOption(item)
-                is OptionsItem.Caption -> ListCaption(item.text)
+                is OptionsItem.Caption -> Caption(item.text, Modifier.listCaptionInset())
                 OptionsItem.Divider -> OptionsDivider()
             }
         }
@@ -77,14 +78,14 @@ private fun ActionOption(
     onDone: () -> Unit,
 ) {
     OptionsRow(
-        item.icon,
-        item.label,
+        item.action.symbol,
+        item.action.label,
         item.detail,
         Modifier
             .currentChoice(item.current)
             .clickable(role = Role.Button) {
                 onDone()
-                item.onClick()
+                item.action.onClick()
             },
     ) { if (item.opens) Symbol(Res.drawable.symbol_chevron_right, mirrorInRtl = true) }
 }
@@ -114,16 +115,16 @@ private fun Modifier.currentChoice(current: Boolean): Modifier =
 internal fun OptionsDivider() {
     Box(
         Modifier
-            .padding(horizontal = MenuTokens.rowPadding - MenuTokens.inset, vertical = PanelTokens.iconGap)
+            .padding(horizontal = MenuTokens.rowPadding - MenuTokens.inset, vertical = Spacing.iconGap)
             .fillMaxWidth()
-            .height(PanelTokens.borderWidth)
+            .height(Sizes.borderWidth)
             .background(OtusColors.bgLight),
     )
 }
 
 @Composable
 private fun OptionsRow(
-    icon: DrawableResource,
+    icon: DrawableResource?,
     label: String,
     detail: String?,
     modifier: Modifier,
@@ -132,12 +133,12 @@ private fun OptionsRow(
     Row(
         modifier
             .fillMaxWidth()
-            .heightIn(min = PanelTokens.touchTarget + MenuTokens.inset * 2)
+            .heightIn(min = Sizes.touchTarget + MenuTokens.inset * 2)
             .padding(horizontal = MenuTokens.rowPadding - MenuTokens.inset),
         horizontalArrangement = Arrangement.spacedBy(MenuTokens.rowPadding),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Symbol(icon)
+        if (icon != null) Symbol(icon)
         Column(Modifier.weight(1f)) {
             Text(label, style = panelTextStyle())
             if (detail != null) {

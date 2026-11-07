@@ -8,7 +8,7 @@ package com.otus.jmap
  * from [receive], or cancelling the caller's coroutine, ends the transfer; the caller bounds what
  * it accepts.
  */
-public suspend fun JmapClient.downloadStream(
+internal suspend fun JmapClient.downloadStream(
     session: JmapSession,
     auth: JmapAuth,
     accountId: String,

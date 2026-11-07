@@ -8,7 +8,7 @@ import com.otus.designsystem.resources.symbol_expand_less
 import com.otus.designsystem.resources.symbol_expand_more
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.content.ReadTokens
+import com.otus.designsystem.theme.tokens.rows.StripTokens
 
 /** The `text2` chevron at a strip's end: up while it can grow, down while it can fold. */
 @Composable
@@ -16,7 +16,7 @@ internal fun StripChevron(up: Boolean) {
     CompositionLocalProvider(LocalContentColor provides OtusColors.text2) {
         Symbol(
             if (up) Res.drawable.symbol_expand_less else Res.drawable.symbol_expand_more,
-            size = ReadTokens.chevronSize,
+            size = StripTokens.chevronSize,
         )
     }
 }

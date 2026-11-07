@@ -53,7 +53,7 @@ private fun Modifier.overhang(): Modifier =
 
 /** The ✕ inside a form field that removes the field, read to screen readers as [description]. */
 @Composable
-public fun RemoveFieldButton(
+internal fun RemoveFieldButton(
     description: String,
     onRemove: () -> Unit,
 ) {

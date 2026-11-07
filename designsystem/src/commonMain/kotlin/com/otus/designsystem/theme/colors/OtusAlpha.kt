@@ -1,7 +1,7 @@
 package com.otus.designsystem.theme.colors
 
 /** Opacities for content that stays visible but steps back. */
-public object OtusAlpha {
+internal object OtusAlpha {
     /** Read mail rows and other content shown as already handled. */
     public const val DIMMED: Float = 0.5f
 

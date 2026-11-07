@@ -27,7 +27,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.tokens.selection.CalendarTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
@@ -72,7 +72,7 @@ private fun PickerSurface(
         shape = SmoothCornerShape(topStart = SheetTokens.radius, topEnd = SheetTokens.radius),
         color = OtusColors.bgDark,
         contentColor = OtusColors.text1,
-        border = BorderStroke(PanelTokens.borderWidth, OtusColors.strokeBgDark),
+        border = BorderStroke(Sizes.borderWidth, OtusColors.strokeBgDark),
     ) {
         ProvideTextStyle(panelTextStyle()) {
             Column(

@@ -32,7 +32,7 @@ import com.otus.designsystem.theme.tokens.settings.ThemeTokens
  * [value] within [range]; [label] names it for screen readers, which can also set it directly.
  */
 @Composable
-public fun ColorSlider(
+internal fun ColorSlider(
     value: Float,
     onValueChange: (Float) -> Unit,
     track: Brush,

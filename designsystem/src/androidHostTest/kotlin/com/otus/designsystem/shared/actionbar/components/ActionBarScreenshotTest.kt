@@ -5,6 +5,7 @@ import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_delete
 import com.otus.designsystem.resources.symbol_send
 import com.otus.designsystem.screenshot.screenshot
+import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.people.components.DemoActions.secondary
 import com.otus.designsystem.shared.people.components.DemoActions.write
 import org.junit.Rule
@@ -39,8 +40,8 @@ class ActionBarScreenshotTest {
     fun disabledActions() =
         compose.screenshot("action_bar_disabled") {
             ActionBar(
-                BarAction("Send", Res.drawable.symbol_send, enabled = false) {},
-                secondary = listOf(BarAction("Delete", Res.drawable.symbol_delete, enabled = false) {}),
+                BarAction(UiAction("Send", Res.drawable.symbol_send, enabled = false) {}),
+                secondary = listOf(BarAction(UiAction("Delete", Res.drawable.symbol_delete, enabled = false) {})),
             )
         }
 

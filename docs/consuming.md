@@ -1,110 +1,85 @@
-# Using the libraries from an app
+# Using Meta from an app
 
-The apps pin a released library version from GitHub Packages. Development builds can use a
-sibling checkout instead, so a library
-change can be tried in an app before it is released. Nothing in an app's build requires the
-sibling checkout. Both apps declare Meta dependencies and pin their versions independently.
+Mail and Calendar build Meta from source. Each app includes an otus-meta checkout as a Gradle
+composite build, so `com.otus:<module>` resolves to the matching Meta project, and each app's
+build takes its convention plugins, version catalog, tools, and detekt configuration from the
+same checkout. No app downloads Meta from GitHub Packages or pins a Meta version. See
+[decision 0005](decisions/0005-shared-library-repository.md) for the 2026-11-06 amendment.
 
-## Released versions
+## The checkout
 
-Each module is a Maven artifact `com.otus:<module>` in this repository's GitHub Packages registry.
-Add the registry to the app's `settings.gradle.kts` as exclusive content for the `com.otus`
-group. No other dependency resolves from it, and `com.otus` resolves only from it:
+By default an app expects Meta next to it:
+
+```text
+otus-meta/
+otus-mail/
+otus-calendar/
+```
+
+The `otus.meta.path` Gradle property names another checkout, such as a worktree. It resolves from
+the app's root, so `-Potus.meta.path=../meta-worktree` works for one build and
+`otus.meta.path=/path/to/otus-meta` in `~/.gradle/gradle.properties` works for every build. Without
+a checkout at that path, the app's build stops at once and says where it looked. The app's
+`commit-msg` hook finds Meta the same way, through `ORG_GRADLE_PROJECT_otus.meta.path`,
+`~/.gradle/gradle.properties`, the app's `gradle.properties`, or `../otus-meta`.
+
+## What an app's settings file does
 
 ```kotlin
+pluginManagement {
+    val otusMeta = file(providers.gradleProperty("otus.meta.path").getOrElse("../otus-meta"))
+    repositories { /* google(), mavenCentral(), gradlePluginPortal() */ }
+    includeBuild(otusMeta.resolve("build-logic").path)
+}
+
+plugins {
+    id("otus.settings")
+}
+
 dependencyResolutionManagement {
-    repositories {
-        // existing google() and mavenCentral() entries
-        exclusiveContent {
-            forRepository {
-                maven("https://maven.pkg.github.com/reazndev/otus-meta") {
-                    name = "otusMeta"
-                    // Gradle checks credentials before every build; without a token only -Potus.meta.path works.
-                    if (providers.gradleProperty("otusMetaPassword").isPresent) credentials(PasswordCredentials::class)
-                }
-            }
-            filter { includeGroup("com.otus") }
-        }
+    versionCatalogs {
+        create("appLibs") { from(files("gradle/app.versions.toml")) }
     }
 }
 ```
 
-`mavenContent { includeGroup(...) }` alone only keeps other groups out of this registry, so a
-`com.otus` artifact that someone else published to Maven Central could still win; `exclusiveContent`
-makes this registry the only source for the group.
+`pluginManagement` runs before any plugin, so it reads the path itself to find the convention
+plugins. The `otus.settings` plugin then reads it again with the same rule, includes the checkout,
+and loads its catalog as `libs`. The included build is named `otus-meta` whatever its directory is
+called, so its task paths are always `:otus-meta:<module>:<task>`, and the convention plugins find
+the checkout by that name.
 
-Pin one version for every module in the app's `gradle/libs.versions.toml`:
+- `libs` is Meta's `gradle/libs.versions.toml`, the suite catalog. It holds every version that
+  more than one repository uses, and version-free `otus-<module>` entries for Meta's modules,
+  such as `api(libs.otus.jmap)`.
+- `appLibs` is the app's own `gradle/app.versions.toml`, with only what no other repository uses,
+  such as SQLDelight in Mail. Calendar has none, so it has no `appLibs`.
+- The convention plugins are described in [the quality guide](quality.md#build-logic).
 
-```toml
-[versions]
-otus-meta = "0.1.0"
+## Changing Meta and an app together
 
-[libraries]
-otus-jmap = { module = "com.otus:jmap", version.ref = "otus-meta" }
-```
+Give the Meta branch and the app branch the same name. The app's CI checks out otus-meta beside
+the app and switches to the branch with the app's branch name when one exists, or stays on Meta's
+`main`. Every job does this before it runs a Meta action, so the gate, the build, and the
+pull-request facts all use the Meta that lands with the change, and an app pull request runs
+before its Meta partner merges. Meta's `quality` workflow does the same the other way round: its
+`apps` job compiles Mail and Calendar at the branch with Meta's branch name, or at their `main`,
+against the Meta pull request.
 
-Then depend on it from the app's `shared` module, for example `api(libs.otus.jmap)`.
-
-### Credentials
-
-GitHub Packages needs a token for every download, even from a public repository. Create a
-classic personal access token with the `read:packages` scope.
-
-`credentials(PasswordCredentials::class)` with the repository name `otusMeta` reads the Gradle
-properties `otusMetaUsername` and `otusMetaPassword`. Declare credentials only when the token
-property is present, so tasks that do not download packages can configure without credentials.
-
-On a development machine, add these to `~/.gradle/gradle.properties`, never to the repository:
-
-```properties
-otusMetaUsername=<GitHub username>
-otusMetaPassword=<GitHub token with read:packages>
-```
-
-In each consuming app's Actions settings, store the token as the `OTUS_META_PACKAGES_TOKEN`
-secret and pass it to Gradle:
-
-```yaml
-env:
-  ORG_GRADLE_PROJECT_otusMetaUsername: ${{ github.repository_owner }}
-  ORG_GRADLE_PROJECT_otusMetaPassword: ${{ secrets.OTUS_META_PACKAGES_TOKEN }}
-```
-
-A token grants access to packages; it does not publish missing artifacts. Versions 0.3.1 to
-0.5.0 are not on GitHub Packages. See [releasing](releasing.md).
-
-## Local development against a checkout
-
-Add an opt-in composite build to the app's `settings.gradle.kts`:
-
-```kotlin
-providers.gradleProperty("otus.meta.path").orNull?.let { includeBuild(it) }
-```
-
-Enable it for a single build with `./gradlew checkAll -Potus.meta.path=../otus-meta`, or for every
-build by adding `otus.meta.path=../otus-meta` to `~/.gradle/gradle.properties`. The path resolves
-from each app's root, so one entry works for both apps when they sit next to otus-meta. Gradle
-replaces `com.otus:<module>` with the matching project from the checkout, regardless of the
-pinned version. While publishing is paused, Mail's quality and nightly workflows set this
-property to build Meta source. Their success does not validate the published artifacts.
-
-Before merging an app change that needs a library change, release the library and update the
-pinned version. An app's main branch must always build from a released version.
-
-Version 0.10.0 reorganizes design-system packages. See the
-[package migration guide](ui-package-migration.md) before adopting that candidate. Mail's CI can
-test a matching Meta branch while publishing is paused; this does not publish the version or
-replace the release requirement for the consumer cutover.
+Mail and Calendar label such a pull request `needs meta`. Merge the Meta pull request first, then
+the app's, so the app's `main` always builds against Meta's `main`.
 
 ## iOS
 
 The app's `shared` framework links the library klibs. The Xcode project does not change and no
-Swift package is involved. Add `export(libs.otus.<module>)` to the framework configuration only
-when Swift code must call library types directly.
+Swift package is involved. Its Kotlin build phase runs Gradle, which finds Meta the same way. Add
+`export(libs.otus.<module>)` to the framework configuration only when Swift code must call
+library types directly.
 
 ## Compose resources
 
-The design-system module publishes its fonts and icons as Compose Multiplatform resources under
-`com.otus.designsystem.resources`. The apps keep their own resource packages for app-specific
-assets. Check both Android and iOS app builds after moving resources, because resource packaging
-differs per platform.
+The design system publishes its fonts and icons as Compose Multiplatform resources under
+`com.otus.designsystem.resources`, and the avatar module bundles the Public Suffix List under
+`com.otus.avatar.resources`. Apps keep resource packages only for their own assets. Check both
+Android and iOS app builds after moving resources, because resource packaging differs per
+platform.

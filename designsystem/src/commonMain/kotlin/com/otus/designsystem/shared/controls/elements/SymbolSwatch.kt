@@ -18,7 +18,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import com.otus.designsystem.shared.settings.elements.swatchSelectionRing
 import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.tokens.layout.PanelTokens
+import com.otus.designsystem.theme.tokens.core.Sizes
 import com.otus.designsystem.theme.tokens.people.AvatarTokens
 import com.otus.designsystem.theme.tokens.settings.ThemeTokens
 import org.jetbrains.compose.resources.DrawableResource
@@ -39,7 +39,7 @@ public fun SymbolSwatch(
     val interactions = remember { MutableInteractionSource() }
     Box(
         modifier
-            .size(PanelTokens.touchTarget)
+            .size(Sizes.touchTarget)
             .selectable(selected, interactions, indication = null, role = Role.RadioButton, onClick = onClick)
             .controlPressFeedback(interactions, CircleShape)
             .semantics { contentDescription = label }
@@ -49,7 +49,7 @@ public fun SymbolSwatch(
         contentAlignment = Alignment.Center,
     ) {
         CompositionLocalProvider(LocalContentColor provides OtusColors.text1) {
-            Symbol(symbol, size = PanelTokens.touchTarget * AvatarTokens.SYMBOL_SCALE)
+            Symbol(symbol, size = Sizes.touchTarget * AvatarTokens.SYMBOL_SCALE)
         }
     }
 }

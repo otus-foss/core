@@ -66,15 +66,15 @@ internal fun SwipeBackdrop(
             horizontalArrangement = Arrangement.spacedBy(SwipeTokens.gap),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            if (!fromStart) Text(action.label, color = OtusColors.text1, maxLines = 1)
+            if (!fromStart) Text(action.action.label, color = OtusColors.text1, maxLines = 1)
             Box(
                 Modifier.graphicsLayer {
                     scaleX = scale
                     scaleY = scale
                     translationX = shift
                 },
-            ) { Symbol(action.icon) }
-            if (fromStart) Text(action.label, color = OtusColors.text1, maxLines = 1)
+            ) { Symbol(action.symbol) }
+            if (fromStart) Text(action.action.label, color = OtusColors.text1, maxLines = 1)
         }
     }
 }
