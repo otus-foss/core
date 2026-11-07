@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- `IconPill` takes a `fill`, `bgRegular` by default, so it can match the pills beside it.
+  `DetailsTable` now sits on a raised `darkSurface` card with the images banner's radius and inset.
 - Add a System theme: `SystemTheme` holds the device's colors, `ThemeChoice.withSystem()` selects
   them, and `ThemeSettingsState(store, system)` takes the current ones each launch. On Android,
   `Context.systemTheme()` reads the Material You colors in the device's light or dark mode, or
