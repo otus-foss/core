@@ -41,8 +41,9 @@ compose.resources {
     packageOfResClass = "com.otus.designsystem.resources"
 }
 
-// The published iOS metadata sees JetBrains' and Google's Compose klibs together and warns about
-// duplicate unique names. Every iOS target still compiles these sources with warnings as errors.
+// The iOS metadata compilation, which CI's ios metadata part runs on Linux, sees JetBrains' and
+// Google's Compose klibs together and warns about duplicate unique names. Every iOS target still
+// compiles these sources with warnings as errors.
 // See docs/decisions/0006-native-metadata-warnings.md.
 tasks
     .matching { it.name == "compileIosMainKotlinMetadata" }

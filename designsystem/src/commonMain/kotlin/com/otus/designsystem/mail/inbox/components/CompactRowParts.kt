@@ -69,7 +69,7 @@ internal fun RowEndIcons(text: CompactRowText) {
             RowMark.ReadLater -> MarkSymbol(Res.drawable.symbol_bookmark_fill, OtusColors.text1)
         }
     }
-    text.folders.forEach { FolderGlyph(it.color, kind = it.kind) }
+    text.folders.forEach { FolderGlyph(it.color, icon = it.icon) }
     if (text.moreFolders > 0) {
         Text(
             "+${text.moreFolders}",

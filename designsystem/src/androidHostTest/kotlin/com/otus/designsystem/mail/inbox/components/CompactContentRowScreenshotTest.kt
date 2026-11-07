@@ -8,8 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import com.otus.designsystem.resources.Res
+import com.otus.designsystem.resources.symbol_inbox
 import com.otus.designsystem.resources.symbol_reply
-import com.otus.designsystem.shared.folders.elements.FolderGlyphKind
 import com.otus.designsystem.shared.pages.components.pageScreenshot
 import com.otus.designsystem.shared.people.components.DemoPeople
 import com.otus.designsystem.shared.people.elements.Avatar
@@ -44,7 +44,7 @@ class CompactContentRowScreenshotTest {
             trailing = "9:41",
             count = "3",
             marks = listOf(RowMark.Attachment, RowMark.Flagged),
-            folders = listOf(RowFolderIcon(FolderGlyphKind.Folder, FolderColor.Green)),
+            folders = listOf(RowFolderIcon(FolderColor.Green)),
             preview = "Your invoice is attached as a PDF. Payment is due by the end of the month, as usual.",
         )
 
@@ -82,8 +82,8 @@ class CompactContentRowScreenshotTest {
                     marks = listOf(RowMark.ReadLater),
                     folders =
                         listOf(
-                            RowFolderIcon(FolderGlyphKind.Inbox, color = null),
-                            RowFolderIcon(FolderGlyphKind.Folder, FolderColor.Purple),
+                            RowFolderIcon(color = null, icon = Res.drawable.symbol_inbox),
+                            RowFolderIcon(FolderColor.Purple),
                         ),
                     moreFolders = 2,
                 ),
