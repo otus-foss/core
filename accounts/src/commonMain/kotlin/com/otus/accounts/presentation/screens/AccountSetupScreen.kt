@@ -25,6 +25,7 @@ import com.otus.accounts.presentation.AccountAvatars
 import com.otus.accounts.presentation.AccountsState
 import com.otus.accounts.presentation.ConnectStatus
 import com.otus.accounts.presentation.components.ConnectedAccountRow
+import com.otus.accounts.presentation.components.ServerInput
 import com.otus.accounts.presentation.confirmHostMessage
 import com.otus.accounts.presentation.message
 import com.otus.designsystem.shared.controls.components.ButtonPair
@@ -33,6 +34,7 @@ import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.feedback.components.InfoText
 import com.otus.designsystem.shared.input.elements.InputField
 import com.otus.designsystem.shared.input.elements.InputKind
+import com.otus.designsystem.shared.input.elements.InputNote
 import com.otus.designsystem.shared.overlays.components.ConfirmDialog
 import com.otus.designsystem.shared.overlays.components.SheetFrame
 import com.otus.designsystem.shared.pages.components.PageNote
@@ -176,14 +178,18 @@ private fun AddAccountForm(
         username,
         { username = it },
         placeholder = "you@example.com",
-        supportingText = ConnectFailure.InvalidUsername.message(service).takeIf { ':' in username },
+        note =
+            ConnectFailure.InvalidUsername
+                .message(service)
+                .takeIf { ':' in username }
+                ?.let(::InputNote),
         kind = InputKind.Username,
     )
     InputField(
         "Password",
         password,
         { password = it },
-        supportingText = "Use an app password if your server offers one.",
+        note = InputNote("Use an app password if your server offers one."),
         kind = InputKind.Password,
     )
     val connecting = status == ConnectStatus.Connecting

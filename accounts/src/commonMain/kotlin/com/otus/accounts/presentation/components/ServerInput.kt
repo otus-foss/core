@@ -1,4 +1,4 @@
-package com.otus.accounts.presentation.screens
+package com.otus.accounts.presentation.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -13,6 +13,7 @@ import com.otus.accounts.domain.parseJmapServer
 import com.otus.accounts.presentation.message
 import com.otus.designsystem.shared.input.elements.InputField
 import com.otus.designsystem.shared.input.elements.InputKind
+import com.otus.designsystem.shared.input.elements.InputNote
 import kotlinx.coroutines.delay
 
 /**
@@ -41,9 +42,8 @@ internal fun ServerInput(
         value,
         onValueChange,
         placeholder = "${service.name}.example.com",
-        supportingText = (current ?: ServerCheck(address)).hint(service),
+        note = InputNote((current ?: ServerCheck(address)).hint(service), valid = current?.mark()),
         kind = InputKind.Url,
-        valid = current?.mark(),
     )
 }
 

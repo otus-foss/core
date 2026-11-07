@@ -19,6 +19,7 @@ import com.otus.avatar.ui.presentation.PhotoSource
 import com.otus.avatar.ui.presentation.folderColor
 import com.otus.designsystem.shared.controls.elements.SymbolSwatch
 import com.otus.designsystem.shared.input.elements.InputField
+import com.otus.designsystem.shared.input.elements.InputNote
 import com.otus.designsystem.shared.people.elements.AvatarSymbols
 import com.otus.designsystem.shared.selection.components.PickMark
 import com.otus.designsystem.shared.selection.components.PickRow
@@ -61,7 +62,7 @@ internal fun AvatarChoices(
                 "Letters",
                 draft.letters,
                 { onChange(draft.copy(letters = avatarLetters(it))) },
-                supportingText = "Up to $MAX_AVATAR_LETTERS characters.",
+                note = InputNote("Up to $MAX_AVATAR_LETTERS characters."),
             )
         }
     }

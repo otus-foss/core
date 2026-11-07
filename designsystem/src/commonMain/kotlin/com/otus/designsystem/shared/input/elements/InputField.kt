@@ -12,7 +12,7 @@ import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 import com.otus.designsystem.theme.typography.panelTextStyle
 
-/** Labelled single-line form input, with a check or ✕ at its end once [valid] is known. */
+/** Labelled single-line form input, with its [note] below. */
 @Composable
 public fun InputField(
     label: String,
@@ -20,16 +20,15 @@ public fun InputField(
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     placeholder: String = "",
-    supportingText: String? = null,
+    note: InputNote? = null,
     kind: InputKind = InputKind.Text,
-    valid: Boolean? = null,
 ) {
     Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Spacing.iconGap)) {
         FieldLabel(label)
-        InputBox(value, onValueChange, label, InputLook(placeholder, kind, valid = valid))
-        if (supportingText != null) {
+        InputBox(value, onValueChange, label, InputLook(placeholder, kind, valid = note?.valid))
+        if (note != null) {
             Text(
-                supportingText,
+                note.text,
                 Modifier.padding(horizontal = SheetTokens.gap),
                 style = panelTextStyle(),
                 fontSize = SheetTokens.detailSize,

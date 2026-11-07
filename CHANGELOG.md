@@ -9,8 +9,9 @@
   trailing dot, or an IP address.
 - JMAP: add `JmapClient.isJmapServer(url)`, which follows redirects as sign-in does and accepts a
   401 or a session with the core capability.
-- Design system: `InputField` takes `valid` and shows a check or a cross at its end once it is
-  known.
+- Design system: `InputField` takes an `InputNote`, its text and whether the value is valid, and
+  marks a known valid or invalid value with a check or a cross at its end. Breaking: `note =
+  InputNote(text)` replaces `supportingText = text`.
 - Design system: `Chip` takes a `ChipStyle` (role and look) instead of `role` and `look`, and a
   chip's detail is part of its `ChipLabel`. `PickRow` takes a `RowDensity` instead of `height` and
   `subtitleLines`; `PersonPickRow` draws a person with the address at the end. `ListSheet` drops

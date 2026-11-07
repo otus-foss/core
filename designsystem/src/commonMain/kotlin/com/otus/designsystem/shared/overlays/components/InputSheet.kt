@@ -13,6 +13,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.input.elements.InputField
+import com.otus.designsystem.shared.input.elements.InputNote
 import com.otus.designsystem.shared.overlays.elements.sheetInset
 import com.otus.designsystem.theme.tokens.overlays.SheetTokens
 
@@ -52,7 +53,7 @@ public fun InputSheet(
                 .sheetInset()
                 .padding(bottom = SheetTokens.inset)
                 .focusRequester(focus),
-            supportingText = error.takeIf { value != initial },
+            note = error.takeIf { value != initial }?.let(::InputNote),
         )
     }
 }

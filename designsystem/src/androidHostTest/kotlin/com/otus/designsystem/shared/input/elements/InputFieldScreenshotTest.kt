@@ -36,7 +36,7 @@ class InputFieldScreenshotTest {
                 "ada@example.com",
                 {},
                 WIDTH,
-                supportingText = "Replies go to this address",
+                note = InputNote("Replies go to this address"),
                 kind = InputKind.Email,
             )
         }
@@ -61,9 +61,8 @@ class InputFieldScreenshotTest {
                 "mail.example.org",
                 {},
                 WIDTH,
-                supportingText = "Connects to https://mail.example.org/.well-known/jmap",
+                note = InputNote("Connects to https://mail.example.org/.well-known/jmap", valid = true),
                 kind = InputKind.Url,
-                valid = true,
             )
         }
 
@@ -75,9 +74,8 @@ class InputFieldScreenshotTest {
                 "asdf",
                 {},
                 WIDTH,
-                supportingText = "This doesn't look like a server address.",
+                note = InputNote("This doesn't look like a server address.", valid = false),
                 kind = InputKind.Url,
-                valid = false,
             )
         }
 
