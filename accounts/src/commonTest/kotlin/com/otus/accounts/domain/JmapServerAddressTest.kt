@@ -35,7 +35,18 @@ class JmapServerAddressTest {
         assertEquals(JmapServerAddress.Invalid, parseJmapServer("-bad-.example.com"))
         assertEquals(JmapServerAddress.Invalid, parseJmapServer("asdf"))
         assertEquals(JmapServerAddress.Invalid, parseJmapServer("mail.example."))
-        assertEquals(JmapServerAddress.Invalid, parseJmapServer("192.168.1.5"))
+        assertEquals(JmapServerAddress.Invalid, parseJmapServer("192.168.1"))
+        assertEquals(JmapServerAddress.Invalid, parseJmapServer("192.168.1.256"))
+    }
+
+    @Test
+    fun selfHostedAddressesAreHosts() {
+        listOf("192.168.1.5", "[fd00::1]:8443", "localhost", "LOCALHOST:8080", "jmap:8443").forEach { host ->
+            assertEquals(
+                JmapServerAddress.Valid("https://${host.lowercase()}/.well-known/jmap"),
+                parseJmapServer(host),
+            )
+        }
     }
 
     @Test

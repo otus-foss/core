@@ -17,9 +17,20 @@ public sealed interface JmapServerAddress {
 /** The longest DNS name (RFC 1035, section 2.3.4) plus a colon and a five-digit port. */
 private const val MAX_AUTHORITY_LENGTH = 253 + 6
 
-// Labels, then a top-level domain that starts with a letter, so `asdf` or an IP address is not a host.
-private val hostPattern =
-    Regex("^([A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?\\.)+[A-Za-z]([A-Za-z0-9-]*[A-Za-z0-9])?(:[0-9]{1,5})?$")
+private const val LABEL = "[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?"
+private const val PORT = "(:[0-9]{1,5})"
+private const val OCTET = "(25[0-5]|2[0-4][0-9]|1?[0-9]?[0-9])"
+
+// A half-typed word such as `asdf` is not a host, but self-hosted servers often sit at an IP
+// address, at `localhost`, or at a LAN name with a port, so those count.
+private val hostPatterns =
+    listOf(
+        Regex("^($LABEL\\.)+[A-Za-z]([A-Za-z0-9-]*[A-Za-z0-9])?$PORT?$"),
+        Regex("^$OCTET(\\.$OCTET){3}$PORT?$"),
+        Regex("^\\[[0-9A-Fa-f.]*:[0-9A-Fa-f:.]*]$PORT?$"),
+        Regex("^localhost$PORT?$", RegexOption.IGNORE_CASE),
+        Regex("^$LABEL$PORT$"),
+    )
 
 /**
  * A bare host such as `mail.example.com` uses the standard discovery path, `/.well-known/jmap`
@@ -39,9 +50,9 @@ public fun parseJmapServer(input: String): JmapServerAddress {
     }
 }
 
-// The length check comes first: the pattern recurses once per label, so a pasted run of
+// The length check comes first: the DNS pattern recurses once per label, so a pasted run of
 // thousands of labels would overflow the stack before it could fail.
-private fun String.isHost(): Boolean = length <= MAX_AUTHORITY_LENGTH && hostPattern.matches(this)
+private fun String.isHost(): Boolean = length <= MAX_AUTHORITY_LENGTH && hostPatterns.any { it.matches(this) }
 
 /** Details for connecting one account. The password is passed on, never stored by this model. */
 public data class JmapAccountDraft(
