@@ -8,13 +8,13 @@ internal fun isAvatarEmail(email: String): Boolean =
         email.substringAfter('@').isNotBlank() && email.none { it.isWhitespace() || it.isISOControl() }
 
 /** Conservative ASCII hostname handling. IDNs and internal hosts retain their local fallback. */
-public fun avatarIconDomain(email: String): String? {
+internal fun avatarIconDomain(email: String): String? {
     if (!isAvatarEmail(email)) return null
     return email.substringAfter('@').takeIf(::isPublicAvatarHost)?.lowercase()
 }
 
 /** Whether the public loader may request [url], so callers can check an address before saving it. */
-public fun isPublicAvatarUrl(url: String): Boolean = runCatching { Url(url) }.getOrNull()?.isPublicImageUrl() == true
+internal fun isPublicAvatarUrl(url: String): Boolean = runCatching { Url(url) }.getOrNull()?.isPublicImageUrl() == true
 
 /** Only the default HTTPS port, so a public name whose DNS answer is private cannot probe other ports. */
 internal fun Url.isPublicImageUrl(): Boolean =

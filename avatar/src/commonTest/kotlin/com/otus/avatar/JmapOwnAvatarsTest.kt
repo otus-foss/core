@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonArray
@@ -71,7 +72,7 @@ class JmapOwnAvatarsTest {
             val server = SelfCardServer(card = card)
             server.avatars.save("ada", "ada@example.org", "Ada", null)
             val patch = server.update()
-            assertTrue(patch.getValue("media").jsonObject.isEmpty())
+            assertEquals(JsonNull, patch.getValue("media"))
             assertTrue(
                 patch
                     .getValue("vCard")

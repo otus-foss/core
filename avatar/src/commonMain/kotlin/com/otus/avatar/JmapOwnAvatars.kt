@@ -17,14 +17,11 @@ import com.otus.jmap.contacts.toCreation
 import com.otus.jscontact.Card
 import com.otus.jscontact.CardKind
 import com.otus.jscontact.EmailAddress
-import com.otus.jscontact.Media
-import com.otus.jscontact.MediaKind
 import com.otus.jscontact.Name
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.JsonObject
-import kotlin.io.encoding.Base64
 import com.otus.jmap.contacts.AddressBookType as BookType
 import com.otus.jmap.contacts.ContactCardType as CardType
 
@@ -76,12 +73,11 @@ public class JmapOwnAvatars(
         val books = connection.call(GetMethod(BookType, account)).list.filter { it.myRights.mayWrite }
         val madeId = madeLock.withLock { made[accountKey to email] }
         val card = selfCard(connection, account, email, books.map { it.id }.toSet(), madeId)
-        val photo = (avatar as? ContactAvatar.Photo)?.toMedia()
         val method =
             when {
-                card != null -> SetMethod(CardType, account, update = card.update(avatar, photo))
+                card != null -> SetMethod(CardType, account, update = card.update(avatar))
                 avatar == null -> return
-                else -> SetMethod(CardType, account, create = newCard(email, name, books, avatar, photo))
+                else -> SetMethod(CardType, account, create = newCard(email, name, books, avatar))
             }
         val result = connection.call(method)
         val error = result.firstError
@@ -147,21 +143,8 @@ private fun List<AddressBook>.saveTarget(): AddressBook =
     sortedByDescending { it.isDefault }.firstOrNull() ?: throw OwnAvatarException(OwnAvatarFailure.ReadOnly)
 
 /** The `update` argument that sets this card's avatar. */
-private fun Card.update(
-    avatar: ContactAvatar?,
-    photo: Media?,
-): Map<String, JsonObject> = mapOf(requireNotNull(id) to cardPatch(this, withAvatar(avatar, photo)))
-
-/** This card with [photo] as its only photo, or none, and with the style of [avatar], or none. */
-private fun Card.withAvatar(
-    avatar: ContactAvatar?,
-    photo: Media?,
-): Card {
-    val others = media?.filterValues { it.kind != MediaKind.Photo }
-    val photos = photo?.let { mapOf(AVATAR_PHOTO_KEY to it) }.orEmpty()
-    return copy(media = if (media == null && photo == null) null else others.orEmpty() + photos)
-        .withAvatarStyle((avatar as? ContactAvatar.Styled)?.style)
-}
+private fun Card.update(avatar: ContactAvatar?): Map<String, JsonObject> =
+    mapOf(requireNotNull(id) to cardPatch(this, withAvatar(avatar)))
 
 /** The `create` argument that makes a self card for [email] in the default writable book. */
 private fun newCard(
@@ -169,7 +152,6 @@ private fun newCard(
     name: String,
     books: List<AddressBook>,
     avatar: ContactAvatar,
-    photo: Media?,
 ): Map<String, JsonObject> =
     mapOf(
         NEW_CARD to
@@ -177,14 +159,10 @@ private fun newCard(
                 kind = CardKind.Individual,
                 name = name.trim().takeIf { it.isNotEmpty() }?.let { Name(full = it) },
                 emails = mapOf(EMAIL_KEY to EmailAddress(email)),
-                media = photo?.let { mapOf(AVATAR_PHOTO_KEY to it) },
                 addressBookIds = mapOf(books.saveTarget().id to true),
-            ).withAvatarStyle((avatar as? ContactAvatar.Styled)?.style)
+            ).withAvatar(avatar)
                 .toCreation(),
     )
-
-private fun ContactAvatar.Photo.toMedia() =
-    Media(MediaKind.Photo, uri = "data:$mediaType;base64,${Base64.encode(image.bytes)}", mediaType = mediaType)
 
 private const val NEW_CARD = "self"
 private const val EMAIL_KEY = "e1"

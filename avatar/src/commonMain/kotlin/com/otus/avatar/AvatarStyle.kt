@@ -70,10 +70,10 @@ public const val MAX_AVATAR_LETTERS: Int = 3
  * that stores vCards, such as Stalwart, keeps; Stalwart rejects unknown top-level card properties.
  * Other contact apps keep the property but ignore it.
  */
-public const val AVATAR_STYLE_PROPERTY: String = "x-otus-avatar"
+internal const val AVATAR_STYLE_PROPERTY: String = "x-otus-avatar"
 
 /** The style in the `vCard` value of a card, or null when it holds none Otus can read. */
-public fun avatarStyleIn(vCard: JsonElement?): AvatarStyle? =
+internal fun avatarStyleIn(vCard: JsonElement?): AvatarStyle? =
     vCard
         .avatarProperties()
         .firstOrNull { it.isAvatarStyle() }
@@ -85,7 +85,7 @@ public fun avatarStyleIn(vCard: JsonElement?): AvatarStyle? =
  * The `vCard.properties` of a card after setting [style] in [vCard], keeping its other properties.
  * A null [style] removes it.
  */
-public fun avatarPropertiesWith(
+internal fun avatarPropertiesWith(
     vCard: JsonElement?,
     style: AvatarStyle?,
 ): JsonArray {
@@ -103,7 +103,7 @@ public fun avatarPropertiesWith(
 }
 
 /** Whether the `vCard` value of a card holds a style. */
-public fun hasAvatarStyle(vCard: JsonElement?): Boolean = vCard.avatarProperties().any { it.isAvatarStyle() }
+internal fun hasAvatarStyle(vCard: JsonElement?): Boolean = vCard.avatarProperties().any { it.isAvatarStyle() }
 
 private fun JsonElement?.avatarProperties(): List<JsonArray> =
     ((this as? JsonObject)?.get(VCARD_PROPERTIES) as? JsonArray).orEmpty().filterIsInstance<JsonArray>()
