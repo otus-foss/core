@@ -24,6 +24,12 @@ from source_code import (
 SOURCE_FOLDERS = ("shared/src", "androidApp/src", "iosApp")
 FEATURE_LAYERS = {"domain", "data", "presentation"}
 DRAWABLE = re.compile(r"drawable(?:-[\w-]+)?")
+# Material's theme and surfaces skip OtusTheme's tokens; Meta's elements wrap what apps need.
+MATERIAL_DRAWING = (
+    "androidx.compose.material.MaterialTheme",
+    "androidx.compose.material.Surface",
+    "androidx.compose.material3.",
+)
 
 
 def violations(path: Path, text: str, base: str, layers: frozenset[str]) -> list[str]:
@@ -72,6 +78,8 @@ def violations(path: Path, text: str, base: str, layers: frozenset[str]) -> list
         )
         if not allowed:
             errors.append("composables belong in app or presentation screens and components")
+    if uses(code, MATERIAL_DRAWING):
+        errors.append("draw with otus-meta elements, not Material's theme or surfaces")
     if literal_color(code):
         errors.append("literal colors belong in otus-meta designsystem/theme")
     return sorted(set(errors))

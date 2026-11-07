@@ -147,6 +147,24 @@ class AppRuleTests(unittest.TestCase):
                 )
         self.assertFalse(check("feature.inbox.presentation.components", "val c = OtusColors.text1"))
 
+    def test_material_theme_and_surfaces_belong_in_meta(self):
+        for body in (
+            "import androidx.compose.material.Surface\nval s = Surface",
+            "import androidx.compose.material.MaterialTheme\nval t = MaterialTheme",
+            "import androidx.compose.material3.Text\nval t = Text",
+        ):
+            with self.subTest(body=body):
+                self.assertIn(
+                    "draw with otus-meta elements, not Material's theme or surfaces",
+                    check("feature.welcome.presentation.screens", body),
+                )
+        self.assertFalse(
+            check(
+                "feature.inbox.presentation.components",
+                "import androidx.compose.material.Text\nval t = Text",
+            )
+        )
+
     def test_raw_animation_specs_are_rejected(self):
         for body in (
             "val spec = tween<Float>(300)",
