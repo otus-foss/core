@@ -36,20 +36,18 @@ plugins {
     id("otus.settings")
 }
 
-val otusMeta = file(providers.gradleProperty("otus.meta.path").getOrElse("../otus-meta"))
-includeBuild(otusMeta) { name = "otus-meta" }
-
 dependencyResolutionManagement {
     versionCatalogs {
-        create("libs") { from(files(otusMeta.resolve("gradle/libs.versions.toml"))) }
         create("appLibs") { from(files("gradle/app.versions.toml")) }
     }
 }
 ```
 
-`pluginManagement` cannot read values from the rest of the file, so the path appears twice.
-The included build is named `otus-meta` whatever its directory is called, so its task paths are
-always `:otus-meta:<module>:<task>`, and the convention plugins find the checkout by that name.
+`pluginManagement` runs before any plugin, so it reads the path itself to find the convention
+plugins. The `otus.settings` plugin then reads it again with the same rule, includes the checkout,
+and loads its catalog as `libs`. The included build is named `otus-meta` whatever its directory is
+called, so its task paths are always `:otus-meta:<module>:<task>`, and the convention plugins find
+the checkout by that name.
 
 - `libs` is Meta's `gradle/libs.versions.toml`, the suite catalog. It holds every version that
   more than one repository uses, and version-free `otus-<module>` entries for Meta's modules,
