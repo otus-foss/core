@@ -29,7 +29,14 @@ public class JmapClient(
     engine: HttpClientEngine? = null,
     internal val policy: JmapPolicy = JmapPolicy(),
 ) : AutoCloseable {
-    internal val http = if (engine == null) HttpClient { configure() } else HttpClient(engine) { configure() }
+    internal val http =
+        if (engine ==
+            null
+        ) {
+            HttpClient { configure(policy) }
+        } else {
+            HttpClient(engine) { configure(policy) }
+        }
     internal val urls = JmapUrls(policy)
 
     /**
@@ -85,7 +92,7 @@ public class JmapClient(
         val start = urls.parse(url)
         val trusted = trustedOrigins + start.origin()
         val (target, response) = getFollowingRedirects(start) { hop -> auth.takeIf { hop.origin() in trusted } }
-        val session = parseSession(target.requireTrusted(trusted), response, trusted)
+        val session = urls.parseSession(target.requireTrusted(trusted), response, trusted)
         if (requireTrustedBlobOrigins) urls.requireTrustedBlobOrigins(session)
         return session
     }
@@ -149,36 +156,6 @@ public class JmapClient(
         return jmapDecoding { parseResponse(decode(response)) }
     }
 
-    private fun parseSession(
-        url: Url,
-        response: RawResponse,
-        trusted: Set<String>,
-    ): JmapSession {
-        val dto = jmapDecoding { JmapJson.decodeFromJsonElement(SessionDto.serializer(), decode(response)) }
-        return JmapSession(
-            sessionUrl = url.toString(),
-            apiUrl = urls.resolve(url, dto.apiUrl).requireTrusted(trusted).toString(),
-            username = dto.username,
-            capabilities = dto.capabilities.keys,
-            accounts =
-                dto.accounts.mapValues { (_, account) ->
-                    JmapAccount(
-                        account.name,
-                        account.isPersonal,
-                        account.isReadOnly,
-                        account.accountCapabilities.keys,
-                        account.accountCapabilities.capabilityObjects(),
-                    )
-                },
-            primaryAccounts = dto.primaryAccounts,
-            state = dto.state,
-            trustedOrigins = trusted,
-            downloadUrl = dto.downloadUrl,
-            uploadUrl = dto.uploadUrl,
-            capabilityObjects = dto.capabilities.capabilityObjects(),
-        )
-    }
-
     private suspend fun exchange(
         method: HttpMethod,
         target: Url,
@@ -207,19 +184,51 @@ public class JmapClient(
             throw JmapException.Unreachable(error)
         }
 
-    private fun HttpClientConfig<*>.configure() {
-        followRedirects = false
-        expectSuccess = false
-        install(HttpTimeout) {
-            connectTimeoutMillis = policy.connectTimeoutMillis
-            requestTimeoutMillis = policy.requestTimeoutMillis
-            socketTimeoutMillis = policy.socketTimeoutMillis
-        }
-    }
-
     private companion object {
         val REDIRECT_STATUSES = setOf(301, 302, 303, 307, 308)
     }
+}
+
+/** Redirects are followed by hand, so each hop's credentials can be chosen; [policy] sets the timeouts. */
+private fun HttpClientConfig<*>.configure(policy: JmapPolicy) {
+    followRedirects = false
+    expectSuccess = false
+    install(HttpTimeout) {
+        connectTimeoutMillis = policy.connectTimeoutMillis
+        requestTimeoutMillis = policy.requestTimeoutMillis
+        socketTimeoutMillis = policy.socketTimeoutMillis
+    }
+}
+
+/** The session [response] describes, fetched from [url]; its `apiUrl` must be on a [trusted] origin. */
+private fun JmapUrls.parseSession(
+    url: Url,
+    response: RawResponse,
+    trusted: Set<String>,
+): JmapSession {
+    val dto = jmapDecoding { JmapJson.decodeFromJsonElement(SessionDto.serializer(), decode(response)) }
+    return JmapSession(
+        sessionUrl = url.toString(),
+        apiUrl = resolve(url, dto.apiUrl).requireTrusted(trusted).toString(),
+        username = dto.username,
+        capabilities = dto.capabilities.keys,
+        accounts =
+            dto.accounts.mapValues { (_, account) ->
+                JmapAccount(
+                    account.name,
+                    account.isPersonal,
+                    account.isReadOnly,
+                    account.accountCapabilities.keys,
+                    account.accountCapabilities.capabilityObjects(),
+                )
+            },
+        primaryAccounts = dto.primaryAccounts,
+        state = dto.state,
+        trustedOrigins = trusted,
+        downloadUrl = dto.downloadUrl,
+        uploadUrl = dto.uploadUrl,
+        capabilityObjects = dto.capabilities.capabilityObjects(),
+    )
 }
 
 /**

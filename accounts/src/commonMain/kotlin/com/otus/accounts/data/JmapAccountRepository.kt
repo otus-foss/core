@@ -162,16 +162,17 @@ public class JmapAccountRepository(
                 id = existing?.id ?: "${draft.username} ${draft.sessionUrl}",
                 sessionUrl = draft.sessionUrl,
                 username = draft.username,
-                name = accountName(session) ?: draft.username,
+                name = session.accountName(service) ?: draft.username,
                 trustedOrigins = draft.trustedOrigins,
             )
         logins.save(login, draft.password)
         return login
     }
-
-    private fun accountName(session: JmapSession): String? =
-        session.accountFor(service.capability)?.let { session.accounts[it]?.name }?.ifBlank { null }
 }
+
+/** The name [session] gives the account that offers [service], unless it is blank. */
+private fun JmapSession.accountName(service: AccountService): String? =
+    accountFor(service.capability)?.let { accounts[it]?.name }?.ifBlank { null }
 
 internal fun JmapException.toFailure(): ConnectFailure =
     when (this) {
