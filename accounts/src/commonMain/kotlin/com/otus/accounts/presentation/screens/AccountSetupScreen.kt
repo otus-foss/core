@@ -170,14 +170,7 @@ private fun AddAccountForm(
             password = ""
         }
     }
-    InputField(
-        "Server",
-        server,
-        { server = it },
-        placeholder = "${service.name}.example.com",
-        supportingText = serverHint(address),
-        kind = InputKind.Url,
-    )
+    ServerInput(server, { server = it }, service, state::checkServer)
     InputField(
         "Username",
         username,
@@ -231,14 +224,6 @@ private fun statusText(
         is ConnectStatus.Connected -> "Connected ${status.name}."
         is ConnectStatus.Failed -> status.reason.message(service)
         is ConnectStatus.ConfirmHost -> confirmHostMessage(status.host)
-    }
-
-private fun serverHint(address: JmapServerAddress): String =
-    when (address) {
-        JmapServerAddress.Empty -> "Your provider's host name, or its full JMAP session URL."
-        JmapServerAddress.Insecure -> "JMAP requires a secure connection. Use https://."
-        JmapServerAddress.Invalid -> "This doesn't look like a server address."
-        is JmapServerAddress.Valid -> "Connects to ${address.sessionUrl}"
     }
 
 private val AvatarsInfo =

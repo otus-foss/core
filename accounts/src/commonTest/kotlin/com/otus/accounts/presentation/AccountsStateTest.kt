@@ -2,6 +2,7 @@ package com.otus.accounts.presentation
 
 import com.otus.accounts.domain.AccountRepository
 import com.otus.accounts.domain.AccountStorageException
+import com.otus.accounts.domain.ConnectFailure
 import com.otus.accounts.domain.ConnectOutcome
 import com.otus.accounts.domain.ConnectedAccount
 import com.otus.accounts.domain.JmapAccountDraft
@@ -173,6 +174,8 @@ private class AccountStateRepository : AccountRepository {
         }
         return pendingConnection?.await() ?: ConnectOutcome.Connected(account)
     }
+
+    override suspend fun checkServer(sessionUrl: String): ConnectFailure? = null
 
     override suspend fun remove(id: String) {
         if (failRemove) throw AccountStorageException(IllegalStateException("remove failed"))

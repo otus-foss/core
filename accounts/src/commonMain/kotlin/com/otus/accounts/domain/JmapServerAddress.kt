@@ -17,8 +17,9 @@ public sealed interface JmapServerAddress {
 /** The longest DNS name (RFC 1035, section 2.3.4) plus a colon and a five-digit port. */
 private const val MAX_AUTHORITY_LENGTH = 253 + 6
 
+// Labels, then a top-level domain that starts with a letter, so `asdf` or an IP address is not a host.
 private val hostPattern =
-    Regex("^[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?(\\.[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?)*(:[0-9]{1,5})?$")
+    Regex("^([A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?\\.)+[A-Za-z]([A-Za-z0-9-]*[A-Za-z0-9])?(:[0-9]{1,5})?$")
 
 /**
  * A bare host such as `mail.example.com` uses the standard discovery path, `/.well-known/jmap`

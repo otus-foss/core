@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Accounts: the setup form checks the server address as it is typed and marks it with a check or
+  a cross. Add `AccountRepository.checkServer(sessionUrl)` and `AccountsState.checkServer`, which
+  ask without credentials whether an address answers like a JMAP server. Breaking for any other
+  `AccountRepository`, which must implement it. `parseJmapServer` now rejects a bare word, a
+  trailing dot, or an IP address.
+- JMAP: add `JmapClient.isJmapServer(url)`, which follows redirects as sign-in does and accepts a
+  401 or a session with the core capability.
+- Design system: `InputField` takes `valid` and shows a check or a cross at its end once it is
+  known.
 - Design system: `Chip` takes a `ChipStyle` (role and look) instead of `role` and `look`, and a
   chip's detail is part of its `ChipLabel`. `PickRow` takes a `RowDensity` instead of `height` and
   `subtitleLines`; `PersonPickRow` draws a person with the address at the end. `ListSheet` drops

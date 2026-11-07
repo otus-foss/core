@@ -178,4 +178,13 @@ class JmapAccountRepositoryTest {
             val connection = JmapConnections(JmapClient(engine), store).connection(login)
             assertContentEquals(byteArrayOf(7), connection.download("d333333", "photo", "image/png", 10).bytes)
         }
+
+    @Test
+    fun checkingAServerNeedsNoCredentialsAndSavesNothing() =
+        runTest {
+            assertEquals(null, repository(stalwartLike()).checkServer(draft.sessionUrl))
+            val missing = MockEngine { respond("", HttpStatusCode.NotFound) }
+            assertEquals(ConnectFailure.NotJmap, repository(missing).checkServer(draft.sessionUrl))
+            assertTrue(store.logins().isEmpty())
+        }
 }
