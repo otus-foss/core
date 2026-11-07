@@ -1,7 +1,9 @@
 package com.otus.designsystem.shared.panels.components
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -49,6 +51,20 @@ internal fun quickViewAlpha(position: Float): Float =
         position <= QUICK_FROM -> 0f
         position <= 1f -> (position - QUICK_FROM) / (1f - QUICK_FROM)
         else -> (1f - (position - 1f) / (GROWN_LAST_STOP_FROM - 1f)).coerceAtLeast(0f)
+    }
+
+/**
+ * How much what both stops show stays at [position]: in with the quick view and held through the
+ * last stop, or in with the last stop when the panel [skipping] past the quick view.
+ */
+internal fun sharedAlpha(
+    position: Float,
+    skipping: Boolean,
+): Float =
+    when {
+        skipping -> lastStopAlpha(position)
+        position >= 1f -> 1f
+        else -> quickViewAlpha(position)
     }
 
 /** How much a grown panel's last stop shows at [position]. */
@@ -113,11 +129,38 @@ public fun rememberShownUntilClosed(
 /**
  * A grown panel's room: the [quick] view around the first stop, and the [lastStop] toward the last,
  * each fading with how far [expansion] is open and leaving the accessibility tree once faded out.
+ * [shared], such as a message's details, sits above both and stays still while one fades into the
+ * other, so it never redraws between the stops.
  * The quick view stays hidden while the panel skips past it. The last stop is composed only while
  * it is [lastStopOpen], and until the panel stops moving after, so its faded layer takes no taps.
  */
 @Composable
 public fun GrownPanelLayers(
+    expansion: PanelExpansion,
+    lastStopOpen: Boolean,
+    quick: @Composable () -> Unit,
+    lastStop: @Composable () -> Unit,
+    shared: (@Composable () -> Unit)? = null,
+) {
+    val position = { expansion.position }
+    val sharedHidden by remember(expansion) { derivedStateOf { sharedAlpha(position(), expansion.skipping) == 0f } }
+    Column(Modifier.fillMaxSize()) {
+        shared?.let { content ->
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .graphicsLayer { alpha = sharedAlpha(position(), expansion.skipping) }
+                    .hiddenWhen(sharedHidden),
+            ) { content() }
+        }
+        Box(Modifier.weight(1f).fillMaxWidth()) {
+            Layers(expansion, lastStopOpen, quick, lastStop)
+        }
+    }
+}
+
+@Composable
+private fun Layers(
     expansion: PanelExpansion,
     lastStopOpen: Boolean,
     quick: @Composable () -> Unit,

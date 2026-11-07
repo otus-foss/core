@@ -4,7 +4,8 @@
 
 - Design system: `DetailRows` replaces `DetailsTable` and draws the rows without a card, so they
   sit straight on a panel. `grownStopHeight(content)` gives a grown panel stop's height for
-  measured content, and `GROWN_EXPANDED_STOP` names the expanded stop. Breaking: `DetailsTable`,
+  measured content, and `GROWN_EXPANDED_STOP` names the expanded stop. `GrownPanelLayers` takes a
+  `shared` slot that both stops show and that stays still while one fades into the other. Breaking: `DetailsTable`,
   `QuickPerson`, and the `QuickViewTokens.person*` tokens are gone; see docs/removed-apis.md.
 - Accounts: the setup form checks the server address as it is typed and marks it with a check or
   a cross. Add `AccountRepository.checkServer(sessionUrl)` and `AccountsState.checkServer`, which
