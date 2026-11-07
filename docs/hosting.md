@@ -83,7 +83,18 @@ An app's build jobs check the app out to `otus-<app>` and Meta to `otus-meta`, s
 a development machine, so Gradle finds Meta at `../otus-meta` and Spotless never sees Meta's
 files. The apps read otus-meta with the read-only `OTUS_META_DEPLOY_KEY` deploy key, which only
 the checkout steps receive. Meta's `apps` job reads the apps the same way, with the
-`OTUS_MAIL_DEPLOY_KEY` and `OTUS_CALENDAR_DEPLOY_KEY` deploy keys. Meta's architecture check fails a workflow that gives a repository
+`OTUS_MAIL_DEPLOY_KEY` and `OTUS_CALENDAR_DEPLOY_KEY` deploy keys. Without them every `apps` job fails at the checkout
+with "Not Found". To add one, make a key pair, add its public half to the repository that is read
+as a read-only deploy key, and store its private half as the secret in the repository that reads:
+
+```sh
+ssh-keygen -t ed25519 -N "" -C "otus-meta apps ci" -f /tmp/key
+gh repo deploy-key add /tmp/key.pub -R reazndev/otus-mail -t "otus-meta apps ci"
+gh secret set OTUS_MAIL_DEPLOY_KEY -R reazndev/otus-meta < /tmp/key && rm /tmp/key /tmp/key.pub
+```
+
+Dependabot pull requests read only Dependabot secrets, so their CI also needs each key stored there
+(`gh secret set --app dependabot`). Meta's architecture check fails a workflow that gives a repository
 secret to a Gradle step or shares one through a workflow or job `env`.
 
 ## Packages

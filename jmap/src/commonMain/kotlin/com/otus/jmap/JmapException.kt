@@ -119,8 +119,9 @@ public val JmapException.category: JmapErrorCategory
         }
 
 /**
- * Whether the same call may succeed later: `serverUnavailable`, `serverFail`, and
- * `serverPartialFail` (RFC 8620, section 3.6.2) report a server problem, not one with the call.
+ * Whether the call waits for the next sync instead of failing for good: `serverUnavailable` (RFC
+ * 8620, section 3.6.2) is temporary, while `serverFail` may fail again and `serverPartialFail` asks
+ * for a resync. All three are the server's problem, not the call's, so a later try may succeed.
  */
 public val JmapException.MethodError.isTemporary: Boolean
     get() = type in TEMPORARY_METHOD_ERRORS

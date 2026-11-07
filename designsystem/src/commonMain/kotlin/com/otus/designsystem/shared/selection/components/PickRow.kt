@@ -54,7 +54,7 @@ public fun PickRow(
     leading: (@Composable () -> Unit)? = null,
 ) {
     val height = if (density == RowDensity.Compact) Sizes.touchTarget else mark.style.rowHeight(subtitle != null)
-    PickRowFrame(mark, onClick, modifier.heightIn(min = height), leading) { PickRowText(title, subtitle) }
+    PickRowFrame(mark, onClick, modifier.heightIn(min = height), leading) { PickRowText(title, subtitle, density) }
 }
 
 /**
@@ -76,14 +76,18 @@ public fun PersonPickRow(
         modifier.heightIn(min = mark.style.rowHeight(hasSubtitle = false)),
         avatar,
         trailing = address?.let { { PickDetail(it) } },
-    ) { PickRowText(name, subtitle = null) }
+    ) { PickRowText(name, subtitle = null, RowDensity.Compact) }
 }
 
-/** The [title] and smaller `text2` [subtitle] of a [PickRow]. */
+/**
+ * The [title] and smaller `text2` [subtitle] of a [PickRow]. A [RowDensity.Regular] row wraps its
+ * subtitle, which can explain a choice in a few sentences; a compact one keeps it to a line.
+ */
 @Composable
 private fun PickRowText(
     title: String,
     subtitle: String?,
+    density: RowDensity,
 ) {
     Text(title, style = panelTextStyle(), maxLines = 1, overflow = TextOverflow.Ellipsis)
     if (subtitle != null) {
@@ -92,7 +96,7 @@ private fun PickRowText(
             style = panelTextStyle(),
             color = OtusColors.text2,
             fontSize = TypeScale.detail,
-            maxLines = 1,
+            maxLines = if (density == RowDensity.Compact) 1 else Int.MAX_VALUE,
             overflow = TextOverflow.Ellipsis,
         )
     }
@@ -114,7 +118,8 @@ private fun PickDetail(text: String) {
 /**
  * The frame of a [PickRow] for rows whose text is not a plain title: the [leading] slot, the
  * [content] column, an optional [trailing] slot, and the [mark] at the end, or first when
- * [PickMark.atStart]. [modifier] sets the row's least height.
+ * [PickMark.atStart]. [modifier] sets the row's least height, and [verticalPadding] keeps a tall
+ * row's text off its edges.
  */
 @Composable
 internal fun PickRowFrame(
@@ -123,6 +128,7 @@ internal fun PickRowFrame(
     modifier: Modifier,
     leading: (@Composable () -> Unit)?,
     trailing: (@Composable () -> Unit)? = null,
+    verticalPadding: Dp = Spacing.iconGap,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val interactions = remember { MutableInteractionSource() }
@@ -136,7 +142,7 @@ internal fun PickRowFrame(
             .clip(shape)
             .cardFill(card, mark.selected)
             .controlPressFeedback(interactions, shape)
-            .padding(horizontal = if (card) SheetTokens.gap else SheetTokens.inset, vertical = Spacing.iconGap),
+            .padding(horizontal = if (card) SheetTokens.gap else SheetTokens.inset, vertical = verticalPadding),
         horizontalArrangement = Arrangement.spacedBy(SheetTokens.gap),
         verticalAlignment = Alignment.CenterVertically,
     ) {

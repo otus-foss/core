@@ -49,8 +49,9 @@ class JmapOwnAvatarsTest {
             val server = SelfCardServer(card = """{"id":"c","addressBookIds":{"own":true},$ADA_EMAIL,$media}""")
             server.avatars.save("ada", "ada@example.org", "Ada", photo)
             val patch = server.update()
-            assertEquals(setOf("media"), patch.keys)
-            assertEquals(setOf("l", AVATAR_PHOTO_KEY), patch.getValue("media").jsonObject.keys)
+            // Only the changed entries go out, so the logo the server returned is never sent back.
+            assertEquals(setOf("media/p", "media/$AVATAR_PHOTO_KEY"), patch.keys)
+            assertEquals(JsonNull, patch.getValue("media/p"))
         }
 
     @Test
@@ -73,14 +74,7 @@ class JmapOwnAvatarsTest {
             server.avatars.save("ada", "ada@example.org", "Ada", null)
             val patch = server.update()
             assertEquals(JsonNull, patch.getValue("media"))
-            assertTrue(
-                patch
-                    .getValue("vCard")
-                    .jsonObject
-                    .getValue("properties")
-                    .jsonArray
-                    .isEmpty(),
-            )
+            assertTrue(patch.getValue("vCard/properties").jsonArray.isEmpty())
         }
 
     @Test

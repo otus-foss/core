@@ -3,7 +3,10 @@
 import re
 from pathlib import Path
 
-REPOSITORY_SECRET = re.compile(r"secrets\.")
+# `secrets.NAME` and `secrets[expression]`.
+REPOSITORY_SECRET = re.compile(r"\bsecrets\s*[.\[]")
+# A Gradle build runs code from dependencies, so it gets neither a secret nor the job's token.
+GRADLE_SECRET = re.compile(REPOSITORY_SECRET.pattern + r"|\bgithub\.token\b")
 STEP = re.compile(r" {6}- ")
 SHARED_ENV = re.compile(r"(?: {4})?env:\s*$")
 
@@ -49,9 +52,9 @@ def workflow_secret_violations(text: str) -> list[str]:
     errors = [
         f"step '{step_name(step) or step.splitlines()[0].strip()}' runs Gradle with a secret"
         for step in steps(text)
-        if "gradlew" in step and REPOSITORY_SECRET.search(step)
+        if "gradlew" in step and GRADLE_SECRET.search(step)
     ]
-    if any("secrets." in block for block in shared_env(text)):
+    if any(REPOSITORY_SECRET.search(block) for block in shared_env(text)):
         errors.append("a workflow or job env shares a secret with every step; give it to one step")
     return errors
 

@@ -43,14 +43,15 @@ tasks.register<JavaExec>("detekt") {
     args(
         "--input",
         moduleSources.joinToString(","),
-        "--config",
-        detektConfig.path,
         "--build-upon-default-config",
         "--excludes",
         "**/build/**,**/src/test/**,**/src/*Test/**",
         "--report",
         "html:build/reports/detekt.html",
     )
+    // The config's place on disk stays out of the task's inputs, so another checkout can reuse the cache.
+    val configPath = detektConfig.path
+    argumentProviders.add(CommandLineArgumentProvider { listOf("--config", configPath) })
     // Declared inputs and outputs let an unchanged tree skip detekt or restore it from the build cache.
     inputs
         .files(moduleSources.map { fileTree(it) { exclude("test/**", "*Test/**") } })

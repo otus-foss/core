@@ -16,12 +16,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.contentType
+import androidx.compose.ui.semantics.error
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import com.otus.designsystem.resources.Res
 import com.otus.designsystem.resources.symbol_check
-import com.otus.designsystem.resources.symbol_close
+import com.otus.designsystem.resources.symbol_report
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.theme.colors.FolderColor
 import com.otus.designsystem.theme.colors.OtusColors
@@ -55,7 +57,8 @@ internal fun InputIcon(icon: DrawableResource) {
 }
 
 /**
- * A green check when [valid], or a red ✕, at a field's end. The palette has no status colors, so it
+ * A green check when [valid], or a red warning mark, at a field's end. The mark is drawn only; the
+ * field reads its state to screen readers. The palette has no status colors, so it
  * takes the Green and Red folder shades, which reach 3:1 contrast on `bgDark` in every theme.
  */
 @Composable
@@ -63,7 +66,7 @@ private fun ValidityMark(valid: Boolean) {
     val color = if (valid) FolderColor.Green else FolderColor.Red
     CompositionLocalProvider(LocalContentColor provides (color.tint ?: OtusColors.text2)) {
         Box(Modifier.padding(start = SheetTokens.gap)) {
-            Symbol(if (valid) Res.drawable.symbol_check else Res.drawable.symbol_close)
+            Symbol(if (valid) Res.drawable.symbol_check else Res.drawable.symbol_report)
         }
     }
 }
@@ -90,6 +93,11 @@ internal fun InputBox(
                 contentDescription = description
                 val type = look.kind.contentType
                 if (type != null) contentType = type
+                when (look.valid) {
+                    true -> stateDescription = "Valid"
+                    false -> error("Not valid")
+                    null -> Unit
+                }
             },
         singleLine = true,
         textStyle = style,

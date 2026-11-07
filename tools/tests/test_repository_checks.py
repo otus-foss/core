@@ -44,12 +44,23 @@ class WorkflowSecretTests(unittest.TestCase):
             ["step 'Sign' runs Gradle with a secret"], workflow_secret_violations(text)
         )
 
+    def test_gradle_steps_get_no_indexed_secret_or_job_token(self):
+        for value in ("${{ secrets[matrix.key] }}", "${{ github.token }}"):
+            text = WORKFLOW.replace("apksigner sign app.apk", "./gradlew sign").replace(
+                "${{ secrets.KEY }}", value
+            )
+            with self.subTest(value=value):
+                self.assertEqual(
+                    ["step 'Sign' runs Gradle with a secret"], workflow_secret_violations(text)
+                )
+
     def test_workflow_and_job_env_share_no_secrets(self):
         for text in (
             "env:\n  TOKEN: ${{ secrets.TOKEN }}\n" + WORKFLOW,
             WORKFLOW.replace(
                 "    steps:", "    env:\n      TOKEN: ${{ secrets.TOKEN }}\n    steps:"
             ),
+            "env:\n  TOKEN: ${{ secrets[inputs.name] }}\n" + WORKFLOW,
         ):
             with self.subTest(text=text):
                 self.assertTrue(workflow_secret_violations(text))

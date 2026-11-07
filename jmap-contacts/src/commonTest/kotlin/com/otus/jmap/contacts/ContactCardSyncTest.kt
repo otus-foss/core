@@ -103,7 +103,7 @@ class ContactCardSyncTest {
                 parseObject(
                     """{"accountId": "a0x9", "create": {"k1": {"@type": "Card", "version": "1.0",
                     "uid": "urn:uuid:4f5e", "name": {"@type": "Name", "full": "Ada"},
-                    "addressBookIds": {"$PERSONAL": true}}}, "update": {"c1": {"addressBookIds": {"$PERSONAL": true, "$AUTOSAVED": true}}}}""",
+                    "addressBookIds": {"$PERSONAL": true}}}, "update": {"c1": {"addressBookIds/$AUTOSAVED": true}}}""",
                 ),
                 server.singleCall()[1],
             )

@@ -155,6 +155,7 @@ private fun ChoiceOption(
             } else {
                 null
             },
+        verticalPadding = ChoiceSheetTokens.optionGap,
     ) { ChoiceText(row) }
 }
 

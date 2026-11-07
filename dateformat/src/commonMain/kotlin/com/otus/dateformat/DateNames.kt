@@ -53,9 +53,18 @@ public fun DateFormatter.formatRecentDay(
 private val DateFormatter.dayFirst: Boolean
     get() =
         when (preference) {
-            DateFormatPreference.DayMonthYearDots, DateFormatPreference.DayMonthYearSlashes -> true
-            DateFormatPreference.DeviceLocale -> formatDayMonth(DAY_FIRST_PROBE).startsWith(PROBE_DAY.toString())
-            else -> false
+            DateFormatPreference.DayMonthYearDots, DateFormatPreference.DayMonthYearSlashes -> {
+                true
+            }
+
+            // Reads the first digit's value, so locales that write native digits, such as ar-EG, count too.
+            DateFormatPreference.DeviceLocale -> {
+                formatDayMonth(DAY_FIRST_PROBE).firstOrNull(Char::isDigit)?.digitToIntOrNull() == PROBE_DAY_TENS
+            }
+
+            else -> {
+                false
+            }
         }
 
 /** This month's English name, such as "January". */
@@ -72,5 +81,8 @@ private const val DAYS_IN_WEEK = 7
 
 /** A day whose number no month has, so a day-month text shows which comes first. */
 private const val PROBE_DAY = 31
+
+/** The first digit of [PROBE_DAY], which a day-first date starts with. */
+private const val PROBE_DAY_TENS = 3
 private const val PROBE_YEAR = 2000
 private val DAY_FIRST_PROBE = LocalDate(PROBE_YEAR, Month.DECEMBER, PROBE_DAY)

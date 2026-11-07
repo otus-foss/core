@@ -2,7 +2,7 @@
 
 ## Hosting
 
-GitHub hosts development, pull requests, issues, CI, and released packages. Use `origin` for
+GitHub hosts development, pull requests, issues, and CI. Meta publishes no packages (decision 0020). Use `origin` for
 GitHub. See [hosting and CI](docs/hosting.md).
 
 ## Required reading and commands

@@ -74,8 +74,8 @@ public fun SwipeActions(
     var width by remember { mutableIntStateOf(0) }
     val state = rememberSwipeState(width, startToEnd != null, endToStart != null)
     val flash = remember { Animatable(0f) }
-    // Keeps the action a release ran on the backdrop until the row is back at rest, even if the row's
-    // actions change. While it is set, no release can run another action.
+    // Keeps the action a release ran on the backdrop while it runs, even if the row's actions change.
+    // No release runs another action until the row is back at rest.
     var running by remember { mutableStateOf<RunningSwipe?>(null) }
     val fling =
         rememberSwipeRelease(state, threshold, flash, startToEnd, endToStart, { running }) { running = it }
@@ -114,8 +114,9 @@ public fun SwipeActions(
 }
 
 /**
- * What releasing a drag past the threshold does: runs the side's action once, unless one is
- * [running], and keeps it [running] until the row is back at rest.
+ * What releasing a drag past the threshold does: runs the side's action once, while none is
+ * [running] and the row is at rest, so a row waiting at its anchor after a dismissing action only
+ * goes back.
  */
 @Composable
 private fun rememberSwipeRelease(
@@ -134,7 +135,10 @@ private fun rememberSwipeRelease(
     return remember(state, threshold, motionScale) {
         thresholdFlingBehavior(state, threshold, motionScale) { side ->
             val action =
-                side.pick(currentStartToEnd, currentEndToStart)?.takeIf { running() == null }
+                // A dismissed row waiting at its anchor is not at rest, so a release there only returns it.
+                side
+                    .pick(currentStartToEnd, currentEndToStart)
+                    ?.takeIf { running() == null && state.settledValue == SwipeAnchor.Settled }
                     ?: return@thresholdFlingBehavior false
             // Set before the launch, so a second release in the same frame cannot also commit.
             onRunning(RunningSwipe(side, action))

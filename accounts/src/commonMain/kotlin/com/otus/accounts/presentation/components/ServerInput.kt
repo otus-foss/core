@@ -33,7 +33,9 @@ internal fun ServerInput(
     LaunchedEffect(address) {
         delay(SERVER_CHECK_DELAY_MILLIS)
         checked = ServerCheck(address, checking = address is JmapServerAddress.Valid)
-        if (address is JmapServerAddress.Valid) checked = ServerCheck(address, failure = check(address.sessionUrl))
+        if (address is JmapServerAddress.Valid) {
+            checked = ServerCheck(address, failure = check(address.sessionUrl), answered = true)
+        }
     }
     // Until the check catches up with the typing, the hint describes what is typed and nothing is marked.
     val current = checked.takeIf { it.address == address }
@@ -47,11 +49,15 @@ internal fun ServerInput(
     )
 }
 
-/** What the field last learned about [address]: still [checking], or why no JMAP server answers. */
+/**
+ * What the field last learned about [address]: still [checking], [answered] by a JMAP server, or
+ * why none answers.
+ */
 private data class ServerCheck(
     val address: JmapServerAddress,
     val checking: Boolean = false,
     val failure: ConnectFailure? = null,
+    val answered: Boolean = false,
 )
 
 private fun ServerCheck.mark(): Boolean? =
@@ -64,6 +70,7 @@ private fun ServerCheck.hint(service: AccountService): String =
     when {
         checking -> "Checking server…"
         failure != null -> failure.message(service)
+        answered && address is JmapServerAddress.Valid -> "Found a JMAP server at ${address.sessionUrl}"
         else -> serverHint(address)
     }
 

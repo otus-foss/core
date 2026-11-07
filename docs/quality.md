@@ -123,8 +123,8 @@ visual element, component, token, and drawable comes from Meta. Both kinds share
   `@SuppressLint`, or `tools:ignore`;
 - no literal colors outside Meta's theme, also through an import alias, a qualified name, or
   `Color.hsv`;
-- animations take their timing from `Motion`: no spring or new curve, and no Compose call left on
-  its default spring. Meta's components may build a `tween` with a named easing and a duration
+- animations take their timing from `Motion`: no spring or new curve, and no common Compose call,
+  such as `animateFloatAsState` or a one-argument `tween`, left on its default spring. Meta's components may build a `tween` with a named easing and a duration
   from `Motion`; apps use `motionTween` or `Motion.tween` only;
 - the file-length limits below;
 - no repository secret reaches a Gradle step or a shared workflow `env`.

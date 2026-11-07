@@ -28,8 +28,8 @@ that has it, on `origin/main` of otus-meta unless the entry names another branch
 | `symbol_arrow_downward`, `symbol_collapse_content`, `symbol_contact_page`, `symbol_create_new_folder`, `symbol_folder_off`, `symbol_rule_folder`, `symbol_share`, `symbol_speaker_notes_off` | `designsystem` | 2026-11-06 | `2b8a290b` | Material Symbols drawables no code drew. |
 | `PanelSearchField`, `SearchHitRow`, `PanelTokens.searchHitHeight`, `PanelTokens.searchHitGap` | `designsystem` | 2026-11-07 | `2b8a290b` | A search field in the control panel and a row for a message it found; Mail's inbox search sheet, their only caller, went with the one search UI. |
 | `FilterTokens.pickAvatarSize` | `designsystem` | 2026-11-07 | `2b8a290b` | The 36 dp avatar size of a filter page's people rows. |
-| `Spacing.xxs`, `Spacing.m`, `Spacing.xxl` | `designsystem` | 2026-11-07 | `6e4baf53` on `refactor/untangle` | The 2, 8, and 24 dp steps of the spacing scale, which no token used. |
-| `ComposeTokens.fromAvatarSize`, `ComposeTokens.fromLabelMaxWidth`, `ComposeTokens.dropdownAvatarSize` | `designsystem` | 2026-11-07 | `refactor/untangle` | The Send-from pill's avatar and label width and an address dropdown's avatar; `SenderTokens` and `AvatarTokens.menuSize` hold them for every screen that shows a sender. |
+| `Spacing.xxs`, `Spacing.m`, `Spacing.xxl` | `designsystem` | 2026-11-07 | `6e4baf53`, the head of otus-meta#152, which GitHub keeps as `refs/pull/152/head` | The 2, 8, and 24 dp steps of the spacing scale, which no token used. |
+| `ComposeTokens.fromAvatarSize`, `ComposeTokens.fromLabelMaxWidth`, `ComposeTokens.dropdownAvatarSize` | `designsystem` | 2026-11-07 | `a40b2038` | The Send-from pill's avatar and label width and an address dropdown's avatar; `SenderTokens` and `AvatarTokens.menuSize` hold them for every screen that shows a sender. |
 | `appearanceIndex`, `appIconIndex` | `settings` | 2026-11-07 | `d98e4a45` | Listed the Appearance page and the App icon row for settings search; `appearanceSections` and `appIconRow` declare them once for the page and search. |
 | `AppIconSetting` | `settings` | 2026-11-07 | `d98e4a45` | Drew the App icon row and its sheet; `appIconRow` is the row as a `ChoiceRowSpec`. |
 | `FolderGlyphKind`, `FolderGlyph(kind)`, `RowFolderIcon.kind` | `designsystem` | 2026-11-07 | `d98e4a45` | Asked a folder glyph for the inbox symbol; `icon = symbol_inbox` with no color draws the same. |
@@ -37,5 +37,6 @@ that has it, on `origin/main` of otus-meta unless the entry names another branch
 | `DateFormatPreference.fromStorageValue` | `dateformat` | 2026-11-07 | `d98e4a45` | Read a saved date format; `DateFormatSettingsState` reads it, and only a test called this. |
 | `QuickPerson`, `QuickViewTokens.personStart`, `personEnd`, `personGap`, `personNameSize`, `personAddressSize` | `designsystem` | 2026-11-07 | `2b8a290b` | A quick view module for one person, such as who sent the open message; the Read view's expanded stop shows the message details instead. |
 | `DetailsTable` | `designsystem` | 2026-11-07 | `2b8a290b` | Detail rows on a raised card; the Read view draws `DetailRows` straight on its panel at both stops. |
+| `ContactCardPatch`, `CardPatchProperty`, `CardPatchMap`, `CardPatchSet` | `jmap-contacts` | 2026-11-06 | `2b8a290b` | Built a ContactCard PatchObject from typed handles; `cardPatch(before, after)` replaces them. |
 
 `ContactCardFilter` stays: the `avatar` module searches cards with it.
