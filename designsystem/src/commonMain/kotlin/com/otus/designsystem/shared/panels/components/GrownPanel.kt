@@ -17,10 +17,13 @@ import com.otus.designsystem.shared.pages.elements.hiddenWhen
 import com.otus.designsystem.theme.tokens.layout.PanelTokens
 import com.otus.designsystem.theme.tokens.layout.QuickViewTokens
 
-// The steps a page's control panel grows through: its usual height, a quick view, and a last
-// stop, such as every filter or every detail.
+// The stops a page's control panel grows through: regular, its usual height (stop 0); expanded,
+// the quick view; and full, the last stop, such as every filter or every detail.
 
-/** A grown panel's last stop, such as every filter. */
+/** A grown panel's expanded stop, with the quick view. */
+public const val GROWN_EXPANDED_STOP: Int = 1
+
+/** A grown panel's full stop, its last, such as every filter. */
 public const val GROWN_LAST_STOP: Int = 2
 
 /** Where the last stop takes over from the quick view, halfway to it. */
@@ -31,11 +34,14 @@ private const val QUICK_FROM = 0.3f
 
 /** A quick view's height with [modules] picked: the modules, its last row, and the grab handle. */
 public fun quickViewHeight(modules: Int): Dp =
-    QuickViewTokens.moduleGap +
-        (QuickViewTokens.moduleHeight + QuickViewTokens.moduleGap) * modules +
-        QuickViewTokens.jumpHeight +
-        PanelTokens.handlePadding * 2 +
-        PanelTokens.handleHeight
+    grownStopHeight(
+        QuickViewTokens.moduleGap +
+            (QuickViewTokens.moduleHeight + QuickViewTokens.moduleGap) * modules +
+            QuickViewTokens.jumpHeight,
+    )
+
+/** A stop's height for [content] of a measured height, with the grab handle below it. */
+public fun grownStopHeight(content: Dp): Dp = content + PanelTokens.handlePadding * 2 + PanelTokens.handleHeight
 
 /** How much a grown panel's quick view shows at [position]: in toward its stop, out toward the next. */
 internal fun quickViewAlpha(position: Float): Float =

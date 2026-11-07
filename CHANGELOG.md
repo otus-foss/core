@@ -2,11 +2,15 @@
 
 ## Unreleased
 
+- Design system: `DetailRows` draws a `DetailsTable`'s rows without its card, so they sit straight
+  on a panel, and `grownStopHeight(content)` gives a grown panel stop's height for measured
+  content. `GROWN_EXPANDED_STOP` names the expanded stop. Breaking: `QuickPerson` and its `QuickViewTokens.person*` tokens are gone; see
+  docs/removed-apis.md.
 - Accounts: the setup form checks the server address as it is typed and marks it with a check or
   a cross. Add `AccountRepository.checkServer(sessionUrl)` and `AccountsState.checkServer`, which
   ask without credentials whether an address answers like a JMAP server. Breaking for any other
-  `AccountRepository`, which must implement it. `parseJmapServer` now rejects a bare word, a
-  trailing dot, or an IP address.
+  `AccountRepository`, which must implement it. `parseJmapServer` now rejects a bare word or a
+  trailing dot, and accepts an IP address, `localhost`, or a single name with a port.
 - JMAP: add `JmapClient.isJmapServer(url)`, which follows redirects as sign-in does and accepts a
   401 or a session with the core capability.
 - Design system: `InputField` takes an `InputNote`, its text and whether the value is valid, and

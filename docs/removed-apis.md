@@ -37,3 +37,4 @@ that has it, on `origin/main` of otus-meta unless the entry names another branch
 | `DateFormatPreference.fromStorageValue` | `dateformat` | 2026-11-07 | `d98e4a45` | Read a saved date format; `DateFormatSettingsState` reads it, and only a test called this. |
 
 `ContactCardFilter` stays: the `avatar` module searches cards with it.
+| `QuickPerson`, `QuickViewTokens.personStart`, `personEnd`, `personGap`, `personNameSize`, `personAddressSize` | `designsystem` | 2026-11-07 | `2b8a290b` | A quick view module for one person, such as who sent the open message; the Read view's expanded stop shows the message details instead. |
