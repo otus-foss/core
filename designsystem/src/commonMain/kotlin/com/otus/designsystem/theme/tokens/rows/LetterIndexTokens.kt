@@ -23,8 +23,23 @@ internal object LetterIndexTokens {
     /** The letter's column, wider than any letter, so every count starts at the same edge. */
     val letterColumn: Dp = 28.dp
 
-    /** How far from a heading's start edge a press opens the index; further along it takes a long press. */
+    /** The longest first name the current letter shows with a second name beside it. */
+    const val PREVIEW_CHARACTERS: Int = 10
+
+    /**
+     * How far from a heading's edge on the letters' side a press opens the index; further along it
+     * takes a long press.
+     */
     val handleWidth: Dp = 64.dp
+
+    /**
+     * How many rows above and below the pressed heading a thumb reaches without shifting the hand.
+     * The edge zones sit at the ends of that reach, and every letter can scroll into it.
+     */
+    const val THUMB_REACH_ROWS: Float = 4f
+
+    /** How much the switch-sides button grows while a dragging finger is on it. */
+    const val SWITCH_HOVER_SCALE: Float = 1.2f
 
     /** How many rows deep the edge zones are where a held finger scrolls an overflowing column. */
     const val EDGE_ROWS: Float = 1.5f

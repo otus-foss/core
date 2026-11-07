@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- `LetterIndex` can sit on either edge. Breaking: it takes `side: LetterIndexSide` and
+  `onSideChange`; a button in the other top corner switches sides on a tap or when a dragging
+  finger lifts on it. A heading's press zone follows the side.
+- The letter index scrolls within a thumb's reach: the edge zones sit about four rows above and
+  below the pressed heading, and every letter can scroll into that reach.
+- `IndexLetter` takes `names`; the current letter shows the first two in place of its count, or
+  only the first when it is longer than ten characters.
+
 - `actionBarInset()` keeps the bar `barInset` from the sides instead of adding the navigation bar
   height, so it lines up with the page. `FormattingBar` no longer widens itself over the keyboard.
 - `fillRail()` leaves out the rail's inset at both ends, so the last chip in a filled rail is no

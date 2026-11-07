@@ -51,9 +51,9 @@ private class StopMark {
 }
 
 /**
- * While a finger drags across the open index, scrolls a column too tall for the screen when the
- * finger holds near the top or bottom of the safe area, faster the closer it is to the edge, and
- * marks the letter that comes under it. Rows are [rowHeight] pixels tall.
+ * While a finger drags across the open index, scrolls a column too tall for the thumb's reach when
+ * the finger holds near the top or bottom of that reach, faster the further it goes, and marks the
+ * letter that comes under it. Rows are [rowHeight] pixels tall.
  */
 internal suspend fun LetterIndexState.scrollAtEdges(rowHeight: Float) {
     if (!dragging) return
@@ -72,8 +72,9 @@ private fun LetterIndexState.scrollAtEdgesFor(
 ) {
     val held = finger
     val safe = safeArea
-    if (held == null || safe == null) return
-    val pull = edgePull(held.y, safe.top, safe.bottom, rowHeight * LetterIndexTokens.EDGE_ROWS)
+    if (held == null || safe == null || onSwitch) return
+    val reach = thumbBand(safe.top..safe.bottom, anchorY, rowHeight)
+    val pull = edgePull(held.y, reach.start, reach.endInclusive, rowHeight * LetterIndexTokens.EDGE_ROWS)
     if (pull != 0f) {
         shiftBy(pull * rowHeight * LetterIndexTokens.EDGE_ROWS_PER_SECOND * seconds)
         hover(held)

@@ -39,7 +39,7 @@ class LetterIndexTest {
         compose.setContent {
             WithBackDispatcher {
                 val state = rememberLetterIndexState()
-                LetterIndex(state) {
+                LetterIndex(state, LetterIndexSide.Start, {}) {
                     Text("A", Modifier.letterIndexHandle(state, "A", letters) { picked = it })
                 }
             }
@@ -81,7 +81,7 @@ class LetterIndexTest {
         compose.setContent {
             WithBackDispatcher {
                 val state = rememberLetterIndexState()
-                LetterIndex(state, Modifier.fillMaxSize()) {
+                LetterIndex(state, LetterIndexSide.Start, {}, Modifier.fillMaxSize()) {
                     Box(Modifier.fillMaxSize()) {
                         val heading = Modifier.letterIndexHandle(state, letter, letters) {}
                         Text(letter, Modifier.align(Alignment.BottomStart).padding(bottom = bottomGap).then(heading))
