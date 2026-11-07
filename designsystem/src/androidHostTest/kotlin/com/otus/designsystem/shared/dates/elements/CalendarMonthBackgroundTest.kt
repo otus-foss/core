@@ -9,6 +9,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -58,23 +61,30 @@ class CalendarMonthBackgroundTest {
         }
     }
 
+    private var shownDirection by mutableStateOf(LayoutDirection.Ltr)
+    private var shown = false
+
     private fun render(direction: LayoutDirection): Bitmap {
-        compose.setContent {
-            OtusTheme {
-                CompositionLocalProvider(LocalLayoutDirection provides direction) {
-                    Column(
-                        Modifier
-                            .requiredSize(280.dp, 96.dp)
-                            .background(OtusColors.bgDark)
-                            .semantics { contentDescription = "Month outline" },
-                    ) {
-                        repeat(2) { week ->
-                            Box(
-                                Modifier
-                                    .fillMaxWidth()
-                                    .height(48.dp)
-                                    .calendarMonthBackground(3, 31, week, OtusColors.bgRegular),
-                            )
+        shownDirection = direction
+        if (!shown) {
+            shown = true
+            compose.setContent {
+                OtusTheme {
+                    CompositionLocalProvider(LocalLayoutDirection provides shownDirection) {
+                        Column(
+                            Modifier
+                                .requiredSize(280.dp, 96.dp)
+                                .background(OtusColors.bgDark)
+                                .semantics { contentDescription = "Month outline" },
+                        ) {
+                            repeat(2) { week ->
+                                Box(
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .height(48.dp)
+                                        .calendarMonthBackground(3, 31, week, OtusColors.bgRegular),
+                                )
+                            }
                         }
                     }
                 }

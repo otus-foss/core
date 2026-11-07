@@ -73,6 +73,9 @@ class SheetPositionTest {
             assertEquals(0f, position.hidden)
             assertEquals(0, closes)
             launch(clock) { position.release(velocity = 601f, flingVelocity = 600f) { closes++ } }.join()
+            assertEquals(0, closes, "A fling that did not move the sheet down keeps it open")
+            position.dragBy(40f)
+            launch(clock) { position.release(velocity = 601f, flingVelocity = 600f) { closes++ } }.join()
             assertEquals(1, closes)
         }
 

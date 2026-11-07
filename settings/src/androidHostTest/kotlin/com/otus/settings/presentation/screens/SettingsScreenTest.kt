@@ -1,11 +1,14 @@
 package com.otus.settings.presentation.screens
 
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
+import androidx.navigationevent.compose.rememberNavigationEventDispatcherOwner
 import com.otus.designsystem.theme.OtusTheme
 import com.otus.settings.presentation.screens.SettingsScreen
 import com.otus.settings.presentation.settingsIndex
@@ -26,11 +29,15 @@ class SettingsScreenTest {
         var opened = 0
         var navigation = 0
         compose.setContent {
-            OtusTheme {
-                SettingsScreen(
-                    settingsIndex { page("Preferences", { opened++ }, summary = "Choose your defaults") },
-                    onOpenNavigation = { navigation++ },
-                )
+            CompositionLocalProvider(
+                LocalNavigationEventDispatcherOwner provides rememberNavigationEventDispatcherOwner(parent = null),
+            ) {
+                OtusTheme {
+                    SettingsScreen(
+                        settingsIndex { page("Preferences", { opened++ }, summary = "Choose your defaults") },
+                        onOpenNavigation = { navigation++ },
+                    )
+                }
             }
         }
         compose.onNodeWithText("Choose your defaults").assertIsDisplayed()
