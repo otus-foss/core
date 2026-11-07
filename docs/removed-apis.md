@@ -30,5 +30,9 @@ that has it, on `origin/main` of otus-meta unless the entry names another branch
 | `FilterTokens.pickAvatarSize` | `designsystem` | 2026-11-07 | `2b8a290b` | The 36 dp avatar size of a filter page's people rows. |
 | `Spacing.xxs`, `Spacing.m`, `Spacing.xxl` | `designsystem` | 2026-11-07 | `6e4baf53` on `refactor/untangle` | The 2, 8, and 24 dp steps of the spacing scale, which no token used. |
 | `ComposeTokens.fromAvatarSize`, `ComposeTokens.fromLabelMaxWidth`, `ComposeTokens.dropdownAvatarSize` | `designsystem` | 2026-11-07 | `refactor/untangle` | The Send-from pill's avatar and label width and an address dropdown's avatar; `SenderTokens` and `AvatarTokens.menuSize` hold them for every screen that shows a sender. |
+| `appearanceIndex`, `appIconIndex` | `settings` | 2026-11-07 | `d98e4a45` | Listed the Appearance page and the App icon row for settings search; `appearanceSections` and `appIconRow` declare them once for the page and search. |
+| `AppIconSetting` | `settings` | 2026-11-07 | `d98e4a45` | Drew the App icon row and its sheet; `appIconRow` is the row as a `ChoiceRowSpec`. |
+| `FolderGlyphKind`, `FolderGlyph(kind)`, `RowFolderIcon.kind` | `designsystem` | 2026-11-07 | `d98e4a45` | Asked a folder glyph for the inbox symbol; `icon = symbol_inbox` with no color draws the same. |
+| `DateFormatPreference.fromStorageValue` | `dateformat` | 2026-11-07 | `d98e4a45` | Read a saved date format; `DateFormatSettingsState` reads it, and only a test called this. |
 
 `ContactCardFilter` stays: the `avatar` module searches cards with it.

@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+- Settings: the Appearance page is a `SettingsSectionSpec` list, `appearanceSections(...)`, that
+  takes the app's own rows, and `appIconRow` is the App icon row; the page and settings search
+  both read them. Breaking: `AppearanceSettingsScreen` takes those sections, and
+  `appearanceIndex`, `appIconIndex`, and `AppIconSetting` are gone; see docs/removed-apis.md.
+- json-types: add `Instant.toUtcDate()` and `String.toUtcDateOrNull()`, the writer and reader
+  `UtcDateSerializer` uses, so callers read a `:60` leap second the same way.
+- Avatars: add `Card.withAvatar(avatar, photoKey)` and `ContactAvatar.Photo.toMedia()`, the one
+  rule for putting a photo or style on a card. Removing every photo now patches `media` to null
+  instead of an empty map. `avatarStyleIn`, `avatarPropertiesWith`, `hasAvatarStyle`,
+  `AVATAR_STYLE_PROPERTY`, `avatarIconDomain`, and `isPublicAvatarUrl` are internal.
+- dateformat: add `Month.fullName`, which the date pickers use. Breaking: remove
+  `DateFormatPreference.fromStorageValue`.
+- Design system: `RowFolderIcon` takes an `icon` instead of a `FolderGlyphKind`, and
+  `folderSymbol` takes only a role. `LetterIndexScrollGuard` is public again for Mail's contacts.
 - Build: Meta publishes no packages any more (decision 0019). The `publish` workflow, the
   publication checker, and `maven-publish` are gone; the apps build Meta from source.
 - JMAP: `JmapClient.download`, `upload`, and `downloadStream` are internal. Breaking: download and
