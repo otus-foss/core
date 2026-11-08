@@ -7,12 +7,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -24,7 +22,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
@@ -49,7 +46,7 @@ import com.otus.designsystem.theme.tokens.core.Spacing
 import com.otus.designsystem.theme.tokens.settings.ThemeTokens
 
 /**
- * A theme to pick: a small sketch of a page drawn in [sketch]'s colors above [title]. The
+ * A theme to pick: [sketch]'s colors as rings above [title]. The
  * selected card has an accent ring and a check; the card is one radio button.
  * With [actions], a long press opens them in a [ContextMenu] where the finger is, and the selected
  * card shows a more button that opens them in place of the check.
@@ -89,7 +86,7 @@ public fun ThemeCard(
                 ).padding(ThemeTokens.cardPadding),
             verticalArrangement = Arrangement.spacedBy(ThemeTokens.cardGap),
         ) {
-            ThemeSketch(sketch)
+            ThemeRings(sketch)
             CardLabel(title, selected, openMenu)
         }
         val menuPosition = menuAt
@@ -145,46 +142,5 @@ private fun MoreButton(
         ) {
             Symbol(Res.drawable.symbol_more_horiz)
         }
-    }
-}
-
-/** A page with a bar and two lines of text, the second led by the accent. */
-@Composable
-private fun ThemeSketch(sketch: OtusPalette) {
-    val shape = SmoothCornerShape(ThemeTokens.sketchRadius)
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .height(ThemeTokens.sketchHeight)
-            .background(sketch.bgRegular, shape)
-            .strokeBorder(Sizes.borderWidth, sketch.strokeBgDark, shape)
-            .padding(ThemeTokens.sketchPadding),
-        verticalArrangement = Arrangement.spacedBy(ThemeTokens.sketchGap),
-    ) {
-        val bar = SmoothCornerShape(ThemeTokens.sketchBarRadius)
-        Box(
-            Modifier
-                .fillMaxWidth()
-                .height(ThemeTokens.sketchBarHeight)
-                .background(sketch.bgDark, bar)
-                .strokeBorder(Sizes.borderWidth, sketch.strokeBgDark, bar),
-        )
-        SketchLine(sketch.bgLight, sketch.text2, ThemeTokens.SKETCH_LONG_LINE)
-        SketchLine(sketch.accentLight, sketch.text1, ThemeTokens.SKETCH_SHORT_LINE)
-    }
-}
-
-@Composable
-private fun SketchLine(
-    dot: Color,
-    line: Color,
-    length: Float,
-) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(ThemeTokens.sketchGap),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Box(Modifier.size(ThemeTokens.sketchDot).background(dot, CircleShape))
-        Box(Modifier.fillMaxWidth(length).height(ThemeTokens.sketchLineHeight).background(line, CircleShape))
     }
 }

@@ -1,6 +1,5 @@
 package com.otus.settings.presentation
 
-import com.otus.designsystem.theme.colors.AccentPreset
 import com.otus.designsystem.theme.colors.CustomTheme
 import com.otus.designsystem.theme.colors.ThemeBase
 import com.otus.designsystem.theme.colors.ThemeChoice
@@ -17,10 +16,8 @@ internal val CustomTheme.title: String
 internal val ThemeBase.title: String
     get() = name
 
-internal val AccentPreset.title: String
-    get() = if (this == AccentPreset.OtusBlue) "Otus blue" else name
-
-internal val ThemeColor.title: String
+/** A theme color's name, such as on its row under Colors. */
+public val ThemeColor.title: String
     get() =
         when (this) {
             ThemeColor.Page -> "Page"

@@ -90,14 +90,6 @@ class ThemeSettingsScreenTest {
         compose.onNodeWithText("Black copy").assertExists()
     }
 
-    @Test
-    fun doneClosesTheCustomAccentSheet() {
-        showScreen()
-        compose.onNodeWithContentDescription("Custom color").performScrollTo().performClick()
-        clickButton("Done")
-        compose.onNodeWithContentDescription("Hue").assertDoesNotExist()
-    }
-
     /** Opens the page color; the list of colors starts unfolded when the theme has changed colors. */
     private fun openPageColor(listShown: Boolean = false) {
         showScreen()

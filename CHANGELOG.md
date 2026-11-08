@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Settings: the theme page drops its Accent color section and custom accent sheet. Apps set the
+  accent through a generated theme or the accent shades under Colors.
+- Design system: `ThemeCard` shows a theme's surfaces, text, and accent as two rows of
+  overlapping rings instead of a page sketch, and the eight `ThemeTokens.sketch*` line and bar
+  tokens give way to `ringSize`, `ringStep`, and `ringDrop`. The theme page's phone preview fills
+  New mail with the accent fill and outline, as the real action bar does.
+- Design system: add `HueSlider`, a hue slider whose rainbow track can take a saturation and
+  lightness; `ColorSheet` uses it. `Hsl`, `hslColor`, and `Color.toHsl` are public again, for
+  apps that generate theme colors.
 - Design system: `DetailRows` replaces `DetailsTable` and draws the rows without a card, so they
   sit straight on a panel. `grownStopHeight(content)` gives a grown panel stop's height for
   measured content, and `GROWN_EXPANDED_STOP` names the expanded stop. `GrownPanelLayers` takes a

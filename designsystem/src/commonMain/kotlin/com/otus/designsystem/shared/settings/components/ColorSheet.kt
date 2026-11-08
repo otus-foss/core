@@ -28,6 +28,7 @@ import com.otus.designsystem.shared.overlays.components.SheetHeaderAction
 import com.otus.designsystem.shared.overlays.elements.sheetInset
 import com.otus.designsystem.shared.reorder.components.HALF
 import com.otus.designsystem.shared.settings.elements.ColorSlider
+import com.otus.designsystem.shared.settings.elements.HueSlider
 import com.otus.designsystem.theme.colors.Hsl
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.colors.hslColor
@@ -93,7 +94,7 @@ public fun ColorSheet(
                 color = parsed
                 hsl = parsed.toHsl()
             }
-            ColorSlider(hsl.hue, { slide(hsl.copy(hue = it)) }, hueTrack, "Hue", range = 0f..MAX_HUE)
+            HueSlider(hsl.hue, { slide(hsl.copy(hue = it)) }, "Hue")
             ColorSlider(
                 hsl.saturation,
                 { slide(hsl.copy(saturation = it)) },
@@ -128,13 +129,3 @@ private fun HexRow(
         InputField("Hex", hex, onHexChange, Modifier.weight(1f), placeholder = "#5A7EA4")
     }
 }
-
-private val hueTrack =
-    Brush.horizontalGradient(
-        (0..HUE_STOPS).map { hslColor(MAX_HUE * it / HUE_STOPS, TRACK_SATURATION, TRACK_LIGHTNESS) },
-    )
-
-private const val MAX_HUE = 359f
-private const val HUE_STOPS = 6
-private const val TRACK_SATURATION = 0.55f
-private const val TRACK_LIGHTNESS = 0.45f

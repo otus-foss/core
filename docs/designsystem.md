@@ -17,7 +17,7 @@ The preparation reads the sender's markup in one linear scan, as a browser token
 than with regular expressions that could backtrack, so no message can stall or crash it. Only real
 tags count: an `<img>` or a `color` attribute inside a comment, a style sheet, or an attribute
 value is left alone.
-The user picks one of four themes and an accent color. Changing any single color saves a custom
+The user picks one of four themes; the app can generate one from a hue. Changing any single color saves a custom
 theme. The Otus theme with Otus blue is the palette recorded in [mail design foundations](suite/mail-design.md). See
 [decision 0014](decisions/0014-user-themes.md).
 

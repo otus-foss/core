@@ -16,15 +16,11 @@ public object ThemeTokens {
     public val cardTitleSize: TextUnit = 15.sp
     public val cardTitleLineHeight: TextUnit = 20.sp
     public val sketchHeight: Dp = 64.dp
-    public val sketchRadius: Dp = cardRadius - cardPadding
-    public val sketchPadding: Dp = 8.dp
-    public val sketchGap: Dp = 6.dp
-    public val sketchBarHeight: Dp = 14.dp
-    public val sketchBarRadius: Dp = CornerTokens.small
-    public val sketchDot: Dp = 12.dp
-    public val sketchLineHeight: Dp = 5.dp
-    public const val SKETCH_LONG_LINE: Float = 0.5f
-    public const val SKETCH_SHORT_LINE: Float = 0.35f
+
+    /** A card's colors as rings in two rows, each [ringStep] from the next and the lower row [ringDrop] down. */
+    public val ringSize: Dp = 34.dp
+    public val ringStep: Dp = 30.dp
+    public val ringDrop: Dp = 24.dp
 
     public val swatchSize: Dp = 30.dp
     public val swatchTargetWidth: Dp = 40.dp
