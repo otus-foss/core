@@ -7,7 +7,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 /** An opaque color from HSL, rounded to 8 bits per channel; out-of-range values are clamped. */
-internal fun hslColor(
+public fun hslColor(
     hue: Float,
     saturation: Float,
     lightness: Float,
@@ -17,7 +17,7 @@ internal fun hslColor(
     return Color(exact.toArgb())
 }
 
-internal fun Color.toHsl(): Hsl {
+public fun Color.toHsl(): Hsl {
     val high = max(red, max(green, blue))
     val low = min(red, min(green, blue))
     val lightness = (high + low) / 2

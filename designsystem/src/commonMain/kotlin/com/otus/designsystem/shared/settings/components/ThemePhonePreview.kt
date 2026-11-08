@@ -234,7 +234,8 @@ private fun SketchBar(palette: OtusPalette) {
             Modifier
                 .weight(1f)
                 .fillMaxHeight()
-                .background(palette.accentRegular, CircleShape)
+                .background(palette.accentDark, CircleShape)
+                .strokeBorder(Sizes.borderWidth, palette.accentRegular, CircleShape)
                 .padding(horizontal = ThemeTokens.previewBarPadding),
             verticalAlignment = Alignment.CenterVertically,
         ) {

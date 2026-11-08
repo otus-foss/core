@@ -75,7 +75,7 @@ for this one theme only.
 A **System** card follows the built-in themes on Android 12 and newer. It takes every surface and
 text color and the accent from the device's Material You colors, and follows the device's light or
 dark mode. Android recreates the activity when the wallpaper colors or the mode change, and the app
-reads them again. While System is selected, the theme page hides the accent swatches and Colors,
+reads them again. While System is selected, the theme page hides Colors,
 since the device sets them; System has no Duplicate action. iOS and older Android show no System
 card, and a saved System choice falls back to the stored built-in theme there.
 
@@ -83,3 +83,11 @@ card, and a saved System choice falls back to the stored built-in theme there.
 saved preference adds a `system` part while it is selected. In Android source, `Context.systemTheme()`
 maps the Material You tonal palettes onto the theme colors, with the dark raised surface below the
 page and the light one above it, as in the built-in themes.
+
+## Update: accent from a hue
+
+The user asked to remove the accent swatches once Mail's theme page gained **Colors from one
+hue**, a slider that makes a whole theme, accent included, from one hue. The theme page no longer
+has an Accent color section or a custom accent sheet. The accent still exists: a generated theme
+sets it, the accent shades under Colors change it one by one, and **Reset to Otus** puts back Otus
+blue. `AccentPreset` stays, since the app icon matches its owl to the closest preset.
