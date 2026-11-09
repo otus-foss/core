@@ -1,6 +1,7 @@
 package com.otus.designsystem.shared.swipe.components
 
 import androidx.compose.animation.core.animate
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.ScrollScope
@@ -15,12 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.compositeOver
-import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
@@ -31,16 +26,14 @@ import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.Motion
 import com.otus.designsystem.theme.motion.MotionSpeed
-import com.otus.designsystem.theme.tokens.rows.EntryTokens
 import com.otus.designsystem.theme.tokens.rows.SwipeTokens
 import kotlin.math.abs
 
 /**
  * The accent band behind a swiped row, edge to edge at the row's height, which the row slides off.
- * Where it meets the uncovered screen edge, inverted corners of the cards' radius flare it up and
- * down, flush with the edge. The action's icon and label sit [edgeInset] in from the band's edge,
- * where the row's card begins. The icon grows and slides in until the drag [distance] reaches the
- * threshold. A release that commits brightens the band by [flash]. [onMeasured] reports the width the label needs.
+ * The action's icon and label sit [edgeInset] in from the band's edge, where the row's card begins.
+ * The icon grows and slides in until the drag [distance] reaches the threshold. A release that
+ * commits brightens the band by [flash]. [onMeasured] reports the width the label needs.
  */
 @Composable
 internal fun SwipeBackdrop(
@@ -58,10 +51,9 @@ internal fun SwipeBackdrop(
     val scale = SwipeTokens.ICON_START_SCALE + progress * (1f - SwipeTokens.ICON_START_SCALE)
     val shift = with(density) { SwipeTokens.iconEntry.toPx() } * (1f - progress) * if (fromLeft) -1f else 1f
     Box(
-        modifier.edgeBand(
-            OtusColors.text1.copy(alpha = flash).compositeOver(OtusColors.accentDark),
-            fromLeft,
-        ),
+        modifier
+            .background(OtusColors.accentDark)
+            .drawBehind { if (flash > 0f) drawRect(OtusColors.text1.copy(alpha = flash)) },
     ) {
         Row(
             Modifier
@@ -86,40 +78,6 @@ internal fun SwipeBackdrop(
         }
     }
 }
-
-/**
- * Fills the band with [color] and, at the left or right screen edge, flares it up and down with
- * inverted corners of the cards' radius, flush with the edge. The flares draw outside the band's
- * bounds.
- */
-private fun Modifier.edgeBand(
-    color: Color,
-    fromLeft: Boolean,
-): Modifier =
-    drawBehind {
-        drawRect(color)
-        val flare = edgeFlare(EntryTokens.radius.toPx())
-        listOf(1f, -1f).forEach { vertical ->
-            scale(if (fromLeft) 1f else -1f, vertical) { drawPath(flare, color) }
-        }
-    }
-
-/**
- * The flare above a band's left edge, in the band's coordinates: an inverted corner of [radius]
- * that runs up the screen edge and curves back down to the band's top.
- */
-internal fun edgeFlare(radius: Float): Path =
-    Path().apply {
-        moveTo(0f, 0f)
-        lineTo(0f, -radius)
-        arcTo(
-            Rect(Offset(radius, -radius), radius),
-            startAngleDegrees = 180f,
-            sweepAngleDegrees = -90f,
-            forceMoveTo = false,
-        )
-        close()
-    }
 
 /**
  * Settles a release by distance alone. Past [threshold], [commit] takes over the row and moves it
