@@ -15,27 +15,25 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.Motion
 import com.otus.designsystem.theme.motion.MotionSpeed
-import com.otus.designsystem.theme.shapes.SmoothCornerShape
-import com.otus.designsystem.theme.tokens.rows.EntryTokens
 import com.otus.designsystem.theme.tokens.rows.SwipeTokens
 import kotlin.math.abs
 
 /**
- * The accent card behind a swiped row, the row card's full size and shape, which the row slides
- * off. The action's icon and label sit at the edge the row uncovers. The icon grows and slides in
- * until the drag [distance] reaches the threshold. A release that commits brightens the card by
- * [flash]. [onMeasured] reports the width the label needs.
+ * The accent band behind a swiped row, edge to edge at the row's height, which the row slides off.
+ * The action's icon and label sit [edgeInset] in from the band's edge, where the row's card begins.
+ * The icon grows and slides in until the drag [distance] reaches the threshold. A release that
+ * commits brightens the band by [flash]. [onMeasured] reports the width the label needs.
  */
 @Composable
 internal fun SwipeBackdrop(
@@ -43,6 +41,7 @@ internal fun SwipeBackdrop(
     distance: Float,
     fromStart: Boolean,
     flash: Float,
+    edgeInset: Dp,
     modifier: Modifier,
     onMeasured: (Float) -> Unit,
 ) {
@@ -53,14 +52,15 @@ internal fun SwipeBackdrop(
     val shift = with(density) { SwipeTokens.iconEntry.toPx() } * (1f - progress) * if (fromLeft) -1f else 1f
     Box(
         modifier
-            .clip(SmoothCornerShape(EntryTokens.radius))
-            .background(OtusColors.accentRegular)
+            .background(OtusColors.accentDark)
             .drawBehind { if (flash > 0f) drawRect(OtusColors.text1.copy(alpha = flash)) },
     ) {
         Row(
             Modifier
                 .align(if (fromStart) Alignment.CenterStart else Alignment.CenterEnd)
                 .fillMaxHeight()
+                // Outside the measurement, so the row still stops just past the label.
+                .padding(horizontal = edgeInset)
                 .onSizeChanged { onMeasured(it.width.toFloat()) }
                 .padding(horizontal = SwipeTokens.inset),
             horizontalArrangement = Arrangement.spacedBy(SwipeTokens.gap),

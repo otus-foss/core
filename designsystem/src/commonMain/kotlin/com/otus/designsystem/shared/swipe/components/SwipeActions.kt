@@ -13,6 +13,7 @@ import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -34,8 +35,10 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
 import com.otus.designsystem.theme.motion.LocalMotionScale
 import com.otus.designsystem.theme.motion.Motion
 import com.otus.designsystem.theme.motion.MotionSpeed
@@ -49,8 +52,10 @@ import kotlin.math.roundToInt
 
 /**
  * Hosts a row that reveals [startToEnd] when dragged toward the end edge and [endToStart] when
- * dragged toward the start edge. An accent card the row's size waits behind it, so the row slides
- * off it; give [content] an opaque background, such as a card. The
+ * dragged toward the start edge. An accent band the row's height waits behind it, so the row slides
+ * off it; give [content] an opaque background, such as a card. The band fills the whole width, so
+ * with [edgeInset] between the row and the screen edges it reaches the edges while the row stays
+ * inset. The
  * action's icon grows in beside its label until the fixed threshold, where a haptic marks that
  * release will act.
  * Releasing past it flashes and runs the action once; shorter drags spring back. The row stops
@@ -66,6 +71,7 @@ public fun SwipeActions(
     startToEnd: SwipeAction?,
     endToStart: SwipeAction?,
     modifier: Modifier = Modifier,
+    edgeInset: Dp = 0.dp,
     settledBy: Any? = null,
     content: @Composable () -> Unit,
 ) {
@@ -104,12 +110,13 @@ public fun SwipeActions(
                 abs(offset),
                 direction == SwipeAnchor.StartToEnd,
                 flash.value,
+                edgeInset,
                 Modifier.matchParentSize(),
             ) {
                 revealWidths[direction] = maxOf(threshold, it)
             }
         }
-        SwipeForeground(rowOffset, content)
+        SwipeForeground(rowOffset, edgeInset, content)
     }
 }
 
@@ -247,16 +254,18 @@ internal fun ThresholdHaptic(armed: Boolean) {
     LaunchedEffect(armed) { if (armed) haptics.performHapticFeedback(HapticFeedbackType.GestureThresholdActivate) }
 }
 
-/** The row itself, moved by [offset]; opaque so the revealed area never shows through it. */
+/** The row itself, [inset] from the edges and moved by [offset]; opaque so the revealed area never shows through it. */
 @Composable
 private fun SwipeForeground(
     offset: Float,
+    inset: Dp,
     content: @Composable () -> Unit,
 ) {
     val sign = if (LocalLayoutDirection.current == LayoutDirection.Rtl) -1f else 1f
     Box(
         Modifier
             .fillMaxWidth()
+            .padding(horizontal = inset)
             .offset { IntOffset((offset * sign).roundToInt(), 0) },
     ) { content() }
 }
