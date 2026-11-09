@@ -88,8 +88,8 @@ public class RichText(
         when (format) {
             TextFormat.Bold -> state.toggleSpanStyle(SpanStyle(fontWeight = FontWeight.Bold))
             TextFormat.Italic -> state.toggleSpanStyle(SpanStyle(fontStyle = FontStyle.Italic))
-            TextFormat.Bullets -> state.toggleUnorderedList()
-            TextFormat.Numbers -> state.toggleOrderedList()
+            TextFormat.Bullets -> state.keepingTypingStyle { toggleUnorderedList() }
+            TextFormat.Numbers -> state.keepingTypingStyle { toggleOrderedList() }
             TextFormat.Link -> if (state.isLink) state.removeLink()
             TextFormat.Clear -> state.clearFormatting()
         }
@@ -129,6 +129,16 @@ public class RichText(
         active = joined
         focusNext = joined
     }
+}
+
+/**
+ * Runs [change] and turns the styles at the cursor back on. A list rewrites its line, and the
+ * editor then drops styles that were turned on for text not typed yet, such as Bold on an empty line.
+ */
+private fun RichTextState.keepingTypingStyle(change: RichTextState.() -> Unit) {
+    val style = currentSpanStyle
+    change()
+    addSpanStyle(style)
 }
 
 /** Removes every span style, link, and list at the cursor. */
