@@ -95,10 +95,26 @@ public class RichText(
         }
     }
 
-    /** Links the selected text to [url], or inserts [url] as its own text when nothing is selected. */
-    public fun addLink(url: String) {
+    /** The text selected in the block being written, empty while the cursor is a caret. */
+    public val selectedText: String
+        get() = current.run { annotatedString.text.substring(selection.min, selection.max) }
+
+    /**
+     * Adds a link to [url] that reads [text], or [url] itself while [text] is blank. Selected text
+     * that already reads so keeps its formatting; other selected text is replaced.
+     */
+    public fun addLink(
+        url: String,
+        text: String = selectedText,
+    ) {
         val state = current
-        if (state.selection.collapsed) state.addLink(url, url) else state.addLinkToSelection(url)
+        val shown = text.ifBlank { url }
+        if (shown == selectedText) {
+            state.addLinkToSelection(url)
+        } else {
+            state.removeSelectedText()
+            state.addLink(shown, url)
+        }
     }
 
     /** Removes the image at [index] and joins the text blocks around it, the cursor where they meet. */
