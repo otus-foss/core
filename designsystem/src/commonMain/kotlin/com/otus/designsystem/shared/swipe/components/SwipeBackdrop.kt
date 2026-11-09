@@ -37,10 +37,10 @@ import kotlin.math.abs
 
 /**
  * The accent band behind a swiped row, edge to edge at the row's height, which the row slides off.
- * Where it meets the uncovered screen edge, inverted corners flare it up and down around the
- * neighboring cards. The action's icon and label sit [edgeInset] in from the band's edge, where the row's card begins.
- * The icon grows and slides in until the drag [distance] reaches the threshold. A release that
- * commits brightens the band by [flash]. [onMeasured] reports the width the label needs.
+ * Where it meets the uncovered screen edge, inverted corners of the cards' radius flare it up and
+ * down, flush with the edge. The action's icon and label sit [edgeInset] in from the band's edge,
+ * where the row's card begins. The icon grows and slides in until the drag [distance] reaches the
+ * threshold. A release that commits brightens the band by [flash]. [onMeasured] reports the width the label needs.
  */
 @Composable
 internal fun SwipeBackdrop(
@@ -60,7 +60,6 @@ internal fun SwipeBackdrop(
     Box(
         modifier.edgeBand(
             OtusColors.text1.copy(alpha = flash).compositeOver(OtusColors.accentDark),
-            edgeInset,
             fromLeft,
         ),
     ) {
@@ -89,49 +88,38 @@ internal fun SwipeBackdrop(
 }
 
 /**
- * Fills the band with [color] and, at the left or right screen edge, flares it around the cards
- * above and below. Each flare is an inverted corner that follows the neighbor card's corner at the
- * list's gap, so the band keeps the same distance to every card. The row's card sits [edgeInset]
- * in from the edge; the flares draw outside the band's bounds.
+ * Fills the band with [color] and, at the left or right screen edge, flares it up and down with
+ * inverted corners of the cards' radius, flush with the edge. The flares draw outside the band's
+ * bounds.
  */
 private fun Modifier.edgeBand(
     color: Color,
-    edgeInset: Dp,
     fromLeft: Boolean,
 ): Modifier =
     drawBehind {
         drawRect(color)
-        val flare = edgeFlare(edgeInset.toPx(), EntryTokens.gap.toPx(), EntryTokens.radius.toPx()) ?: return@drawBehind
+        val flare = edgeFlare(EntryTokens.radius.toPx())
         listOf(1f, -1f).forEach { vertical ->
             scale(if (fromLeft) 1f else -1f, vertical) { drawPath(flare, color) }
         }
     }
 
 /**
- * The flare above a band's left edge, in the band's coordinates: a strip up the screen edge that
- * stops [gap] short of the card above, then curves around that card's [radius] corner, [gap] away,
- * back to the band's top. Null when the inset leaves no room beside the cards.
+ * The flare above a band's left edge, in the band's coordinates: an inverted corner of [radius]
+ * that runs up the screen edge and curves back down to the band's top.
  */
-internal fun edgeFlare(
-    inset: Float,
-    gap: Float,
-    radius: Float,
-): Path? {
-    if (inset <= gap) return null
-    val top = -(gap + radius)
-    return Path().apply {
+internal fun edgeFlare(radius: Float): Path =
+    Path().apply {
         moveTo(0f, 0f)
-        lineTo(0f, top)
-        lineTo(inset - gap, top)
+        lineTo(0f, -radius)
         arcTo(
-            Rect(Offset(inset + radius, top), radius + gap),
+            Rect(Offset(radius, -radius), radius),
             startAngleDegrees = 180f,
             sweepAngleDegrees = -90f,
             forceMoveTo = false,
         )
         close()
     }
-}
 
 /**
  * Settles a release by distance alone. Past [threshold], [commit] takes over the row and moves it
