@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Design system: `folderSymbol("scheduled")` gives the schedule-send symbol, so a Scheduled
+  folder no longer shows the plain folder symbol.
 - Settings: the theme page drops its Accent color section and custom accent sheet. Apps set the
   accent through a generated theme or the accent shades under Colors.
 - Design system: `ThemeCard` shows a theme's surfaces, text, and accent as two rows of
