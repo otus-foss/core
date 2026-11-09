@@ -1,5 +1,6 @@
 package com.otus.designsystem.mail.compose.components
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -19,6 +20,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,6 +47,8 @@ import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.shared.controls.elements.controlPressFeedback
 import com.otus.designsystem.shared.panels.components.drawEdgeFade
 import com.otus.designsystem.theme.colors.OtusColors
+import com.otus.designsystem.theme.motion.MotionSpeed
+import com.otus.designsystem.theme.motion.motionTween
 import com.otus.designsystem.theme.shapes.SmoothCornerShape
 import com.otus.designsystem.theme.shapes.strokeBorder
 import com.otus.designsystem.theme.tokens.core.Sizes
@@ -110,8 +114,16 @@ private fun FormattingRow(
                 leading()
                 LeadingDivider()
             }
-            TextFormat.entries.forEach { format ->
-                FormatButton(format.label, format.symbol, text.isActive(format), { text.applyFormat(format, onLink) })
+            val active = TextFormat.entries.map(text::isActive)
+            TextFormat.entries.forEachIndexed { index, format ->
+                FormatCell(
+                    format.label,
+                    format.symbol,
+                    active[index],
+                    onClick = { text.applyFormat(format, onLink) },
+                    joinsStart = active[index] && active.getOrElse(index - 1) { false },
+                    joinsEnd = active[index] && active.getOrElse(index + 1) { false },
+                )
             }
         }
         trailing?.invoke()
@@ -146,6 +158,24 @@ public fun FormatButton(
     onClick: () -> Unit,
     enabled: Boolean = true,
 ) {
+    FormatCell(description, icon, active, onClick, enabled)
+}
+
+/**
+ * A [FormatButton] whose fill bridges to the active button before it ([joinsStart]) or after it
+ * ([joinsEnd]), so active neighbors read as one pill. Each bridge grows out of the round fill's
+ * middle line, which keeps both ends round while the two fills meet.
+ */
+@Composable
+private fun FormatCell(
+    description: String,
+    icon: DrawableResource,
+    active: Boolean,
+    onClick: () -> Unit,
+    enabled: Boolean = true,
+    joinsStart: Boolean = false,
+    joinsEnd: Boolean = false,
+) {
     val interactions = remember { MutableInteractionSource() }
     val shape = SmoothCornerShape(ComposeTokens.formatButtonRadius)
     Box(
@@ -157,6 +187,8 @@ public fun FormatButton(
             }.clickable(interactions, indication = null, enabled = enabled, role = Role.Button, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
+        Bridge(joinsStart, Modifier.align(Alignment.CenterStart))
+        Bridge(joinsEnd, Modifier.align(Alignment.CenterEnd))
         Surface(
             Modifier.size(ComposeTokens.formatButtonSize).controlPressFeedback(interactions, shape),
             shape = shape,
@@ -164,6 +196,20 @@ public fun FormatButton(
             contentColor = if (enabled) OtusColors.text1 else OtusColors.text3,
         ) { Box(contentAlignment = Alignment.Center) { Symbol(icon, size = ComposeTokens.formatIconSize) } }
     }
+}
+
+/** Half a cell of `selectedFill` from the cell's edge to its middle, as tall as the fill once [shown]. */
+@Composable
+private fun Bridge(
+    shown: Boolean,
+    modifier: Modifier,
+) {
+    val height by animateFloatAsState(if (shown) 1f else 0f, motionTween(MotionSpeed.Quick), label = "Format bridge")
+    Box(
+        modifier
+            .size(Sizes.touchTarget / 2, ComposeTokens.formatButtonSize * height)
+            .background(OtusColors.selectedFill),
+    )
 }
 
 /**

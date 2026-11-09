@@ -88,17 +88,33 @@ public class RichText(
         when (format) {
             TextFormat.Bold -> state.toggleSpanStyle(SpanStyle(fontWeight = FontWeight.Bold))
             TextFormat.Italic -> state.toggleSpanStyle(SpanStyle(fontStyle = FontStyle.Italic))
-            TextFormat.Bullets -> state.toggleUnorderedList()
-            TextFormat.Numbers -> state.toggleOrderedList()
+            TextFormat.Bullets -> state.keepingTypingStyle { toggleUnorderedList() }
+            TextFormat.Numbers -> state.keepingTypingStyle { toggleOrderedList() }
             TextFormat.Link -> if (state.isLink) state.removeLink()
             TextFormat.Clear -> state.clearFormatting()
         }
     }
 
-    /** Links the selected text to [url], or inserts [url] as its own text when nothing is selected. */
-    public fun addLink(url: String) {
+    /** The text selected in the block being written, empty while the cursor is a caret. */
+    public val selectedText: String
+        get() = current.run { annotatedString.text.substring(selection.min, selection.max) }
+
+    /**
+     * Adds a link to [url] that reads [text], or [url] itself while [text] is blank. Selected text
+     * that already reads so keeps its formatting; other selected text is replaced.
+     */
+    public fun addLink(
+        url: String,
+        text: String = selectedText,
+    ) {
         val state = current
-        if (state.selection.collapsed) state.addLink(url, url) else state.addLinkToSelection(url)
+        val shown = text.ifBlank { url }
+        if (shown == selectedText) {
+            state.addLinkToSelection(url)
+        } else {
+            state.removeSelectedText()
+            state.addLink(shown, url)
+        }
     }
 
     /** Removes the image at [index] and joins the text blocks around it, the cursor where they meet. */
@@ -113,6 +129,16 @@ public class RichText(
         active = joined
         focusNext = joined
     }
+}
+
+/**
+ * Runs [change] and turns the styles at the cursor back on. A list rewrites its line, and the
+ * editor then drops styles that were turned on for text not typed yet, such as Bold on an empty line.
+ */
+private fun RichTextState.keepingTypingStyle(change: RichTextState.() -> Unit) {
+    val style = currentSpanStyle
+    change()
+    addSpanStyle(style)
 }
 
 /** Removes every span style, link, and list at the cursor. */
