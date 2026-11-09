@@ -3,8 +3,8 @@
 ## Unreleased
 
 - Design system: `SwipeActions` takes an `edgeInset`. It insets the row by that much and lets the
-  swipe's accent band fill the full width, out to the screen edges, where small inverted corners
-  flare it into the gaps between rows. The band now uses `accentDark`, the primary button's fill,
+  swipe's accent band fill the full width, out to the screen edges, where inverted corners flare
+  it around the neighboring cards at the list's gap and the cards' radius. The band now uses `accentDark`, the primary button's fill,
   and is no longer rounded.
 - Settings: the theme page drops its Accent color section and custom accent sheet. Apps set the
   accent through a generated theme or the accent shades under Colors.

@@ -11,9 +11,6 @@ internal object SwipeTokens {
     val inset = Spacing.gutter
     val gap = 8.dp
 
-    /** Radius of the inverted corners that flare a swipe's band into the screen edge. */
-    val edgeFlare = 6.dp
-
     /** How far the icon slides in from the edge while it grows to full size at the threshold. */
     val iconEntry = 16.dp
 

@@ -15,9 +15,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
@@ -28,13 +31,14 @@ import com.otus.designsystem.shared.controls.elements.Symbol
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.Motion
 import com.otus.designsystem.theme.motion.MotionSpeed
+import com.otus.designsystem.theme.tokens.rows.EntryTokens
 import com.otus.designsystem.theme.tokens.rows.SwipeTokens
 import kotlin.math.abs
 
 /**
  * The accent band behind a swiped row, edge to edge at the row's height, which the row slides off.
- * Where it meets the uncovered screen edge, small inverted corners flare it into the gaps above and
- * below. The action's icon and label sit [edgeInset] in from the band's edge, where the row's card begins.
+ * Where it meets the uncovered screen edge, inverted corners flare it up and down around the
+ * neighboring cards. The action's icon and label sit [edgeInset] in from the band's edge, where the row's card begins.
  * The icon grows and slides in until the drag [distance] reaches the threshold. A release that
  * commits brightens the band by [flash]. [onMeasured] reports the width the label needs.
  */
@@ -56,7 +60,7 @@ internal fun SwipeBackdrop(
     Box(
         modifier.edgeBand(
             OtusColors.text1.copy(alpha = flash).compositeOver(OtusColors.accentDark),
-            SwipeTokens.edgeFlare,
+            edgeInset,
             fromLeft,
         ),
     ) {
@@ -85,32 +89,49 @@ internal fun SwipeBackdrop(
 }
 
 /**
- * Fills the band with [color] and flares it by [flare] above and below at the left or right edge,
- * with concave corners, so it runs into the screen edge. The flares draw outside the band's bounds.
+ * Fills the band with [color] and, at the left or right screen edge, flares it around the cards
+ * above and below. Each flare is an inverted corner that follows the neighbor card's corner at the
+ * list's gap, so the band keeps the same distance to every card. The row's card sits [edgeInset]
+ * in from the edge; the flares draw outside the band's bounds.
  */
 private fun Modifier.edgeBand(
     color: Color,
-    flare: Dp,
+    edgeInset: Dp,
     fromLeft: Boolean,
 ): Modifier =
     drawBehind {
-        val radius = flare.toPx()
-        val edge = if (fromLeft) 0f else size.width
-        val inward = if (fromLeft) radius else -radius
         drawRect(color)
-        listOf(0f to -radius, size.height to radius).forEach { (base, outward) ->
-            drawPath(
-                Path().apply {
-                    moveTo(edge, base)
-                    lineTo(edge, base + outward)
-                    // Curves from the screen edge back to the band through the corner, like an inverted radius.
-                    quadraticTo(edge, base, edge + inward, base)
-                    close()
-                },
-                color,
-            )
+        val flare = edgeFlare(edgeInset.toPx(), EntryTokens.gap.toPx(), EntryTokens.radius.toPx()) ?: return@drawBehind
+        listOf(1f, -1f).forEach { vertical ->
+            scale(if (fromLeft) 1f else -1f, vertical) { drawPath(flare, color) }
         }
     }
+
+/**
+ * The flare above a band's left edge, in the band's coordinates: a strip up the screen edge that
+ * stops [gap] short of the card above, then curves around that card's [radius] corner, [gap] away,
+ * back to the band's top. Null when the inset leaves no room beside the cards.
+ */
+internal fun edgeFlare(
+    inset: Float,
+    gap: Float,
+    radius: Float,
+): Path? {
+    if (inset <= gap) return null
+    val top = -(gap + radius)
+    return Path().apply {
+        moveTo(0f, 0f)
+        lineTo(0f, top)
+        lineTo(inset - gap, top)
+        arcTo(
+            Rect(Offset(inset + radius, top), radius + gap),
+            startAngleDegrees = 180f,
+            sweepAngleDegrees = -90f,
+            forceMoveTo = false,
+        )
+        close()
+    }
+}
 
 /**
  * Settles a release by distance alone. Past [threshold], [commit] takes over the row and moves it
