@@ -7,6 +7,7 @@ import com.otus.designsystem.resources.symbol_draft
 import com.otus.designsystem.resources.symbol_folder
 import com.otus.designsystem.resources.symbol_inbox
 import com.otus.designsystem.resources.symbol_report
+import com.otus.designsystem.resources.symbol_schedule_send
 import com.otus.designsystem.resources.symbol_send
 import org.jetbrains.compose.resources.DrawableResource
 
@@ -20,6 +21,7 @@ public fun folderSymbol(role: String?): DrawableResource =
         "inbox" -> Res.drawable.symbol_inbox
         "drafts" -> Res.drawable.symbol_draft
         "sent" -> Res.drawable.symbol_send
+        "scheduled" -> Res.drawable.symbol_schedule_send
         "archive" -> Res.drawable.symbol_archive
         "junk" -> Res.drawable.symbol_report
         "trash" -> Res.drawable.symbol_delete

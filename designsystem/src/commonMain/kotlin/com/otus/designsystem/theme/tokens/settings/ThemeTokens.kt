@@ -32,10 +32,6 @@ public object ThemeTokens {
     public val swatchAddIcon: Dp = 18.dp
     public val swatchGap: Dp = 2.dp
 
-    /** Small captions, such as a theme's name over its accent preview. */
-    public val roleCaptionSize: TextUnit = 12.sp
-    public val roleCaptionLineHeight: TextUnit = 16.sp
-
     /** The overlapping theme colors on the row that opens them. */
     public val stackSwatch: Dp = 24.dp
     public val stackOverlap: Dp = 8.dp
@@ -63,10 +59,8 @@ public object ThemeTokens {
     public val phoneFrame: Color = Color(0xFF4A4A4F)
     public val phoneBezel: Color = Color(0xFF050506)
 
-    /** The custom color sheet: the picked color beside its hex code, and a preview per theme. */
+    /** The color sheet's picked color beside its hex code, and the pill in the phone preview. */
     public val customColorSize: Dp = 64.dp
-    public val customPreviewPadding: Dp = 10.dp
-    public val customPreviewRadius: Dp = CornerTokens.row
     public val customPillHeight: Dp = 28.dp
     public val customPillPadding: Dp = 10.dp
 
