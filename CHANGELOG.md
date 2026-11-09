@@ -8,6 +8,8 @@
   overlapping rings instead of a page sketch, and the eight `ThemeTokens.sketch*` line and bar
   tokens give way to `ringSize`, `ringStep`, and `ringDrop`. The theme page's phone preview fills
   New mail with the accent fill and outline, as the real action bar does.
+- Design system: remove `ThemeTokens.roleCaptionSize`, `roleCaptionLineHeight`,
+  `customPreviewPadding`, and `customPreviewRadius`, which only the removed custom accent sheet used.
 - Design system: add `HueSlider`, a hue slider whose rainbow track can take a saturation and
   lightness; `ColorSheet` uses it. `Hsl`, `hslColor`, and `Color.toHsl` are public again, for
   apps that generate theme colors.
