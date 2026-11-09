@@ -62,9 +62,9 @@ class SwipeActionsScreenshotTest {
 
     @Composable
     private fun Rows() =
-        // The list's own surface and spacing, which show around the cards.
+        // The list's own surface and spacing, which show around the cards; rows inset themselves.
         Column(
-            Modifier.background(OtusColors.bgRegular).padding(InboxTokens.pageInset),
+            Modifier.background(OtusColors.bgRegular).padding(vertical = InboxTokens.pageInset),
             verticalArrangement = Arrangement.spacedBy(EntryTokens.gap),
         ) {
             Row("Mira Chen", "Lunch on Friday?")
@@ -81,6 +81,7 @@ class SwipeActionsScreenshotTest {
         SwipeAction(UiAction("Archive", Res.drawable.symbol_archive) {}),
         SwipeAction(UiAction("Delete", Res.drawable.symbol_delete) {}, dismisses = true),
         modifier,
+        edgeInset = InboxTokens.pageInset,
     ) {
         Column(
             Modifier
