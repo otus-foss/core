@@ -9,6 +9,10 @@
   leave, and `Modifier.turnSeam` draws a line between the two pages. Breaking:
   `SlidingPositionStrip` is gone; call `TurningPositionStrip` with a `TurnProgress?` instead of a
   position. See docs/removed-apis.md.
+- Design system: `RichText.addLink` trims whitespace from the ends of the link text it gets, and
+  leaves whitespace at the ends of the selection outside the link instead of deleting it. When the
+  trimmed text matches the selection, the selection keeps its formatting; otherwise only the text
+  between that whitespace is replaced.
 - Design system: `SwipeActions` takes an `edgeInset`. It insets the row by that much and lets the
   swipe's accent band fill the full width, out to the screen edges. The band now uses
   `accentDark`, the primary button's fill, and is no longer rounded.
