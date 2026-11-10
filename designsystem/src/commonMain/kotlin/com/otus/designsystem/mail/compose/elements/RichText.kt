@@ -101,14 +101,16 @@ public class RichText(
 
     /**
      * Adds a link to [url] that reads [text], or [url] itself while [text] is blank. Selected text
-     * that already reads so keeps its formatting; other selected text is replaced.
+     * that already reads so keeps its formatting; other selected text is replaced. Spaces at the
+     * ends of the selection stay outside the link.
      */
     public fun addLink(
         url: String,
         text: String = selectedText,
     ) {
         val state = current
-        val shown = text.ifBlank { url }
+        state.selection = state.selection.withoutEdgeSpaces(state.annotatedString.text)
+        val shown = text.trim().ifBlank { url }
         if (shown == selectedText) {
             state.addLinkToSelection(url)
         } else {
@@ -129,6 +131,13 @@ public class RichText(
         active = joined
         focusNext = joined
     }
+}
+
+/** This range inside [text], without the spaces at its ends. */
+internal fun TextRange.withoutEdgeSpaces(text: String): TextRange {
+    val part = text.substring(min, max)
+    val start = min + part.length - part.trimStart().length
+    return TextRange(start, maxOf(start, min + part.trimEnd().length))
 }
 
 /**
