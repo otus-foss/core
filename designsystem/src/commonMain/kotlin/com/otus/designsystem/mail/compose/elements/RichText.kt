@@ -100,9 +100,10 @@ public class RichText(
         get() = current.run { annotatedString.text.substring(selection.min, selection.max) }
 
     /**
-     * Adds a link to [url] that reads [text], or [url] itself while [text] is blank. Selected text
-     * that already reads so keeps its formatting; other selected text is replaced. Spaces at the
-     * ends of the selection stay outside the link.
+     * Adds a link to [url] that reads [text] without whitespace at its ends, or [url] itself while
+     * [text] is blank. Whitespace at the ends of the selection stays outside the link and is kept.
+     * Selected text that already reads so keeps its formatting; otherwise the text between that
+     * whitespace is replaced.
      */
     public fun addLink(
         url: String,
@@ -133,11 +134,12 @@ public class RichText(
     }
 }
 
-/** This range inside [text], without the spaces at its ends. */
+/** This range inside [text] without whitespace at its ends, in the same direction. */
 internal fun TextRange.withoutEdgeSpaces(text: String): TextRange {
     val part = text.substring(min, max)
-    val start = min + part.length - part.trimStart().length
-    return TextRange(start, maxOf(start, min + part.trimEnd().length))
+    val first = min + part.length - part.trimStart().length
+    val last = maxOf(first, min + part.trimEnd().length)
+    return if (reversed) TextRange(last, first) else TextRange(first, last)
 }
 
 /**
