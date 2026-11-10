@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.lerp
 import com.otus.designsystem.theme.colors.OtusColors
 import com.otus.designsystem.theme.motion.MotionSpeed
 import com.otus.designsystem.theme.motion.motionTween
@@ -26,35 +27,53 @@ import com.otus.designsystem.theme.tokens.layout.PageTokens
  * Where a page sits among [count] pages, newest first: the [current] page is a wide `text1` pill,
  * the others small `bgLight` dots. With more than [PageTokens.DOT_WINDOW] pages it shows a window
  * that keeps the current dot in view, and the outer dots shrink where more pages lie beyond them.
- * It has no semantics; the text beside it says the position.
+ * While a drag heads to another page, [turn], that page's dot swells in `text3`, and once letting
+ * go would turn the page the pill jumps to it. It has no semantics; the text beside it says the
+ * position.
  */
 @Composable
 internal fun PageDots(
     count: Int,
     current: Int,
     modifier: Modifier = Modifier,
+    turn: TurnProgress? = null,
 ) {
+    val swelling = turn?.takeUnless { it.ready }
     Row(
         modifier,
         horizontalArrangement = Arrangement.spacedBy(PageTokens.dotGap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        visibleDots(count, current).forEach { dot -> key(dot.index) { Dot(dot) } }
+        visibleDots(count, turn.shown(current)).forEach { dot ->
+            key(dot.index) { Dot(dot, swelling?.fraction?.takeIf { dot.index == swelling.toward } ?: 0f) }
+        }
     }
 }
 
+/** One dot, [swell] of the way from its own width to [PageTokens.swollenDotWidth]. */
 @Composable
-private fun Dot(dot: VisibleDot) {
+private fun Dot(
+    dot: VisibleDot,
+    swell: Float,
+) {
+    val width = if (dot.current) PageTokens.currentDotWidth else lerp(dot.size, PageTokens.swollenDotWidth, swell)
     // Width and height animate as one value, so a dot that grows or shrinks stays round.
     val size by animateValueAsState(
-        DpSize(if (dot.current) PageTokens.currentDotWidth else dot.size, dot.size),
+        DpSize(width, dot.size),
         DpSizeConverter,
         motionTween(MotionSpeed.Fast),
     )
     Box(
         Modifier
             .size(size)
-            .background(if (dot.current) OtusColors.text1 else OtusColors.bgLight, CircleShape),
+            .background(
+                when {
+                    dot.current -> OtusColors.text1
+                    swell > 0f -> OtusColors.text3
+                    else -> OtusColors.bgLight
+                },
+                CircleShape,
+            ),
     )
 }
 

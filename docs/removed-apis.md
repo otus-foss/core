@@ -7,6 +7,7 @@ that has it, on `origin/main` of otus-meta unless the entry names another branch
 
 | API | Module | Removed | Last commit with it | What it did |
 | --- | --- | --- | --- | --- |
+| `SlidingPositionStrip` | `designsystem` | 2026-11-10 | `67f5ced4` | Slid each page's strip content with the pager; `TurningPositionStrip` keeps the strip still and shows how far a swipe is from turning the page. |
 | `com.otus.jmap.sharing` (`Principal`, `PrincipalFilter`, `ShareNotification`, `ShareNotificationQuery`, the sharing capabilities) | `jmap` | 2026-11-06 | `2b8a290b` | Read and queried RFC 9670 Principals and ShareNotifications. |
 | `JmapCapability.PRINCIPALS`, `JmapCapability.PRINCIPALS_OWNER` | `jmap` | 2026-11-06 | `2b8a290b` | The RFC 9670 capability URIs the sharing package used. |
 | `CopyMethod`, `CopyResult` | `jmap` | 2026-11-06 | `2b8a290b` | Sent `Foo/copy` (RFC 8620, section 5.4), with `onSuccessDestroyOriginal`. |

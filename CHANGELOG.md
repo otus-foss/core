@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- Design system: a swipe between pages can show how far it is from turning. `TurnProgress` holds
+  the page a drag heads to and its fraction of the turn distance. `TurningPositionStrip` keeps
+  still, swells that page's dot, and shows the page once letting go would turn to it;
+  `TurnDotsPill` shows the dots alone. `Modifier.turnDim` dims the page that letting go would
+  leave, and `Modifier.turnSeam` draws a line between the two pages. Breaking:
+  `SlidingPositionStrip` is gone; call `TurningPositionStrip` with a `TurnProgress?` instead of a
+  position. See docs/removed-apis.md.
 - Design system: `SwipeActions` takes an `edgeInset`. It insets the row by that much and lets the
   swipe's accent band fill the full width, out to the screen edges. The band now uses
   `accentDark`, the primary button's fill, and is no longer rounded.

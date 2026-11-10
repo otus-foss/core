@@ -25,6 +25,15 @@ public object PageTokens {
     public val currentDotWidth: Dp = 18.dp
     public val dotGap: Dp = 3.dp
 
+    /** The widest the dot of the page a drag heads to swells before the drag is far enough. */
+    public val swollenDotWidth: Dp = 14.dp
+
+    /** The line between the two pages while a drag heads from one to the other. */
+    public val seamWidth: Dp = 2.dp
+
+    /** How opaque the dimmer of the two pages is while a drag heads from one to the other. */
+    public const val TURN_DIM: Float = 0.35f
+
     /** The dots at the edge of a cut window: next to the edge, and at it. */
     public val nearEdgeDot: Dp = 4.dp
     public val edgeDot: Dp = 3.dp
