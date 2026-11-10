@@ -16,6 +16,7 @@ import com.otus.designsystem.screenshot.screenshot
 import com.otus.designsystem.shared.controls.elements.UiAction
 import com.otus.designsystem.shared.feedback.components.InfoStrip
 import com.otus.designsystem.shared.folders.elements.FolderStack
+import com.otus.designsystem.shared.pages.elements.TurnProgress
 import com.otus.designsystem.shared.people.components.DemoPeople
 import com.otus.designsystem.shared.people.components.NamedAvatar
 import com.otus.designsystem.shared.rows.components.StripCard
@@ -48,16 +49,24 @@ class ReadStripScreenshotTest {
     fun positionLight() =
         compose.screenshot("position_strip_light", palette = ThemeChoice(ThemeBase.Light).palette) { PositionStrips() }
 
-    /** Mid-swipe: the first page's content slides out to the left while the second's slides in, inside one card. */
+    /**
+     * A swipe toward the second page: its dot swells while the strip keeps the first page, then
+     * the strip shows the second once letting go would turn the page, and the dots alone in a pill.
+     */
     @Test
-    fun slidingMidSwipe() =
-        compose.screenshot("position_strip_sliding") {
+    fun turning() =
+        compose.screenshot("position_strip_turning") {
             val pages =
                 listOf(
                     PositionPage(NamedAvatar("Latest", DemoPeople.grace), "1/6 · 12 Oct"),
                     PositionPage(NamedAvatar("Margaret Knuth", DemoPeople.margaret), "2/6 · 11 Oct"),
                 )
-            SlidingPositionStrip(count = 6, current = 0, { 0.4f }, { pages[it.coerceAtMost(1)] }, {}) { FolderSlot() }
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                listOf(0.6f, 1f).map { TurnProgress(toward = 1, fraction = it) }.forEach { turn ->
+                    TurningPositionStrip(6, current = 0, turn, { pages[it.coerceAtMost(1)] }, {}) { FolderSlot() }
+                    TurnDotsPill(count = 6, current = 0, turn)
+                }
+            }
         }
 
     @Test

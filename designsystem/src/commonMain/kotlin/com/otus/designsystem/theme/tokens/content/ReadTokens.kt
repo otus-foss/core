@@ -28,6 +28,10 @@ public object ReadTokens {
     /** Between the dots and the position text under a strip's title. */
     public val dotsGap: Dp = 8.dp
 
+    /** The pill that shows the dots during a swipe while the strips are hidden. */
+    public val turnPillHeight: Dp = 28.dp
+    public val turnPillInset: Dp = 12.dp
+
     /** The grown thread list: its header, its rows, their avatar, and the row text. */
     public val listHeaderHeight: Dp = 56.dp
     public val listAvatarSize: Dp = 26.dp

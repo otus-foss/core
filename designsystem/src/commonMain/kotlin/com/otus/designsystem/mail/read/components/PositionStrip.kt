@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import com.otus.designsystem.shared.controls.components.StripChevron
 import com.otus.designsystem.shared.pages.elements.PageDots
+import com.otus.designsystem.shared.pages.elements.TurnProgress
 import com.otus.designsystem.shared.people.components.NamedAvatar
 import com.otus.designsystem.shared.people.components.PersonAvatar
 import com.otus.designsystem.shared.rows.components.StripCard
@@ -80,6 +81,7 @@ internal class StripPosition(
     val count: Int,
     val current: Int,
     val detail: String,
+    val turn: TurnProgress? = null,
 ) {
     /** What screen readers hear without a description of the caller's: "<title>, message x of n, <detail>". */
     fun spoken(heading: NamedAvatar): String = "${heading.name}, message ${current + 1} of $count, $detail"
@@ -194,7 +196,7 @@ private fun DotsLine(position: StripPosition) {
         horizontalArrangement = Arrangement.spacedBy(ReadTokens.dotsGap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        PageDots(position.count, position.current)
+        PageDots(position.count, position.current, turn = position.turn)
         Text(
             position.detail,
             style = panelTextStyle(),
