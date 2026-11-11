@@ -31,7 +31,7 @@ Discover and respect the capabilities each account and server provides. Missing 
 
 Aim to reuse account handling, JMAP transport, contact models, and appropriate UI components while preserving independent app repositories and releases. Mail-specific workflows belong in Mail; calendar-specific workflows belong in Calendar.
 
-Shared libraries live in otus-meta as `com.otus:<module>` modules. Both apps build them from an
+Shared libraries live in otus-meta as `com.otusfoss.core:<module>` modules. Both apps build them from an
 otus-meta checkout as a composite build and pin no version.
 Shared runtime account data and credentials still require an explicit platform design;
 library reuse alone does not provide them. See decision 0005.

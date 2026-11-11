@@ -1,6 +1,6 @@
 # JMAP
 
-The `jmap` module (`com.otus.jmap`, artifact `com.otus:jmap`) is a provider-independent client for
+The `jmap` module (`com.otusfoss.core.jmap`, artifact `com.otusfoss.core:jmap`) is a provider-independent client for
 RFC 8620 (core) and login storage. It has no UI and no app
 code, so Otus Mail and Otus Calendar can both use it. Mail-specific types live in the Mail app.
 Developed and checked against Stalwart. It moved here from otus-mail at version 0.1.0.
@@ -10,8 +10,8 @@ Developed and checked against Stalwart. It moved here from otus-mail at version 
 - Kotlin explicit API mode: every public declaration is deliberate. Depends only on Ktor client
   core, kotlinx.serialization, coroutines, and `json-types`. Apps supply the HTTP engine (OkHttp on Android, Darwin
   on iOS).
-- The architecture check enforces: package root `com.otus.jmap`; no Compose or lifecycle; no
-  references to `com.otus.mail` or `com.otus.calendar`; no platform APIs in common code. File length,
+- The architecture check enforces: package root `com.otusfoss.core.jmap`; no Compose or lifecycle; no
+  references to `com.otusfoss.mail` or `com.otusfoss.calendar`; no platform APIs in common code. File length,
   suppression, wildcard-import, detekt, and ktlint rules apply as everywhere else.
 - Apps use it as `api(libs.otus.jmap)` from their `shared` module; see
   [Using the libraries from an app](consuming.md).
@@ -120,7 +120,7 @@ Developed and checked against Stalwart. It moved here from otus-mail at version 
   extensions. Apps decode the parts they need; malformed values read as unknown.
 - Before sending, the client checks every capability against the session and each account a call
   touches. It throws `Unsupported` instead of sending a request the server cannot serve.
-- Logins (`com.otus.jmap.login`): `JmapLogin` identifies a server and user, not a JMAP account.
+- Logins (`com.otusfoss.core.jmap.login`): `JmapLogin` identifies a server and user, not a JMAP account.
   Each app resolves its own account per capability with `JmapConnections.account`, so one login can
   serve mail and calendars. `LoginStore` keeps secrets apart from the list. `LoginLifecycle` is what
   follows a login's life: `connected`, `removing`, `removeFailed`, and `removed`; see
@@ -172,7 +172,7 @@ size their calls with `getBatch`, `setBatch`, and `callBatch`.
 
 ## Use in the apps
 
-Apps depend on `com.otus:jmap` and define their own data types with `JmapType` and the matching
+Apps depend on `com.otusfoss.core:jmap` and define their own data types with `JmapType` and the matching
 capability, such as `MailboxType` in Mail or a `CalendarEvent` type in Calendar, and resolve the
 account with `JmapConnections.account`. Each installed app passes its own storage names to `AndroidLoginStore`
 and `IosLoginStore`, so apps never share logins. Mail keeps the names of its first release

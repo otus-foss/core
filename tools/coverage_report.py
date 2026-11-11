@@ -47,7 +47,7 @@ LAYERS = [
     (re.compile(r"/feature/([^/]+)/presentation/(screens|components)/"), "{0} · presentation/{1}"),
     (re.compile(r"/feature/([^/]+)/(domain|data|presentation)/"), "{0} · {1}"),
     (re.compile(r"/designsystem/[^/]+/[^/]+/(elements|components)/"), "designsystem · {0}"),
-    (re.compile(r"/com/otus/mail/(app|core)/"), "{0}"),
+    (re.compile(r"/com/otusfoss/mail/(app|core)/"), "{0}"),
     (re.compile(r"/presentation/(screens|components)/"), "{module} · presentation/{0}"),
     (re.compile(r"/(domain|data|presentation)/"), "{module} · {0}"),
 ]

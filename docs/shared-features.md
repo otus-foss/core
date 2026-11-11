@@ -5,7 +5,7 @@ is unchanged. Both target Android and iOS; screens compose the common design sys
 
 ## Settings
 
-`com.otus:settings` owns `SettingsScreen`, `AppearanceSettingsScreen`, `DateFormatSettingsState`,
+`com.otusfoss.core:settings` owns `SettingsScreen`, `AppearanceSettingsScreen`, `DateFormatSettingsState`,
 date-format examples, and the settings index. The app builds the index with `settingsIndex`:
 top-level pages with summaries and icons, and inside each page its sections, settings, current
 values, options, and subpages. The app decides which pages exist and where they lead. The home
@@ -40,7 +40,7 @@ finds the setting.
 
 The theme, app icon, animation speed, and date format are each a `StoredChoiceState<T>`:
 `ThemeSettingsState`, `AppIconSettingsState`, `AnimationSettingsState`, and
-`DateFormatSettingsState`. Each takes a `StoredChoice` from `com.otus:storage`, one text value
+`DateFormatSettingsState`. Each takes a `StoredChoice` from `com.otusfoss.core:storage`, one text value
 under a key in a `KeyValueStore`. The app chooses the file and key; `SharedPreferenceValues` keeps
 them in Android shared preferences and `UserDefaultsValues` in iOS user defaults. Previews and
 tests pass `inMemoryChoice()`.
@@ -50,7 +50,7 @@ unchanged. The platform stores save in the background, with `SharedPreferences.a
 `NSUserDefaults`, so a failed save on disk is never reported, and the new choice may be lost after
 a restart.
 
-`com.otus:storage` also holds `StringMapStore`, a map read and replaced whole, with
+`com.otusfoss.core:storage` also holds `StringMapStore`, a map read and replaced whole, with
 `PreferenceMap` and `UserDefaultsMap`, and `storedName`, the SHA-256 name of a value for a file.
 The appearance screen offers date formatting as a flat `SettingRow` with the pattern in a
 `ValueButton`; tapping it opens a `ChoiceSheet`. Its trailing `content` slot places app-owned
@@ -63,7 +63,7 @@ choice applies at once and is written to the theme's `StoredChoice` first. Pass
 
 ## Accounts
 
-`com.otus:accounts` owns account models/contracts, JMAP server-address parsing,
+`com.otusfoss.core:accounts` owns account models/contracts, JMAP server-address parsing,
 `JmapAccountRepository`, `AccountsState`, `AccountSetupScreen`, and `ConnectedAccountRow`.
 The app supplies its login store, transport, connection cache, coroutine scope, required
 `AccountService`, and the `LoginLifecycle`s that follow each login. Screen titles are app

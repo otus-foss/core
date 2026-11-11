@@ -10,13 +10,13 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import coverage_report
 
 REPORT = Path(__file__).resolve().parent / "fixtures/coverage_report.xml"
-MAIN = "shared/src/commonMain/kotlin/com/otus/mail"
+MAIN = "shared/src/commonMain/kotlin/com/otusfoss/mail"
 SCREEN = f"{MAIN}/feature/inbox/presentation/screens/InboxScreen.kt"
 COUNT = f"{MAIN}/feature/inbox/domain/Count.kt"
-ACTIVITY = "androidApp/src/main/kotlin/com/otus/mail/app/MainActivity.kt"
-TEST = "shared/src/commonTest/kotlin/com/otus/mail/feature/inbox/domain/CountTest.kt"
+ACTIVITY = "androidApp/src/main/kotlin/com/otusfoss/mail/app/MainActivity.kt"
+TEST = "shared/src/commonTest/kotlin/com/otusfoss/mail/feature/inbox/domain/CountTest.kt"
 SOURCES = {
-    SCREEN: """package com.otus.mail.feature.inbox.presentation.screens
+    SCREEN: """package com.otusfoss.mail.feature.inbox.presentation.screens
 
 import androidx.compose.runtime.Composable
 
@@ -36,11 +36,11 @@ private fun InboxScreenPreview() {
     InboxScreen(1)
 }
 """,
-    COUNT: """package com.otus.mail.feature.inbox.domain
+    COUNT: """package com.otusfoss.mail.feature.inbox.domain
 
 fun count(a: Int) = if (a > 0) a else 0
 """,
-    ACTIVITY: """package com.otus.mail.app
+    ACTIVITY: """package com.otusfoss.mail.app
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(state: Bundle?) {
@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 """,
-    TEST: """package com.otus.mail.feature.inbox.domain
+    TEST: """package com.otusfoss.mail.feature.inbox.domain
 
 class CountTest
 """,
@@ -113,15 +113,19 @@ class CoverageReportTests(unittest.TestCase):
         self.assertIn("| shared | 3 | 7 | 42.9% |", text)
 
     def test_layers_fall_back_to_the_module(self):
-        meta = "designsystem/src/commonMain/kotlin/com/otus/designsystem"
+        meta = "designsystem/src/commonMain/kotlin/com/otusfoss/core/designsystem"
         self.assertEqual(
             "designsystem · elements", coverage_report.layer(f"{meta}/shared/rows/elements/Row.kt")
         )
         self.assertEqual("designsystem", coverage_report.layer(f"{meta}/theme/OtusColors.kt"))
-        settings = "settings/src/commonMain/kotlin/com/otus/settings/presentation/screens/Screen.kt"
+        settings = (
+            "settings/src/commonMain/kotlin/com/otusfoss/core/settings/presentation/screens/"
+            "Screen.kt"
+        )
         self.assertEqual("settings · presentation/screens", coverage_report.layer(settings))
         self.assertEqual(
-            "jmap", coverage_report.layer("jmap/src/commonMain/kotlin/com/otus/jmap/Session.kt")
+            "jmap",
+            coverage_report.layer("jmap/src/commonMain/kotlin/com/otusfoss/core/jmap/Session.kt"),
         )
 
     def test_least_covered_files_rank_by_uncovered_lines(self):

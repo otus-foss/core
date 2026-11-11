@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 
 META = Path(__file__).resolve().parents[1]
-COLORS = META / "designsystem/src/commonMain/kotlin/com/otus/designsystem/theme/colors"
+COLORS = META / "designsystem/src/commonMain/kotlin/com/otusfoss/core/designsystem/theme/colors"
 LAUNCH_COLORS = Path("androidApp/src/main/res/values/colors.xml")
 
 

@@ -18,17 +18,17 @@ used only by Mail. See [decision 0008](decisions/0008-central-ui-ownership.md).
 ## Modules
 
 Each top-level directory with a `build.gradle.kts` and `src/` is one library module. A module
-named `jmap-mail` uses the package `com.otus.jmap.mail` and the coordinates `com.otus:jmap-mail`,
+named `jmap-mail` uses the package `com.otusfoss.core.jmap.mail` and the coordinates `com.otusfoss.core:jmap-mail`,
 which the apps' composite builds resolve to the module. The architecture checker derives the namespace from the directory name.
 
 ```text
 <module>/
   build.gradle.kts
   src/
-    commonMain/kotlin/com/otus/<module>/   Portable code and public API
-    androidMain/kotlin/com/otus/<module>/  Android implementations
-    iosMain/kotlin/com/otus/<module>/      iOS implementations
-    commonTest/kotlin/com/otus/<module>/   Behavior tests
+    commonMain/kotlin/com/otusfoss/core/<module>/   Portable code and public API
+    androidMain/kotlin/com/otusfoss/core/<module>/  Android implementations
+    iosMain/kotlin/com/otusfoss/core/<module>/      iOS implementations
+    commonTest/kotlin/com/otusfoss/core/<module>/   Behavior tests
 ```
 
 The repeated `src/<sourceSet>/kotlin` paths tell Kotlin which code each target compiles. Shared
@@ -69,7 +69,7 @@ module on a real dependency difference, for example when Calendar must not pull 
 
 The checker in `tools/check_architecture.py` enforces these rules at source level:
 
-- No module references `com.otus.mail` or `com.otus.calendar`, including in tests.
+- No module references `com.otusfoss.mail` or `com.otusfoss.calendar`, including in tests.
 - Packages match the source path and start with the module namespace.
 - `commonMain` uses no Android, JVM, or Apple platform APIs.
 - `designsystem` modules use `shared/<group>/elements` and `components` for shared UI, and
@@ -142,7 +142,7 @@ remain independent. See [decision 0007](decisions/0007-shared-feature-modules.md
 The package layout groups rendering by ownership, responsibility, and UI layer:
 
 ```text
-com/otus/designsystem/
+com/otusfoss/core/designsystem/
   theme/OtusTheme.kt
   theme/colors/
   theme/motion/
@@ -168,5 +168,5 @@ the core scales `Spacing`, `Sizes`, and `TypeScale`. Shared UI reads the scales 
 objects, never a Mail screen's (`InboxTokens`, `ComposeTokens`, `ReadTokens`); see
 [the design system guide](designsystem.md#tokens).
 
-`designsystem` also owns the public `com.otus.designsystem.resources.Res` symbol bundle. Mail supplies display values and actions
+`designsystem` also owns the public `com.otusfoss.core.designsystem.resources.Res` symbol bundle. Mail supplies display values and actions
 through feature adapters. No Mail domain model enters these component APIs.

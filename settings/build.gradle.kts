@@ -24,4 +24,4 @@ kotlin {
     }
 }
 
-compose.resources { packageOfResClass = "com.otus.settings.resources" }
+compose.resources { packageOfResClass = "com.otusfoss.core.settings.resources" }

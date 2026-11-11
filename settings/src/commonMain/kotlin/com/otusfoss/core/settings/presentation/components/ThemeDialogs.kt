@@ -1,0 +1,81 @@
+package com.otusfoss.core.settings.presentation.components
+
+import androidx.compose.runtime.Composable
+import com.otusfoss.core.designsystem.shared.controls.elements.UiAction
+import com.otusfoss.core.designsystem.shared.overlays.components.ConfirmDialog
+import com.otusfoss.core.designsystem.shared.overlays.components.InputSheet
+import com.otusfoss.core.designsystem.theme.colors.CustomTheme
+import com.otusfoss.core.designsystem.theme.colors.ThemeChoice
+import com.otusfoss.core.settings.presentation.ThemeOption
+import com.otusfoss.core.settings.presentation.copyName
+import com.otusfoss.core.settings.presentation.nameProblem
+import com.otusfoss.core.settings.presentation.title
+
+/**
+ * The menu for one theme card: every theme can be duplicated, and a custom theme can also be
+ * renamed or deleted. [onChange] applies a duplicate, and [onDialog] opens the rename sheet or the
+ * delete popup.
+ */
+internal fun themeActions(
+    option: ThemeOption,
+    choice: ThemeChoice,
+    onChange: (ThemeChoice) -> Unit,
+    onDialog: (ThemeDialog) -> Unit,
+): List<UiAction> {
+    val custom = option.custom
+    // The device's colors change with the wallpaper, so there is nothing fixed to copy.
+    if (option.system) return emptyList()
+    return buildList {
+        if (custom != null) add(UiAction("Rename") { onDialog(ThemeDialog.Rename(custom)) })
+        add(UiAction("Duplicate") { onChange(option.choice.withCopy(choice.copyName(option))) })
+        if (custom != null) add(UiAction("Delete") { onDialog(ThemeDialog.Delete(custom)) })
+    }
+}
+
+/** Shows [dialog]; [onChange] applies the new choice, and [onDialog] closes it with null. */
+@Composable
+internal fun ThemeDialogs(
+    dialog: ThemeDialog,
+    choice: ThemeChoice,
+    onChange: (ThemeChoice) -> Unit,
+    onDialog: (ThemeDialog?) -> Unit,
+) {
+    when (dialog) {
+        is ThemeDialog.Rename -> RenameThemeSheet(dialog.theme, choice, onChange) { onDialog(null) }
+        is ThemeDialog.Delete -> DeleteThemeDialog(dialog.theme, choice, onChange) { onDialog(null) }
+    }
+}
+
+@Composable
+private fun RenameThemeSheet(
+    theme: CustomTheme,
+    choice: ThemeChoice,
+    onChange: (ThemeChoice) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    InputSheet(
+        title = "Rename theme",
+        label = "Name",
+        confirmLabel = "Rename",
+        onConfirm = { onChange(choice.withName(theme.id, it)) },
+        onDismiss = onDismiss,
+        initial = theme.title,
+        problem = { choice.nameProblem(it, theme) },
+    )
+}
+
+@Composable
+private fun DeleteThemeDialog(
+    theme: CustomTheme,
+    choice: ThemeChoice,
+    onChange: (ThemeChoice) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    ConfirmDialog(
+        title = "Delete ${theme.title}?",
+        message = "Its colors are deleted. If it is in use, the app switches to ${theme.base.title}.",
+        confirmLabel = "Delete",
+        onConfirm = { onChange(choice.withoutCustomTheme(theme.id)) },
+        onDismiss = onDismiss,
+    )
+}

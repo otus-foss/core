@@ -1,0 +1,111 @@
+package com.otusfoss.core.avatar
+
+import com.otusfoss.core.jmap.GetMethod
+import com.otusfoss.core.jmap.GetResult
+import com.otusfoss.core.jmap.JmapCall
+import com.otusfoss.core.jmap.JmapConnection
+import com.otusfoss.core.jmap.JmapException
+import com.otusfoss.core.jmap.JmapFilter
+import com.otusfoss.core.jmap.JmapIds
+import com.otusfoss.core.jmap.QueryMethod
+import com.otusfoss.core.jmap.QueryResult
+import com.otusfoss.core.jmap.allOf
+import com.otusfoss.core.jmap.anyOf
+import com.otusfoss.core.jmap.contacts.ContactCardFilter
+import com.otusfoss.core.jmap.contacts.ContactCardType
+import com.otusfoss.core.jscontact.Card
+import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.serialization.json.JsonPrimitive
+
+/**
+ * Search each page without retaining the whole address book or trusting fuzzy email matches. On
+ * each page, cards in the [own] books the user may write come first, so a shared card never hides
+ * the user's own; then the cards Otus wrote, so an avatar the user set wins over older photos.
+ */
+internal suspend fun <T : Any> findContactAvatar(
+    connection: JmapConnection,
+    account: String,
+    email: String,
+    books: Set<String>,
+    own: Set<String>,
+    load: suspend (Card) -> T?,
+): T? =
+    withTimeoutOrNull(CONTACT_SEARCH_TIMEOUT_MILLIS) {
+        var position = 0L
+        var state: String? = null
+        while (true) {
+            val (query, cards) = contactPage(connection, account, email, books, position)
+            // Stop if the server ignores pagination or the result set changes between pages.
+            val queryChanged = state != null && state != query.queryState
+            if (query.position != position || queryChanged || query.ids.isEmpty()) break
+            state = query.queryState
+            val found =
+                cards
+                    .filter { it.isIn(books) && it.hasAddress(email) }
+                    .sortedWith(compareBy({ !it.isIn(own) }, { !it.isAvatarCard }, { it.id }))
+                    .firstNotNullOfOrNull { load(it) }
+            if (found != null) return@withTimeoutOrNull found
+            position += query.ids.size
+        }
+        null
+    }
+
+private fun Card.hasAddress(email: String): Boolean =
+    emails.orEmpty().values.any { avatarEmailKey(it.address) == avatarEmailKey(email) }
+
+/** Whether this card sits in one of [books]. */
+internal fun Card.isIn(books: Set<String>): Boolean = addressBookIds.orEmpty().any { it.value && it.key in books }
+
+private suspend fun contactPage(
+    connection: JmapConnection,
+    account: String,
+    email: String,
+    books: Set<String>,
+    position: Long,
+): Pair<QueryResult, List<Card>> =
+    withCardProperties { properties ->
+        lateinit var query: JmapCall<QueryResult>
+        lateinit var get: JmapCall<GetResult<Card>>
+        val response =
+            connection.send {
+                query =
+                    call(
+                        QueryMethod(
+                            ContactCardType,
+                            account,
+                            contactFilter(email, books),
+                            limit = CONTACT_PAGE_SIZE,
+                            extra = mapOf("position" to JsonPrimitive(position)),
+                        ),
+                    )
+                get = call(GetMethod(ContactCardType, account, JmapIds.Result(query.resultOf("/ids")), properties))
+            }
+        response[query] to response[get].list
+    }
+
+/**
+ * Runs [load] asking for the card properties avatars need, including `vCard`, which holds the
+ * style. Stalwart returns a card's extra vCard properties only when `vCard` is asked for by name. A
+ * server that does not know `vCard` rejects the call (RFC 8620, section 5.1), so [load] then runs
+ * again without it.
+ */
+internal suspend fun <T> withCardProperties(load: suspend (List<String>) -> T): T =
+    try {
+        load(CARD_PROPERTIES + VCARD_PROPERTY)
+    } catch (error: JmapException.MethodError) {
+        if (error.type != "invalidArguments") throw error
+        load(CARD_PROPERTIES)
+    }
+
+private fun contactFilter(
+    email: String,
+    books: Set<String>,
+): JmapFilter =
+    allOf(
+        ContactCardFilter(email = email).toFilter(),
+        anyOf(books.sorted().map { ContactCardFilter(inAddressBook = it).toFilter() }),
+    )
+
+private const val CONTACT_PAGE_SIZE = 32
+private val CARD_PROPERTIES = listOf("id", "addressBookIds", "emails", "media")
+private const val CONTACT_SEARCH_TIMEOUT_MILLIS = 10_000L

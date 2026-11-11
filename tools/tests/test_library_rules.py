@@ -10,7 +10,7 @@ from source_code import source_code
 
 
 def check(module, package, body, source_set="commonMain"):
-    base = "com.otus." + module.replace("-", ".")
+    base = "com.otusfoss.core." + module.replace("-", ".")
     name = base + (f".{package}" if package else "")
     path = Path(f"{module}/src/{source_set}/kotlin") / name.replace(".", "/") / "Example.kt"
     return violations(path, f"package {name}\n{body}")
@@ -38,9 +38,9 @@ class ProtocolModuleTests(unittest.TestCase):
         self.assertTrue(check("accounts", "data", "import androidx.compose.runtime.Composable"))
 
     def test_app_code_is_rejected_in_every_source_set(self):
-        self.assertTrue(check("jmap", "login", "import com.otus.mail.app.App"))
-        self.assertTrue(check("jmap", "", "fun x() = com.otus.calendar.app.App()"))
-        self.assertTrue(check("jmap", "", "import com.otus.mail.app.App", "commonTest"))
+        self.assertTrue(check("jmap", "login", "import com.otusfoss.mail.app.App"))
+        self.assertTrue(check("jmap", "", "fun x() = com.otusfoss.calendar.app.App()"))
+        self.assertTrue(check("jmap", "", "import com.otusfoss.mail.app.App", "commonTest"))
 
     def test_common_code_cannot_use_platform_apis(self):
         self.assertTrue(check("jmap", "", "import android.content.Context"))
@@ -54,10 +54,10 @@ class ProtocolModuleTests(unittest.TestCase):
         self.assertTrue(check("contacts", "domain", "import app.cash.sqldelight.Query"))
 
     def test_package_must_match_module_namespace(self):
-        path = Path("jmap/src/commonMain/kotlin/com/otus/jmap/Example.kt")
-        self.assertTrue(violations(path, "package com.otus.mail.core\n"))
-        path = Path("jmap/src/commonMain/kotlin/com/otus/contacts/Example.kt")
-        self.assertTrue(violations(path, "package com.otus.contacts\n"))
+        path = Path("jmap/src/commonMain/kotlin/com/otusfoss/core/jmap/Example.kt")
+        self.assertTrue(violations(path, "package com.otusfoss.mail.core\n"))
+        path = Path("jmap/src/commonMain/kotlin/com/otusfoss/core/contacts/Example.kt")
+        self.assertTrue(violations(path, "package com.otusfoss.core.contacts\n"))
 
     def test_catch_all_packages_are_rejected(self):
         self.assertTrue(check("jmap", "utils", "fun x() = 1"))
@@ -75,13 +75,13 @@ class ProtocolModuleTests(unittest.TestCase):
         ):
             with self.subTest(annotation=annotation):
                 self.assertTrue(check("jmap", "", annotation, "androidMain"))
-        path = Path("jmap/src/commonMain/kotlin/com/otus/jmap/Example.kt")
+        path = Path("jmap/src/commonMain/kotlin/com/otusfoss/core/jmap/Example.kt")
         for directive in ('@file:kotlin.Suppress("unused")', '@file: Suppress("unused")'):
             with self.subTest(directive=directive):
-                self.assertTrue(violations(path, f"{directive}\npackage com.otus.jmap\n"))
+                self.assertTrue(violations(path, f"{directive}\npackage com.otusfoss.core.jmap\n"))
 
     def test_string_templates_are_still_checked(self):
-        body = 'fun x() = "${android.os.Build.MODEL} and ${com.otus.mail.app.App()}"'
+        body = 'fun x() = "${android.os.Build.MODEL} and ${com.otusfoss.mail.app.App()}"'
         errors = check("jmap", "", body)
         self.assertIn("platform-only API in commonMain", errors)
         self.assertIn("shared libraries cannot depend on Mail or Calendar app code", errors)
@@ -107,26 +107,32 @@ class DesignSystemTests(unittest.TestCase):
         self.assertTrue(check("designsystem", "", "fun x() = 1"))
 
     def test_elements_cannot_import_components(self):
-        body = "import com.otus.designsystem.shared.navigation.components.Sidebar"
+        body = "import com.otusfoss.core.designsystem.shared.navigation.components.Sidebar"
         self.assertTrue(check("designsystem", "shared.controls.elements", body))
         self.assertEqual(check("designsystem", "shared.controls.components", body), [])
 
     def test_cannot_depend_on_protocol_or_feature_modules(self):
         self.assertTrue(
-            check("designsystem", "shared.controls.elements", "import com.otus.jmap.JmapClient")
+            check(
+                "designsystem",
+                "shared.controls.elements",
+                "import com.otusfoss.core.jmap.JmapClient",
+            )
         )
         self.assertTrue(
             check("designsystem", "shared.controls.components", "import io.ktor.client.HttpClient")
         )
-        body = "import com.otus.accounts.domain.ConnectedAccount"
+        body = "import com.otusfoss.core.accounts.domain.ConnectedAccount"
         self.assertTrue(check("designsystem", "shared.controls.components", body))
 
     def test_may_format_dates(self):
-        body = "import com.otus.dateformat.DateFormatter"
+        body = "import com.otusfoss.core.dateformat.DateFormatter"
         self.assertEqual(check("designsystem", "shared.controls.components", body), [])
         self.assertTrue(
             check(
-                "designsystem", "shared.controls.components", "import com.otus.dateformatting.Store"
+                "designsystem",
+                "shared.controls.components",
+                "import com.otusfoss.core.dateformatting.Store",
             )
         )
 
@@ -186,21 +192,23 @@ class ThemePackageTests(unittest.TestCase):
                 "designsystem.resources.Res",
                 "dateformat.DateFormatter",
             ):
-                for body in reference_bodies(f"com.otus.{target}"):
+                for body in reference_bodies(f"com.otusfoss.core.{target}"):
                     with self.subTest(package=package, body=body):
                         self.assertEqual(check("designsystem", package, body), [])
         self.assertEqual(check("designsystem", "theme", "@Composable fun OtusTheme() {}"), [])
 
     def test_nested_theme_groups_are_organizational(self):
         for package in ("theme.shared.controls.elements", "theme.tokens.elements"):
-            for body in reference_bodies("com.otus.designsystem.theme.tokens.components.RowTokens"):
+            for body in reference_bodies(
+                "com.otusfoss.core.designsystem.theme.tokens.components.RowTokens"
+            ):
                 with self.subTest(package=package, body=body):
                     self.assertEqual(check("designsystem", package, body), [])
         self.assertEqual(
             check(
                 "designsystem",
                 "shared.controls.elements",
-                "import com.otus.designsystem.theme.tokens.components.RowTokens",
+                "import com.otusfoss.core.designsystem.theme.tokens.components.RowTokens",
             ),
             [],
         )
@@ -250,17 +258,30 @@ class ThemePackageTests(unittest.TestCase):
 
     def test_nested_theme_keeps_package_and_namespace_matching(self):
         for directory, package in (
-            ("com.otus.designsystem.theme.colors", "com.otus.designsystem.theme.motion"),
-            ("com.otus.designsystem.theme.colors", "com.otus.designsystem.theme..colors"),
-            ("com.otus.designsystemish.theme.colors", "com.otus.designsystemish.theme.colors"),
-            ("com.otus.designsystemtheme.colors", "com.otus.designsystemtheme.colors"),
+            (
+                "com.otusfoss.core.designsystem.theme.colors",
+                "com.otusfoss.core.designsystem.theme.motion",
+            ),
+            (
+                "com.otusfoss.core.designsystem.theme.colors",
+                "com.otusfoss.core.designsystem.theme..colors",
+            ),
+            (
+                "com.otusfoss.core.designsystemish.theme.colors",
+                "com.otusfoss.core.designsystemish.theme.colors",
+            ),
+            (
+                "com.otusfoss.core.designsystemtheme.colors",
+                "com.otusfoss.core.designsystemtheme.colors",
+            ),
             ("org.example.theme.colors", "org.example.theme.colors"),
         ):
             path = Path("designsystem/src/commonMain/kotlin") / directory.replace(".", "/") / "A.kt"
             with self.subTest(directory=directory, package=package):
                 errors = violations(path, f"package {package}\nval tint = Color(0xFFFFFFFF)")
                 self.assertIn(
-                    "package must match source path and the module namespace com.otus.designsystem",
+                    "package must match source path and the module namespace "
+                    "com.otusfoss.core.designsystem",
                     errors,
                 )
                 self.assertIn("literal colors belong in theme", errors)
@@ -270,37 +291,37 @@ class QualifiedExpressionTests(unittest.TestCase):
     forbidden_references = (
         (
             "theme.brand",
-            "com.otus.designsystem.shared.controls.elements.WIDTH",
+            "com.otusfoss.core.designsystem.shared.controls.elements.WIDTH",
             "theme cannot depend on scoped UI",
         ),
         (
             "shared.controls.elements",
-            "com.otus.designsystem.shared.controls.components.WIDTH",
+            "com.otusfoss.core.designsystem.shared.controls.components.WIDTH",
             "elements cannot depend on components",
         ),
         (
             "shared.controls.components",
-            "com.otus.designsystem.mail.inbox.elements.WIDTH",
+            "com.otusfoss.core.designsystem.mail.inbox.elements.WIDTH",
             "shared UI cannot depend on mail or calendar UI",
         ),
         (
             "mail.inbox.components",
-            "com.otus.designsystem.calendar.events.elements.WIDTH",
+            "com.otusfoss.core.designsystem.calendar.events.elements.WIDTH",
             "mail and calendar UI cannot depend on each other",
         ),
         (
             "calendar.events.components",
-            "com.otus.designsystem.mail.inbox.elements.WIDTH",
+            "com.otusfoss.core.designsystem.mail.inbox.elements.WIDTH",
             "mail and calendar UI cannot depend on each other",
         ),
         (
             "theme.brand",
-            "com.otus.jmap.LIMIT",
+            "com.otusfoss.core.jmap.LIMIT",
             "design-system modules may depend only on design-system and dateformat",
         ),
         (
             "theme.brand",
-            "com.otus.mail.app.LIMIT",
+            "com.otusfoss.mail.app.LIMIT",
             "shared libraries cannot depend on Mail or Calendar app code",
         ),
         (
@@ -317,7 +338,7 @@ class QualifiedExpressionTests(unittest.TestCase):
 
     def test_closed_and_open_ended_theme_ranges_are_allowed(self):
         for theme in ("theme", "theme.brand"):
-            base = f"com.otus.designsystem.{theme}"
+            base = f"com.otusfoss.core.designsystem.{theme}"
             for operator in ("..", "..<", " .. ", " ..< ", "..\n    ", "..<\n    "):
                 expression = f"{base}.OWL_ART_WIDTH{operator}{base}.OWL_ART_HEIGHT"
                 for module, package in (
@@ -330,9 +351,9 @@ class QualifiedExpressionTests(unittest.TestCase):
 
     def test_qualified_theme_tokens_and_navigation_can_span_lines(self):
         for reference in (
-            "com.otus.designsystem.theme.OWL_ART_WIDTH",
-            "com.otus.designsystem.theme.brand.OWL_ART_WIDTH",
-            "com.otus.designsystem.theme.tokens.inbox.InboxTokens.row.height.value",
+            "com.otusfoss.core.designsystem.theme.OWL_ART_WIDTH",
+            "com.otusfoss.core.designsystem.theme.brand.OWL_ART_WIDTH",
+            "com.otusfoss.core.designsystem.theme.tokens.inbox.InboxTokens.row.height.value",
         ):
             for separator in (".\n    ", "\n    .", " \n . \n "):
                 expressions = (
@@ -350,7 +371,7 @@ class QualifiedExpressionTests(unittest.TestCase):
                         )
 
     def test_forbidden_references_are_checked_on_each_range_endpoint(self):
-        allowed = "com.otus.designsystem.theme.brand.OWL_ART_WIDTH"
+        allowed = "com.otusfoss.core.designsystem.theme.brand.OWL_ART_WIDTH"
         for package, forbidden, error in self.forbidden_references:
             for operator in ("..", "..<"):
                 for left, right in ((allowed, forbidden), (forbidden, allowed)):
@@ -374,7 +395,7 @@ class QualifiedExpressionTests(unittest.TestCase):
             "theme.colors.2palette.OtusColors",
         ):
             for suffix in ("", " as Item"):
-                body = f"import com.otus.designsystem.{target}{suffix}"
+                body = f"import com.otusfoss.core.designsystem.{target}{suffix}"
                 with self.subTest(body=body):
                     errors = check("designsystem", "shared.controls.elements", body)
                     self.assertIn(
@@ -452,7 +473,7 @@ class ScopedDesignSystemTests(unittest.TestCase):
                             check(
                                 "designsystem",
                                 f"{scope}.controls.{layer}",
-                                f"import com.otus.designsystem.{target}",
+                                f"import com.otusfoss.core.designsystem.{target}",
                             ),
                             [],
                         )
@@ -460,8 +481,9 @@ class ScopedDesignSystemTests(unittest.TestCase):
     def test_elements_cannot_use_components_in_any_group(self):
         for scope in ("shared", "mail", "calendar"):
             for body in (
-                "import com.otus.designsystem.shared.navigation.components.Sidebar as Panel",
-                f"fun row() = com.otus.designsystem.{scope}.other.components.Row()",
+                "import com.otusfoss.core.designsystem.shared.navigation.components.Sidebar"
+                " as Panel",
+                f"fun row() = com.otusfoss.core.designsystem.{scope}.other.components.Row()",
             ):
                 with self.subTest(scope=scope, body=body):
                     errors = check("designsystem", f"{scope}.controls.elements", body)
@@ -475,9 +497,9 @@ class ScopedDesignSystemTests(unittest.TestCase):
             ("calendar", "mail"),
         ):
             for body in (
-                f"import com.otus.designsystem.{target}.rows.elements.Label as Item",
-                f"fun row() = com.otus.designsystem.{target}.rows.elements.Label()",
-                f'val label = "${{com.otus.designsystem.{target}.rows.elements.Label()}}"',
+                f"import com.otusfoss.core.designsystem.{target}.rows.elements.Label as Item",
+                f"fun row() = com.otusfoss.core.designsystem.{target}.rows.elements.Label()",
+                f'val label = "${{com.otusfoss.core.designsystem.{target}.rows.elements.Label()}}"',
             ):
                 with self.subTest(scope=scope, target=target, body=body):
                     errors = check("designsystem", f"{scope}.controls.components", body)
@@ -492,7 +514,7 @@ class ScopedDesignSystemTests(unittest.TestCase):
         for package in ThemePackageTests.packages:
             for scope in ("shared", "mail", "calendar"):
                 for layer in ("elements", "components"):
-                    target = f"com.otus.designsystem.{scope}.controls.{layer}.Row"
+                    target = f"com.otusfoss.core.designsystem.{scope}.controls.{layer}.Row"
                     for body in reference_bodies(target):
                         with self.subTest(package=package, body=body):
                             self.assertEqual(
@@ -520,8 +542,8 @@ class ScopedDesignSystemTests(unittest.TestCase):
                 "mail.inbox.theme.OtusColors",
             ):
                 for body in (
-                    f"import com.otus.designsystem.{target} as Item",
-                    f"fun row() = com.otus.designsystem.{target}()",
+                    f"import com.otusfoss.core.designsystem.{target} as Item",
+                    f"fun row() = com.otusfoss.core.designsystem.{target}()",
                 ):
                     with self.subTest(module=module, target=target, body=body):
                         errors = check(module, package, body)
@@ -559,11 +581,11 @@ class ScopedDesignSystemTests(unittest.TestCase):
             ("app.cash.sqldelight.Query", "UI must not access network or database APIs"),
             ("androidx.room.Room", "UI must not access network or database APIs"),
             ("okhttp3.OkHttpClient", "UI must not access network or database APIs"),
-            ("com.otus.jmap.JmapClient", "design-system modules may depend only"),
-            ("com.otus.accounts.domain.Account", "design-system modules may depend only"),
-            ("com.otus.settings.domain.Entry", "design-system modules may depend only"),
-            ("com.otus.mail.app.App", "shared libraries cannot depend on Mail or Calendar"),
-            ("com.otus.calendar.app.App", "shared libraries cannot depend on Mail or Calendar"),
+            ("com.otusfoss.core.jmap.JmapClient", "design-system modules may depend only"),
+            ("com.otusfoss.core.accounts.domain.Account", "design-system modules may depend only"),
+            ("com.otusfoss.core.settings.domain.Entry", "design-system modules may depend only"),
+            ("com.otusfoss.mail.app.App", "shared libraries cannot depend on Mail or Calendar"),
+            ("com.otusfoss.calendar.app.App", "shared libraries cannot depend on Mail or Calendar"),
         ):
             for package in ("mail.inbox.components", *ThemePackageTests.packages):
                 for body in reference_bodies(reference):
@@ -610,7 +632,7 @@ class ScopedDesignSystemTests(unittest.TestCase):
             ("shared.forms.components", "elements.Button", "design-system references must use"),
             ("shared.forms.components", "components.Row", "design-system references must use"),
         ):
-            for body in reference_bodies(f"com.otus.designsystem.{target}"):
+            for body in reference_bodies(f"com.otusfoss.core.designsystem.{target}"):
                 with self.subTest(module=module, package=package, body=body):
                     errors = check(module, package, body)
                     if error is None:
@@ -624,24 +646,26 @@ class ScopedDesignSystemTests(unittest.TestCase):
 
     def test_comments_and_strings_do_not_count_as_references(self):
         body = """
-// import com.otus.designsystem.mail.inbox.components.Row
-/** com.otus.designsystem.components.Sidebar */
-val example = "com.otus.designsystem.calendar.events.components.Row"
+// import com.otusfoss.core.designsystem.mail.inbox.components.Row
+/** com.otusfoss.core.designsystem.components.Sidebar */
+val example = "com.otusfoss.core.designsystem.calendar.events.components.Row"
 """
         self.assertEqual(check("designsystem", "shared.controls.elements", body), [])
 
     def test_reference_on_the_package_line_is_still_checked(self):
-        package = "com.otus.designsystem.shared.controls.elements"
+        package = "com.otusfoss.core.designsystem.shared.controls.elements"
         path = Path("designsystem/src/commonMain/kotlin") / package.replace(".", "/") / "Test.kt"
-        text = f"package {package}; import com.otus.designsystem.shared.rows.components.Row"
+        text = (
+            f"package {package}; import com.otusfoss.core.designsystem.shared.rows.components.Row"
+        )
         self.assertIn("elements cannot depend on components", violations(path, text))
 
     def test_tests_keep_the_existing_production_guard_exemption(self):
         body = """
 import io.ktor.client.HttpClient
 import android.content.Context
-import com.otus.designsystem.mail.inbox.components.Row
-import com.otus.designsystem.components.OldFixture
+import com.otusfoss.core.designsystem.mail.inbox.components.Row
+import com.otusfoss.core.designsystem.components.OldFixture
 fun row(model: InboxViewModel) = Color(0xFFFFFFFF)
 """
         for source_set in ("commonTest", "androidHostTest", "iosTest"):
@@ -651,13 +675,18 @@ fun row(model: InboxViewModel) = Color(0xFFFFFFFF)
 
     def test_test_sources_still_enforce_packages_apps_suppressions_and_import_style(self):
         path = Path(
-            "designsystem/src/commonTest/kotlin/com/otus/designsystem/shared/controls/elements/Test.kt"
+            "designsystem/src/commonTest/kotlin/com/otusfoss/core/designsystem/shared/controls/elements/Test.kt"
         )
-        errors = violations(path, "package com.otus.designsystem.shared.controls.components")
+        errors = violations(
+            path, "package com.otusfoss.core.designsystem.shared.controls.components"
+        )
         self.assertTrue(any("package must match" in error for error in errors))
         for body, error in (
-            ("import com.otus.mail.app.App", "shared libraries cannot depend"),
-            ("import com.otus.designsystem.shared.controls.components.*", "wildcard imports"),
+            ("import com.otusfoss.mail.app.App", "shared libraries cannot depend"),
+            (
+                "import com.otusfoss.core.designsystem.shared.controls.components.*",
+                "wildcard imports",
+            ),
             ('@Suppress("unused") fun test() {}', "inline lint suppression"),
             ("\n" * 301, "file has"),
         ):
@@ -684,25 +713,35 @@ class FeatureModuleTests(unittest.TestCase):
         self.assertTrue(check("settings", "widgets", "class Entry"))
 
     def test_shared_feature_boundaries(self):
-        body = "import com.otus.designsystem.theme.OtusColors"
+        body = "import com.otusfoss.core.designsystem.theme.OtusColors"
         self.assertTrue(check("accounts", "domain", body))
-        self.assertTrue(check("accounts", "presentation", "import com.otus.jmap.JmapClient"))
-        body = "import com.otus.settings.presentation.SettingsEntry"
+        self.assertTrue(
+            check("accounts", "presentation", "import com.otusfoss.core.jmap.JmapClient")
+        )
+        body = "import com.otusfoss.core.settings.presentation.SettingsEntry"
         self.assertTrue(check("accounts", "presentation", body))
 
     def test_composables_live_in_components_or_screens(self):
         self.assertTrue(check("accounts", "presentation", self.compose))
 
     def test_screen_files_end_in_screen(self):
-        path = Path("settings/src/commonMain/kotlin/com/otus/settings/presentation/screens/Page.kt")
-        text = "package com.otus.settings.presentation.screens\n" + self.compose
+        path = Path(
+            "settings/src/commonMain/kotlin/com/otusfoss/core/settings/presentation/screens/Page.kt"
+        )
+        text = "package com.otusfoss.core.settings.presentation.screens\n" + self.compose
         self.assertTrue(violations(path, text))
 
     def test_layer_directions(self):
-        self.assertTrue(check("accounts", "presentation", "import com.otus.accounts.data.Repo"))
-        self.assertTrue(check("accounts", "domain", "import com.otus.accounts.data.Repo"))
-        self.assertTrue(check("accounts", "data", "import com.otus.accounts.presentation.State"))
-        self.assertEqual(check("accounts", "data", "import com.otus.accounts.domain.Account"), [])
+        self.assertTrue(
+            check("accounts", "presentation", "import com.otusfoss.core.accounts.data.Repo")
+        )
+        self.assertTrue(check("accounts", "domain", "import com.otusfoss.core.accounts.data.Repo"))
+        self.assertTrue(
+            check("accounts", "data", "import com.otusfoss.core.accounts.presentation.State")
+        )
+        self.assertEqual(
+            check("accounts", "data", "import com.otusfoss.core.accounts.domain.Account"), []
+        )
 
     def test_components_take_values_not_services(self):
         body = "fun row(repository: AccountRepository) {}"

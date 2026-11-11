@@ -1,6 +1,6 @@
 # Push subscriptions
 
-`com.otus:jmap-push` keeps one JMAP push subscription (RFC 8620, section 7.2) per login, pointed at
+`com.otusfoss.core:jmap-push` keeps one JMAP push subscription (RFC 8620, section 7.2) per login, pointed at
 the endpoint the app's push service gave that login. It has no UI and no platform push code.
 Each app connects its own push service, such as a UnifiedPush receiver on Android. See
 [decision 0015](decisions/0015-push-notifications.md).
@@ -8,8 +8,8 @@ Each app connects its own push service, such as a UnifiedPush receiver on Androi
 ## Module rename in 0.10.0
 
 The module is now `jmap-push` to identify its JMAP subscription responsibility. Replace the Maven
-dependency `com.otus:push` with `com.otus:jmap-push`, and replace `com.otus.push` imports with
-`com.otus.jmap.push`. In an Otus app's version catalog, rename `otus-push` to `otus-jmap-push`
+dependency `com.otusfoss.core:push` with `com.otusfoss.core:jmap-push`, and replace `com.otusfoss.core.push` imports with
+`com.otusfoss.core.jmap.push`. In an Otus app's version catalog, rename `otus-push` to `otus-jmap-push`
 and use `libs.otus.jmap.push`. Gradle tasks now use the `:jmap-push:` prefix.
 
 The public type names and behavior are unchanged. Existing stored subscription records, app
@@ -34,7 +34,7 @@ storage keys, and platform delivery services keep their formats and identities.
     `JmapAccountRepository`.
   - `status()` reports `Off`, `Waiting`, `Active`, or `Refused` per login, without waiting for a
     running `sync`.
-- A `StringMapStore` from `com.otus:storage` keeps each login's record as text in app-private
+- A `StringMapStore` from `com.otusfoss.core:storage` keeps each login's record as text in app-private
   storage. Records hold no credentials.
 
 ## Behavior

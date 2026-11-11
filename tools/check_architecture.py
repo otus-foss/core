@@ -3,7 +3,7 @@
 Every Otus repository runs this copy from its otus-meta checkout, from its own root. The
 repository's config/checks.toml says what it is:
 
-    namespace = "com.otus.mail"     # the app's package root; Meta uses "com.otus"
+    namespace = "com.otusfoss.mail"     # the app's package root; Meta uses "com.otusfoss.core"
     kind = "app"                    # "app" or "library"
     layers = ["app", "core", "feature"]   # an app's top-level packages in shared/commonMain
 """
