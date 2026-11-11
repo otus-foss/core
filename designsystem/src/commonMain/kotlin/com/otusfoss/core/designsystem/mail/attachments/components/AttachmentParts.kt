@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,6 +33,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
+import com.otusfoss.core.designsystem.mail.attachments.elements.FileIcon
 import com.otusfoss.core.designsystem.resources.Res
 import com.otusfoss.core.designsystem.resources.symbol_download
 import com.otusfoss.core.designsystem.shared.controls.elements.Symbol
@@ -109,12 +111,25 @@ internal fun SummaryText(
     )
 }
 
-/** One file in the opened strip: tapping it runs [onOpen]; its download button runs [onSave]. */
+/** [file] as a picture: its thumbnail, else a page in the fill of its kind with its type on it. */
+@Composable
+internal fun FileIcon(
+    file: AttachmentFile,
+    size: Dp,
+) {
+    FileIcon(file.label, file.kind.tint, size, picture = file.thumbnail)
+}
+
+/**
+ * One file in a list: tapping it runs [onOpen]; its download button runs [onSave]. The row's
+ * content sits [contentPadding] in from its sides, by default as far as a strip card's.
+ */
 @Composable
 internal fun FileRow(
     file: AttachmentFile,
     onOpen: () -> Unit,
     onSave: () -> Unit,
+    contentPadding: PaddingValues = StripRowPadding,
 ) {
     Row(
         Modifier
@@ -122,11 +137,11 @@ internal fun FileRow(
             .heightIn(min = ReadTokens.fileRowHeight)
             .topHairline(OtusColors.strokeBgDark)
             .clickable(role = Role.Button, onClick = onOpen)
-            .padding(start = StripTokens.start + StripTokens.gap / 2, end = StripTokens.end / 2),
+            .padding(contentPadding),
         horizontalArrangement = Arrangement.spacedBy(StripTokens.gap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        FileTile(file, ReadTokens.fileTileSize, Sizes.iconSize)
+        FileIcon(file, ReadTokens.fileTileSize)
         Column(Modifier.weight(1f)) {
             Text(
                 file.name,
@@ -159,5 +174,7 @@ internal fun FileRow(
         }
     }
 }
+
+private val StripRowPadding = PaddingValues(start = StripTokens.start + StripTokens.gap / 2, end = StripTokens.end / 2)
 
 private const val SUMMARY_SPLIT = " · "

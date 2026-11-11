@@ -1,7 +1,7 @@
 package com.otusfoss.core.designsystem.mail.quickview.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -33,6 +33,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.onLongClick
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -149,16 +150,21 @@ internal fun QuickLabel(
     )
 }
 
-/** A tap target read out as one [description], with the controls' press feedback in [shape]. */
+/**
+ * A tap target read out as one [description], with the controls' press feedback in [shape]. A long
+ * press runs [onHold], which screen readers offer as the action named [holdLabel].
+ */
 @Composable
 internal fun Modifier.quickClick(
     description: String,
     shape: Shape,
     onClick: () -> Unit,
+    onHold: (() -> Unit)? = null,
+    holdLabel: String? = null,
 ): Modifier {
     val interactions = remember { MutableInteractionSource() }
     return controlPressFeedback(interactions, shape)
-        .clickable(interactions, indication = null, onClick = onClick)
+        .combinedClickable(interactions, indication = null, onLongClick = onHold, onClick = onClick)
         .clearAndSetSemantics {
             contentDescription = description
             role = Role.Button
@@ -166,12 +172,18 @@ internal fun Modifier.quickClick(
                 onClick()
                 true
             }
+            onHold?.let { hold ->
+                onLongClick(holdLabel) {
+                    hold()
+                    true
+                }
+            }
         }
 }
 
 /** Fades the content out toward its end edge, so a row that scrolls on shows it. */
 @Composable
-private fun Modifier.fadeEnd(): Modifier {
+internal fun Modifier.fadeEnd(): Modifier {
     val opaque = OtusColors.text1
     val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
     return graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen).drawWithContent {

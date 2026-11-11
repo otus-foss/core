@@ -1,5 +1,6 @@
 package com.otusfoss.core.designsystem.mail.attachments.components
 
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import com.otusfoss.core.designsystem.resources.Res
 import com.otusfoss.core.designsystem.resources.symbol_attach_file
@@ -14,6 +15,7 @@ import com.otusfoss.core.designsystem.resources.symbol_notes
 import com.otusfoss.core.designsystem.resources.symbol_pdf
 import com.otusfoss.core.designsystem.resources.symbol_person
 import com.otusfoss.core.designsystem.resources.symbol_slideshow
+import com.otusfoss.core.designsystem.theme.tokens.content.FileKindTokens
 import org.jetbrains.compose.resources.DrawableResource
 
 /**
@@ -38,14 +40,33 @@ public enum class AttachmentKind(
 }
 
 /**
+ * The fill of the page a file of this kind is drawn as, when it has no picture. Kinds that share a
+ * fill are still told apart by the type written on the page.
+ */
+internal val AttachmentKind.tint: Color
+    get() =
+        when (this) {
+            AttachmentKind.Pdf -> FileKindTokens.pdf
+            AttachmentKind.Document -> FileKindTokens.document
+            AttachmentKind.Sheet -> FileKindTokens.sheet
+            AttachmentKind.Slides -> FileKindTokens.slides
+            AttachmentKind.Archive -> FileKindTokens.archive
+            AttachmentKind.Image, AttachmentKind.Audio, AttachmentKind.Video -> FileKindTokens.media
+            AttachmentKind.Calendar -> FileKindTokens.calendar
+            AttachmentKind.Contact, AttachmentKind.Code, AttachmentKind.Other -> FileKindTokens.other
+        }
+
+/**
  * A file attached to a message, as an [AttachmentStrip] shows it: its [name], a [detail] such as
- * "PDF · 240 KB · 4 pages", its [kind], and an optional decoded [thumbnail] for images.
+ * "PDF · 240 KB · 4 pages", its [kind], an optional decoded [thumbnail] for images, and the short
+ * [label] of its type, such as "PDF", written on its page when it has no thumbnail.
  */
 public data class AttachmentFile(
     val name: String,
     val detail: String,
     val kind: AttachmentKind,
     val thumbnail: ImageBitmap? = null,
+    val label: String = "",
 )
 
 /**
