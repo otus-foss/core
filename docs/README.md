@@ -1,5 +1,25 @@
 # Otus Core documentation
 
+## Modules
+
+| Module | Artifact | Contents |
+| --- | --- | --- |
+| [`json-types`](jmap.md) | `com.otusfoss.core:json-types` | RFC 3339 dates and PatchObject paths that JMAP and JSContact share |
+| [`storage`](shared-features.md#stored-choices) | `com.otusfoss.core:storage` | Key-value and string-map stores, stored choices, and stored names |
+| [`jmap`](jmap.md) | `com.otusfoss.core:jmap` | JMAP client (RFC 8620), account lookup, login lifecycle, and protected login storage |
+| [`jscontact`](contacts.md) | `com.otusfoss.core:jscontact` | JSContact cards (RFC 9553) |
+| [`jmap-contacts`](contacts.md) | `com.otusfoss.core:jmap-contacts` | JMAP for Contacts (RFC 9610) |
+| [`jmap-push`](push.md) | `com.otusfoss.core:jmap-push` | JMAP push subscriptions |
+| [`dateformat`](dateformat.md) | `com.otusfoss.core:dateformat` | Date display, with day, month, and time names |
+| [`avatar`](avatar.md) | `com.otusfoss.core:avatar` | Contact photos, website icons, and generated initials |
+| [`avatar-ui`](avatar.md#avatar-ui) | `com.otusfoss.core:avatar-ui` | Avatar looks on the design system and the own-avatar editor |
+| [`designsystem`](designsystem.md) | `com.otusfoss.core:designsystem` | Theme, elements, and components |
+| [`settings`](shared-features.md) | `com.otusfoss.core:settings` | Settings and appearance pages, added in 0.3.0 |
+| [`accounts`](shared-features.md) | `com.otusfoss.core:accounts` | JMAP account setup, added in 0.3.0 |
+
+More modules follow as code moves out of the apps. See
+[the architecture guide](architecture.md) for the planned modules and extraction order.
+
 ## Suite
 
 - [Hosting and CI](hosting.md): GitHub repositories, the workflows and shared actions of all three
