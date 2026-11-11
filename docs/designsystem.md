@@ -248,11 +248,11 @@ ease-in-out and linear timing. `LocalMotionScale` scales all of it.
 ## Behavior guides
 
 These guides still live in Mail, which was the first app to use the components:
-[context panel](https://github.com/reazndev/otus-mail/blob/main/docs/context-panel.md),
-[selection sheets](https://github.com/reazndev/otus-mail/blob/main/docs/selection-sheets.md),
-[sidebar](https://github.com/reazndev/otus-mail/blob/main/docs/sidebar.md),
-[motion](https://github.com/reazndev/otus-mail/blob/main/docs/motion.md), and
-[color theme](https://github.com/reazndev/otus-mail/blob/main/docs/design.md).
+[context panel](https://github.com/otus-foss/otus-mail/blob/main/docs/context-panel.md),
+[selection sheets](https://github.com/otus-foss/otus-mail/blob/main/docs/selection-sheets.md),
+[sidebar](https://github.com/otus-foss/otus-mail/blob/main/docs/sidebar.md),
+[motion](https://github.com/otus-foss/otus-mail/blob/main/docs/motion.md), and
+[color theme](https://github.com/otus-foss/otus-mail/blob/main/docs/design.md).
 
 ## Date chooser
 

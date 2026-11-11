@@ -5,7 +5,7 @@
 Mail and Calendar learn about new data straight from the user's JMAP server. Otus runs no push
 server or gateway for Android delivery. The Apple implementation on `feat/apple-push` adds an
 optional APNs bridge, as [decision 0017](0017-apple-push.md) records. The Android decision follows
-[Mail #18](https://github.com/reazndev/otus-mail/issues/18).
+[Mail #18](https://github.com/otus-foss/otus-mail/issues/18).
 
 The server tells the app that data changed through JMAP push (RFC 8620, section 7). A push holds
 only a `StateChange`: account ids, data type names, and new state strings. The app then fetches

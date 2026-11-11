@@ -24,10 +24,10 @@ The architecture guide moves code here when the second app needs it. This is new
 neither app calls yet, so it goes ahead of that rule because the user asked for it, as
 [decision 0007](0007-shared-feature-modules.md) did for settings and accounts. Both apps plan to
 use contacts: Mail for contact management and recipients
-([Mail #8](https://github.com/reazndev/otus-mail/issues/8),
-[Mail #6](https://github.com/reazndev/otus-mail/issues/6),
-[Mail #19](https://github.com/reazndev/otus-mail/issues/19)), and Calendar for attendee
-suggestions ([Calendar #7](https://github.com/reazndev/otus-calendar/issues/7)). See
+([Mail #8](https://github.com/otus-foss/otus-mail/issues/8),
+[Mail #6](https://github.com/otus-foss/otus-mail/issues/6),
+[Mail #19](https://github.com/otus-foss/otus-mail/issues/19)), and Calendar for attendee
+suggestions ([Calendar #7](https://github.com/otus-foss/otus-calendar/issues/7)). See
 [the contacts guide](../contacts.md) for the API.
 
 ## Two modules
@@ -46,7 +46,7 @@ properties of RFC 9553 to add two.
 
 RFC 9670 defines Principals and ShareNotifications for every data type that can be shared, not
 only for contacts. AddressBooks use `shareWith` now, and shared calendars
-([Calendar #9](https://github.com/reazndev/otus-calendar/issues/9)) will use the same Principals.
+([Calendar #9](https://github.com/otus-foss/otus-calendar/issues/9)) will use the same Principals.
 With the types in `jmap`, a later `jmap-calendars` module does not depend on `jmap-contacts`. The
 `sharing` package holds only the wire types and the capability readers. Each data type keeps its
 own rights in `shareWith`, such as `AddressBookRights`, because RFC 9670 leaves the rights to

@@ -7,17 +7,17 @@ particular to it, such as Mail's nightly builds.
 
 GitHub hosts all three repositories. Develop, open pull requests, and file issues there:
 
-- [Otus Mail](https://github.com/reazndev/otus-mail)
-- [Otus Calendar](https://github.com/reazndev/otus-calendar)
-- [Otus Meta](https://github.com/reazndev/otus-meta)
+- [Otus Mail](https://github.com/otus-foss/otus-mail)
+- [Otus Calendar](https://github.com/otus-foss/otus-calendar)
+- [Otus Meta](https://github.com/otus-foss/otus-meta)
 
 Checkouts use `origin` for GitHub. Clone the apps next to Meta, because they build it from
 source; see [consuming](consuming.md):
 
 ```sh
-git clone git@github.com:reazndev/otus-meta.git
-git clone git@github.com:reazndev/otus-mail.git
-git clone git@github.com:reazndev/otus-calendar.git
+git clone git@github.com:otus-foss/otus-meta.git
+git clone git@github.com:otus-foss/otus-mail.git
+git clone git@github.com:otus-foss/otus-calendar.git
 (cd otus-meta && git config --local core.hooksPath .githooks)
 (cd otus-mail && git config --local core.hooksPath .githooks)
 (cd otus-calendar && git config --local core.hooksPath .githooks)
@@ -83,20 +83,8 @@ before its Meta partner merges.
 
 An app's build jobs check the app out to `otus-<app>` and Meta to `otus-meta`, side by side as on
 a development machine, so Gradle finds Meta at `../otus-meta` and Spotless never sees Meta's
-files. The apps read otus-meta with the read-only `OTUS_META_DEPLOY_KEY` deploy key, which only
-the checkout steps receive. Meta's `apps` job reads the apps the same way, with the
-`OTUS_MAIL_DEPLOY_KEY` and `OTUS_CALENDAR_DEPLOY_KEY` deploy keys. Without them every `apps` job fails at the checkout
-with "Not Found". To add one, make a key pair, add its public half to the repository that is read
-as a read-only deploy key, and store its private half as the secret in the repository that reads:
-
-```sh
-ssh-keygen -t ed25519 -N "" -C "otus-meta apps ci" -f /tmp/key
-gh repo deploy-key add /tmp/key.pub -R reazndev/otus-mail -t "otus-meta apps ci"
-gh secret set OTUS_MAIL_DEPLOY_KEY -R reazndev/otus-meta < /tmp/key && rm /tmp/key /tmp/key.pub
-```
-
-Dependabot pull requests read only Dependabot secrets, so their CI also needs each key stored there
-(`gh secret set --app dependabot`). Meta's architecture check fails a workflow that gives a repository
+files. The repositories are public, so the checkouts need no key, and Dependabot's pull requests
+run the same checks. Meta's architecture check fails a workflow that gives a repository
 secret to a Gradle step or shares one through a workflow or job `env`.
 
 ## Packages

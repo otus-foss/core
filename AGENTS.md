@@ -196,7 +196,7 @@ when you write the body yourself. The title follows the commit title rules above
 screenshots at the head commit, and send phone captures to the user to drag in.
 
 When the pull request finishes an issue, end the body with `Closes #123`, or
-`Closes reazndev/otus-meta#45` for an issue in another repository, so GitHub closes it on merge.
+`Closes otus-foss/otus-meta#45` for an issue in another repository, so GitHub closes it on merge.
 Write `Part of #123` for a step that leaves the issue open. Search the open issues before you open
 the pull request. The `issue link` workflow warns about a pull request that closes no issue.
 

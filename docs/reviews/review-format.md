@@ -71,7 +71,7 @@ sequenceDiagram
 
 **Estimated review effort:** <1 to 5> (<Trivial | Simple | Moderate | Complex | Critical>) | ~<n> minutes
 **Change type:** <bug fix | feature | refactor | docs | build>
-**Partner PR:** <reazndev/otus-mail#123, or "none">
+**Partner PR:** <otus-foss/otus-mail#123, or "none">
 **Possibly related PRs:** <links with one line each, or leave out>
 
 </details>
@@ -114,7 +114,7 @@ sequenceDiagram
 <summary><strong>Review info</strong></summary>
 
 **Model:** <actual model id>, <lenses run>
-**Instructions:** reazndev/otus-meta@<instruction sha7>
+**Instructions:** otus-foss/otus-meta@<instruction sha7>
 **Commits:** `<base sha7>`...`<head sha7>`, <n> commits
 **Files processed:** <n> of <n>; <skipped files and why>
 **Checks:** <each command and its result, or why it could not run>
