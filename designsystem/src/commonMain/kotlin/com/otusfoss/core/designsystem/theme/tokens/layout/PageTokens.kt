@@ -15,6 +15,9 @@ public object PageTokens {
     public val textInset: Dp = 12.dp
     public val rowGap: Dp = 8.dp
     public val captionSize: TextUnit = 14.sp
+
+    /** A text link is one touch target tall. */
+    public val linkHeight: Dp = 48.dp
     public val dialogMaxWidth: Dp = 420.dp
 
     /** Each nesting level of a tree row moves its icon this far toward the trailing edge. */

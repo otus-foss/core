@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+- Design system: first-run components in `shared/onboarding`. `OnboardingFrame` holds the back
+  chevron's slot and `StepProgress`, whose fill animates and whose number rolls, for a whole run;
+  `OnboardingStepBody` and `OnboardingHeroBody` are the steps inside it, and `PresetCard` with
+  `PresetMark` offers a set of settings to start from. `TextLink` is a quiet underlined action.
+- Design system: `LocalOnSelectedFill` marks content on `selectedFill`, where `ValueButton`
+  outlines and an off `ToggleSwitch` track take colors that show. `SettingToggleRow` and
+  `SettingSpecRow` take a `density`. A password `InputField` ends with Show or Hide, an `InputNote`
+  without text shows only its mark, and an invalid field's mark is a circled exclamation mark.
+  `FolderColorNudge` puts its body on the line below its title.
+- Accounts: `ConnectAccountFields`, `ConnectButton`, and `rememberConnectDraft` let a page place
+  the sign-in button apart from the fields; `ConnectAccountForm` keeps them together. The server
+  field shows no text under it, and the password field no longer suggests an app password.
+- Settings: `ThemePicker` shows the shipped themes as cards in a chosen number of columns.
+
 - Breaking: every package moves from `com.otus.<module>` to `com.otusfoss.core.<module>`, and the
   Maven coordinates from `com.otus:<module>` to `com.otusfoss.core:<module>`. Apps update their
   imports, and their own packages move to `com.otusfoss.mail` and `com.otusfoss.calendar`.

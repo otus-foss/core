@@ -22,7 +22,7 @@ class FolderColorNudgeScreenshotTest {
         compose.pageScreenshot("folder_color_nudge") {
             FolderColorNudge(
                 title = "Receipts has no colour yet.",
-                body = " Coloured folders are easier to spot next to each mail.",
+                body = "Coloured folders are easier to spot next to each mail.",
                 colors = FolderColor.entries - FolderColor.Default,
                 onPick = {},
                 onDismiss = {},

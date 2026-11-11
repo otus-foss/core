@@ -10,31 +10,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.otusfoss.core.accounts.domain.AccountService
-import com.otusfoss.core.accounts.domain.ConnectFailure
 import com.otusfoss.core.accounts.domain.ConnectedAccount
-import com.otusfoss.core.accounts.domain.JmapAccountDraft
-import com.otusfoss.core.accounts.domain.JmapServerAddress
-import com.otusfoss.core.accounts.domain.isValidUsername
-import com.otusfoss.core.accounts.domain.parseJmapServer
 import com.otusfoss.core.accounts.presentation.AccountAvatars
 import com.otusfoss.core.accounts.presentation.AccountsState
 import com.otusfoss.core.accounts.presentation.ConnectStatus
+import com.otusfoss.core.accounts.presentation.components.ConnectAccountForm
 import com.otusfoss.core.accounts.presentation.components.ConnectedAccountRow
-import com.otusfoss.core.accounts.presentation.components.ServerInput
-import com.otusfoss.core.accounts.presentation.confirmHostMessage
-import com.otusfoss.core.accounts.presentation.message
-import com.otusfoss.core.designsystem.shared.controls.components.ButtonPair
 import com.otusfoss.core.designsystem.shared.controls.elements.ActionButton
-import com.otusfoss.core.designsystem.shared.controls.elements.UiAction
 import com.otusfoss.core.designsystem.shared.feedback.components.InfoText
-import com.otusfoss.core.designsystem.shared.input.elements.InputField
-import com.otusfoss.core.designsystem.shared.input.elements.InputKind
-import com.otusfoss.core.designsystem.shared.input.elements.InputNote
 import com.otusfoss.core.designsystem.shared.overlays.components.ConfirmDialog
 import com.otusfoss.core.designsystem.shared.overlays.components.SheetFrame
 import com.otusfoss.core.designsystem.shared.pages.components.PageNote
@@ -150,87 +137,9 @@ private fun AddAccountSheet(
         Column(
             Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(SheetTokens.inset),
             verticalArrangement = Arrangement.spacedBy(PageTokens.rowGap),
-        ) { AddAccountForm(state, service) }
+        ) { ConnectAccountForm(state, service) }
     }
 }
-
-@Composable
-private fun AddAccountForm(
-    state: AccountsState,
-    service: AccountService,
-) {
-    var server by rememberSaveable { mutableStateOf("") }
-    var username by rememberSaveable { mutableStateOf("") }
-    // Kept out of saved instance state on purpose.
-    var password by remember { mutableStateOf("") }
-    val address = parseJmapServer(server)
-    val status = state.status
-    LaunchedEffect(status) {
-        if (status is ConnectStatus.Connected) {
-            server = ""
-            username = ""
-            password = ""
-        }
-    }
-    ServerInput(server, { server = it }, service, state::checkServer)
-    InputField(
-        "Username",
-        username,
-        { username = it },
-        placeholder = "you@example.com",
-        note =
-            ConnectFailure.InvalidUsername
-                .message(service)
-                .takeIf { ':' in username }
-                ?.let(::InputNote),
-        kind = InputKind.Username,
-    )
-    InputField(
-        "Password",
-        password,
-        { password = it },
-        note = InputNote("Use an app password if your server offers one."),
-        kind = InputKind.Password,
-    )
-    val connecting = status == ConnectStatus.Connecting
-    val ready = address is JmapServerAddress.Valid && isValidUsername(username.trim()) && password.isNotEmpty()
-    ActionButton(
-        if (connecting) "Connecting…" else "Connect",
-        {
-            if (address is JmapServerAddress.Valid) {
-                state.connect(JmapAccountDraft(address.sessionUrl, username.trim(), password))
-            }
-        },
-        Modifier.fillMaxWidth(),
-        primary = true,
-        enabled = ready && !connecting,
-    )
-    if (status is ConnectStatus.ConfirmHost) {
-        ConfirmHostPrompt(status.host, state)
-    } else {
-        statusText(status, service)?.let { PageNote(it) }
-    }
-}
-
-@Composable
-private fun ConfirmHostPrompt(
-    host: String,
-    state: AccountsState,
-) {
-    PageNote(confirmHostMessage(host))
-    ButtonPair(UiAction("Cancel", onClick = state::cancelHost), UiAction("Trust $host", onClick = state::trustHost))
-}
-
-private fun statusText(
-    status: ConnectStatus,
-    service: AccountService,
-): String? =
-    when (status) {
-        ConnectStatus.Idle, ConnectStatus.Connecting -> null
-        is ConnectStatus.Connected -> "Connected ${status.name}."
-        is ConnectStatus.Failed -> status.reason.message(service)
-        is ConnectStatus.ConfirmHost -> confirmHostMessage(status.host)
-    }
 
 private val AvatarsInfo =
     InfoText(

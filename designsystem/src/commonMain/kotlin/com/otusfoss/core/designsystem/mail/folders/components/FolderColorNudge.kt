@@ -23,10 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
 import com.otusfoss.core.designsystem.resources.Res
 import com.otusfoss.core.designsystem.resources.symbol_close
 import com.otusfoss.core.designsystem.resources.symbol_palette
@@ -40,8 +37,8 @@ import com.otusfoss.core.designsystem.theme.tokens.core.Sizes
 import com.otusfoss.core.designsystem.theme.tokens.feedback.NudgeTokens
 
 /**
- * A card above a list that offers a color for a folder that has none. [title] and [body] read as
- * one paragraph, with the title in SemiBold text1. Each of [colors] is a filled circle the user
+ * A card above a list that offers a color for a folder that has none. [title] is a line of its
+ * own in SemiBold text1, with [body] below it. Each of [colors] is a filled circle the user
  * can tap; [onDismiss] runs from the close button.
  */
 @Composable
@@ -81,16 +78,16 @@ private fun NudgeText(
     body: String,
     modifier: Modifier,
 ) {
-    Text(
-        buildAnnotatedString {
-            withStyle(SpanStyle(color = OtusColors.text1, fontWeight = FontWeight.SemiBold)) { append(title) }
-            append(body)
-        },
-        modifier,
-        color = OtusColors.text2,
-        fontSize = NudgeTokens.textSize,
-        lineHeight = NudgeTokens.lineHeight,
-    )
+    Column(modifier) {
+        Text(
+            title,
+            color = OtusColors.text1,
+            fontSize = NudgeTokens.textSize,
+            lineHeight = NudgeTokens.lineHeight,
+            fontWeight = FontWeight.SemiBold,
+        )
+        Text(body, color = OtusColors.text2, fontSize = NudgeTokens.textSize, lineHeight = NudgeTokens.lineHeight)
+    }
 }
 
 /**

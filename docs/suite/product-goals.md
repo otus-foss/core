@@ -38,7 +38,7 @@ library reuse alone does not provide them. See decision 0005.
 
 ## Current state
 
-Both repositories contain Android/iOS scaffolding. Mail now starts with an empty Inbox screen, using the reusable context panel and local search/filter logic over supplied messages. A reusable sidebar navigates between Inbox and Settings. Settings has subpages for JMAP email accounts and appearance & behavior (date format). The sidebar, context panel, pills, and other reusable controls come from core's
+Both repositories contain Android/iOS scaffolding. A new Mail install opens on a first run that connects an account and picks privacy, notification, and theme settings (see [Mail's first run guide](https://github.com/otus-foss/mail/blob/main/docs/onboarding.md)); after it Mail starts on the Inbox screen, using the reusable context panel and local search/filter logic over supplied messages. A reusable sidebar navigates between Inbox and Settings. Settings has subpages for JMAP email accounts and appearance & behavior (date format). The sidebar, context panel, pills, and other reusable controls come from core's
 design system. JMAP transport/login storage, dates, and avatars also come from shared libraries.
 Version 0.3.0 adds shared settings/account setup and date-range selection,
 used by Mail's consuming PR. Mail still owns its destinations, filter semantics, and inbox/folder

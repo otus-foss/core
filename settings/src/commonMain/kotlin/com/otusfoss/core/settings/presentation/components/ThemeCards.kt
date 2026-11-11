@@ -30,3 +30,25 @@ internal fun ThemeCards(
         )
     }
 }
+
+/**
+ * The themes Otus ships, and the device's colors where it has them, as cards in [columns] without
+ * a theme's actions, for a page that only picks one, such as a first run. The user's custom
+ * themes are left out.
+ */
+@Composable
+public fun ThemePicker(
+    choice: ThemeChoice,
+    onSelect: (ThemeChoice) -> Unit,
+    columns: Int = 2,
+) {
+    CardGrid(choice.options.filter { it.custom == null }, Modifier.selectableGroup(), columns) { option, modifier ->
+        ThemeCard(
+            title = option.title,
+            sketch = option.choice.palette,
+            selected = option.selected,
+            onClick = { onSelect(option.choice) },
+            modifier = modifier,
+        )
+    }
+}

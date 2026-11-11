@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.style.TextOverflow
+import com.otusfoss.core.designsystem.theme.colors.LocalOnSelectedFill
 import com.otusfoss.core.designsystem.theme.colors.OtusColors
 import com.otusfoss.core.designsystem.theme.colors.readableOn
 import com.otusfoss.core.designsystem.theme.shapes.SmoothCornerShape
@@ -37,7 +38,7 @@ public fun ValueButton(
     modifier: Modifier = Modifier,
     swatch: Color? = null,
     fill: Color? = null,
-    outline: Color = OtusColors.bgLight,
+    outline: Color = if (LocalOnSelectedFill.current) OtusColors.text3 else OtusColors.bgLight,
 ) {
     val shape = SmoothCornerShape(SettingTokens.valueRadius)
     Row(
