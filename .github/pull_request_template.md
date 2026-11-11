@@ -1,49 +1,25 @@
 <!--
 Title: type(scope): short action, with the commit title rules in AGENTS.md.
 Open as a draft. Mark it ready once every commit is pushed, because CI runs once.
-Delete a section that has nothing to say, except Testing.
+Summary: a few plain sentences on what changes for the apps that use it and why. Start a breaking
+change with "Breaking:" and say what each app must change. Add each public API or behavior change
+under "## Unreleased" in CHANGELOG.md.
+Add screenshots below it when the change is visual.
+Paired PRs: link each pull request in another repository that this one needs or that needs it,
+one per line. Keep the heading and write "No paired PR" when there is none.
+Closes: all issues on one line, with the keyword before each, such as "Closes #1, closes #2".
+GitHub links only the first issue of "Closes #1, #2".
+Write "Part of #123" for a step that leaves the issue open.
 -->
 
-<!-- One or two sentences: what changes for the apps that use it, and why. -->
+# Summary
 
-## Changes
 
-<!--
-One bullet per change, naming the public declarations it adds or changes.
-Start a breaking change with "Breaking:" and say what each app must change.
-Add each public API or behavior change under "## Unreleased" in CHANGELOG.md.
--->
 
--
+# Paired PRs
 
-## Depends on
+No paired PR
 
-<!-- The app PR that adopts this as otus-foss/mail#123, or the design page. -->
+# Closes
 
--
-
-## Screenshots
-
-<!--
-Add images when the change is visual or a picture explains it faster than words.
-Show each changed state in the themes where it looks different. Put a small change in a
-Before | After table. Link a recorded screenshot at the head commit, which stays put after merge:
-![Inbox](https://github.com/otus-foss/core/blob/<sha>/<path>.png?raw=true)
-Drag phone captures and screen recordings into the description on GitHub.
--->
-
-## Testing
-
-<!-- Only what ran, with its result. -->
-
-- Checks: <!-- `./gradlew checkAll` passed, or the narrower tasks that ran -->
-- Tests: <!-- new or re-recorded tests and screenshots, and what each covers -->
-- Device: <!-- the app build and phone you tried it on, or "Not run on a device." -->
-
-## Not covered
-
-<!-- Known gaps, risks, and follow-ups. -->
-
--
-
-<!-- Closes #123, or Part of #123 -->
+Closes #
