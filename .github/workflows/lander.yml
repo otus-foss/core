@@ -12,7 +12,7 @@ on:
       repos:
         description: Repositories that can hold partners, in merge order.
         type: string
-        default: otus-core,otus-mail,otus-calendar
+        default: core,mail,calendar
     secrets:
       app-private-key:
         required: true

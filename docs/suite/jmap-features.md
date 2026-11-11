@@ -6,8 +6,8 @@ plans it, or has no plan for it. Read it before you add a control that reads or 
 data.
 
 The library API is in [the JMAP library guide](../jmap.md). Mail's folder, rule, and Read later
-behavior is in [Mail's folders guide](https://github.com/otus-foss/otus-mail/blob/main/docs/folders.md).
-The v1 plan is the [suite roadmap](https://github.com/otus-foss/otus-mail/issues/9).
+behavior is in [Mail's folders guide](https://github.com/otus-foss/mail/blob/main/docs/folders.md).
+The v1 plan is the [suite roadmap](https://github.com/otus-foss/mail/issues/9).
 
 Last checked against the code on 2026-10-12: Mail and Core `main`, Calendar `main`, and the
 uncommitted `feat/action-bar` Mail worktree. The library notes on contacts, sharing,
@@ -63,7 +63,7 @@ uncommitted `feat/action-bar` Mail worktree. The library notes on contacts, shar
 | `urn:ietf:params:jmap:mdn` | RFC 9007 | No plan | |
 | `urn:ietf:params:jmap:websocket` | RFC 8887 | No plan | Push uses Web Push and EventSource. See [push](#push-and-sync). |
 | `urn:ietf:params:jmap:webpush-vapid` | RFC 9749 | In progress | Mail `feat/google-push` passes the server key to its embedded Google distributor and replaces registration when the key changes. |
-| `urn:ietf:params:jmap:principals` and sharing | RFC 9670 | Planned | Shared calendars ([Calendar #9](https://github.com/otus-foss/otus-calendar/issues/9)). The Principal and ShareNotification types, the `principals` capabilities, and AddressBook `shareWith` patches were removed as unused; see [removed APIs](../removed-apis.md) to restore them. |
+| `urn:ietf:params:jmap:principals` and sharing | RFC 9670 | Planned | Shared calendars ([Calendar #9](https://github.com/otus-foss/calendar/issues/9)). The Principal and ShareNotification types, the `principals` capabilities, and AddressBook `shareWith` patches were removed as unused; see [removed APIs](../removed-apis.md) to restore them. |
 | Tasks | IETF draft | No plan | The roadmap defers a task manager. `TaskList/get` appears only in library tests. |
 
 ## Session and core
@@ -72,12 +72,12 @@ uncommitted `feat/action-bar` Mail worktree. The library notes on contacts, shar
 | --- | --- | --- |
 | `/.well-known/jmap` discovery, redirects | Used | https only. A redirect to another host asks the user first. |
 | HTTP Basic auth | Used | The only sign-in method. |
-| OAuth | Planned | [Mail #13](https://github.com/otus-foss/otus-mail/issues/13). Do not design OAuth screens until it is decided. |
+| OAuth | Planned | [Mail #13](https://github.com/otus-foss/mail/issues/13). Do not design OAuth screens until it is decided. |
 | Result references in one request | Used | `Email/query` then `Email/get`; `ContactCard/query` then `ContactCard/get`. |
 | `ifInState` on `/set` | Used | Saving rules. A `stateMismatch` makes the app reload and ask the user to save again. |
 | Blob upload | Used | Sieve scripts, signature images, attachments on drafts, and own-address avatar photos. |
 | Blob download | Used | Contact photos. Attachments are planned. |
-| `/changes` | Planned | [Mail #15](https://github.com/otus-foss/otus-mail/issues/15). Today every load refetches. |
+| `/changes` | Planned | [Mail #15](https://github.com/otus-foss/mail/issues/15). Today every load refetches. |
 | `/queryChanges` | Planned | Mail #15, where the server supports it. The library has `QueryChangesMethod` on Core `feat/jmap-contacts`; no app calls it. |
 | `/copy` | No plan | No cross-account copy or move in the apps. `CopyMethod` was removed as unused; see [removed APIs](../removed-apis.md). |
 | `Core/echo` | Library tests only | |
@@ -111,10 +111,10 @@ app sees Read later as an ordinary folder.
 | `Email/set` keyword patch | Used | Read and unread (`$seen`), flagged (`$flagged`). |
 | `Email/set` `mailboxIds` patch | Used | Move, Archive, Trash, Read later, rule backfill. Batched within `maxObjectsInSet`. |
 | `Email/set` create and destroy drafts | In progress | Compose saves to the `drafts` role folder on `feat/action-bar`. |
-| HTML bodies (`htmlBody`) | Partial | Mail renders an open message's HTML body in `HtmlView` with scripts off and remote images hidden until the user shows them. Inline `cid:` images are not loaded yet. See [Mail #25](https://github.com/otus-foss/otus-mail/issues/25). |
+| HTML bodies (`htmlBody`) | Partial | Mail renders an open message's HTML body in `HtmlView` with scripts off and remote images hidden until the user shows them. Inline `cid:` images are not loaded yet. See [Mail #25](https://github.com/otus-foss/mail/issues/25). |
 | Headers beyond From and Subject (`to`, `cc`, `messageId`, `references`) | In progress | Compose reads them for replies on `feat/action-bar`. |
 | Attachment download | Planned | Mail #25. Rows show attachment names only. |
-| Server-side search (`text`, `from`, `subject` filters) | Planned | [Mail #23](https://github.com/otus-foss/otus-mail/issues/23) plans local and server evaluation. Today search filters loaded messages on the device. |
+| Server-side search (`text`, `from`, `subject` filters) | Planned | [Mail #23](https://github.com/otus-foss/mail/issues/23) plans local and server evaluation. Today search filters loaded messages on the device. |
 | `$answered`, `$forwarded`, `$draft` keywords | In progress | Drafts carry `$draft`. On Mail `feat/send`, sending clears it and sets `$answered` or `$forwarded` on the original. |
 | `$junk` and `$notjunk` keywords | No plan | A Junk action is planned in Mail #25. It may move to the `junk` role folder, set keywords, or both. Decide in that issue. |
 | Custom keywords as labels | No plan | Labels in rows come from folders, not keywords. |
@@ -149,7 +149,7 @@ app sees Read later as an ordinary folder.
 | `SieveScript/validate` | No plan | |
 | Raw Sieve editing | No plan | Decided against. Rules are edited only through the rule editor. |
 | ManageSieve (RFC 5804) | No plan | Listed in the folders guide as an option for IMAP in v2. |
-| Rules from reusable filters | Planned | [Mail #24](https://github.com/otus-foss/otus-mail/issues/24). |
+| Rules from reusable filters | Planned | [Mail #24](https://github.com/otus-foss/mail/issues/24). |
 
 ### VacationResponse
 
@@ -173,8 +173,8 @@ module call these methods through their own small contact types.
 | `ContactCard/query`, other filters and sorts | No plan | The library has every condition of RFC 9610, section 3.3.1. Its sorts (`ContactCardSort`) were removed as unused; see [removed APIs](../removed-apis.md). |
 | `ContactCard/get` | Used | Properties: `id`, `addressBookIds`, `emails`, `media`, and `vCard`, which holds the avatar style; retried without `vCard` on `invalidArguments`. Photos come from a blob or a data URI. |
 | `ContactCard/set` | Used | Creates or updates the self card of an own address: a `photo` media entry with a `data:` URI, or the `x-otus-avatar` vCard property in `vCard.properties`. Other card changes are planned. |
-| `AddressBook/set` | Planned | [Mail #8](https://github.com/otus-foss/otus-mail/issues/8), [Mail #6](https://github.com/otus-foss/otus-mail/issues/6), [Mail #19](https://github.com/otus-foss/otus-mail/issues/19). The library has `cardPatch` and `Card.toCreation`; `AddressBookSetMethod` was removed as unused, see [removed APIs](../removed-apis.md). |
-| Recipient and attendee suggestions | Planned | Mail #26 and [Calendar #7](https://github.com/otus-foss/otus-calendar/issues/7). Compose recipients are plain text today. |
+| `AddressBook/set` | Planned | [Mail #8](https://github.com/otus-foss/mail/issues/8), [Mail #6](https://github.com/otus-foss/mail/issues/6), [Mail #19](https://github.com/otus-foss/mail/issues/19). The library has `cardPatch` and `Card.toCreation`; `AddressBookSetMethod` was removed as unused, see [removed APIs](../removed-apis.md). |
+| Recipient and attendee suggestions | Planned | Mail #26 and [Calendar #7](https://github.com/otus-foss/calendar/issues/7). Compose recipients are plain text today. |
 | `ContactCard/changes`, `AddressBook/changes`, `ContactCard/queryChanges` | Planned | Mail #19. |
 | `ContactCard/copy` | No plan | Cards stay in their account. `CopyMethod` was removed as unused; see [removed APIs](../removed-apis.md). |
 | Address book sharing (`shareWith`, Principals) | No plan | The library's `shareWith` patches and Principals (RFC 9670) were removed as unused; see [removed APIs](../removed-apis.md). |
@@ -184,12 +184,12 @@ The contact photo lookup and own-address avatars are the only contact features. 
 ## Calendars
 
 Nothing is implemented. Calendar shows its welcome screen and has no JMAP code. The plan, in the
-[Calendar roadmap](https://github.com/otus-foss/otus-calendar/issues/1):
+[Calendar roadmap](https://github.com/otus-foss/calendar/issues/1):
 
-- Account setup through the shared accounts module ([Calendar #2](https://github.com/otus-foss/otus-calendar/issues/2)).
-- `Calendar` and `CalendarEvent` read and write, recurrence, time zones, reminders ([Calendar #3](https://github.com/otus-foss/otus-calendar/issues/3)).
+- Account setup through the shared accounts module ([Calendar #2](https://github.com/otus-foss/calendar/issues/2)).
+- `Calendar` and `CalendarEvent` read and write, recurrence, time zones, reminders ([Calendar #3](https://github.com/otus-foss/calendar/issues/3)).
 - Shared calendars, rights, and free/busy where the server supports them (Calendar #9).
-- Invitations found in mail and answered from either app ([Calendar #5](https://github.com/otus-foss/otus-calendar/issues/5), [Mail #31](https://github.com/otus-foss/otus-mail/issues/31)).
+- Invitations found in mail and answered from either app ([Calendar #5](https://github.com/otus-foss/calendar/issues/5), [Mail #31](https://github.com/otus-foss/mail/issues/31)).
 
 The calendars spec is still a draft. Mail #12 pins the revision to the one the tested server
 implements. Reminders stay local to the device and are not server alarms.
@@ -198,8 +198,8 @@ implements. Reminders stay local to the device and are not server alarms.
 
 | Feature | Status | Notes |
 | --- | --- | --- |
-| Push (`EventSource`, `PushSubscription`) | Partial | [Mail #18](https://github.com/otus-foss/otus-mail/issues/18), [decision 0015](../decisions/0015-push-notifications.md): background check, UnifiedPush, Google FCM, and an experimental always connected mode, with no Otus server. Mail uses `PushSubscription` through `com.otusfoss.core:jmap-push` with UnifiedPush and periodic background checks. Google delivery is on `feat/google-push`; EventSource remains planned. |
-| Local database and offline queue | Planned | [Mail #14](https://github.com/otus-foss/otus-mail/issues/14), [Mail #16](https://github.com/otus-foss/otus-mail/issues/16). Today nothing is cached. Each launch and refresh reloads from the server. |
+| Push (`EventSource`, `PushSubscription`) | Partial | [Mail #18](https://github.com/otus-foss/mail/issues/18), [decision 0015](../decisions/0015-push-notifications.md): background check, UnifiedPush, Google FCM, and an experimental always connected mode, with no Otus server. Mail uses `PushSubscription` through `com.otusfoss.core:jmap-push` with UnifiedPush and periodic background checks. Google delivery is on `feat/google-push`; EventSource remains planned. |
+| Local database and offline queue | Planned | [Mail #14](https://github.com/otus-foss/mail/issues/14), [Mail #16](https://github.com/otus-foss/mail/issues/16). Today nothing is cached. Each launch and refresh reloads from the server. |
 
 Until sync lands, a screen cannot show data that was not loaded in this session, and there is no
 offline mode. Design empty, loading, and error states for every account on its own, because each
@@ -223,7 +223,7 @@ user has. A local setting affects only this install.
 | Avatar options (domain icons, external photos) | Device | None. Public image requests send no account credentials. |
 
 No setting syncs between devices or between Mail and Calendar. Export and import of settings is
-planned as a JSON file ([Mail #20](https://github.com/otus-foss/otus-mail/issues/20)), not through
+planned as a JSON file ([Mail #20](https://github.com/otus-foss/mail/issues/20)), not through
 JMAP.
 
 ## Updating this guide

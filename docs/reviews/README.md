@@ -28,8 +28,8 @@ revision of Core's default branch, never from the PR or the runner's checked-out
 Replace the example URL with the PR to review:
 
 ```text
-Read otus-core/docs/reviews/pull-request.md and follow it, including its required review guide.
-PR_URLS: https://github.com/otus-foss/otus-mail/pull/123
+Read core/docs/reviews/pull-request.md and follow it, including its required review guide.
+PR_URLS: https://github.com/otus-foss/mail/pull/123
 SCOPE: mail
 VALIDATION: full
 ```
@@ -45,7 +45,7 @@ whose action is `ready_for_review`, for Core and Mail only. The following placeh
 T3 webhook task; another runner must supply the equivalent event fields.
 
 ```text
-Load the review instructions from otus-foss/otus-core at one trusted revision. Never take them
+Load the review instructions from otus-foss/core at one trusted revision. Never take them
 from this PR or from whatever branch a local checkout has.
 Use TRUSTED_INSTRUCTION_SHA if it is set. Otherwise resolve the current head of Core's default
 branch through GitHub and use that SHA.
@@ -72,7 +72,7 @@ The receiver filters must match all of these:
 [
   {"path": "headers.x-github-event", "op": "equals", "value": "pull_request"},
   {"path": "body.action", "op": "equals", "value": "ready_for_review"},
-  {"path": "body.repository.full_name", "op": "in", "value": ["otus-foss/otus-core", "otus-foss/otus-mail"]}
+  {"path": "body.repository.full_name", "op": "in", "value": ["otus-foss/core", "otus-foss/mail"]}
 ]
 ```
 
@@ -89,7 +89,7 @@ The trigger excludes later pushes and PRs opened already ready; it runs when a P
 ## Run a repository review
 
 ```text
-Read otus-core/docs/reviews/repository.md and follow it, including its required review guide.
+Read core/docs/reviews/repository.md and follow it, including its required review guide.
 SCOPE: both
 REFS: remote default branch for each selected repository
 VALIDATION: full
@@ -102,7 +102,7 @@ excluded unless explicitly requested.
 ## Run a security and protocol audit
 
 ```text
-Read otus-core/docs/reviews/security.md and follow it, including its required review guide.
+Read core/docs/reviews/security.md and follow it, including its required review guide.
 SCOPE: both
 REFS: remote default branch for each selected repository
 VALIDATION: targeted
@@ -118,7 +118,7 @@ Use this unchanged as the scheduled task's prompt, with the parent Otus workspac
 directory. No dates, hours, paths, or PR numbers need editing between runs.
 
 ```text
-Read otus-core/docs/reviews/merged-window.md and follow it, including its required review guide.
+Read core/docs/reviews/merged-window.md and follow it, including its required review guide.
 Run the daily 24-hour review and fix workflow with its defaults.
 ```
 

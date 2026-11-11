@@ -2,7 +2,7 @@
 
 The `dateformat` module (`com.otusfoss.core.dateformat`, artifact `com.otusfoss.core:dateformat`) formats dates for
 display. It has no UI and stores nothing: the `settings` module keeps the user's choice. It moved
-here from otus-mail in version 0.2.0.
+here from mail in version 0.2.0.
 
 ## Choices and defaults
 

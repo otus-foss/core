@@ -7,20 +7,20 @@ particular to it, such as Mail's nightly builds.
 
 GitHub hosts all three repositories. Develop, open pull requests, and file issues there:
 
-- [Otus Mail](https://github.com/otus-foss/otus-mail)
-- [Otus Calendar](https://github.com/otus-foss/otus-calendar)
-- [Otus Core](https://github.com/otus-foss/otus-core)
+- [Otus Mail](https://github.com/otus-foss/mail)
+- [Otus Calendar](https://github.com/otus-foss/calendar)
+- [Otus Core](https://github.com/otus-foss/core)
 
 Checkouts use `origin` for GitHub. Clone the apps next to Core, because they build it from
 source; see [consuming](consuming.md):
 
 ```sh
-git clone git@github.com:otus-foss/otus-core.git
-git clone git@github.com:otus-foss/otus-mail.git
-git clone git@github.com:otus-foss/otus-calendar.git
-(cd otus-core && git config --local core.hooksPath .githooks)
-(cd otus-mail && git config --local core.hooksPath .githooks)
-(cd otus-calendar && git config --local core.hooksPath .githooks)
+git clone git@github.com:otus-foss/core.git
+git clone git@github.com:otus-foss/mail.git
+git clone git@github.com:otus-foss/calendar.git
+(cd core && git config --local core.hooksPath .githooks)
+(cd mail && git config --local core.hooksPath .githooks)
+(cd calendar && git config --local core.hooksPath .githooks)
 ```
 
 ## Workflows
@@ -37,7 +37,7 @@ Leave it unset to save macOS minutes.
   [coverage](quality.md#coverage).
 - `pull request` labels each pull request by size (`size:XS` to `size:XL`, tests left out),
   comments the screenshots it adds or changes beside the old ones, and warns when UI code changes
-  without a screenshot. In the apps it also adds a `needs core` label when otus-core has a branch
+  without a screenshot. In the apps it also adds a `needs core` label when core has a branch
   with the same name, since that pair has to land together, Core first.
 - `actionlint` lints workflows in pull requests that change `.github/`.
 - `issue link` warns when a pull request closes no issue, and `issue report` lists each Monday the
@@ -64,8 +64,8 @@ that change only Android code skip the macOS `ios` job.
 
 ## Shared actions
 
-Core's `.github/actions` holds the steps every repository repeats. The apps check out otus-core
-and use the actions from that checkout with `uses: ./otus-core/.github/actions/<name>`, so each
+Core's `.github/actions` holds the steps every repository repeats. The apps check out core
+and use the actions from that checkout with `uses: ./core/.github/actions/<name>`, so each
 job runs the actions of the Core branch it builds with; Core uses `./.github/actions/<name>`. Only
 the apps' `land` workflow calls Core directly, `lander.yml` from `main`, which needs Core's Actions
 access setting; see [landing](landing.md#setup).
@@ -76,13 +76,13 @@ access setting; see [landing](landing.md#setup).
 - `size-label` labels a pull request by size.
 - `screenshot-comment` comments the screenshots a pull request adds or changes.
 
-Every app job checks otus-core out with its full history and first switches it to the branch with
+Every app job checks core out with its full history and first switches it to the branch with
 the app's branch name when there is one, so every action it then runs comes from that branch. An
 action change is therefore tested by its partner app pull request, and an app pull request runs
 before its Core partner merges.
 
-An app's build jobs check the app out to `otus-<app>` and Core to `otus-core`, side by side as on
-a development machine, so Gradle finds Core at `../otus-core` and Spotless never sees Core's
+An app's build jobs check the app out to `otus-<app>` and Core to `core`, side by side as on
+a development machine, so Gradle finds Core at `../core` and Spotless never sees Core's
 files. The repositories are public, so the checkouts need no key, and Dependabot's pull requests
 run the same checks. Core's architecture check fails a workflow that gives a repository
 secret to a Gradle step or shares one through a workflow or job `env`.

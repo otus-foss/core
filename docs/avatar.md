@@ -3,7 +3,7 @@
 The `avatar` module (`com.otusfoss.core.avatar`, artifact `com.otusfoss.core:avatar`) resolves sender and attendee
 avatars: JMAP contact photos, optional website icons, and generated initials. It has no UI. The
 design system's `Avatar` element draws the result, and `rememberAvatarImage` decodes image bytes.
-It moved here from otus-mail in version 0.2.0.
+It moved here from mail in version 0.2.0.
 
 ## Implemented API
 
@@ -208,7 +208,7 @@ restart, corrupt records and account removal.
 Contact search tests also cover later-page exact matches, server-clamped page sizes, exhaustion,
 changing queries, stalled pagination, search deadlines, and caller cancellation.
 Mail's inbox tests cover restoring avatars before network work; see
-[Mail's avatar guide](https://github.com/otus-foss/otus-mail/blob/main/docs/avatars.md).
+[Mail's avatar guide](https://github.com/otus-foss/mail/blob/main/docs/avatars.md).
 `RememberAvatarImageTest` and `DecodedAvatarCacheTest` in the design system cover decoding.
 iOS runtime validation requires macOS/Xcode.
 

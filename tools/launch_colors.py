@@ -3,7 +3,7 @@
 Android draws the window before Compose starts, from androidApp/src/main/res/values/colors.xml, so
 that file repeats the Otus theme's page and text colors and the default accent. The architecture
 check fails when it drifts. Run it from an app's root after changing those tokens:
-python3 ../otus-core/tools/launch_colors.py
+python3 ../core/tools/launch_colors.py
 """
 
 import re
@@ -38,7 +38,7 @@ def launch_colors_xml() -> str:
     )
     return (
         '<?xml version="1.0" encoding="utf-8" ?>\n'
-        "<!-- Written by otus-core's tools/launch_colors.py from the Otus theme; do not edit. -->\n"
+        "<!-- Written by core's tools/launch_colors.py from the Otus theme; do not edit. -->\n"
         f"<resources>\n{rows}</resources>\n"
     )
 
@@ -47,7 +47,7 @@ def launch_color_violations(root: Path) -> list[str]:
     path = root / LAUNCH_COLORS
     if path.is_file() and path.read_text() == launch_colors_xml():
         return []
-    return [f"{LAUNCH_COLORS}: differs from Core's theme; run otus-core's tools/launch_colors.py"]
+    return [f"{LAUNCH_COLORS}: differs from Core's theme; run core's tools/launch_colors.py"]
 
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 import kotlinx.kover.gradle.plugin.dsl.KoverProjectExtension
 
 // The quality checks of every Otus repository, applied to its root project. The tools and the
-// detekt configuration come from the otus-core checkout, so each repository runs the same ones;
+// detekt configuration come from the core checkout, so each repository runs the same ones;
 // see Core's docs/quality.md.
 plugins {
     id("com.diffplug.spotless")

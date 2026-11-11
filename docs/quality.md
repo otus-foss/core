@@ -8,7 +8,7 @@ its iOS and screenshot tests.
 
 Requires JDK 21 and Python 3.11+, plus the Android SDK for Android checks. No Node.js or npm
 installation is required; see [decision 0002](decisions/0002-gradle-quality-entry-points.md). The
-apps also need an otus-core checkout beside them; see [consuming](consuming.md).
+apps also need an core checkout beside them; see [consuming](consuming.md).
 
 One-time setup in each repository:
 
@@ -52,7 +52,7 @@ Kotlin/Native tests for iOS run only on macOS. On Linux, compile the iOS sources
 ## Build logic
 
 `build-logic/` is an included build of convention plugins. Core includes it from its settings
-file; the apps include it from their otus-core checkout through `pluginManagement`. Every
+file; the apps include it from their core checkout through `pluginManagement`. Every
 version they read comes from `gradle/libs.versions.toml`.
 
 | Plugin | Applied to | What it sets up |
@@ -88,7 +88,7 @@ directories.
 
 ## Shared tools and configuration
 
-Every repository runs the tools in Core's `tools/` from its otus-core checkout, so a rule changes
+Every repository runs the tools in Core's `tools/` from its core checkout, so a rule changes
 in one place. Their tests live in `tools/tests` here.
 
 | Tool | Purpose |
@@ -131,7 +131,7 @@ visual element, component, token, and drawable comes from Core. Both kinds share
 
 An app also fails when `androidApp/src/main/res/values/colors.xml` differs from what
 `launch_colors.py` writes from the Otus theme, so the launch window always matches the first
-Compose frame. Run `python3 ../otus-core/tools/launch_colors.py` from the app's root after a
+Compose frame. Run `python3 ../core/tools/launch_colors.py` from the app's root after a
 theme change.
 
 The checker inspects source text, not the Kotlin type graph, so it cannot prove transitive
@@ -186,7 +186,7 @@ Core builds no publications; see [decision 0020](decisions/0020-no-library-publi
 ## Commit messages
 
 The versioned `commit-msg` hook runs `tools/check_commit_message.py`; the apps' hooks run the copy
-in their otus-core checkout. It rejects invalid title syntax, missing blank separators, and bodies
+in their core checkout. It rejects invalid title syntax, missing blank separators, and bodies
 outside the 1–8 bullet limit. Optional footers follow a blank line after the bullets. Footers
 begin with a token such as `Refs: #123`, `Closes #123`, or `BREAKING CHANGE: ...`; multiline footer
 text is allowed. Wrapped bullet lines start with at least two spaces. The checker ignores editor

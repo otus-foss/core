@@ -2,7 +2,7 @@
 
 Public APIs that no code in Mail or Calendar called, outside their own tests, were removed on
 2026-11-06 and 2026-11-07 (decision 3 of the untangle refactor). Each entry names the last commit
-that has it, on `origin/main` of otus-core unless the entry names another branch. To bring one back, restore its files from that commit with
+that has it, on `origin/main` of core unless the entry names another branch. To bring one back, restore its files from that commit with
 `git checkout 2b8a290b -- <path>` and its tests with them.
 
 | API | Module | Removed | Last commit with it | What it did |
@@ -29,7 +29,7 @@ that has it, on `origin/main` of otus-core unless the entry names another branch
 | `symbol_arrow_downward`, `symbol_collapse_content`, `symbol_contact_page`, `symbol_create_new_folder`, `symbol_folder_off`, `symbol_rule_folder`, `symbol_share`, `symbol_speaker_notes_off` | `designsystem` | 2026-11-06 | `2b8a290b` | Material Symbols drawables no code drew. |
 | `PanelSearchField`, `SearchHitRow`, `PanelTokens.searchHitHeight`, `PanelTokens.searchHitGap` | `designsystem` | 2026-11-07 | `2b8a290b` | A search field in the control panel and a row for a message it found; Mail's inbox search sheet, their only caller, went with the one search UI. |
 | `FilterTokens.pickAvatarSize` | `designsystem` | 2026-11-07 | `2b8a290b` | The 36 dp avatar size of a filter page's people rows. |
-| `Spacing.xxs`, `Spacing.m`, `Spacing.xxl` | `designsystem` | 2026-11-07 | `6e4baf53`, the head of otus-core#152, which GitHub keeps as `refs/pull/152/head` | The 2, 8, and 24 dp steps of the spacing scale, which no token used. |
+| `Spacing.xxs`, `Spacing.m`, `Spacing.xxl` | `designsystem` | 2026-11-07 | `6e4baf53`, the head of core#152, which GitHub keeps as `refs/pull/152/head` | The 2, 8, and 24 dp steps of the spacing scale, which no token used. |
 | `ComposeTokens.fromAvatarSize`, `ComposeTokens.fromLabelMaxWidth`, `ComposeTokens.dropdownAvatarSize` | `designsystem` | 2026-11-07 | `a40b2038` | The Send-from pill's avatar and label width and an address dropdown's avatar; `SenderTokens` and `AvatarTokens.menuSize` hold them for every screen that shows a sender. |
 | `appearanceIndex`, `appIconIndex` | `settings` | 2026-11-07 | `d98e4a45` | Listed the Appearance page and the App icon row for settings search; `appearanceSections` and `appIconRow` declare them once for the page and search. |
 | `AppIconSetting` | `settings` | 2026-11-07 | `d98e4a45` | Drew the App icon row and its sheet; `appIconRow` is the row as a `ChoiceRowSpec`. |

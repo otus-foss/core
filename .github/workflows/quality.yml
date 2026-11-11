@@ -83,9 +83,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - app: otus-mail
+          - app: mail
             tasks: :shared:compileAndroidMain :androidApp:compileDebugKotlin
-          - app: otus-calendar
+          - app: calendar
             tasks: :androidApp:compileDebugKotlin
     defaults:
       run:
@@ -93,7 +93,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          path: otus-core
+          path: core
           persist-credentials: false
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -109,11 +109,11 @@ jobs:
             git checkout --quiet --detach "origin/$BRANCH"
           fi
           git log --oneline -1
-      - uses: ./otus-core/.github/actions/setup-build
+      - uses: ./core/.github/actions/setup-build
         with:
           directory: ${{ matrix.app }}
           python: "false"
-      - run: ./gradlew ${{ matrix.tasks }} -Potus.core.path=../otus-core --console=plain
+      - run: ./gradlew ${{ matrix.tasks }} -Potus.core.path=../core --console=plain
 
   # Runs only while the repository variable IOS_CI is "on" (Settings > Secrets and variables >
   # Actions > Variables), so macOS minutes stay off until someone turns it back on.

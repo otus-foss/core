@@ -59,7 +59,7 @@ androidx-activity-compose = { module = "androidx.activity:activity-compose", ver
 detekt-cli = { module = "io.gitlab.arturbosch.detekt:detekt-cli", version.ref = "detekt" }
 
 # Core's modules as the apps see them. The apps build Core from source, so Gradle substitutes each
-# with the matching project of the included otus-core build; Core itself uses project accessors.
+# with the matching project of the included core build; Core itself uses project accessors.
 otus-json-types = { module = "com.otusfoss.core:json-types" }
 otus-storage = { module = "com.otusfoss.core:storage" }
 otus-jmap = { module = "com.otusfoss.core:jmap" }

@@ -1,6 +1,6 @@
 """Fail on source-layout, dependency-policy, and shared-configuration violations.
 
-Every Otus repository runs this copy from its otus-core checkout, from its own root. The
+Every Otus repository runs this copy from its core checkout, from its own root. The
 repository's config/checks.toml says what it is:
 
     namespace = "com.otusfoss.mail"     # the app's package root; Core uses "com.otusfoss.core"

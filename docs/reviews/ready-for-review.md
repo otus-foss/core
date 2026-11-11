@@ -13,7 +13,7 @@ for this PR. Keep their other restrictions. Do not invoke the daily fix workflow
 
 ## Load instructions and create local state
 
-These prompts are versioned at `docs/reviews/` in `otus-foss/otus-core`. Copies also travel with
+These prompts are versioned at `docs/reviews/` in `otus-foss/core`. Copies also travel with
 Mail and Calendar PRs so an isolated checkout has the required files. Core owns the canonical
 copies; update the copies together. Their presence in Calendar does not expand this workflow's
 Core/Mail scope.
@@ -49,7 +49,7 @@ review retryable. A local directory on another machine is not a substitute for r
 ## Trigger and inputs
 
 Accept only the GitHub webhook event `pull_request` with action `ready_for_review`, for base
-repository `otus-foss/otus-core` or `otus-foss/otus-mail`. This is the transition out of draft. A
+repository `otus-foss/core` or `otus-foss/mail`. This is the transition out of draft. A
 review-requested event, an ordinary push, a comment, or opening a PR already ready does not trigger
 this workflow. See [GitHub's event definitions](https://docs.github.com/en/webhooks/webhook-events-and-payloads#pull_request).
 

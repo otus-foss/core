@@ -31,14 +31,14 @@ Discover and respect the capabilities each account and server provides. Missing 
 
 Aim to reuse account handling, JMAP transport, contact models, and appropriate UI components while preserving independent app repositories and releases. Mail-specific workflows belong in Mail; calendar-specific workflows belong in Calendar.
 
-Shared libraries live in otus-core as `com.otusfoss.core:<module>` modules. Both apps build them from an
-otus-core checkout as a composite build and pin no version.
+Shared libraries live in core as `com.otusfoss.core:<module>` modules. Both apps build them from an
+core checkout as a composite build and pin no version.
 Shared runtime account data and credentials still require an explicit platform design;
 library reuse alone does not provide them. See decision 0005.
 
 ## Current state
 
-Both repositories contain Android/iOS scaffolding. Mail now starts with an empty Inbox screen, using the reusable context panel and local search/filter logic over supplied messages. A reusable sidebar navigates between Inbox and Settings. Settings has subpages for JMAP email accounts and appearance & behavior (date format). The sidebar, context panel, pills, and other reusable controls come from otus-core's
+Both repositories contain Android/iOS scaffolding. Mail now starts with an empty Inbox screen, using the reusable context panel and local search/filter logic over supplied messages. A reusable sidebar navigates between Inbox and Settings. Settings has subpages for JMAP email accounts and appearance & behavior (date format). The sidebar, context panel, pills, and other reusable controls come from core's
 design system. JMAP transport/login storage, dates, and avatars also come from shared libraries.
 Version 0.3.0 adds shared settings/account setup and date-range selection,
 used by Mail's consuming PR. Mail still owns its destinations, filter semantics, and inbox/folder
@@ -47,7 +47,7 @@ plus value-driven message/detail rows and empty-state rendering. New branded ele
 reusable visual compositions are developed in Core. Mail connects JMAP accounts over HTTP Basic auth, stores credentials in platform-protected storage, and loads each account's inbox. Folders (JMAP mailboxes) appear in the sidebar, open as pages, and can
 be created, renamed, nested, and deleted; messages can be moved between them. Rules that file
 arriving mail into folders run on the server as one Sieve script (RFC 9661) where the server
-supports it; see the [Mail folders guide](https://github.com/otus-foss/otus-mail/blob/main/docs/folders.md).
+supports it; see the [Mail folders guide](https://github.com/otus-foss/mail/blob/main/docs/folders.md).
 Messages can be marked read or unread, flagged, archived, trashed, filed as spam, and moved, from
 an open message, a selection, or by swiping a row; Mail behavior chooses each swipe and whether opening a
 message marks it read. An optional Read later switch, off by default, gives each account whose
@@ -56,7 +56,7 @@ while it stays in the inbox. Message rows name the other folders a message is in
 An open message is a page over the list, with an action bar at the bottom and a menu for the
 other actions. Long-pressing rows selects them, and the same bar acts on the selection.
 Mail behavior › Action bar chooses each bar's buttons; see the
-[Mail action bar guide](https://github.com/otus-foss/otus-mail/blob/main/docs/action-bar.md).
+[Mail action bar guide](https://github.com/otus-foss/mail/blob/main/docs/action-bar.md).
 Settings pages use flat rows, choice sheets, and confirmation dialogs from
 Core's design system. Sync and sending are not
 implemented yet. No sample mail is shipped; populated-list validation uses test-only fixtures. Calendar retains its welcome screen. Full synchronization, calendar workflows, and contact management remain goals. Mail can now look up
@@ -71,7 +71,7 @@ Core's `dateformat` and `settings` provide date-format choices, locale-aware for
 app-private preference storage. Mail uses them for displayed inbox dates and date-filter
 summaries, and its Settings › Appearance page lets users choose the saved date format. Calendar
 has no dates or settings yet and does not depend on them. See the
-[Mail guide](https://github.com/otus-foss/otus-mail/blob/main/docs/date-formatting.md).
+[Mail guide](https://github.com/otus-foss/mail/blob/main/docs/date-formatting.md).
 
 ## Decisions to resolve as implementation starts
 

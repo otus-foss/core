@@ -49,7 +49,7 @@ interactive targets, which adds vertical space relative to the supplied design.
 
 The inbox fade in Figma contains `#353637`, outside the supplied palette. Implementation uses a
 transparent alpha fade instead. The palette above remains unchanged. See
-[Mail context-panel documentation](https://github.com/otus-foss/otus-mail/blob/main/docs/context-panel.md) for API and validation details.
+[Mail context-panel documentation](https://github.com/otus-foss/mail/blob/main/docs/context-panel.md) for API and validation details.
 
 ## Inbox page
 
@@ -62,7 +62,7 @@ Generated avatars choose `bgLight` or a grey a step from it toward `bgDark` or `
 address, with `text1` initials, so a list of people does not fill with the accent and every avatar
 shows on raised cards. Contact photos fill the same circle. These avatar variants are app decisions, not newly
 verified Figma values. Metadata continues to use named text tokens. No palette values change.
-See [Mail inbox documentation](https://github.com/otus-foss/otus-mail/blob/main/docs/inbox.md) for implemented behavior and deferred work.
+See [Mail inbox documentation](https://github.com/otus-foss/mail/blob/main/docs/inbox.md) for implemented behavior and deferred work.
 
 ## Reusable pill sizing
 
@@ -102,7 +102,7 @@ surface `24:655` informs the styling; it does not provide complete picker layout
 content and date calendar originated in the app and were subsequently recreated as editable
 Figma components (review `39:2`). The approved joined month navigation (`40:14`) is now
 implemented in Mail: one outlined capsule, a center month/year pill, and separate arrow targets. See
-[Mail selection sheets](https://github.com/otus-foss/otus-mail/blob/main/docs/selection-sheets.md) for behavior and validation.
+[Mail selection sheets](https://github.com/otus-foss/mail/blob/main/docs/selection-sheets.md) for behavior and validation.
 
 ## Action bar
 
@@ -186,4 +186,4 @@ The reusable `AnimatedText` element slides and fades between labels. Mail uses i
 date-picker month/year capsule: later months move up, earlier months move down, and year text
 changes only across years. Incoming text arrives at `Normal` speed with the enter curve, 240 ms;
 outgoing text leaves at `Fast` speed with the exit curve, 160 ms.
-See [Mail motion](https://github.com/otus-foss/otus-mail/blob/main/docs/motion.md) and [Calendar motion](https://github.com/otus-foss/otus-calendar/blob/main/docs/motion.md).
+See [Mail motion](https://github.com/otus-foss/mail/blob/main/docs/motion.md) and [Calendar motion](https://github.com/otus-foss/calendar/blob/main/docs/motion.md).

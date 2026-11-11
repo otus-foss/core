@@ -11,7 +11,7 @@
 - [Mail design foundations](suite/mail-design.md): the palette and Figma reference used by both apps.
 - [JMAP features in Otus](suite/jmap-features.md): which capabilities and methods the apps use,
   build, plan, or leave out. Read it before designing a screen or setting.
-- [Roadmap](https://github.com/otus-foss/otus-mail/issues/9): the v1 JMAP suite and v2 protocol plan.
+- [Roadmap](https://github.com/otus-foss/mail/issues/9): the v1 JMAP suite and v2 protocol plan.
 
 ## Libraries
 
@@ -39,7 +39,7 @@
 - [0002: Gradle quality commands without npm](decisions/0002-gradle-quality-entry-points.md)
 - [0003: Portable Compose imports](decisions/0003-portable-compose-imports.md)
 - [0004: Commit messages](decisions/0004-commit-messages.md)
-- [0005: Shared libraries in otus-core](decisions/0005-shared-library-repository.md)
+- [0005: Shared libraries in core](decisions/0005-shared-library-repository.md)
 - [0006: Warnings in the design system's iOS metadata](decisions/0006-native-metadata-warnings.md)
 
 - [0007: Shared feature modules](decisions/0007-shared-feature-modules.md)

@@ -5,7 +5,7 @@ import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.getByType
 import java.io.File
 
-/** The suite catalog, otus-core's gradle/libs.versions.toml, which every Otus build loads as `libs`. */
+/** The suite catalog, core's gradle/libs.versions.toml, which every Otus build loads as `libs`. */
 internal val Project.libs: VersionCatalog
     get() = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
@@ -14,11 +14,11 @@ internal fun VersionCatalog.version(name: String): String = findVersion(name).ge
 internal fun VersionCatalog.sdk(name: String): Int = version("android-$name").toInt()
 
 /**
- * The otus-core checkout that holds the shared tools and configuration: the build an app includes as
- * `otus-core`, or this build itself when it is Core.
+ * The core checkout that holds the shared tools and configuration: the build an app includes as
+ * `core`, or this build itself when it is Core.
  */
 val Project.otusCoreDir: File
-    get() = gradle.includedBuilds.find { it.name == "otus-core" }?.projectDir ?: rootDir
+    get() = gradle.includedBuilds.find { it.name == "core" }?.projectDir ?: rootDir
 
 /** Python with the pinned quality tools. A linked worktree has no .venv of its own, so it uses the main checkout's. */
 val Project.qualityPython: Provider<String>

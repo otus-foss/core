@@ -1,7 +1,7 @@
 name: Set up the build
 description: >-
   Java, Gradle, the Android SDK, and the pinned Python quality tools, for a repository checked out
-  at the given directory. The SDK platform and build tools come from otus-core's version catalog.
+  at the given directory. The SDK platform and build tools come from core's version catalog.
 inputs:
   directory:
     description: The repository's checkout, relative to the workspace

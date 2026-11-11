@@ -10,7 +10,7 @@ that the Otus review instructions are missing before claiming a complete review.
 ## Inputs
 
 ```text
-PR_URLS: one or more PR URLs in otus-foss/otus-core or otus-foss/otus-mail
+PR_URLS: one or more PR URLs in otus-foss/core or otus-foss/mail
 SCOPE: meta | mail | both
 VALIDATION: full | targeted | static
 REPO_PATHS: optional explicit paths for Core and Mail

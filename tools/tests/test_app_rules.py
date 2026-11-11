@@ -133,7 +133,7 @@ class AppRuleTests(unittest.TestCase):
         for layer in ("elements", "components", "theme"):
             with self.subTest(layer=layer):
                 self.assertIn(
-                    "visual elements, components, and tokens belong in otus-core",
+                    "visual elements, components, and tokens belong in core",
                     check(f"designsystem.{layer}", "val x = 1", app="calendar"),
                 )
 
@@ -152,7 +152,7 @@ class AppRuleTests(unittest.TestCase):
         ):
             with self.subTest(body=body):
                 self.assertIn(
-                    "literal colors belong in otus-core designsystem/theme",
+                    "literal colors belong in core designsystem/theme",
                     check("feature.inbox.presentation.components", body),
                 )
         self.assertFalse(check("feature.inbox.presentation.components", "val c = OtusColors.text1"))
@@ -165,7 +165,7 @@ class AppRuleTests(unittest.TestCase):
         ):
             with self.subTest(body=body):
                 self.assertIn(
-                    "draw with otus-core elements, not Material's theme or surfaces",
+                    "draw with core elements, not Material's theme or surfaces",
                     check("feature.welcome.presentation.screens", body),
                 )
         self.assertFalse(

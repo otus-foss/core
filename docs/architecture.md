@@ -45,7 +45,7 @@ module. Calendar consumes only `designsystem` so far. Both apps build Core from 
 
 | Order | Module | Source | Notes |
 | --- | --- | --- | --- |
-| 1 | `jmap` | `otus-mail/jmap` | Moved in 0.1.0. See [JMAP](jmap.md). |
+| 1 | `jmap` | `mail/jmap` | Moved in 0.1.0. See [JMAP](jmap.md). |
 | 2 | `designsystem` | `designsystem/` in both apps | Moved from Mail in 0.2.0. See [design system](designsystem.md). |
 | 3 | `dateformat` | `core/dateformat` in both apps | Moved from Mail in 0.2.0. See [date formatting](dateformat.md). |
 | 4 | `avatar` | `core/avatar` in both apps | Moved from Mail in 0.2.0. See [avatars](avatar.md). |
@@ -112,7 +112,7 @@ serves all three repositories.
   Gradle-entry-point, portable-import, and commit-message rules that both apps already follow.
 - `build-logic/`, `tools/`, and `config/` hold the convention plugins, checkers, and detekt
   configuration every repository runs; see [the quality guide](quality.md#build-logic).
-- `.github/actions/` holds the CI steps the apps use from their otus-core checkout; see
+- `.github/actions/` holds the CI steps the apps use from their core checkout; see
   [hosting and CI](hosting.md#shared-actions).
 
 ## Shared feature modules

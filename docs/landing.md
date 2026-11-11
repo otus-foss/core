@@ -31,7 +31,7 @@ lander updates that comment as the state changes. Pull requests without the labe
   request to a maintainer's change. The workflows never check out pull request code, which keeps
   `pull_request_target` safe. A fork's own workflow files run its checks, so it can make them pass;
   read a fork's `.github/` changes before adding the label. A fork's app pull request always builds
-  against Core's `main`, since its Core branch is not in otus-core.
+  against Core's `main`, since its Core branch is not in core.
 - **A partial landing stops.** If Core merges and Mail then fails, the lander stops, says so in the
   comment, and fails its run. Merge the rest by hand.
 
@@ -45,7 +45,7 @@ and its merges do not start other workflows. Do this once:
 1. Create a GitHub App under the `otus-foss` organization's Developer settings. Turn off the webhook. Give it these
    repository permissions: Actions, Contents, Issues, Pull requests, Commit statuses, and Workflows
    read and write; Checks read. Metadata read is added on its own.
-2. Install it on `otus-core`, `otus-mail`, and `otus-calendar` only.
+2. Install it on `core`, `mail`, and `calendar` only.
 3. Add the App's client ID as the `LANDER_CLIENT_ID` organization variable and a private key as the
    `LANDER_APP_PRIVATE_KEY` organization secret, both for these three repositories.
 

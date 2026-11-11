@@ -18,7 +18,7 @@ Add each public API or behavior change under "## Unreleased" in CHANGELOG.md.
 
 ## Depends on
 
-<!-- The app PR that adopts this as otus-foss/otus-mail#123, or the design page. -->
+<!-- The app PR that adopts this as otus-foss/mail#123, or the design page. -->
 
 -
 
@@ -28,7 +28,7 @@ Add each public API or behavior change under "## Unreleased" in CHANGELOG.md.
 Add images when the change is visual or a picture explains it faster than words.
 Show each changed state in the themes where it looks different. Put a small change in a
 Before | After table. Link a recorded screenshot at the head commit, which stays put after merge:
-![Inbox](https://github.com/otus-foss/otus-core/blob/<sha>/<path>.png?raw=true)
+![Inbox](https://github.com/otus-foss/core/blob/<sha>/<path>.png?raw=true)
 Drag phone captures and screen recordings into the description on GitHub.
 -->
 

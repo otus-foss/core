@@ -1,6 +1,6 @@
 # Using Core from an app
 
-Mail and Calendar build Core from source. Each app includes an otus-core checkout as a Gradle
+Mail and Calendar build Core from source. Each app includes an core checkout as a Gradle
 composite build, so `com.otusfoss.core:<module>` resolves to the matching Core project, and each app's
 build takes its convention plugins, version catalog, tools, and detekt configuration from the
 same checkout. No app downloads Core from GitHub Packages or pins a Core version. See
@@ -11,23 +11,23 @@ same checkout. No app downloads Core from GitHub Packages or pins a Core version
 By default an app expects Core next to it:
 
 ```text
-otus-core/
-otus-mail/
-otus-calendar/
+core/
+mail/
+calendar/
 ```
 
 The `otus.core.path` Gradle property names another checkout, such as a worktree. It resolves from
 the app's root, so `-Potus.core.path=../core-worktree` works for one build and
-`otus.core.path=/path/to/otus-core` in `~/.gradle/gradle.properties` works for every build. Without
+`otus.core.path=/path/to/core` in `~/.gradle/gradle.properties` works for every build. Without
 a checkout at that path, the app's build stops at once and says where it looked. The app's
 `commit-msg` hook finds Core the same way, through `ORG_GRADLE_PROJECT_otus.core.path`,
-`~/.gradle/gradle.properties`, the app's `gradle.properties`, or `../otus-core`.
+`~/.gradle/gradle.properties`, the app's `gradle.properties`, or `../core`.
 
 ## What an app's settings file does
 
 ```kotlin
 pluginManagement {
-    val otusCore = file(providers.gradleProperty("otus.core.path").getOrElse("../otus-core"))
+    val otusCore = file(providers.gradleProperty("otus.core.path").getOrElse("../core"))
     repositories { /* google(), mavenCentral(), gradlePluginPortal() */ }
     includeBuild(otusCore.resolve("build-logic").path)
 }
@@ -45,8 +45,8 @@ dependencyResolutionManagement {
 
 `pluginManagement` runs before any plugin, so it reads the path itself to find the convention
 plugins. The `otus.settings` plugin then reads it again with the same rule, includes the checkout,
-and loads its catalog as `libs`. The included build is named `otus-core` whatever its directory is
-called, so its task paths are always `:otus-core:<module>:<task>`, and the convention plugins find
+and loads its catalog as `libs`. The included build is named `core` whatever its directory is
+called, so its task paths are always `:core:<module>:<task>`, and the convention plugins find
 the checkout by that name.
 
 - `libs` is Core's `gradle/libs.versions.toml`, the suite catalog. It holds every version that
@@ -58,7 +58,7 @@ the checkout by that name.
 
 ## Changing Core and an app together
 
-Give the Core branch and the app branch the same name. The app's CI checks out otus-core beside
+Give the Core branch and the app branch the same name. The app's CI checks out core beside
 the app and switches to the branch with the app's branch name when one exists, or stays on Core's
 `main`. Every job does this before it runs a Core action, so the gate, the build, and the
 pull-request facts all use the Core that lands with the change, and an app pull request runs
