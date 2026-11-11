@@ -35,7 +35,7 @@ jobs:
     if: >-
       github.event_name == 'pull_request_target' && (
         github.event.action == 'synchronize' || github.event.label.name == 'ready to land')
-    runs-on: ubicloud-standard-2
+    runs-on: ubuntu-24.04
     steps:
       - id: token
         uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
@@ -93,7 +93,7 @@ jobs:
   land:
     needs: approve
     if: always() && needs.approve.result != 'failure'
-    runs-on: ubicloud-standard-2
+    runs-on: ubuntu-24.04
     concurrency:
       group: lander-${{ github.repository }}
       cancel-in-progress: false
