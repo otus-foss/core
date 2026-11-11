@@ -21,12 +21,13 @@ import com.otusfoss.core.designsystem.theme.typography.panelTextStyle
  * Label and value rows, such as a message's sender details: From, To, Date, and Folders. The labels
  * line up in a narrow `text3` column that grows with the font scale and wraps a long label to a
  * second line, and hairlines separate the rows. They draw no background, so they sit straight on a
- * panel.
+ * panel. When [divided], a hairline also separates the first row from what sits above.
  */
 @Composable
 public fun DetailRows(
     rows: List<DetailLine>,
     modifier: Modifier = Modifier,
+    divided: Boolean = false,
 ) {
     val labelWidth = DetailsTableTokens.labelWidth * LocalDensity.current.fontScale
     Column(modifier.fillMaxWidth()) {
@@ -34,7 +35,7 @@ public fun DetailRows(
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .topHairline(OtusColors.strokeBgDark) { index > 0 }
+                    .topHairline(OtusColors.strokeBgDark) { divided || index > 0 }
                     .padding(vertical = DetailsTableTokens.padding),
                 horizontalArrangement = Arrangement.spacedBy(DetailsTableTokens.padding),
                 verticalAlignment = Alignment.CenterVertically,

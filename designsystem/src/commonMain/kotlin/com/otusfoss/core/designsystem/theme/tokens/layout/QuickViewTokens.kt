@@ -33,6 +33,17 @@ public object QuickViewTokens {
     public val labelSize: TextUnit = 12.sp
     public val labelLineHeight: TextUnit = 15.sp
 
+    /** A file card in a row that scrolls, its picture, and the gap to its two-line name. */
+    public val fileCardWidth: Dp = 160.dp
+    public val fileIconSize: Dp = 48.dp
+    public val fileGap: Dp = 10.dp
+    public val fileEnd: Dp = 12.dp
+    public val fileNameSize: TextUnit = 13.sp
+    public val fileNameLineHeight: TextUnit = 17.sp
+
+    /** Up to this many file cards share the row's width; more scroll. */
+    public const val FILE_FILL_LIMIT: Int = 2
+
     /** A drag released faster than this, per second, settles on the next stop the way it went. */
     public val flingSpeed: Dp = 800.dp
 
