@@ -133,6 +133,16 @@ jobs:
               return pr;
             }
 
+            // Each repository's lander can land the same group at once, so a merge can fail while
+            // the other run's merge of that pull request is still in progress.
+            async function mergedSoon(repo, number) {
+              for (let tries = 0; tries < 5; tries++) {
+                if ((await getPull(repo, number)).merged) return true;
+                await sleep(3000);
+              }
+              return false;
+            }
+
             // Partners share the branch name and come from the repository itself, never from a fork,
             // so nobody outside can attach a pull request to a maintainer's change.
             async function groupOf(repo, pr) {
@@ -219,8 +229,7 @@ jobs:
                   // The sha makes GitHub refuse the merge if someone pushed since the checks above.
                   await github.rest.pulls.merge({ owner, repo, pull_number: pr.number, sha: pr.head.sha, merge_method: 'squash' });
                 } catch (error) {
-                  // Another repository's lander may have merged it a moment ago.
-                  if (!(await getPull(repo, pr.number)).merged) {
+                  if (!(await mergedSoon(repo, pr.number))) {
                     member.problems = [`did not merge: ${error.message}`];
                     await report(members, landed.length > 0
                       ? `Landed ${landed.map(name).join(', ')}, then stopped. Merge the rest by hand.`
