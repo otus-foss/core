@@ -2,10 +2,10 @@
 
 A pull request merges when a maintainer adds the `ready to land` label. If open pull requests in
 the other Otus repositories come from a branch with the same name, they are its partners, and the
-whole group merges together, Meta first, once every one of them is ready. The nightly build pairs
-Mail `main` with Meta `main`, so partners must not land hours apart.
+whole group merges together, Core first, once every one of them is ready. The nightly build pairs
+Mail `main` with Core `main`, so partners must not land hours apart.
 
-Each repository's `land` workflow calls Meta's `lander` workflow, which does the work.
+Each repository's `land` workflow calls Core's `lander` workflow, which does the work.
 
 ## Rules
 
@@ -31,8 +31,8 @@ lander updates that comment as the state changes. Pull requests without the labe
   request to a maintainer's change. The workflows never check out pull request code, which keeps
   `pull_request_target` safe. A fork's own workflow files run its checks, so it can make them pass;
   read a fork's `.github/` changes before adding the label. A fork's app pull request always builds
-  against Meta's `main`, since its Meta branch is not in otus-meta.
-- **A partial landing stops.** If Meta merges and Mail then fails, the lander stops, says so in the
+  against Core's `main`, since its Core branch is not in core.
+- **A partial landing stops.** If Core merges and Mail then fails, the lander stops, says so in the
   comment, and fails its run. Merge the rest by hand.
 
 Agents add `ready to land` only when the user asks them to land a pull request.
@@ -45,7 +45,7 @@ and its merges do not start other workflows. Do this once:
 1. Create a GitHub App under the `otus-foss` organization's Developer settings. Turn off the webhook. Give it these
    repository permissions: Actions, Contents, Issues, Pull requests, Commit statuses, and Workflows
    read and write; Checks read. Metadata read is added on its own.
-2. Install it on `otus-meta`, `otus-mail`, and `otus-calendar` only.
+2. Install it on `core`, `mail`, and `calendar` only.
 3. Add the App's client ID as the `LANDER_CLIENT_ID` organization variable and a private key as the
    `LANDER_APP_PRIVATE_KEY` organization secret, both for these three repositories.
 

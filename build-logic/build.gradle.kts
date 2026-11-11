@@ -1,4 +1,4 @@
-// Convention plugins for Meta, Mail, and Calendar; see docs/quality.md#build-logic.
+// Convention plugins for Core, Mail, and Calendar; see docs/quality.md#build-logic.
 plugins {
     `kotlin-dsl`
 }

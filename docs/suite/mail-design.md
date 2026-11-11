@@ -35,7 +35,7 @@ Exact component assignments, interaction states, and foreground/background pairi
 
 In both apps this palette is the default Otus theme; the user can pick another theme and accent, and only the System theme follows the device's light or dark mode. Default text is text-1 (#EBECED) at full opacity; background and default surfaces use bg-regular (#161617). Secondary text colors are opt-in.
 
-Android draws each app's launch window before Compose starts, from `androidApp/src/main/res/values/colors.xml`. Meta's `tools/launch_colors.py` writes that file from the Otus theme's `bg-regular`, `text-1`, and `accent-regular`, and the architecture check fails when it drifts.
+Android draws each app's launch window before Compose starts, from `androidApp/src/main/res/values/colors.xml`. Core's `tools/launch_colors.py` writes that file from the Otus theme's `bg-regular`, `text-1`, and `accent-regular`, and the architecture check fails when it drifts.
 
 ## Context panel decisions
 
@@ -49,7 +49,7 @@ interactive targets, which adds vertical space relative to the supplied design.
 
 The inbox fade in Figma contains `#353637`, outside the supplied palette. Implementation uses a
 transparent alpha fade instead. The palette above remains unchanged. See
-[Mail context-panel documentation](https://github.com/otus-foss/otus-mail/blob/main/docs/context-panel.md) for API and validation details.
+[Mail context-panel documentation](https://github.com/otus-foss/mail/blob/main/docs/context-panel.md) for API and validation details.
 
 ## Inbox page
 
@@ -62,7 +62,7 @@ Generated avatars choose `bgLight` or a grey a step from it toward `bgDark` or `
 address, with `text1` initials, so a list of people does not fill with the accent and every avatar
 shows on raised cards. Contact photos fill the same circle. These avatar variants are app decisions, not newly
 verified Figma values. Metadata continues to use named text tokens. No palette values change.
-See [Mail inbox documentation](https://github.com/otus-foss/otus-mail/blob/main/docs/inbox.md) for implemented behavior and deferred work.
+See [Mail inbox documentation](https://github.com/otus-foss/mail/blob/main/docs/inbox.md) for implemented behavior and deferred work.
 
 ## Reusable pill sizing
 
@@ -102,7 +102,7 @@ surface `24:655` informs the styling; it does not provide complete picker layout
 content and date calendar originated in the app and were subsequently recreated as editable
 Figma components (review `39:2`). The approved joined month navigation (`40:14`) is now
 implemented in Mail: one outlined capsule, a center month/year pill, and separate arrow targets. See
-[Mail selection sheets](https://github.com/otus-foss/otus-mail/blob/main/docs/selection-sheets.md) for behavior and validation.
+[Mail selection sheets](https://github.com/otus-foss/mail/blob/main/docs/selection-sheets.md) for behavior and validation.
 
 ## Action bar
 
@@ -158,7 +158,7 @@ keep their `bg-light` outline. Folder colors the user picks are not the accent a
 
 ## Motion
 
-Every animation uses Meta's `Motion` API: four cubic Bézier curves in `MotionCurve`, four
+Every animation uses Core's `Motion` API: four cubic Bézier curves in `MotionCurve`, four
 speeds in `MotionSpeed`, and a global speed multiplier in `LocalMotionScale`. The curves are
 standard (0.4, 0, 0.2, 1), reverse (0.8, 0, 0.6, 1), enter (0.2, 0, 0, 1), and exit
 (0.4, 0, 1, 1). The curves and speeds
@@ -180,10 +180,10 @@ Rules for both apps:
 - To make everything faster or slower, change `LocalMotionScale`. Do not edit the speeds.
 
 Mail follows these rules. Calendar still has its own motion code and adopts `Motion` when it
-moves to Meta's design system.
+moves to Core's design system.
 
 The reusable `AnimatedText` element slides and fades between labels. Mail uses it for the
 date-picker month/year capsule: later months move up, earlier months move down, and year text
 changes only across years. Incoming text arrives at `Normal` speed with the enter curve, 240 ms;
 outgoing text leaves at `Fast` speed with the exit curve, 160 ms.
-See [Mail motion](https://github.com/otus-foss/otus-mail/blob/main/docs/motion.md) and [Calendar motion](https://github.com/otus-foss/otus-calendar/blob/main/docs/motion.md).
+See [Mail motion](https://github.com/otus-foss/mail/blob/main/docs/motion.md) and [Calendar motion](https://github.com/otus-foss/calendar/blob/main/docs/motion.md).

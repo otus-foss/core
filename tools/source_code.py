@@ -143,7 +143,7 @@ def is_production(path_parts: tuple[str, ...]) -> bool:
 
 
 FEATURE_LAYERS = frozenset({"domain", "data", "presentation"})
-# What code in each layer of a feature may not reach, in the apps and in Meta's feature modules.
+# What code in each layer of a feature may not reach, in the apps and in Core's feature modules.
 LAYER_LIMITS = {
     "domain": (("data", "presentation"), "domain cannot depend on data or presentation"),
     "presentation": (("data",), "presentation cannot depend on data implementations"),

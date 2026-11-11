@@ -1,7 +1,7 @@
 # Shared Otus review guide
 
 Follow this guide together with the selected PR, ready-for-review, repository, or daily prompt. Review
-Meta and Mail as independent repositories. Never inspect or build Calendar for these reviews.
+Core and Mail as independent repositories. Never inspect or build Calendar for these reviews.
 
 ## Review contract
 
@@ -32,17 +32,17 @@ Meta and Mail as independent repositories. Never inspect or build Calendar for t
 ## Establish the evidence
 
 1. Resolve the selected repository paths and verify their remotes. Defaults are sibling
-   `otus-meta` and `otus-mail` checkouts under the Otus workspace. Their GitHub repositories are
-   `otus-foss/otus-meta` and `otus-foss/otus-mail`. Allow explicit path overrides. Run Git and
+   `core` and `mail` checkouts under the Otus workspace. Their GitHub repositories are
+   `otus-foss/core` and `otus-foss/mail`. Allow explicit path overrides. Run Git and
    Gradle from the relevant repository, never the unversioned parent directory.
 2. Record the review start in UTC, branch or ref, full commit SHA, and worktree status for each
    selected repository. Fetch the required remote refs without changing the user's checkout.
    If fetching fails, distinguish local evidence from verified remote state.
 3. Read the applicable `AGENTS.md`, `README.md`, `docs/architecture.md`, and `docs/quality.md` at
-   the reviewed revision. Read Meta's `docs/README.md`, `docs/suite/product-goals.md`,
+   the reviewed revision. Read Core's `docs/README.md`, `docs/suite/product-goals.md`,
    `docs/suite/mail-design.md`, and `docs/suite/jmap-features.md`. For a Mail-only review, use an
-   available Meta checkout or an accessible pinned copy for this context and report its revision.
-4. Read the relevant feature guides and accepted decisions, including later amendments. Meta's
+   available Core checkout or an accessible pinned copy for this context and report its revision.
+4. Read the relevant feature guides and accepted decisions, including later amendments. Core's
    central UI ownership decision is currently 0008. Discover files instead of relying on an old
    decision number. Read `docs/consuming.md` and `docs/releasing.md` for library changes, and
    Mail's `docs/shared-libraries.md` for consumer changes.
@@ -50,8 +50,8 @@ Meta and Mail as independent repositories. Never inspect or build Calendar for t
    Documentation describes intent; source establishes implemented behavior. Record conflicts
    and distinguish an accepted exception from an accidental violation. Never assume a feature
    remains unimplemented because a README or suite summary says so.
-6. Freeze the reviewed revisions before testing. Record Meta's effective version or source SHA
-   used by Mail, including `otus.meta.path`, `otus.meta.repository`, CI checkout selection, and
+6. Freeze the reviewed revisions before testing. Record Core's effective version or source SHA
+   used by Mail, including `otus.core.path`, `otus.core.repository`, CI checkout selection, and
    relevant machine-wide overrides. Inspect only the needed configuration values; do not dump
    environment variables or credential files. Recheck remote heads at the end and disclose drift.
 
@@ -101,7 +101,7 @@ assumption. Low-confidence concerns belong in questions, not confirmed findings.
 - Enforce portable `domain`, implementation `data`, and `presentation` boundaries. App wiring
   connects dependencies. Features do not import other features directly. Core does not depend
   on features, UI, or app wiring. `commonMain` contains no platform-only APIs.
-- Enforce elements, components, and screens. Meta owns visual elements, reusable rendering,
+- Enforce elements, components, and screens. Core owns visual elements, reusable rendering,
   tokens, motion, symbols, and fonts, even with one app consumer. Mail owns feature adapters,
   screens, and navigation. Components accept values and callbacks, with no ViewModels,
   repositories, navigation controllers, networking, or storage inside them.
@@ -114,7 +114,7 @@ assumption. Low-confidence concerns belong in questions, not confirmed findings.
 - Check 300-line Kotlin and 200-line Swift limits, including tests. Validate any first-line
   `otus-file-length` exception and its concrete reason. Do not recommend compressed code to
   satisfy a limit. Check for blanket suppressions, new baselines, skipped checks, and dead code.
-- For Meta, verify module/package/artifact names, explicit API mode, warnings as errors, and
+- For Core, verify module/package/artifact names, explicit API mode, warnings as errors, and
   absence of app dependencies. Shared accounts and settings keep their layer boundaries and
   receive app-owned services, persistence, navigation, and credentials.
 
@@ -137,7 +137,7 @@ assumption. Low-confidence concerns belong in questions, not confirmed findings.
   specifications. Verify advertised support before requiring a behavior.
 - Check Stalwart-specific fallbacks for isolation and documentation. Test absent optional
   capabilities and alternate valid server responses. Do not make Calendar protocol work part
-  of the review. Meta contact schemas remain in scope even when they contain calendar fields.
+  of the review. Core contact schemas remain in scope even when they contain calendar fields.
 
 ## Mail data and user flows
 
@@ -223,8 +223,8 @@ assumption. Low-confidence concerns belong in questions, not confirmed findings.
 - Inspect current hooks and workflow triggers, filters, permissions, checkout refs, pinned
   actions, disabled jobs, and artifact provenance. Review nightly build/update paths when affected.
   Match each claimed CI result to its actual tested SHA, including synthetic merge commits and
-  the Meta SHA used by Mail. A green badge on an older revision is not validation of this one.
-- Discover task names from the reviewed build. Useful current tasks include Meta
+  the Core SHA used by Mail. A green badge on an older revision is not validation of this one.
+- Discover task names from the reviewed build. Useful current tasks include Core
   `:<module>:testAndroidHostTest`, Mail `:shared:testAndroidHostTest`, Mail
   `:androidApp:testDebugUnitTest`, `qualityCheck`, and `checkAll`. Mail's `pushBridgeTest` runs
   its bridge tests. Use `--tests` only on a task that supports it.

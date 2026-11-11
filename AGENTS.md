@@ -1,8 +1,8 @@
-# Otus Meta engineering rules
+# Otus Core engineering rules
 
 ## Hosting
 
-GitHub hosts development, pull requests, issues, and CI. Meta publishes no packages (decision 0020). Use `origin` for
+GitHub hosts development, pull requests, issues, and CI. Core publishes no packages (decision 0020). Use `origin` for
 GitHub. See [hosting and CI](docs/hosting.md).
 
 ## Required reading and commands
@@ -196,7 +196,7 @@ when you write the body yourself. The title follows the commit title rules above
 screenshots at the head commit, and send phone captures to the user to drag in.
 
 When the pull request finishes an issue, end the body with `Closes #123`, or
-`Closes otus-foss/otus-meta#45` for an issue in another repository, so GitHub closes it on merge.
+`Closes otus-foss/core#45` for an issue in another repository, so GitHub closes it on merge.
 Write `Part of #123` for a step that leaves the issue open. Search the open issues before you open
 the pull request. The `issue link` workflow warns about a pull request that closes no issue.
 
@@ -219,8 +219,8 @@ Inspect existing patterns first. Make focused changes, run the relevant checks, 
 environment blockers precisely. Add behavior tests for new logic and regression tests for fixes.
 Update `docs/architecture.md` when modules or boundaries change.
 
-Mail, Calendar, and this repository are separate Git repositories. The apps build Meta from
-source, from a sibling checkout or `otus.meta.path`, and their CI checks Meta out beside them.
-When a change here needs app changes, use the same branch name in each repository and merge Meta's
+Mail, Calendar, and this repository are separate Git repositories. The apps build Core from
+source, from a sibling checkout or `otus.core.path`, and their CI checks Core out beside them.
+When a change here needs app changes, use the same branch name in each repository and merge Core's
 pull request first; see `docs/consuming.md`. Do not push release tags without a concrete
 task.

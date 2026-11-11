@@ -1,7 +1,7 @@
 # Design system
 
 The `designsystem` module (`com.otusfoss.core.designsystem`, artifact `com.otusfoss.core:designsystem`) holds the
-Otus theme, elements, and components. It moved here from otus-mail in version 0.2.0. Elements and
+Otus theme, elements, and components. It moved here from mail in version 0.2.0. Elements and
 components take values and callbacks; they own no ViewModels, navigation, networking, or storage.
 `HtmlView` is the one exception: with `loadRemote`, its web view fetches the images, styles, and
 fonts the document names. Without it, the platform also blocks every web request beneath the
@@ -248,11 +248,11 @@ ease-in-out and linear timing. `LocalMotionScale` scales all of it.
 ## Behavior guides
 
 These guides still live in Mail, which was the first app to use the components:
-[context panel](https://github.com/otus-foss/otus-mail/blob/main/docs/context-panel.md),
-[selection sheets](https://github.com/otus-foss/otus-mail/blob/main/docs/selection-sheets.md),
-[sidebar](https://github.com/otus-foss/otus-mail/blob/main/docs/sidebar.md),
-[motion](https://github.com/otus-foss/otus-mail/blob/main/docs/motion.md), and
-[color theme](https://github.com/otus-foss/otus-mail/blob/main/docs/design.md).
+[context panel](https://github.com/otus-foss/mail/blob/main/docs/context-panel.md),
+[selection sheets](https://github.com/otus-foss/mail/blob/main/docs/selection-sheets.md),
+[sidebar](https://github.com/otus-foss/mail/blob/main/docs/sidebar.md),
+[motion](https://github.com/otus-foss/mail/blob/main/docs/motion.md), and
+[color theme](https://github.com/otus-foss/mail/blob/main/docs/design.md).
 
 ## Date chooser
 
@@ -307,7 +307,7 @@ them with the change:
 
 ## Central UI ownership
 
-Meta owns every branded element, reusable component, visual token, and symbol resource. These
+Core owns every branded element, reusable component, visual token, and symbol resource. These
 APIs take values and callbacks; Mail domain models and workflow decisions stay in Mail adapters.
 Import symbols through the public `com.otusfoss.core.designsystem.resources.Res` bundle. Mail, settings,
 and accounts use the same symbol files. See [decision 0008](decisions/0008-central-ui-ownership.md).

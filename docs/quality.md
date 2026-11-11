@@ -8,7 +8,7 @@ its iOS and screenshot tests.
 
 Requires JDK 21 and Python 3.11+, plus the Android SDK for Android checks. No Node.js or npm
 installation is required; see [decision 0002](decisions/0002-gradle-quality-entry-points.md). The
-apps also need an otus-meta checkout beside them; see [consuming](consuming.md).
+apps also need an core checkout beside them; see [consuming](consuming.md).
 
 One-time setup in each repository:
 
@@ -36,7 +36,7 @@ the final batch, and repeat it only when later changes or failures require anoth
 | --- | --- |
 | `formatAll` | Spotless/ktlint Kotlin and Gradle formatting, project text whitespace, Ruff fixes/formatting |
 | `qualityCheck` | Spotless, detekt, architecture checks, the repository's tool tests, Ruff lint/format |
-| `checkAll` | In Meta, `qualityCheck` plus the `check` task of every library module; in the apps, see their guides |
+| `checkAll` | In Core, `qualityCheck` plus the `check` task of every library module; in the apps, see their guides |
 
 Project text formatting covers Markdown, YAML, JSON, XML/plist, and TOML with trailing-whitespace
 removal and a final newline. It does not enforce full syntax-specific formatting or Markdown
@@ -44,23 +44,23 @@ structure. Ruff checks Python files only.
 
 Test code gets ktlint formatting only. detekt and Android lint (`ignoreTestSources`) skip test
 source sets, because analyzing them took about a third of lint's time and found little. The apps'
-lint analyzes Meta modules through `checkDependencies`, so this keeps their `checkAll` fast too.
+lint analyzes Core modules through `checkDependencies`, so this keeps their `checkAll` fast too.
 
 Kotlin/Native tests for iOS run only on macOS. On Linux, compile the iOS sources of a module with
 `./gradlew :<module>:compileKotlinIosSimulatorArm64`; this does not run them.
 
 ## Build logic
 
-`build-logic/` is an included build of convention plugins. Meta includes it from its settings
-file; the apps include it from their otus-meta checkout through `pluginManagement`. Every
+`build-logic/` is an included build of convention plugins. Core includes it from its settings
+file; the apps include it from their core checkout through `pluginManagement`. Every
 version they read comes from `gradle/libs.versions.toml`.
 
 | Plugin | Applied to | What it sets up |
 | --- | --- | --- |
 | `otus.settings` | every settings file | the Google and Maven Central repositories |
-| `otus.quality` | every root project | Spotless, detekt with Meta's `config/detekt.yml`, the architecture check and tool tests, Ruff, `formatAll`, `qualityCheck`, Kover, test sharding |
-| `otus.kmp-library` | Meta's modules without UI | iOS and Android targets, SDKs, JVM 11, warnings as errors, explicit API, the package `com.otusfoss.core.<module>` |
-| `otus.kmp-compose-library` | Meta's Compose modules | the same, with Compose and Android resources |
+| `otus.quality` | every root project | Spotless, detekt with Core's `config/detekt.yml`, the architecture check and tool tests, Ruff, `formatAll`, `qualityCheck`, Kover, test sharding |
+| `otus.kmp-library` | Core's modules without UI | iOS and Android targets, SDKs, JVM 11, warnings as errors, explicit API, the package `com.otusfoss.core.<module>` |
+| `otus.kmp-compose-library` | Core's Compose modules | the same, with Compose and Android resources |
 | `otus.kmp-app` | an app's `shared` module | the same targets and SDKs, Compose, and the static `Shared` iOS framework |
 | `otus.android-app` | an app's `androidApp` module | namespace and application id `com.otusfoss.core.<app>`, SDKs, JVM 11, lint, warnings as errors |
 | `otus.screenshots` | modules with Roborazzi tests | the baseline folder as a test input, and `-Proborazzi.record` |
@@ -70,7 +70,7 @@ jobs, and tasks such as Mail's `pushBridgeTest`. Every module's `check` depends 
 `qualityCheck`, so CI jobs other than the quality job pass `-x qualityCheck` where they run
 `check`.
 
-`architectureTest` runs the Python tests in the repository's own `tools/tests`, with Meta's
+`architectureTest` runs the Python tests in the repository's own `tools/tests`, with Core's
 `tools` on `PYTHONPATH`; a repository without such tests, such as Calendar, has no
 `architectureTest`.
 
@@ -88,7 +88,7 @@ directories.
 
 ## Shared tools and configuration
 
-Every repository runs the tools in Meta's `tools/` from its otus-meta checkout, so a rule changes
+Every repository runs the tools in Core's `tools/` from its core checkout, so a rule changes
 in one place. Their tests live in `tools/tests` here.
 
 | Tool | Purpose |
@@ -97,11 +97,11 @@ in one place. Their tests live in `tools/tests` here.
 | `check_commit_message.py` | the `commit-msg` hook of every repository |
 | `coverage_report.py` | the coverage summary |
 | `launch_colors.py` | writes an app's launch-window colors from the theme |
-| `brand_drawables.py` | Meta's brand drawables |
+| `brand_drawables.py` | Core's brand drawables |
 
 One copy of `config/detekt.yml` serves all three repositories. `.editorconfig` and `ruff.toml`
 must sit at each repository's root for editors and Ruff to find them, so the apps keep copies,
-and the architecture check fails when a copy differs from Meta's.
+and the architecture check fails when a copy differs from Core's.
 
 ## Architecture checks
 
@@ -116,22 +116,22 @@ layers = ["app", "core", "feature"]
 A `library` repository's modules are the ones its settings file includes; their rules follow
 [the architecture guide](architecture.md). An `app` follows its own `docs/architecture.md`: its
 shared common code lives in the listed layers, features never import each other, and every
-visual element, component, token, and drawable comes from Meta. Both kinds share these rules:
+visual element, component, token, and drawable comes from Core. Both kinds share these rules:
 
 - package names match the source path and the namespace, and no wildcard imports;
 - no inline suppressions, in Kotlin, Swift, or Android XML, such as `@Suppress`, `@get:Suppress`,
   `@SuppressLint`, or `tools:ignore`;
-- no literal colors outside Meta's theme, also through an import alias, a qualified name, or
+- no literal colors outside Core's theme, also through an import alias, a qualified name, or
   `Color.hsv`;
 - animations take their timing from `Motion`: no spring or new curve, and no common Compose call,
-  such as `animateFloatAsState` or a one-argument `tween`, left on its default spring. Meta's components may build a `tween` with a named easing and a duration
+  such as `animateFloatAsState` or a one-argument `tween`, left on its default spring. Core's components may build a `tween` with a named easing and a duration
   from `Motion`; apps use `motionTween` or `Motion.tween` only;
 - the file-length limits below;
 - no repository secret reaches a Gradle step or a shared workflow `env`.
 
 An app also fails when `androidApp/src/main/res/values/colors.xml` differs from what
 `launch_colors.py` writes from the Otus theme, so the launch window always matches the first
-Compose frame. Run `python3 ../otus-meta/tools/launch_colors.py` from the app's root after a
+Compose frame. Run `python3 ../core/tools/launch_colors.py` from the app's root after a
 theme change.
 
 The checker inspects source text, not the Kotlin type graph, so it cannot prove transitive
@@ -176,17 +176,17 @@ opens or a draft is marked ready; see [hosting and CI](hosting.md). The reposito
 require checks on their GitHub plan, so CI reports results but cannot block a merge. See
 [decision 0013](decisions/0013-local-quality-gate.md).
 
-In Meta, the `check` job runs `checkAll` as three parallel jobs: `qualityCheck`,
+In Core, the `check` job runs `checkAll` as three parallel jobs: `qualityCheck`,
 `checkDesignSystem`, and `checkLibraries`. A fourth part, outside `checkAll`, compiles every
 module's `iosMain` on Linux with `compileIosMainKotlinMetadata`. The `apps` job compiles Mail's and
 Calendar's Android code against the pull request, at the app branch with the same name or at the
 app's `main`. The `ios` job runs every module's iOS simulator tests on macOS.
-Meta builds no publications; see [decision 0020](decisions/0020-no-library-publishing.md).
+Core builds no publications; see [decision 0020](decisions/0020-no-library-publishing.md).
 
 ## Commit messages
 
 The versioned `commit-msg` hook runs `tools/check_commit_message.py`; the apps' hooks run the copy
-in their otus-meta checkout. It rejects invalid title syntax, missing blank separators, and bodies
+in their core checkout. It rejects invalid title syntax, missing blank separators, and bodies
 outside the 1–8 bullet limit. Optional footers follow a blank line after the bullets. Footers
 begin with a token such as `Refs: #123`, `Closes #123`, or `BREAKING CHANGE: ...`; multiline footer
 text is allowed. Wrapped bullet lines start with at least two spaces. The checker ignores editor
@@ -259,7 +259,7 @@ Limits:
 - A composable whose name the scanner cannot find in the bytecode is reported as not found
   rather than as unrendered.
 
-Measured in Meta on 2026-11-02 on `main` at `19f9973`:
+Measured in Core on 2026-11-02 on `main` at `19f9973`:
 
 | Module | Line | Branch |
 | --- | --- | --- |

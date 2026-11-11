@@ -1,4 +1,4 @@
-"""Source-layout and dependency rules for Meta's library modules; see docs/architecture.md."""
+"""Source-layout and dependency rules for Core's library modules; see docs/architecture.md."""
 
 import re
 from pathlib import Path

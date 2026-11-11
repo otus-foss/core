@@ -10,10 +10,10 @@ that the Otus review instructions are missing before claiming a complete review.
 ## Inputs
 
 ```text
-PR_URLS: one or more PR URLs in otus-foss/otus-meta or otus-foss/otus-mail
+PR_URLS: one or more PR URLs in otus-foss/core or otus-foss/mail
 SCOPE: meta | mail | both
 VALIDATION: full | targeted | static
-REPO_PATHS: optional explicit paths for Meta and Mail
+REPO_PATHS: optional explicit paths for Core and Mail
 REPORT_DIR: optional directory outside the repositories
 ```
 
@@ -36,9 +36,9 @@ ask for correction rather than silently skipping a requested PR. Calendar is alw
    the assumed merge order and separately assess the combined result. A dependency on an earlier
    layer is valid only when the proposed base/order makes it available. Check whether the final
    result still works against the intended target branch.
-5. For paired Meta/Mail PRs, identify the exact source combinations and the intended release or
+5. For paired Core/Mail PRs, identify the exact source combinations and the intended release or
    source-consumption path. Compare API signatures, defaults, resources, models, and behavior
-   across both sides. Read relevant consumer code even for a Meta-only PR, but report findings
+   across both sides. Read relevant consumer code even for a Core-only PR, but report findings
    only within the selected scope. If the consumer is unavailable, record the compatibility gap.
 6. If the PR already merged, distinguish a review of its proposed diff from the actual landed
    result. Include merge conflict resolutions and identify defects that still exist at the
@@ -79,8 +79,8 @@ Missing roadmap work is not a regression unless the PR promises or depends on it
 ## Validate and finish
 
 - Run validation according to the shared guide and selected mode at the frozen revisions. Mail
-  builds against Meta's source: the Meta branch with the PR's branch name, else `main`.
-- Map CI results to the tested head or synthetic merge SHA and effective Meta SHA. Check whether
+  builds against Core's source: the Core branch with the PR's branch name, else `main`.
+- Map CI results to the tested head or synthetic merge SHA and effective Core SHA. Check whether
   later commits arrived after the one-time CI run. Report disabled/missing platform checks.
 - Re-read the diff and candidate findings after validation. Recheck PR heads and bases. If they
   moved, report the frozen revisions and the unreviewed changes; do not attach a verdict to the

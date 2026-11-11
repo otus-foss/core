@@ -1,9 +1,9 @@
 """Fail on source-layout, dependency-policy, and shared-configuration violations.
 
-Every Otus repository runs this copy from its otus-meta checkout, from its own root. The
+Every Otus repository runs this copy from its core checkout, from its own root. The
 repository's config/checks.toml says what it is:
 
-    namespace = "com.otusfoss.mail"     # the app's package root; Meta uses "com.otusfoss.core"
+    namespace = "com.otusfoss.mail"     # the app's package root; Core uses "com.otusfoss.core"
     kind = "app"                    # "app" or "library"
     layers = ["app", "core", "feature"]   # an app's top-level packages in shared/commonMain
 """
@@ -18,7 +18,7 @@ from library_rules import library_violations
 from shared_files import shared_file_violations
 from workflow_secrets import workflow_violations
 
-META = Path(__file__).resolve().parents[1]
+CORE = Path(__file__).resolve().parents[1]
 
 
 def library_modules(root: Path) -> list[str]:
@@ -39,7 +39,7 @@ def repository_violations(root: Path) -> list[str]:
         layers = frozenset(config["layers"])
         failures = app_violations(root, config["namespace"], layers)
         failures += launch_color_violations(root)
-        failures += shared_file_violations(root, META)
+        failures += shared_file_violations(root, CORE)
     return failures + workflow_violations(root)
 
 

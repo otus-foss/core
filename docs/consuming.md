@@ -1,35 +1,35 @@
-# Using Meta from an app
+# Using Core from an app
 
-Mail and Calendar build Meta from source. Each app includes an otus-meta checkout as a Gradle
-composite build, so `com.otusfoss.core:<module>` resolves to the matching Meta project, and each app's
+Mail and Calendar build Core from source. Each app includes an core checkout as a Gradle
+composite build, so `com.otusfoss.core:<module>` resolves to the matching Core project, and each app's
 build takes its convention plugins, version catalog, tools, and detekt configuration from the
-same checkout. No app downloads Meta from GitHub Packages or pins a Meta version. See
+same checkout. No app downloads Core from GitHub Packages or pins a Core version. See
 [decision 0005](decisions/0005-shared-library-repository.md) for the 2026-11-06 amendment.
 
 ## The checkout
 
-By default an app expects Meta next to it:
+By default an app expects Core next to it:
 
 ```text
-otus-meta/
-otus-mail/
-otus-calendar/
+core/
+mail/
+calendar/
 ```
 
-The `otus.meta.path` Gradle property names another checkout, such as a worktree. It resolves from
-the app's root, so `-Potus.meta.path=../meta-worktree` works for one build and
-`otus.meta.path=/path/to/otus-meta` in `~/.gradle/gradle.properties` works for every build. Without
+The `otus.core.path` Gradle property names another checkout, such as a worktree. It resolves from
+the app's root, so `-Potus.core.path=../core-worktree` works for one build and
+`otus.core.path=/path/to/core` in `~/.gradle/gradle.properties` works for every build. Without
 a checkout at that path, the app's build stops at once and says where it looked. The app's
-`commit-msg` hook finds Meta the same way, through `ORG_GRADLE_PROJECT_otus.meta.path`,
-`~/.gradle/gradle.properties`, the app's `gradle.properties`, or `../otus-meta`.
+`commit-msg` hook finds Core the same way, through `ORG_GRADLE_PROJECT_otus.core.path`,
+`~/.gradle/gradle.properties`, the app's `gradle.properties`, or `../core`.
 
 ## What an app's settings file does
 
 ```kotlin
 pluginManagement {
-    val otusMeta = file(providers.gradleProperty("otus.meta.path").getOrElse("../otus-meta"))
+    val otusCore = file(providers.gradleProperty("otus.core.path").getOrElse("../core"))
     repositories { /* google(), mavenCentral(), gradlePluginPortal() */ }
-    includeBuild(otusMeta.resolve("build-logic").path)
+    includeBuild(otusCore.resolve("build-logic").path)
 }
 
 plugins {
@@ -45,34 +45,34 @@ dependencyResolutionManagement {
 
 `pluginManagement` runs before any plugin, so it reads the path itself to find the convention
 plugins. The `otus.settings` plugin then reads it again with the same rule, includes the checkout,
-and loads its catalog as `libs`. The included build is named `otus-meta` whatever its directory is
-called, so its task paths are always `:otus-meta:<module>:<task>`, and the convention plugins find
+and loads its catalog as `libs`. The included build is named `core` whatever its directory is
+called, so its task paths are always `:core:<module>:<task>`, and the convention plugins find
 the checkout by that name.
 
-- `libs` is Meta's `gradle/libs.versions.toml`, the suite catalog. It holds every version that
-  more than one repository uses, and version-free `otus-<module>` entries for Meta's modules,
+- `libs` is Core's `gradle/libs.versions.toml`, the suite catalog. It holds every version that
+  more than one repository uses, and version-free `otus-<module>` entries for Core's modules,
   such as `api(libs.otus.jmap)`.
 - `appLibs` is the app's own `gradle/app.versions.toml`, with only what no other repository uses,
   such as SQLDelight in Mail. Calendar has none, so it has no `appLibs`.
 - The convention plugins are described in [the quality guide](quality.md#build-logic).
 
-## Changing Meta and an app together
+## Changing Core and an app together
 
-Give the Meta branch and the app branch the same name. The app's CI checks out otus-meta beside
-the app and switches to the branch with the app's branch name when one exists, or stays on Meta's
-`main`. Every job does this before it runs a Meta action, so the gate, the build, and the
-pull-request facts all use the Meta that lands with the change, and an app pull request runs
-before its Meta partner merges. Meta's `quality` workflow does the same the other way round: its
-`apps` job compiles Mail and Calendar at the branch with Meta's branch name, or at their `main`,
-against the Meta pull request.
+Give the Core branch and the app branch the same name. The app's CI checks out core beside
+the app and switches to the branch with the app's branch name when one exists, or stays on Core's
+`main`. Every job does this before it runs a Core action, so the gate, the build, and the
+pull-request facts all use the Core that lands with the change, and an app pull request runs
+before its Core partner merges. Core's `quality` workflow does the same the other way round: its
+`apps` job compiles Mail and Calendar at the branch with Core's branch name, or at their `main`,
+against the Core pull request.
 
-Mail and Calendar label such a pull request `needs meta`. Merge the Meta pull request first, then
-the app's, so the app's `main` always builds against Meta's `main`.
+Mail and Calendar label such a pull request `needs core`. Merge the Core pull request first, then
+the app's, so the app's `main` always builds against Core's `main`.
 
 ## iOS
 
 The app's `shared` framework links the library klibs. The Xcode project does not change and no
-Swift package is involved. Its Kotlin build phase runs Gradle, which finds Meta the same way. Add
+Swift package is involved. Its Kotlin build phase runs Gradle, which finds Core the same way. Add
 `export(libs.otus.<module>)` to the framework configuration only when Swift code must call
 library types directly.
 

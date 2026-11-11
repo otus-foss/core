@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 
 // An app's Android host. Its namespace and application id come from the root project's name, so
-// otus-mail is com.otusfoss.mail.
+// mail is com.otusfoss.mail.
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.plugin.compose")

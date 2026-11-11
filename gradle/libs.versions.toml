@@ -58,8 +58,8 @@ navigation-event-compose = { module = "org.jetbrains.androidx.navigationevent:na
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 detekt-cli = { module = "io.gitlab.arturbosch.detekt:detekt-cli", version.ref = "detekt" }
 
-# Meta's modules as the apps see them. The apps build Meta from source, so Gradle substitutes each
-# with the matching project of the included otus-meta build; Meta itself uses project accessors.
+# Core's modules as the apps see them. The apps build Core from source, so Gradle substitutes each
+# with the matching project of the included core build; Core itself uses project accessors.
 otus-json-types = { module = "com.otusfoss.core:json-types" }
 otus-storage = { module = "com.otusfoss.core:storage" }
 otus-jmap = { module = "com.otusfoss.core:jmap" }

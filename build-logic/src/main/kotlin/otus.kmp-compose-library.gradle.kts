@@ -1,4 +1,4 @@
-// A Meta library module with Compose UI or Compose resources; see OtusLibrary.kt.
+// A Core library module with Compose UI or Compose resources; see OtusLibrary.kt.
 plugins {
     id("org.jetbrains.kotlin.multiplatform")
     id("com.android.kotlin.multiplatform.library")

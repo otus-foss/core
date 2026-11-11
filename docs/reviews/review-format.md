@@ -71,7 +71,7 @@ sequenceDiagram
 
 **Estimated review effort:** <1 to 5> (<Trivial | Simple | Moderate | Complex | Critical>) | ~<n> minutes
 **Change type:** <bug fix | feature | refactor | docs | build>
-**Partner PR:** <otus-foss/otus-mail#123, or "none">
+**Partner PR:** <otus-foss/mail#123, or "none">
 **Possibly related PRs:** <links with one line each, or leave out>
 
 </details>
@@ -85,8 +85,8 @@ sequenceDiagram
 | Description | ❌ | <which template headings are missing or out of order> |
 | Linked issue | ✅ | <issue link, and whether the PR does what it asks> |
 | Out of scope | ✅ | <changes the title and description do not mention> |
-| Changelog | ✅ | <Meta only: public API or behavior changes listed under "Unreleased"> |
-| Meta partner | ❔ | <Mail only: the Meta branch it builds against has the API this PR uses, and merges first> |
+| Changelog | ✅ | <Core only: public API or behavior changes listed under "Unreleased"> |
+| Core partner | ❔ | <Mail only: the Core branch it builds against has the API this PR uses, and merges first> |
 
 </details>
 
@@ -114,7 +114,7 @@ sequenceDiagram
 <summary><strong>Review info</strong></summary>
 
 **Model:** <actual model id>, <lenses run>
-**Instructions:** otus-foss/otus-meta@<instruction sha7>
+**Instructions:** otus-foss/core@<instruction sha7>
 **Commits:** `<base sha7>`...`<head sha7>`, <n> commits
 **Files processed:** <n> of <n>; <skipped files and why>
 **Checks:** <each command and its result, or why it could not run>

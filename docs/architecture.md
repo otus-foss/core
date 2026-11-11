@@ -40,12 +40,12 @@ sets. Keep this build structure and organize responsibilities beneath the module
 The first modules move existing code. `jmap` moved in version 0.1.0; `designsystem`, `dateformat`,
 and `avatar` moved from Mail in 0.2.0. Version 0.3.0 added `accounts` and `settings`,
 plus the historical date-range picker and avatar-stack pill in `designsystem`. Mail consumes every
-module. Calendar consumes only `designsystem` so far. Both apps build Meta from source; see
+module. Calendar consumes only `designsystem` so far. Both apps build Core from source; see
 [consuming](consuming.md).
 
 | Order | Module | Source | Notes |
 | --- | --- | --- | --- |
-| 1 | `jmap` | `otus-mail/jmap` | Moved in 0.1.0. See [JMAP](jmap.md). |
+| 1 | `jmap` | `mail/jmap` | Moved in 0.1.0. See [JMAP](jmap.md). |
 | 2 | `designsystem` | `designsystem/` in both apps | Moved from Mail in 0.2.0. See [design system](designsystem.md). |
 | 3 | `dateformat` | `core/dateformat` in both apps | Moved from Mail in 0.2.0. See [date formatting](dateformat.md). |
 | 4 | `avatar` | `core/avatar` in both apps | Moved from Mail in 0.2.0. See [avatars](avatar.md). |
@@ -112,7 +112,7 @@ serves all three repositories.
   Gradle-entry-point, portable-import, and commit-message rules that both apps already follow.
 - `build-logic/`, `tools/`, and `config/` hold the convention plugins, checkers, and detekt
   configuration every repository runs; see [the quality guide](quality.md#build-logic).
-- `.github/actions/` holds the CI steps the apps use from their otus-meta checkout; see
+- `.github/actions/` holds the CI steps the apps use from their core checkout; see
   [hosting and CI](hosting.md#shared-actions).
 
 ## Shared feature modules

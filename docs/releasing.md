@@ -3,8 +3,8 @@
 ## Versions
 
 All modules share one version and are released together from one tag. The apps do not consume
-releases: they build Meta's `main` from source, see [consuming](consuming.md), so a version number
-protects no caller. A release only names a point in Meta's history that the changelog describes;
+releases: they build Core's `main` from source, see [consuming](consuming.md), so a version number
+protects no caller. A release only names a point in Core's history that the changelog describes;
 raise the minor number for each one.
 
 ## Changelog
@@ -16,7 +16,7 @@ the apps change, which their partner branches do in the same landing. A release 
 
 ## Tags
 
-Meta builds no packages; see [decision 0020](decisions/0020-no-library-publishing.md). A release sets
+Core builds no packages; see [decision 0020](decisions/0020-no-library-publishing.md). A release sets
 `version` in `gradle.properties`, renames `Unreleased` in the changelog, and tags that commit on
 `main` as `v<version>`. Run `./gradlew checkAll` on that commit first; no
 hook runs it for a tag.
@@ -27,7 +27,7 @@ Record unrun checks when tagging.
 
 ## Compatibility checks
 
-Both apps build against Meta's source, so a breaking change lands with the matching app changes.
-Open them on branches with the same name. Meta's `quality` workflow compiles each app at that
-branch, or at its `main`, against the Meta pull request, so a change that breaks an app fails
+Both apps build against Core's source, so a breaking change lands with the matching app changes.
+Open them on branches with the same name. Core's `quality` workflow compiles each app at that
+branch, or at its `main`, against the Core pull request, so a change that breaks an app fails
 there first; see [consuming.md](consuming.md).

@@ -1,6 +1,6 @@
 // Screenshot tests compare against the PNGs in the screenshots folder beside the tests:
 // src/test/screenshots in an app, src/androidHostTest/screenshots in a library. Pass
-// -Proborazzi.record to write new ones instead; see Meta's docs/designsystem.md#screenshot-tests.
+// -Proborazzi.record to write new ones instead; see Core's docs/designsystem.md#screenshot-tests.
 // Decided when tasks are configured, so the order of the plugins block does not matter.
 val screenshots =
     provider {
