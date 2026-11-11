@@ -124,4 +124,14 @@ class ToastHostTest {
         compose.mainClock.advanceTimeBy(4_000)
         assertTrue(state.entries.isEmpty())
     }
+
+    @Test
+    fun aStickyToastStaysWithoutAskingForFrames() {
+        state.show(ToastMessage("Update available", UiAction("View") {}, sticky = true))
+        showHost()
+        // A timer loop for a toast that never times out would keep Compose busy, and this wait would fail.
+        compose.mainClock.autoAdvance = true
+        compose.waitForIdle()
+        compose.onNodeWithText("Update available").assertExists()
+    }
 }

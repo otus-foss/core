@@ -248,14 +248,15 @@ private fun Modifier.liveToast(
     }
 
 /**
- * Advances every timer once per frame while a toast is on screen. Screen reader users get the
- * longer time Android recommends for content with controls.
+ * Advances every timer once per frame while a toast that can time out is on screen; sticky toasts
+ * alone ask for no frames. Screen reader users get the longer time Android recommends for content
+ * with controls.
  */
 @Composable
 private fun RunTimers(state: ToastState) {
     val accessibility by rememberUpdatedState(LocalAccessibilityManager.current)
     LaunchedEffect(state) {
-        snapshotFlow { state.entries.any { !it.leaving } }.collectLatest { active ->
+        snapshotFlow { state.entries.any { !it.leaving && !it.message.sticky } }.collectLatest { active ->
             if (!active) return@collectLatest
             var last = withFrameMillis { it }
             while (true) {

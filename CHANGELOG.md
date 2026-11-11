@@ -7,7 +7,8 @@
   imports, and their own packages move to `com.otusfoss.mail` and `com.otusfoss.calendar`.
 
 - Design system: a sticky toast no longer shows the timer ring beside its action, because it has
-  no timer to run out. `Toast` takes a nullable `remaining`, and null draws no ring.
+  no timer to run out. `Toast` takes a nullable `remaining`, and null draws no ring. `ToastHost`
+  no longer asks for a frame on every frame while only sticky toasts are on screen.
 - Design system: a swipe between pages can show how far it is from turning. `TurnProgress` holds
   the page a drag heads to and its fraction of the turn distance. `TurningPositionStrip` keeps
   still, swells that page's dot, and shows the page once letting go would turn to it;
