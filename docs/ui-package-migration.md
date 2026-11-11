@@ -77,13 +77,13 @@ names under `designsystem/src/androidHostTest/screenshots`; verify them without 
 
 ## Coordinating the repositories
 
-Meta updates `accounts` and `settings` in the same change as the design system. Mail adopts the
+Core updates `accounts` and `settings` in the same change as the design system. Mail adopts the
 new imports on a branch with the same name, which its quality workflow builds against the
-matching Meta branch.
+matching Core branch.
 
-Mail's nightly builds Mail main against Meta main. Merge the Meta change and Mail's import
+Mail's nightly builds Mail main against Core main. Merge the Core change and Mail's import
 update one after the other, away from the nightly's 00:00 UTC run, so no nightly pairs migrated
-Meta with old imports.
+Core with old imports.
 
 ## Validation
 
@@ -92,8 +92,8 @@ existing screenshots, and `checkAll`. Compile both iOS library targets. The arch
 rejects old production UI packages and enforces the new nested boundaries.
 
 Validate Mail and Calendar against the candidate through source substitution and through locally
-published artifacts. Use `otus.meta.repository` for the artifact check so a machine-wide
-`otus.meta.path` cannot silently substitute source. The apps' candidate version pins must match
+published artifacts. Use `otus.core.repository` for the artifact check so a machine-wide
+`otus.core.path` cannot silently substitute source. The apps' candidate version pins must match
 the candidate repository. Run Gradle sequentially through the shared-machine build queue.
 
 Linux compilation does not verify Xcode linking or iOS resource loading. Run those checks on
@@ -102,19 +102,19 @@ passing.
 
 ### Candidate validation on 2026-10-27
 
-Meta, Mail, and Calendar passed `checkAll` with the migrated Meta source. Both apps and Meta's
+Core, Mail, and Calendar passed `checkAll` with the migrated Core source. Both apps and Core's
 design system compiled their `iosArm64` and `iosSimulatorArm64` Kotlin libraries. Existing
 screenshot baselines remain unchanged.
 
 Local publication failed at `:settings:compileIosMainKotlinMetadata` because Compose dependencies
-produce duplicate Kotlin library names. The same failure occurs on unchanged Meta `b1a860f`,
+produce duplicate Kotlin library names. The same failure occurs on unchanged Core `b1a860f`,
 before the package migration. The candidate repository is incomplete, so packaged-artifact
 consumer checks remain blocked. Resolve that publication failure and rerun the artifact checks
 before releasing 0.10.0. Xcode linking, simulator tests, and iOS resource loading remain unrun.
 
 ### Theme and JSContact follow-up on 2026-10-28
 
-Meta passed `checkAll`, including 424 design-system tests and 165 JSContact tests. Both libraries
+Core passed `checkAll`, including 424 design-system tests and 165 JSContact tests. Both libraries
 compiled their `iosArm64` and `iosSimulatorArm64` targets. After the final checker correction,
 `qualityCheck` passed all 94 tooling tests, including 61 architecture tests.
 

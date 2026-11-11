@@ -9,16 +9,16 @@ GitHub hosts all three repositories. Develop, open pull requests, and file issue
 
 - [Otus Mail](https://github.com/otus-foss/otus-mail)
 - [Otus Calendar](https://github.com/otus-foss/otus-calendar)
-- [Otus Meta](https://github.com/otus-foss/otus-meta)
+- [Otus Core](https://github.com/otus-foss/otus-core)
 
-Checkouts use `origin` for GitHub. Clone the apps next to Meta, because they build it from
+Checkouts use `origin` for GitHub. Clone the apps next to Core, because they build it from
 source; see [consuming](consuming.md):
 
 ```sh
-git clone git@github.com:otus-foss/otus-meta.git
+git clone git@github.com:otus-foss/otus-core.git
 git clone git@github.com:otus-foss/otus-mail.git
 git clone git@github.com:otus-foss/otus-calendar.git
-(cd otus-meta && git config --local core.hooksPath .githooks)
+(cd otus-core && git config --local core.hooksPath .githooks)
 (cd otus-mail && git config --local core.hooksPath .githooks)
 (cd otus-calendar && git config --local core.hooksPath .githooks)
 ```
@@ -37,8 +37,8 @@ Leave it unset to save macOS minutes.
   [coverage](quality.md#coverage).
 - `pull request` labels each pull request by size (`size:XS` to `size:XL`, tests left out),
   comments the screenshots it adds or changes beside the old ones, and warns when UI code changes
-  without a screenshot. In the apps it also adds a `needs meta` label when otus-meta has a branch
-  with the same name, since that pair has to land together, Meta first.
+  without a screenshot. In the apps it also adds a `needs core` label when otus-core has a branch
+  with the same name, since that pair has to land together, Core first.
 - `actionlint` lints workflows in pull requests that change `.github/`.
 - `issue link` warns when a pull request closes no issue, and `issue report` lists each Monday the
   open issues that merged pull requests name, in an issue called "Open issues with merged work".
@@ -48,7 +48,7 @@ Leave it unset to save macOS minutes.
 
 Dependabot opens one grouped pull request a week each for GitHub Actions, Gradle, and the pinned
 Python tools. The apps' Gradle updates cover only their `gradle/app.versions.toml`; the shared
-versions update here, in Meta's catalog.
+versions update here, in Core's catalog.
 
 ## When workflows run
 
@@ -64,10 +64,10 @@ that change only Android code skip the macOS `ios` job.
 
 ## Shared actions
 
-Meta's `.github/actions` holds the steps every repository repeats. The apps check out otus-meta
-and use the actions from that checkout with `uses: ./otus-meta/.github/actions/<name>`, so each
-job runs the actions of the Meta branch it builds with; Meta uses `./.github/actions/<name>`. Only
-the apps' `land` workflow calls Meta directly, `lander.yml` from `main`, which needs Meta's Actions
+Core's `.github/actions` holds the steps every repository repeats. The apps check out otus-core
+and use the actions from that checkout with `uses: ./otus-core/.github/actions/<name>`, so each
+job runs the actions of the Core branch it builds with; Core uses `./.github/actions/<name>`. Only
+the apps' `land` workflow calls Core directly, `lander.yml` from `main`, which needs Core's Actions
 access setting; see [landing](landing.md#setup).
 
 - `ready-gate` says whether the run should check anything.
@@ -76,19 +76,19 @@ access setting; see [landing](landing.md#setup).
 - `size-label` labels a pull request by size.
 - `screenshot-comment` comments the screenshots a pull request adds or changes.
 
-Every app job checks otus-meta out with its full history and first switches it to the branch with
+Every app job checks otus-core out with its full history and first switches it to the branch with
 the app's branch name when there is one, so every action it then runs comes from that branch. An
 action change is therefore tested by its partner app pull request, and an app pull request runs
-before its Meta partner merges.
+before its Core partner merges.
 
-An app's build jobs check the app out to `otus-<app>` and Meta to `otus-meta`, side by side as on
-a development machine, so Gradle finds Meta at `../otus-meta` and Spotless never sees Meta's
+An app's build jobs check the app out to `otus-<app>` and Core to `otus-core`, side by side as on
+a development machine, so Gradle finds Core at `../otus-core` and Spotless never sees Core's
 files. The repositories are public, so the checkouts need no key, and Dependabot's pull requests
-run the same checks. Meta's architecture check fails a workflow that gives a repository
+run the same checks. Core's architecture check fails a workflow that gives a repository
 secret to a Gradle step or shares one through a workflow or job `env`.
 
 ## Packages
 
-Meta publishes no packages; the apps build it from source
+Core publishes no packages; the apps build it from source
 ([decision 0020](decisions/0020-no-library-publishing.md)). GitHub Packages still holds the old
 versions, up to 0.3.0 and from 0.6.0 on, and gets no new ones.

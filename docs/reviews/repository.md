@@ -14,7 +14,7 @@ that the Otus review instructions are missing before claiming a complete review.
 SCOPE: meta | mail | both
 REFS: remote default branch for each selected repository, or explicit refs/SHAs per repository
 VALIDATION: full | targeted | static
-REPO_PATHS: optional explicit paths for Meta and Mail
+REPO_PATHS: optional explicit paths for Core and Mail
 FOCUS: optional areas needing extra depth, without dropping the rest of the requested scope
 REPORT_DIR: optional directory outside the repositories
 ```
@@ -30,7 +30,7 @@ changes are excluded unless the user explicitly asks to review them. Calendar is
    tooling, workflows, resources, and public library APIs at the frozen revisions.
 2. Compare the inventory with the docs. Use source and callers to determine which behavior exists.
    Record documentation drift without treating documented future plans as requirements for today.
-3. For Meta, inspect every existing module. Current starting points are `jmap`, `jscontact`,
+3. For Core, inspect every existing module. Current starting points are `jmap`, `jscontact`,
    `jmap-contacts`, `jmap-push`, `avatar`, `dateformat`, `designsystem`, `accounts`, and `settings`.
    Discover additions or removals rather than treating this list as fixed.
 4. For Mail, inspect app wiring, `core`, every implemented feature, Android integrations, iOS
@@ -48,10 +48,10 @@ Read implementations and tests, not just directory names or architecture-check o
 
 Prioritize these paths, then continue through the remaining inventory:
 
-- Meta's transport, authentication, capability handling, wire serialization, protected login
+- Core's transport, authentication, capability handling, wire serialization, protected login
   storage, and public API compatibility. Check both platform implementations of security-sensitive
   contracts. Inspect contacts round trips, push lifecycle, avatar privacy, and date/locale behavior.
-- Meta's design-system ownership, reusable control behavior, semantics, themes, motion, resources,
+- Core's design-system ownership, reusable control behavior, semantics, themes, motion, resources,
   and accounts/settings interfaces. Trace how Mail supplies state and responds to callbacks.
 - Mail's startup, account lifecycle, cache/sync, inbox/search, folders/rules, read/message actions,
   compose/drafts/sending, attachments, notifications, settings, and updates, where implemented.
@@ -74,17 +74,17 @@ Use history when it explains a contract or suspected defect. It is not necessary
 historical commit. Confirm problems against the frozen current revision. Do not propose entire
 missing products, speculative modules, or broad rewrites as review findings.
 
-## Review Meta and Mail together
+## Review Core and Mail together
 
 For `SCOPE: both`, explicitly inspect the boundary between them:
 
-1. List the Meta artifacts Mail declares and the effective artifacts or source checkout it uses.
+1. List the Core artifacts Mail declares and the effective artifacts or source checkout it uses.
    Compare the catalog, Gradle settings, local overrides, and CI/nightly dependency selection.
-2. Trace representative consumers of every used Meta module. Check source/API compatibility,
+2. Trace representative consumers of every used Core module. Check source/API compatibility,
    behavior/default changes, account ownership, callbacks, resources, and theme/motion contracts.
-3. Distinguish compatibility with the pinned published version from compatibility with Meta's
+3. Distinguish compatibility with the pinned published version from compatibility with Core's
    reviewed source SHA. Test the relevant combination and disclose any unverified one. A
-   build against a same-named Meta branch is a different result from a released-library build.
+   build against a same-named Core branch is a different result from a released-library build.
 4. Check changelog and version policy against the public contract. Verify any claimed package
    availability when access permits; do not infer publication from a tag or version property.
 5. Explain which repository should own each proposed correction and whether the other needs a
@@ -105,7 +105,7 @@ The final report must contain:
 - The shared-guide verdict and confirmed findings in severity order, with exact locations,
   triggers, impact, evidence, correction direction, and a regression check for each.
 - A prioritized correction plan that references finding IDs, names the owning repository, and
-  notes ordering where a Meta change must precede a Mail change. Keep optional improvements
+  notes ordering where a Core change must precede a Mail change. Keep optional improvements
   separate from defects and mandatory-policy violations.
 - The coverage ledger, inspected revisions, effective dependency combinations, validation commands
   and results, documentation conflicts, and explicit unreviewed areas. A repository-wide scope

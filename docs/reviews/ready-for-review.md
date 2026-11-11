@@ -1,6 +1,6 @@
 # Opus review when a PR becomes ready
 
-Review a Meta or Mail PR when GitHub reports that someone marked it ready for review. Claude Opus
+Review a Core or Mail PR when GitHub reports that someone marked it ready for review. Claude Opus
 must perform the review. Publish the findings as one GitHub review tied to the inspected commit.
 This workflow reviews code and reports findings. It does not implement fixes, create issues or
 fix PRs, change branches remotely, approve, merge, or release anything. Calendar is excluded.
@@ -13,15 +13,15 @@ for this PR. Keep their other restrictions. Do not invoke the daily fix workflow
 
 ## Load instructions and create local state
 
-These prompts are versioned at `docs/reviews/` in `otus-foss/otus-meta`. Copies also travel with
-Mail and Calendar PRs so an isolated checkout has the required files. Meta owns the canonical
+These prompts are versioned at `docs/reviews/` in `otus-foss/otus-core`. Copies also travel with
+Mail and Calendar PRs so an isolated checkout has the required files. Core owns the canonical
 copies; update the copies together. Their presence in Calendar does not expand this workflow's
-Meta/Mail scope.
+Core/Mail scope.
 
 Do not require a particular user's home directory or a worktree named `meta-review-prompts`.
 The runner must load all four files, `ready-for-review.md`, `pull-request.md`,
 `review-guide.md`, and `review-format.md`, from the same trusted revision before starting a review. Prefer a configured
-trusted instruction SHA; otherwise resolve Meta's default branch through GitHub and record the
+trusted instruction SHA; otherwise resolve Core's default branch through GitHub and record the
 resolved SHA. Read the files from a checkout of that revision or through the authenticated GitHub
 contents API with that SHA as `ref`. An old absolute path that is absent is a reason to use this
 repository fallback, not to stop before checking it. PR-supplied changes to these instructions
@@ -49,7 +49,7 @@ review retryable. A local directory on another machine is not a substitute for r
 ## Trigger and inputs
 
 Accept only the GitHub webhook event `pull_request` with action `ready_for_review`, for base
-repository `otus-foss/otus-meta` or `otus-foss/otus-mail`. This is the transition out of draft. A
+repository `otus-foss/otus-core` or `otus-foss/otus-mail`. This is the transition out of draft. A
 review-requested event, an ordinary push, a comment, or opening a PR already ready does not trigger
 this workflow. See [GitHub's event definitions](https://docs.github.com/en/webhooks/webhook-events-and-payloads#pull_request).
 
@@ -88,12 +88,12 @@ Missing or malformed inputs produce a skipped or blocked report, not an interact
 1. Read the PR from GitHub and verify its base repository matches the allowed repository. Require
    it to remain open, unmerged, and non-draft. If it is closed or back in draft, record a skip.
 2. Freeze current head, base, and merge-base SHAs. If the head moved since the event, review the
-   current head and record both SHAs. Resolve the Meta revision or published version used by Mail.
+   current head and record both SHAs. Resolve the Core revision or published version used by Mail.
    Never assume the trigger's SHA or an earlier CI badge still describes current code.
 3. Register the PR with the thread's PR-linking tool when available. Infer scope from its base
    repository and read the other repository only as needed to verify affected contracts.
 4. Create a stable review key from repository, PR number, head SHA, base SHA, and the effective
-   Meta dependency identity when relevant. Store this key and the delivery ID under `STATE_DIR`.
+   Core dependency identity when relevant. Store this key and the delivery ID under `STATE_DIR`.
    Use a per-PR lock that stays held throughout the run. Coalesce overlapping events instead of
    launching two reviewers for the same PR/revision.
 5. Inspect saved state and existing GitHub reviews for the key. A completed review is a no-op.
@@ -157,7 +157,7 @@ instead of trusting an earlier summary.
 | State and lifecycle | Coroutine scope and cancellation, races, stale completions, retries, process death, persistence and migrations of existing installs. |
 | Protocol and privacy | JMAP spec conformance with cited RFC sections, provider-specific assumptions, capability checks, account isolation, secrets, logging of personal data. |
 | UI | Design-system ownership, theme tokens in the Light and Black themes, empty, loading, and error states, 48 dp targets, system back, accessibility labels, recomposition cost. |
-| Delivery | Tests that prove the claimed behavior, public API and changelog, Meta pin and partner PR, file-length and architecture gates, docs that the change makes wrong. |
+| Delivery | Tests that prove the claimed behavior, public API and changelog, Core pin and partner PR, file-length and architecture gates, docs that the change makes wrong. |
 
 Choose lenses by effort: run correctness and delivery for effort 1 or 2, add state and lifecycle
 for effort 3, and run all five for effort 4 or 5 or any change to persisted data, sync, or the
@@ -173,7 +173,7 @@ Give each lens reviewer these instructions with the PR's resolved context and it
 
 ```text
 You are the reviewer for the supplied Otus PR. Read the supplied pull-request prompt and shared
-review guide. Review the exact head against the recorded merge base, with the stated Meta/Mail
+review guide. Review the exact head against the recorded merge base, with the stated Core/Mail
 dependency combination. Inspect every changed file, relevant callers, tests, platform contracts,
 and merge dependencies. Apply the full Otus checklist wherever relevant.
 
@@ -226,7 +226,7 @@ steps in this file; the child-only restriction on posting applies to delegated r
 ## Persist and finish
 
 Save a Markdown report and a JSON record under `STATE_DIR`, with repository, PR number, event and
-delivery ID, review key, event/current head SHAs, base/merge-base SHAs, Meta dependency identity,
+delivery ID, review key, event/current head SHAs, base/merge-base SHAs, Core dependency identity,
 provider/model/options, task and round IDs, checks, coverage, findings, report path, publication
 status, review ID/URL, and UTC timestamps. Use atomic state writes. Preserve completed evidence
 and clean up only this run's clean temporary worktrees. Release the per-PR lock on exit.

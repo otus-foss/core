@@ -113,11 +113,11 @@ class CoverageReportTests(unittest.TestCase):
         self.assertIn("| shared | 3 | 7 | 42.9% |", text)
 
     def test_layers_fall_back_to_the_module(self):
-        meta = "designsystem/src/commonMain/kotlin/com/otusfoss/core/designsystem"
+        core = "designsystem/src/commonMain/kotlin/com/otusfoss/core/designsystem"
         self.assertEqual(
-            "designsystem · elements", coverage_report.layer(f"{meta}/shared/rows/elements/Row.kt")
+            "designsystem · elements", coverage_report.layer(f"{core}/shared/rows/elements/Row.kt")
         )
-        self.assertEqual("designsystem", coverage_report.layer(f"{meta}/theme/OtusColors.kt"))
+        self.assertEqual("designsystem", coverage_report.layer(f"{core}/theme/OtusColors.kt"))
         settings = (
             "settings/src/commonMain/kotlin/com/otusfoss/core/settings/presentation/screens/"
             "Screen.kt"

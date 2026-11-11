@@ -26,7 +26,7 @@ from source_code import (
 
 SOURCE_FOLDERS = ("shared/src", "androidApp/src", "iosApp")
 DRAWABLE = re.compile(r"drawable(?:-[\w-]+)?")
-# Material's theme and surfaces skip OtusTheme's tokens; Meta's elements wrap what apps need.
+# Material's theme and surfaces skip OtusTheme's tokens; Core's elements wrap what apps need.
 MATERIAL_DRAWING = (
     "androidx.compose.material.MaterialTheme",
     "androidx.compose.material.Surface",
@@ -58,7 +58,7 @@ def violations(path: Path, text: str, base: str, layers: frozenset[str]) -> list
         if uses(code, PLATFORM_APIS):
             errors.append("platform-only API in commonMain")
     if location[:1] == ["designsystem"]:
-        errors.append("visual elements, components, and tokens belong in otus-meta")
+        errors.append("visual elements, components, and tokens belong in otus-core")
     if any(part in CATCH_ALL_PACKAGES for part in location):
         errors.append("use responsibility-specific packages instead of catch-all packages")
     if location[:1] == ["feature"] and (len(location) < 3 or location[2] not in FEATURE_LAYERS):
@@ -83,9 +83,9 @@ def violations(path: Path, text: str, base: str, layers: frozenset[str]) -> list
         if not allowed:
             errors.append("composables belong in app or presentation screens and components")
     if uses(code, MATERIAL_DRAWING):
-        errors.append("draw with otus-meta elements, not Material's theme or surfaces")
+        errors.append("draw with otus-core elements, not Material's theme or surfaces")
     if literal_color(code):
-        errors.append("literal colors belong in otus-meta designsystem/theme")
+        errors.append("literal colors belong in otus-core designsystem/theme")
     return sorted(set(errors))
 
 
@@ -117,9 +117,9 @@ def reference_violations(location: list[str], suffix: str, code: str, base: str)
 
 
 def drawable_violations(root: Path) -> list[str]:
-    """Drawable resources in any source set of the shared or Android module belong in otus-meta."""
+    """Drawable resources in any source set of the shared or Android module belong in otus-core."""
     return [
-        f"{path.relative_to(root)}: visual drawable resources belong in otus-meta/designsystem"
+        f"{path.relative_to(root)}: visual drawable resources belong in otus-core/designsystem"
         for folder in SOURCE_FOLDERS[:2]
         for path in sorted((root / folder).rglob("*"))
         if path.is_file()

@@ -1,7 +1,7 @@
 name: land
 
 # Merges approved pull requests and their partners in the other Otus repositories. The work happens
-# in otus-meta's lander workflow; see its docs/landing.md. GitHub runs these triggers from main.
+# in otus-core's lander workflow; see its docs/landing.md. GitHub runs these triggers from main.
 on:
   pull_request_target:
     types: [labeled, unlabeled, synchronize]

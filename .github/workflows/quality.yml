@@ -71,8 +71,8 @@ jobs:
       - uses: ./.github/actions/setup-build
       - run: ./gradlew ${{ matrix.tasks }} --console=plain
 
-  # Compiles each app against this Meta, at the app branch with this branch's name when there is one,
-  # else its main, so a Meta change that breaks an app shows here before it lands. The apps are
+  # Compiles each app against this Core, at the app branch with this branch's name when there is one,
+  # else its main, so a Core change that breaks an app shows here before it lands. The apps are
   # public, so the checkout needs no key.
   apps:
     needs: changes
@@ -93,7 +93,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          path: otus-meta
+          path: otus-core
           persist-credentials: false
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -109,11 +109,11 @@ jobs:
             git checkout --quiet --detach "origin/$BRANCH"
           fi
           git log --oneline -1
-      - uses: ./otus-meta/.github/actions/setup-build
+      - uses: ./otus-core/.github/actions/setup-build
         with:
           directory: ${{ matrix.app }}
           python: "false"
-      - run: ./gradlew ${{ matrix.tasks }} -Potus.meta.path=../otus-meta --console=plain
+      - run: ./gradlew ${{ matrix.tasks }} -Potus.core.path=../otus-core --console=plain
 
   # Runs only while the repository variable IOS_CI is "on" (Settings > Secrets and variables >
   # Actions > Variables), so macOS minutes stay off until someone turns it back on.

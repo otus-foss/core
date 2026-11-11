@@ -1,15 +1,15 @@
 import kotlinx.kover.gradle.plugin.dsl.KoverProjectExtension
 
 // The quality checks of every Otus repository, applied to its root project. The tools and the
-// detekt configuration come from the otus-meta checkout, so each repository runs the same ones;
-// see Meta's docs/quality.md.
+// detekt configuration come from the otus-core checkout, so each repository runs the same ones;
+// see Core's docs/quality.md.
 plugins {
     id("com.diffplug.spotless")
     id("org.jetbrains.kotlinx.kover")
 }
 
-val tools = otusMetaDir.resolve("tools")
-val detektConfig = otusMetaDir.resolve("config/detekt.yml")
+val tools = otusCoreDir.resolve("tools")
+val detektConfig = otusCoreDir.resolve("config/detekt.yml")
 val ktlint = libs.version("ktlint")
 
 spotless {
@@ -67,7 +67,7 @@ tasks.register<Exec>("architectureCheck") {
     commandLine("python3", tools.resolve("check_architecture.py"))
 }
 
-// The repository's own Python tests, such as Meta's tests of the shared tools.
+// The repository's own Python tests, such as Core's tests of the shared tools.
 val hasToolTests = rootDir.resolve("tools/tests").isDirectory
 if (hasToolTests) {
     tasks.register<Exec>("architectureTest") {

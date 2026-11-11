@@ -31,20 +31,20 @@ Discover and respect the capabilities each account and server provides. Missing 
 
 Aim to reuse account handling, JMAP transport, contact models, and appropriate UI components while preserving independent app repositories and releases. Mail-specific workflows belong in Mail; calendar-specific workflows belong in Calendar.
 
-Shared libraries live in otus-meta as `com.otusfoss.core:<module>` modules. Both apps build them from an
-otus-meta checkout as a composite build and pin no version.
+Shared libraries live in otus-core as `com.otusfoss.core:<module>` modules. Both apps build them from an
+otus-core checkout as a composite build and pin no version.
 Shared runtime account data and credentials still require an explicit platform design;
 library reuse alone does not provide them. See decision 0005.
 
 ## Current state
 
-Both repositories contain Android/iOS scaffolding. Mail now starts with an empty Inbox screen, using the reusable context panel and local search/filter logic over supplied messages. A reusable sidebar navigates between Inbox and Settings. Settings has subpages for JMAP email accounts and appearance & behavior (date format). The sidebar, context panel, pills, and other reusable controls come from otus-meta's
+Both repositories contain Android/iOS scaffolding. Mail now starts with an empty Inbox screen, using the reusable context panel and local search/filter logic over supplied messages. A reusable sidebar navigates between Inbox and Settings. Settings has subpages for JMAP email accounts and appearance & behavior (date format). The sidebar, context panel, pills, and other reusable controls come from otus-core's
 design system. JMAP transport/login storage, dates, and avatars also come from shared libraries.
 Version 0.3.0 adds shared settings/account setup and date-range selection,
 used by Mail's consuming PR. Mail still owns its destinations, filter semantics, and inbox/folder
-flows; Calendar's adoption is deferred. Meta also owns all Mail visual tokens and symbols,
+flows; Calendar's adoption is deferred. Core also owns all Mail visual tokens and symbols,
 plus value-driven message/detail rows and empty-state rendering. New branded elements and
-reusable visual compositions are developed in Meta. Mail connects JMAP accounts over HTTP Basic auth, stores credentials in platform-protected storage, and loads each account's inbox. Folders (JMAP mailboxes) appear in the sidebar, open as pages, and can
+reusable visual compositions are developed in Core. Mail connects JMAP accounts over HTTP Basic auth, stores credentials in platform-protected storage, and loads each account's inbox. Folders (JMAP mailboxes) appear in the sidebar, open as pages, and can
 be created, renamed, nested, and deleted; messages can be moved between them. Rules that file
 arriving mail into folders run on the server as one Sieve script (RFC 9661) where the server
 supports it; see the [Mail folders guide](https://github.com/otus-foss/otus-mail/blob/main/docs/folders.md).
@@ -58,7 +58,7 @@ other actions. Long-pressing rows selects them, and the same bar acts on the sel
 Mail behavior › Action bar chooses each bar's buttons; see the
 [Mail action bar guide](https://github.com/otus-foss/otus-mail/blob/main/docs/action-bar.md).
 Settings pages use flat rows, choice sheets, and confirmation dialogs from
-Meta's design system. Sync and sending are not
+Core's design system. Sync and sending are not
 implemented yet. No sample mail is shipped; populated-list validation uses test-only fixtures. Calendar retains its welcome screen. Full synchronization, calendar workflows, and contact management remain goals. Mail can now look up
 JMAP contact photos for inbox senders; this is a limited read-only lookup, not contact synchronization.
 Both apps expose the same portable avatar service for senders and future attendees. Domain icons
@@ -67,7 +67,7 @@ generated initials always available.
 
 Mail colors are supplied in [mail design foundations](mail-design.md). That palette is the default theme; users can pick Ink, Light, or Black, any accent, and make custom themes (decision 0014). text-1 is the default text color. Detailed interaction designs remain open.
 
-Meta's `dateformat` and `settings` provide date-format choices, locale-aware formatting, and
+Core's `dateformat` and `settings` provide date-format choices, locale-aware formatting, and
 app-private preference storage. Mail uses them for displayed inbox dates and date-filter
 summaries, and its Settings › Appearance page lets users choose the saved date format. Calendar
 has no dates or settings yet and does not depend on them. See the

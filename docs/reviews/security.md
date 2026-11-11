@@ -16,7 +16,7 @@ checks unless they carry a security or data-loss risk.
 SCOPE: meta | mail | both
 REFS: remote default branch for each selected repository, or explicit refs/SHAs per repository
 VALIDATION: full | targeted | static
-REPO_PATHS: optional explicit paths for Meta and Mail
+REPO_PATHS: optional explicit paths for Core and Mail
 FOCUS: optional subset of: security, jmap, races, smells (default: all four)
 AGENTS: optional maximum number of parallel review agents (default: 3)
 REPORT_DIR: optional directory outside the repositories
@@ -41,7 +41,7 @@ never the user's checkout, so uncommitted work stays out of scope. Calendar is a
    - Website-icon hosts, icon proxies, and linked contact-photo hosts, which learn the device IP,
      the requested domain or URL, and when it was requested.
    - The update channel that installs nightly builds.
-3. Read Meta's `docs/jmap.md` security table, `docs/push.md`, `docs/avatar.md`, and the accepted
+3. Read Core's `docs/jmap.md` security table, `docs/push.md`, `docs/avatar.md`, and the accepted
    decisions that set trust rules. Earlier review fixes, such as the blob origin checks from the
    performance and security review, are claims to verify, not settled facts.
 4. Split the work by area when `AGENTS` allows more than one. Give each agent one area below,
@@ -154,7 +154,7 @@ The report follows the shared guide's format, with these additions:
   severity order. Give every finding a stable ID such as `SEC-1`, `JMAP-1`, `RACE-1`, `SMELL-1`.
 - Include the threat map and say which boundaries the audit covered fully, partly, or not at all.
 - For JMAP findings, quote the RFC section number and the requirement level (MUST, SHOULD, MAY).
-- End with a correction plan that names the owning repository and orders Meta changes before the
+- End with a correction plan that names the owning repository and orders Core changes before the
   Mail changes that depend on them.
 
 If `REPORT_DIR` is supplied, save the Markdown report there with a UTC timestamp and scope in its

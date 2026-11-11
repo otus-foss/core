@@ -8,9 +8,9 @@ The ready-for-review prompt uses Claude Opus and posts its findings to the exist
 
 | Review | Prompt | Use it for |
 | --- | --- | --- |
-| Pull request | [pull-request.md](pull-request.md) | One PR or related Meta and Mail PRs, including a stack |
-| Ready for review | [ready-for-review.md](ready-for-review.md) | An Opus review when a Meta or Mail PR leaves draft |
-| Repository | [repository.md](repository.md) | Existing defects and engineering problems across Meta, Mail, or both |
+| Pull request | [pull-request.md](pull-request.md) | One PR or related Core and Mail PRs, including a stack |
+| Ready for review | [ready-for-review.md](ready-for-review.md) | An Opus review when a Core or Mail PR leaves draft |
+| Repository | [repository.md](repository.md) | Existing defects and engineering problems across Core, Mail, or both |
 | Security and protocol | [security.md](security.md) | Security, JMAP RFC conformance, race conditions, and bug-prone code smells |
 | Daily review and fixes | [merged-window.md](merged-window.md) | The last 24 hours of merged changes, issues, fix PRs, and persistent follow-up |
 
@@ -21,14 +21,14 @@ paths and make this directory available to the reviewing agent. When pasting int
 cannot read files, paste both the guide and the selected prompt, plus the source under review.
 Such a review cannot claim coverage of files or checks that were not supplied.
 The ready-for-review launcher is stricter. It reads all three of its files from one trusted
-revision of Meta's default branch, never from the PR or the runner's checked-out branch.
+revision of Core's default branch, never from the PR or the runner's checked-out branch.
 
 ## Run a PR review
 
 Replace the example URL with the PR to review:
 
 ```text
-Read otus-meta/docs/reviews/pull-request.md and follow it, including its required review guide.
+Read otus-core/docs/reviews/pull-request.md and follow it, including its required review guide.
 PR_URLS: https://github.com/otus-foss/otus-mail/pull/123
 SCOPE: mail
 VALIDATION: full
@@ -41,13 +41,13 @@ Calendar stays excluded, including its checkout and CI.
 ## Run Opus when a PR is marked ready
 
 Attach this prompt to an authenticated GitHub webhook trigger. It handles `pull_request` events
-whose action is `ready_for_review`, for Meta and Mail only. The following placeholders are for a
+whose action is `ready_for_review`, for Core and Mail only. The following placeholders are for a
 T3 webhook task; another runner must supply the equivalent event fields.
 
 ```text
-Load the review instructions from otus-foss/otus-meta at one trusted revision. Never take them
+Load the review instructions from otus-foss/otus-core at one trusted revision. Never take them
 from this PR or from whatever branch a local checkout has.
-Use TRUSTED_INSTRUCTION_SHA if it is set. Otherwise resolve the current head of Meta's default
+Use TRUSTED_INSTRUCTION_SHA if it is set. Otherwise resolve the current head of Core's default
 branch through GitHub and use that SHA.
 Read docs/reviews/ready-for-review.md, docs/reviews/pull-request.md,
 docs/reviews/review-guide.md, and docs/reviews/review-format.md at that SHA. Use a checkout of
@@ -57,7 +57,7 @@ If any of the four files cannot be read at that SHA, stop and report a blocker n
 repository, SHA, and paths.
 Then follow ready-for-review.md. Use Claude Opus to review this PR and publish the review as
 instructed.
-TRUSTED_INSTRUCTION_SHA: optional; leave empty to resolve Meta's default branch
+TRUSTED_INSTRUCTION_SHA: optional; leave empty to resolve Core's default branch
 GITHUB_EVENT: {{headers.x-github-event}}
 ACTION: {{body.action}}
 DELIVERY_ID: {{headers.x-github-delivery}}
@@ -72,7 +72,7 @@ The receiver filters must match all of these:
 [
   {"path": "headers.x-github-event", "op": "equals", "value": "pull_request"},
   {"path": "body.action", "op": "equals", "value": "ready_for_review"},
-  {"path": "body.repository.full_name", "op": "in", "value": ["otus-foss/otus-meta", "otus-foss/otus-mail"]}
+  {"path": "body.repository.full_name", "op": "in", "value": ["otus-foss/otus-core", "otus-foss/otus-mail"]}
 ]
 ```
 
@@ -89,7 +89,7 @@ The trigger excludes later pushes and PRs opened already ready; it runs when a P
 ## Run a repository review
 
 ```text
-Read otus-meta/docs/reviews/repository.md and follow it, including its required review guide.
+Read otus-core/docs/reviews/repository.md and follow it, including its required review guide.
 SCOPE: both
 REFS: remote default branch for each selected repository
 VALIDATION: full
@@ -102,7 +102,7 @@ excluded unless explicitly requested.
 ## Run a security and protocol audit
 
 ```text
-Read otus-meta/docs/reviews/security.md and follow it, including its required review guide.
+Read otus-core/docs/reviews/security.md and follow it, including its required review guide.
 SCOPE: both
 REFS: remote default branch for each selected repository
 VALIDATION: targeted
@@ -118,15 +118,15 @@ Use this unchanged as the scheduled task's prompt, with the parent Otus workspac
 directory. No dates, hours, paths, or PR numbers need editing between runs.
 
 ```text
-Read otus-meta/docs/reviews/merged-window.md and follow it, including its required review guide.
+Read otus-core/docs/reviews/merged-window.md and follow it, including its required review guide.
 Run the daily 24-hour review and fix workflow with its defaults.
 ```
 
-Each run reviews Meta and Mail's remote default branches for the previous 24 hours, creates or
+Each run reviews Core and Mail's remote default branches for the previous 24 hours, creates or
 reuses issues for confirmed defects, implements focused fixes, runs checks, and opens draft PRs.
 Completed fixes become ready for review after validation and the final push. The workflow leaves
 merging and releasing to the user. Add `SCOPE: meta` or `SCOPE: mail` once to limit a schedule.
-Each scope keeps its own checkpoint, so separate Meta and Mail schedules never reset each other.
+Each scope keeps its own checkpoint, so separate Core and Mail schedules never reset each other.
 
 The workflow saves its reports and checkpoint automatically:
 
@@ -161,7 +161,7 @@ checks, coverage gaps, and documentation conflicts. A short findings list can fo
 review. The prompts forbid speculative findings, invented test results, and a clean verdict when
 required evidence is missing.
 
-The checklist reflects an inspection of Meta and Mail on 2026-10-25. It deliberately requires
+The checklist reflects an inspection of Core and Mail on 2026-10-25. It deliberately requires
 fresh discovery of modules, features, workflows, and dependency versions on every run. Product
 summaries can lag behind implementation, and an earlier green CI run may cover a different commit
-or Meta dependency.
+or Core dependency.

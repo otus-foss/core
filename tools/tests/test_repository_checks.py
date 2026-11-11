@@ -72,7 +72,7 @@ class WorkflowSecretTests(unittest.TestCase):
 
 
 class SharedFileTests(unittest.TestCase):
-    def test_copies_must_match_meta(self):
+    def test_copies_must_match_core(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
             (root / ".editorconfig").write_bytes((META / ".editorconfig").read_bytes())

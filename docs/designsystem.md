@@ -307,7 +307,7 @@ them with the change:
 
 ## Central UI ownership
 
-Meta owns every branded element, reusable component, visual token, and symbol resource. These
+Core owns every branded element, reusable component, visual token, and symbol resource. These
 APIs take values and callbacks; Mail domain models and workflow decisions stay in Mail adapters.
 Import symbols through the public `com.otusfoss.core.designsystem.resources.Res` bundle. Mail, settings,
 and accounts use the same symbol files. See [decision 0008](decisions/0008-central-ui-ownership.md).

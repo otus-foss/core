@@ -9,15 +9,15 @@ The library API is in [the JMAP library guide](../jmap.md). Mail's folder, rule,
 behavior is in [Mail's folders guide](https://github.com/otus-foss/otus-mail/blob/main/docs/folders.md).
 The v1 plan is the [suite roadmap](https://github.com/otus-foss/otus-mail/issues/9).
 
-Last checked against the code on 2026-10-12: Mail and Meta `main`, Calendar `main`, and the
+Last checked against the code on 2026-10-12: Mail and Core `main`, Calendar `main`, and the
 uncommitted `feat/action-bar` Mail worktree. The library notes on contacts, sharing,
-`/queryChanges`, and `/copy` were checked on 2026-10-22 against Meta `feat/jmap-contacts`.
+`/queryChanges`, and `/copy` were checked on 2026-10-22 against Core `feat/jmap-contacts`.
 
 ## Status labels
 
 | Label | Meaning |
 | --- | --- |
-| Used | On `main` in Mail or Meta, with tests. |
+| Used | On `main` in Mail or Core, with tests. |
 | In progress | Written on a feature branch, not merged. Do not design against it as if it shipped. |
 | Planned | An open roadmap issue covers it. The design is not settled. |
 | No plan | Nothing uses it and no issue asks for it. Propose it in an issue before you design for it. |
@@ -78,7 +78,7 @@ uncommitted `feat/action-bar` Mail worktree. The library notes on contacts, shar
 | Blob upload | Used | Sieve scripts, signature images, attachments on drafts, and own-address avatar photos. |
 | Blob download | Used | Contact photos. Attachments are planned. |
 | `/changes` | Planned | [Mail #15](https://github.com/otus-foss/otus-mail/issues/15). Today every load refetches. |
-| `/queryChanges` | Planned | Mail #15, where the server supports it. The library has `QueryChangesMethod` on Meta `feat/jmap-contacts`; no app calls it. |
+| `/queryChanges` | Planned | Mail #15, where the server supports it. The library has `QueryChangesMethod` on Core `feat/jmap-contacts`; no app calls it. |
 | `/copy` | No plan | No cross-account copy or move in the apps. `CopyMethod` was removed as unused; see [removed APIs](../removed-apis.md). |
 | `Core/echo` | Library tests only | |
 | `maxCallsInRequest` and other request limits | Planned | The library does not enforce them. Mail #12 plans to respect them. |
@@ -160,7 +160,7 @@ the rules script.
 
 ## Contacts
 
-On Meta `feat/jmap-contacts`, the `jmap-contacts` library implements every method in this table,
+On Core `feat/jmap-contacts`, the `jmap-contacts` library implements every method in this table,
 and `jscontact` reads and writes whole JSContact cards. See [contacts](../contacts.md). No app
 uses either module yet, so the Status column still shows what the apps do. Mail and the `avatar`
 module call these methods through their own small contact types.

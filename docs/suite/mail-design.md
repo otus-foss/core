@@ -35,7 +35,7 @@ Exact component assignments, interaction states, and foreground/background pairi
 
 In both apps this palette is the default Otus theme; the user can pick another theme and accent, and only the System theme follows the device's light or dark mode. Default text is text-1 (#EBECED) at full opacity; background and default surfaces use bg-regular (#161617). Secondary text colors are opt-in.
 
-Android draws each app's launch window before Compose starts, from `androidApp/src/main/res/values/colors.xml`. Meta's `tools/launch_colors.py` writes that file from the Otus theme's `bg-regular`, `text-1`, and `accent-regular`, and the architecture check fails when it drifts.
+Android draws each app's launch window before Compose starts, from `androidApp/src/main/res/values/colors.xml`. Core's `tools/launch_colors.py` writes that file from the Otus theme's `bg-regular`, `text-1`, and `accent-regular`, and the architecture check fails when it drifts.
 
 ## Context panel decisions
 
@@ -158,7 +158,7 @@ keep their `bg-light` outline. Folder colors the user picks are not the accent a
 
 ## Motion
 
-Every animation uses Meta's `Motion` API: four cubic Bézier curves in `MotionCurve`, four
+Every animation uses Core's `Motion` API: four cubic Bézier curves in `MotionCurve`, four
 speeds in `MotionSpeed`, and a global speed multiplier in `LocalMotionScale`. The curves are
 standard (0.4, 0, 0.2, 1), reverse (0.8, 0, 0.6, 1), enter (0.2, 0, 0, 1), and exit
 (0.4, 0, 1, 1). The curves and speeds
@@ -180,7 +180,7 @@ Rules for both apps:
 - To make everything faster or slower, change `LocalMotionScale`. Do not edit the speeds.
 
 Mail follows these rules. Calendar still has its own motion code and adopts `Motion` when it
-moves to Meta's design system.
+moves to Core's design system.
 
 The reusable `AnimatedText` element slides and fades between labels. Mail uses it for the
 date-picker month/year capsule: later months move up, earlier months move down, and year text

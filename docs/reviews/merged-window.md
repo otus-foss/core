@@ -27,7 +27,7 @@ LOCK_FILE: ~/.local/state/otus-reviews/daily/run.lock
 WORKTREE_DIR: ~/.local/state/otus-reviews/daily/worktrees
 ```
 
-No input values need editing between runs. The default repositories are `otus-foss/otus-meta` and
+No input values need editing between runs. The default repositories are `otus-foss/otus-core` and
 `otus-foss/otus-mail`, with their sibling checkouts in this workspace. An explicit `SCOPE: meta` or
 `SCOPE: mail` limits a schedule to one repository. Explicit repository/state directory overrides
 are allowed for another machine; the rolling window remains 24 hours. `<SCOPE>` in `STATE_FILE` is
@@ -127,12 +127,12 @@ callers, tests, affected platform implementations, and applicable shared-guide c
 with the prior target tree to establish a regression. Review merge resolution changes too.
 
 Then inspect the combined result at the frozen targets. Look for assumptions invalidated by
-another merge: Meta APIs and Mail callers, source versus published dependencies, schema and cache
+another merge: Core APIs and Mail callers, source versus published dependencies, schema and cache
 changes, overlapping state owners, renamed resources, theme/motion contracts, background workers,
-and workflows that select a different Meta branch. Run tests against the recorded combination.
+and workflows that select a different Core branch. Run tests against the recorded combination.
 
 Use time order within each target's ancestry. For independent repositories, merge timestamps help
-describe the sequence but do not prove that an intermediate Meta/Mail combination was deployed.
+describe the sequence but do not prove that an intermediate Core/Mail combination was deployed.
 Use CI/nightly artifact provenance when claiming that users received a broken combination.
 
 Check a suspected defect at introduction and again at the frozen current targets. Classify it as:
@@ -200,8 +200,8 @@ in separate PRs. A focused fix can cover multiple findings with the same root ca
    remote SHA, and dirty state. Never discard unexpected edits. Enable the versioned Git hooks
    in new checkouts. Preserve the user's main checkout and other sessions' work.
 3. Inspect existing code and apply the smallest complete correction that preserves supported
-   behavior and repository boundaries. Fix a shared visual component in Meta. Do not work around
-   it by drawing in Mail. Update affected docs and Meta's changelog for public behavior/API changes.
+   behavior and repository boundaries. Fix a shared visual component in Core. Do not work around
+   it by drawing in Mail. Update affected docs and Core's changelog for public behavior/API changes.
    Avoid speculative abstractions and unrelated cleanup.
 4. Add or extend a behavior/regression test that exposes the original failure and passes with
    the correction. Check the failure against the base when practical. Use fake data and existing
@@ -233,8 +233,8 @@ in separate PRs. A focused fix can cover multiple findings with the same root ca
 10. Never merge a PR, enable auto-merge, push a release tag, publish packages, deploy, or push to
     a default/target branch. The output of this workflow is reviewable issues and fix PRs.
 
-For a coordinated Meta/Mail fix, prepare both changes in separate repositories and link both PRs.
-Use a matching branch name when current Mail CI resolves Meta that way. Validate the exact pair
+For a coordinated Core/Mail fix, prepare both changes in separate repositories and link both PRs.
+Use a matching branch name when current Mail CI resolves Core that way. Validate the exact pair
 and the intended consuming path. Do not invent a published version, bypass repository policy, or
 silently rely on a local composite. If a release or an unresolved compatibility decision is needed,
 keep the dependent PR in draft and state the dependency. Do not adopt Calendar as extra work.
@@ -252,7 +252,7 @@ asking a question that stalls the unattended run.
 Run focused checks and full validation at the frozen review revisions, as the shared guide
 specifies. Do not run `checkAll` separately for every reviewed merged PR. Run it once per selected
 repository with review work. Each changed fix branch also needs its own final validation as above.
-For paired work, name the Meta/Mail SHAs and resolution mode used. Explain any intermediate revision
+For paired work, name the Core/Mail SHAs and resolution mode used. Explain any intermediate revision
 tested to isolate an introduction. Pending CI may be reported as pending; the next scheduled run
 reconciles it. Do not busy-poll PRs or hold this run open waiting for human review.
 

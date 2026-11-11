@@ -1,4 +1,4 @@
-rootProject.name = "otus-meta"
+rootProject.name = "otus-core"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 // Gradle resolves the convention plugins' own dependencies from these repositories, so every Otus

@@ -1,4 +1,4 @@
-"""Animations take their timing from Meta's Motion: no raw spec and no Compose default spec."""
+"""Animations take their timing from Core's Motion: no raw spec and no Compose default spec."""
 
 import re
 
@@ -17,9 +17,9 @@ SPEC_POSITION = {"animateScrollToPage": 2}
 
 
 def motion_violations(code: str, *, builds_tweens: bool) -> list[str]:
-    """Animations in code without comments or strings, outside Meta's `theme/motion`.
+    """Animations in code without comments or strings, outside Core's `theme/motion`.
 
-    A spring or a new curve never passes. Meta's components may build a tween from Motion values
+    A spring or a new curve never passes. Core's components may build a tween from Motion values
     when [builds_tweens]: it must name its easing, so Compose's default easing cannot slip in, and
     its duration cannot be a number literal. Apps use `motionTween` or `Motion.tween` only.
     """
@@ -29,7 +29,7 @@ def motion_violations(code: str, *, builds_tweens: bool) -> list[str]:
         errors.append("animate through Motion; springs and curves belong in theme/motion")
     for call in re.finditer(TWEEN_CALL, code):
         if not builds_tweens:
-            errors.append("animate through Meta's motionTween or Motion.tween, not a raw tween")
+            errors.append("animate through Core's motionTween or Motion.tween, not a raw tween")
             continue
         arguments = call_arguments(code, call.end() - 1)
         if not re.search(r"\beasing\s*=", arguments):

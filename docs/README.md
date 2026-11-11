@@ -1,11 +1,11 @@
-# Otus Meta documentation
+# Otus Core documentation
 
 ## Suite
 
 - [Hosting and CI](hosting.md): GitHub repositories, the workflows and shared actions of all three
   repositories, runners, and packages.
 - [Landing pull requests](landing.md): the `ready to land` label, partner pull requests, and setup.
-- [Review prompts](reviews/README.md): PR/repository reviews, Opus reviews when PRs become ready, and daily fixes for Meta and Mail.
+- [Review prompts](reviews/README.md): PR/repository reviews, Opus reviews when PRs become ready, and daily fixes for Core and Mail.
 
 - [Product goals](suite/product-goals.md): purpose, protocol scope, and current state of both apps.
 - [Mail design foundations](suite/mail-design.md): the palette and Figma reference used by both apps.
@@ -28,7 +28,7 @@
   restore each from.
 - [Design system](designsystem.md): the `designsystem` module's contents, resources, and tests.
 - [UI package migration](ui-package-migration.md): the domain layout and declaration moves in 0.10.0.
-- [Using Meta from an app](consuming.md): how Mail and Calendar build Meta from source.
+- [Using Core from an app](consuming.md): how Mail and Calendar build Core from source.
 - [Releasing](releasing.md): versions and the changelog.
 - [Quality gate](quality.md): commands, convention plugins, shared tools, and checks for all three
   repositories.
@@ -39,7 +39,7 @@
 - [0002: Gradle quality commands without npm](decisions/0002-gradle-quality-entry-points.md)
 - [0003: Portable Compose imports](decisions/0003-portable-compose-imports.md)
 - [0004: Commit messages](decisions/0004-commit-messages.md)
-- [0005: Shared libraries in otus-meta](decisions/0005-shared-library-repository.md)
+- [0005: Shared libraries in otus-core](decisions/0005-shared-library-repository.md)
 - [0006: Warnings in the design system's iOS metadata](decisions/0006-native-metadata-warnings.md)
 
 - [0007: Shared feature modules](decisions/0007-shared-feature-modules.md)
@@ -54,6 +54,6 @@
 - [0017: Apple push through an APNs bridge](decisions/0017-apple-push.md)
 - [0018: UI domain packages](decisions/0018-ui-domain-packages.md)
 - [0019: Landing partner pull requests together](decisions/0019-linked-landing.md), proposed
-- [0020: Meta publishes no artifacts](decisions/0020-no-library-publishing.md)
+- [0020: Core publishes no artifacts](decisions/0020-no-library-publishing.md)
 
 Decisions 0001 to 0004 were made in the app repositories and apply to every Otus repository.

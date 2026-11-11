@@ -1,10 +1,10 @@
-# Otus Meta
+# Otus Core
 
 Development, pull requests, and issues use
-[otus-meta on GitHub](https://github.com/otus-foss/otus-meta). See [hosting and CI](docs/hosting.md).
+[otus-core on GitHub](https://github.com/otus-foss/otus-core). See [hosting and CI](docs/hosting.md).
 
 Shared Kotlin Multiplatform libraries, suite documentation, and engineering policy for the Otus
-JMAP suite. The two apps live in their own repositories and build these libraries from a Meta
+JMAP suite. The two apps live in their own repositories and build these libraries from a Core
 checkout:
 
 - [Otus Mail](https://github.com/otus-foss/otus-mail)

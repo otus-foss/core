@@ -133,15 +133,15 @@ class AppRuleTests(unittest.TestCase):
         for layer in ("elements", "components", "theme"):
             with self.subTest(layer=layer):
                 self.assertIn(
-                    "visual elements, components, and tokens belong in otus-meta",
+                    "visual elements, components, and tokens belong in otus-core",
                     check(f"designsystem.{layer}", "val x = 1", app="calendar"),
                 )
 
-    def test_feature_adapters_may_use_meta_components(self):
+    def test_feature_adapters_may_use_core_components(self):
         body = "import com.otusfoss.core.designsystem.shared.rows.components.ContentRow"
         self.assertFalse(check("feature.inbox.presentation.components", body))
 
-    def test_literal_colors_belong_in_meta(self):
+    def test_literal_colors_belong_in_core(self):
         for body in (
             "val c = Color(0xFF202021)",
             "import androidx.compose.ui.graphics.Color as Paint\nval c = Paint(0xFF202021)",
@@ -152,12 +152,12 @@ class AppRuleTests(unittest.TestCase):
         ):
             with self.subTest(body=body):
                 self.assertIn(
-                    "literal colors belong in otus-meta designsystem/theme",
+                    "literal colors belong in otus-core designsystem/theme",
                     check("feature.inbox.presentation.components", body),
                 )
         self.assertFalse(check("feature.inbox.presentation.components", "val c = OtusColors.text1"))
 
-    def test_material_theme_and_surfaces_belong_in_meta(self):
+    def test_material_theme_and_surfaces_belong_in_core(self):
         for body in (
             "import androidx.compose.material.Surface\nval s = Surface",
             "import androidx.compose.material.MaterialTheme\nval t = MaterialTheme",
@@ -165,7 +165,7 @@ class AppRuleTests(unittest.TestCase):
         ):
             with self.subTest(body=body):
                 self.assertIn(
-                    "draw with otus-meta elements, not Material's theme or surfaces",
+                    "draw with otus-core elements, not Material's theme or surfaces",
                     check("feature.welcome.presentation.screens", body),
                 )
         self.assertFalse(
