@@ -1,6 +1,6 @@
 # Contacts
 
-`com.otus:jscontact` and `com.otus:jmap-contacts` implement JSContact (RFC 9553) and JMAP for
+`com.otusfoss.core:jscontact` and `com.otusfoss.core:jmap-contacts` implement JSContact (RFC 9553) and JMAP for
 Contacts (RFC 9610). They have no UI, no storage, and no sync. See
 [decision 0016](decisions/0016-contacts-modules.md).
 
@@ -12,8 +12,8 @@ synchronization remain outside these libraries.
 
 | Module | Package | Depends on | Holds |
 | --- | --- | --- | --- |
-| `jscontact` | `com.otus.jscontact` | `json-types` | JSContact cards, vCard conversion, and localization |
-| `jmap-contacts` | `com.otus.jmap.contacts` | `jmap`, `jscontact` | The AddressBook and ContactCard data types, the card filter, and card patches |
+| `jscontact` | `com.otusfoss.core.jscontact` | `json-types` | JSContact cards, vCard conversion, and localization |
+| `jmap-contacts` | `com.otusfoss.core.jmap.contacts` | `jmap`, `jscontact` | The AddressBook and ContactCard data types, the card filter, and card patches |
 
 Both modules use Kotlin explicit API mode and target Android and iOS. The parts of JMAP that other
 data types need too live in `jmap`: `/queryChanges`, filter operators, and PatchObjects. The
@@ -21,7 +21,7 @@ UTCDate serializer and the PatchObject path rules that JSContact shares with JMA
 `json-types`, which both `jmap` and `jscontact` use, so `jscontact` stays free of networking. See
 [JMAP](jmap.md).
 
-Within `jscontact`, public models and entry points stay in `com.otus.jscontact`. The `vcard`
+Within `jscontact`, public models and entry points stay in `com.otusfoss.core.jscontact`. The `vcard`
 subpackage holds internal parsing and conversion code. Callers use `VCard.parse()`, `VCard.write()`,
 and `isEmailAddress` from the root package.
 

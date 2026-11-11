@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Breaking: every package moves from `com.otus.<module>` to `com.otusfoss.core.<module>`, and the
+  Maven coordinates from `com.otus:<module>` to `com.otusfoss.core:<module>`. Apps update their
+  imports, and their own packages move to `com.otusfoss.mail` and `com.otusfoss.calendar`.
+
 - Design system: a swipe between pages can show how far it is from turning. `TurnProgress` holds
   the page a drag heads to and its fraction of the turn distance. `TurningPositionStrip` keeps
   still, swells that page's dot, and shows the page once letting go would turn to it;

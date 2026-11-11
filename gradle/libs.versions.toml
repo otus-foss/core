@@ -60,18 +60,18 @@ detekt-cli = { module = "io.gitlab.arturbosch.detekt:detekt-cli", version.ref = 
 
 # Meta's modules as the apps see them. The apps build Meta from source, so Gradle substitutes each
 # with the matching project of the included otus-meta build; Meta itself uses project accessors.
-otus-json-types = { module = "com.otus:json-types" }
-otus-storage = { module = "com.otus:storage" }
-otus-jmap = { module = "com.otus:jmap" }
-otus-avatar = { module = "com.otus:avatar" }
-otus-avatar-ui = { module = "com.otus:avatar-ui" }
-otus-dateformat = { module = "com.otus:dateformat" }
-otus-designsystem = { module = "com.otus:designsystem" }
-otus-settings = { module = "com.otus:settings" }
-otus-accounts = { module = "com.otus:accounts" }
-otus-jmap-push = { module = "com.otus:jmap-push" }
-otus-jscontact = { module = "com.otus:jscontact" }
-otus-jmap-contacts = { module = "com.otus:jmap-contacts" }
+otus-json-types = { module = "com.otusfoss.core:json-types" }
+otus-storage = { module = "com.otusfoss.core:storage" }
+otus-jmap = { module = "com.otusfoss.core:jmap" }
+otus-avatar = { module = "com.otusfoss.core:avatar" }
+otus-avatar-ui = { module = "com.otusfoss.core:avatar-ui" }
+otus-dateformat = { module = "com.otusfoss.core:dateformat" }
+otus-designsystem = { module = "com.otusfoss.core:designsystem" }
+otus-settings = { module = "com.otusfoss.core:settings" }
+otus-accounts = { module = "com.otusfoss.core:accounts" }
+otus-jmap-push = { module = "com.otusfoss.core:jmap-push" }
+otus-jscontact = { module = "com.otusfoss.core:jscontact" }
+otus-jmap-contacts = { module = "com.otusfoss.core:jmap-contacts" }
 
 # Gradle plugins that build-logic's convention plugins apply.
 android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }

@@ -1,0 +1,129 @@
+package com.otusfoss.core.designsystem.mail.read.components
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material.Text
+import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.unit.dp
+import com.otusfoss.core.designsystem.resources.Res
+import com.otusfoss.core.designsystem.resources.symbol_archive
+import com.otusfoss.core.designsystem.resources.symbol_flag
+import com.otusfoss.core.designsystem.resources.symbol_forward
+import com.otusfoss.core.designsystem.resources.symbol_hide_image
+import com.otusfoss.core.designsystem.resources.symbol_image
+import com.otusfoss.core.designsystem.resources.symbol_notifications_off
+import com.otusfoss.core.designsystem.screenshot.screenshot
+import com.otusfoss.core.designsystem.shared.controls.elements.UiAction
+import com.otusfoss.core.designsystem.shared.dates.elements.DatePill
+import com.otusfoss.core.designsystem.shared.folders.elements.FolderPath
+import com.otusfoss.core.designsystem.shared.overlays.components.OptionsItem
+import com.otusfoss.core.designsystem.shared.overlays.components.OptionsList
+import com.otusfoss.core.designsystem.shared.people.components.DemoPeople
+import com.otusfoss.core.designsystem.shared.people.components.PersonChip
+import com.otusfoss.core.designsystem.shared.people.components.Recipient
+import com.otusfoss.core.designsystem.shared.rows.components.DetailLine
+import com.otusfoss.core.designsystem.shared.rows.components.DetailRows
+import com.otusfoss.core.designsystem.shared.selection.components.PickMark
+import com.otusfoss.core.designsystem.shared.selection.components.PickRow
+import com.otusfoss.core.designsystem.theme.typography.panelTextStyle
+import org.junit.Rule
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
+import org.robolectric.annotation.GraphicsMode
+import kotlin.test.Test
+
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [35], qualifiers = "w360dp-h640dp-xhdpi")
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
+class ReadBodyScreenshotTest {
+    @get:Rule
+    val compose = createComposeRule()
+
+    @Test
+    fun banner() =
+        compose.screenshot("image_banner") {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                ImageBanner(
+                    Res.drawable.symbol_hide_image,
+                    "Images blocked for privacy",
+                    listOf(UiAction("Show") {}),
+                )
+                ImageBanner(
+                    Res.drawable.symbol_image,
+                    "Images shown",
+                    listOf(UiAction("Hide") {}, UiAction("Always") {}),
+                )
+            }
+        }
+
+    @Test
+    fun details() =
+        compose.screenshot("detail_rows") {
+            DetailRows(
+                listOf(
+                    DetailLine("From") { Text("Grace Hopper", style = panelTextStyle()) },
+                    DetailLine("Date") { DatePill("12 Oct", "12 Oct 2026, 09:14", {}) },
+                    DetailLine("Folders") { FolderPath(listOf("Finance", "Invoices")) },
+                ),
+            )
+        }
+
+    @Test
+    fun quote() =
+        compose.screenshot("quote_fold") {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                QuoteFold(QuotedLevel(DemoPeople.mira, "10 Oct", QUOTE, onPerson = {}), expanded = false, onToggle = {})
+                QuoteFold(QuotedLevel(person = null, "10 Oct", QUOTE), expanded = true, onToggle = {})
+            }
+        }
+
+    @Test
+    fun choicePicks() =
+        compose.screenshot("pick_row_radio_first") {
+            Column {
+                PickRow(
+                    "From people you know",
+                    "Contacts, people you've written to and senders you allowed. Everyone else asks first.",
+                    PickMark(selected = true, atStart = true),
+                    {},
+                )
+                PickRow("Never", "Always ask, for every mail.", PickMark(selected = false, atStart = true), {})
+            }
+        }
+
+    @Test
+    fun personChips() =
+        compose.screenshot("person_chip") {
+            val mira = DemoPeople.mira
+            PersonChip(Recipient(mira.name, mira.avatar, mira.name))
+        }
+
+    @Test
+    fun options() =
+        compose.screenshot("options_list_read") {
+            OptionsList(
+                listOf(
+                    OptionsItem.Action(UiAction("Forward", Res.drawable.symbol_forward, onClick = {})),
+                    OptionsItem.Action(UiAction("Flag", Res.drawable.symbol_flag, onClick = {})),
+                    OptionsItem.Divider,
+                    OptionsItem.Caption("Whole conversation"),
+                    OptionsItem.Action(
+                        UiAction("Move to…", Res.drawable.symbol_archive, onClick = {
+                        }),
+                        opens = true,
+                        detail = "Usually Invoices",
+                    ),
+                    OptionsItem.Toggle("Mute conversation", Res.drawable.symbol_notifications_off, checked = true) {},
+                ),
+                onDone = {},
+            )
+        }
+
+    private companion object {
+        const val QUOTE =
+            "I went through the plan with legal this morning. Short version: two waves work, but the EU wave " +
+                "needs more lead time than we assumed. German terms need a full review, and the consent banner " +
+                "has to ship before the EU wave."
+    }
+}

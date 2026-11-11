@@ -1,0 +1,46 @@
+package com.otusfoss.core.designsystem.shared.overlays.components
+
+import com.otusfoss.core.designsystem.shared.controls.elements.UiAction
+import org.jetbrains.compose.resources.DrawableResource
+
+/** One line of an [OptionsMenu]. */
+public sealed interface OptionsItem {
+    /**
+     * Runs the [action] and closes the menu; one that [opens] something more shows a chevron. A
+     * [detail], such as "Usually Invoices", shows as a smaller second line. The [current] choice,
+     * such as the label a field has now, fills with the accent.
+     */
+    public class Action(
+        public val action: UiAction,
+        public val opens: Boolean = false,
+        public val detail: String? = null,
+        public val current: Boolean = false,
+    ) : OptionsItem
+
+    /**
+     * Turns an option on or off with a switch, and leaves the menu open. A [detail] shows as a
+     * smaller second line.
+     */
+    public class Toggle(
+        public val label: String,
+        public val icon: DrawableResource,
+        public val checked: Boolean,
+        public val detail: String?,
+        public val onCheckedChange: (Boolean) -> Unit,
+    ) : OptionsItem {
+        /** A toggle without a second line, so the change can still be the trailing lambda. */
+        public constructor(
+            label: String,
+            icon: DrawableResource,
+            checked: Boolean,
+            onCheckedChange: (Boolean) -> Unit,
+        ) : this(label, icon, checked, detail = null, onCheckedChange)
+    }
+
+    /** A small `text3` heading over the items after it, such as the sender's name. */
+    public class Caption(
+        public val text: String,
+    ) : OptionsItem
+
+    public data object Divider : OptionsItem
+}

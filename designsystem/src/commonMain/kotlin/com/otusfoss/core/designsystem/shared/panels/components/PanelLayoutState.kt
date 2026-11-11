@@ -1,0 +1,158 @@
+package com.otusfoss.core.designsystem.shared.panels.components
+
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.layout.LayoutCoordinates
+import kotlin.math.abs
+
+/** Retain live coordinates. Resolve every part of the panel together during drawing. */
+internal class PanelLayoutState {
+    private var revision by mutableIntStateOf(0)
+    private var panel: LayoutCoordinates? = null
+    private var viewport: LayoutCoordinates? = null
+    private val items = mutableMapOf<Any, PanelHole>()
+
+    /** The chip rail's visible width in pixels, for a chip that fills it. */
+    var railWidth by mutableIntStateOf(0)
+        private set
+
+    fun trackPanel(coordinates: LayoutCoordinates) {
+        panel = coordinates
+        revision++
+    }
+
+    fun trackViewport(coordinates: LayoutCoordinates) {
+        viewport = coordinates
+        railWidth = coordinates.size.width
+        revision++
+    }
+
+    fun trackItem(
+        id: Any,
+        coordinates: LayoutCoordinates,
+        visibility: PillVisibility,
+    ) {
+        items.getOrPut(id) { PanelHole(visibility) }.coordinates = coordinates
+        revision++
+    }
+
+    fun removeItem(id: Any) {
+        items.remove(id)
+        revision++
+    }
+
+    /** The panel's bottom edge in pixels, where the layout put it at the current collapse. */
+    var edge by mutableFloatStateOf(0f)
+
+    /** How far the pills have faded out as the panel collapses, from 0 to 1; their holes close with them. */
+    var railFade by mutableFloatStateOf(0f)
+
+    /** This state read invalidates drawing after placement or scrolling, never composition. */
+    fun frame(
+        gap: Float,
+        border: Float,
+    ): PanelFrame? {
+        val anchors = anchors() ?: return null
+        val parent = anchors.panel
+        val clip = anchors.viewport
+        val bottom = edge
+        val open = 1f - railFade
+        val holes =
+            items.mapNotNull { (id, item) ->
+                val scrolling = id != ActionKey
+                val pill = parent.boundsOf(item.coordinates)?.inflate(gap) ?: return@mapNotNull null
+                val visible = !scrolling || (pill.left < clip.right && pill.right > clip.left)
+                val presence = item.resolve(covered = visible && pill.top < bottom + border) * open
+                if (presence == 0f) null else PanelHoleFrame(pill.scaleAboutCenter(presence), scrolling)
+            }
+        return PanelFrame(bottom, clip, holes)
+    }
+
+    /** Distance that visible rail pills extend past each viewport edge, independent of scroll extent. */
+    fun railOverflow(): RailOverflow {
+        val anchors = anchors() ?: return RailOverflow(0f, 0f)
+        val clip = anchors.viewport
+        val pills =
+            items.mapNotNull { (id, item) ->
+                anchors.panel.boundsOf(item.coordinates).takeIf { id != ActionKey && item.visibility.value() > 0f }
+            }
+        return RailOverflow(
+            left = (clip.left - (pills.minOfOrNull { it.left } ?: clip.left)).coerceAtLeast(0f),
+            right = ((pills.maxOfOrNull { it.right } ?: clip.right) - clip.right).coerceAtLeast(0f),
+        )
+    }
+
+    private fun anchors(): PanelAnchors? {
+        revision
+        val parent = panel?.takeIf { it.isAttached } ?: return null
+        val bounds = Rect(0f, 0f, parent.size.width.toFloat(), edge)
+        return PanelAnchors(parent, parent.boundsOf(viewport) ?: bounds)
+    }
+}
+
+private data class PanelAnchors(
+    val panel: LayoutCoordinates,
+    val viewport: Rect,
+)
+
+/** A pill's fade value and whether its group is entering or staying, rather than leaving. */
+internal class PillVisibility(
+    val value: () -> Float,
+    val wanted: () -> Boolean,
+)
+
+/**
+ * A hole always matches its pill. It switches on or off only while the surface does not cover it,
+ * where the change is invisible. Under the surface it grows or shrinks with the pill's fade instead,
+ * reaching its target exactly when the fade does, so no frame shows a hole popping in or out.
+ */
+private class PanelHole(
+    val visibility: PillVisibility,
+) {
+    var coordinates: LayoutCoordinates? = null
+    private var presence = visibility.value()
+    private var lastFade = presence
+
+    fun resolve(covered: Boolean): Float {
+        val target = if (visibility.wanted()) 1f else 0f
+        val fade = visibility.value().coerceIn(0f, 1f)
+        val remaining = abs(target - lastFade)
+        presence =
+            when {
+                !covered || remaining == 0f -> target
+                else -> target + (presence - target) * (abs(target - fade) / remaining).coerceAtMost(1f)
+            }
+        lastFade = fade
+        return presence
+    }
+}
+
+internal data class PanelHoleFrame(
+    val bounds: Rect,
+    val scrolling: Boolean,
+)
+
+internal data class PanelFrame(
+    val bottom: Float,
+    val viewport: Rect,
+    val holes: List<PanelHoleFrame>,
+)
+
+internal data class RailOverflow(
+    val left: Float,
+    val right: Float,
+)
+
+private fun LayoutCoordinates.boundsOf(child: LayoutCoordinates?): Rect? =
+    child?.takeIf { it.isAttached }?.let { localBoundingBoxOf(it, clipBounds = false) }
+
+private fun Rect.scaleAboutCenter(scale: Float): Rect =
+    Rect(
+        center.x - width * scale / 2,
+        center.y - height * scale / 2,
+        center.x + width * scale / 2,
+        center.y + height * scale / 2,
+    )

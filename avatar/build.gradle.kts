@@ -30,4 +30,4 @@ kotlin {
     }
 }
 
-compose.resources { packageOfResClass = "com.otus.avatar.resources" }
+compose.resources { packageOfResClass = "com.otusfoss.core.avatar.resources" }

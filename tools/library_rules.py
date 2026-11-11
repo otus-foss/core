@@ -25,9 +25,9 @@ from source_code import (
     uses,
 )
 
-NAMESPACE = "com.otus"
+NAMESPACE = "com.otusfoss.core"
 # Libraries are consumed by the apps; they must never reach back into app code.
-APP_NAMESPACES = ("com.otus.mail", "com.otus.calendar")
+APP_NAMESPACES = ("com.otusfoss.mail", "com.otusfoss.calendar")
 UI_LAYERS = frozenset({"elements", "components"})
 # Plain Kotlin beside a group's UI, such as the HTML sanitizer of mail/read; no composables.
 PLAIN_LAYERS = frozenset({"html"})
@@ -178,13 +178,13 @@ def feature_violations(path: Path, base: str, location: list[str], code: str) ->
         errors += service_violations(code)
     if layer == ["presentation"] and uses(code, DATA_APIS):
         errors.append("UI must not access network or database APIs")
-    if layer == ["domain"] and uses(code, ("com.otus.designsystem.",)):
+    if layer == ["domain"] and uses(code, ("com.otusfoss.core.designsystem.",)):
         errors.append("domain cannot depend on the design system")
-    if layer == ["presentation"] and uses(code, ("com.otus.jmap.",)):
+    if layer == ["presentation"] and uses(code, ("com.otusfoss.core.jmap.",)):
         errors.append("presentation uses domain contracts, not protocol clients")
     module = path.parts[0]
     other_features = tuple(
-        f"com.otus.{module_namespace(name)}." for name in FEATURE_UI_MODULES - {module}
+        f"com.otusfoss.core.{module_namespace(name)}." for name in FEATURE_UI_MODULES - {module}
     )
     if uses(code, other_features):
         errors.append("shared features cannot depend directly on another shared feature")

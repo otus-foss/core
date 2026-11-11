@@ -60,8 +60,8 @@ class FileLengthTests(unittest.TestCase):
         self.assertTrue(file_length_violations(Path("Example.kt"), text))
 
     def test_exception_does_not_disable_architecture_checks(self):
-        path = Path("jmap/src/commonMain/kotlin/com/otus/jmap/Example.kt")
-        header = HEADER + "\npackage com.otus.jmap" + "\nimport com.otus.mail.app.App"
+        path = Path("jmap/src/commonMain/kotlin/com/otusfoss/core/jmap/Example.kt")
+        header = HEADER + "\npackage com.otusfoss.core.jmap" + "\nimport com.otusfoss.mail.app.App"
         errors = violations(path, source(310, header))
         self.assertTrue(any("cannot depend on Mail" in error for error in errors))
         self.assertFalse(any("file has" in error for error in errors))

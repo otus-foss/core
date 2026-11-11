@@ -2,7 +2,7 @@
 
 Version 0.10.0 moves the design system's flat `elements` and
 `components` packages beneath an owner and a UI group. It also groups theme declarations by
-responsibility. The artifact remains `com.otus:designsystem`. `theme.OtusTheme` and generated
+responsibility. The artifact remains `com.otusfoss.core:designsystem`. `theme.OtusTheme` and generated
 resource identifiers retain their packages.
 
 ## Updating imports
@@ -13,14 +13,14 @@ old package now belong to several groups. The mapping includes moved public and 
 declarations, including extension functions and values.
 
 ```kotlin
-import com.otus.designsystem.shared.contacts.components.ContactRow
-import com.otus.designsystem.shared.people.components.ChipAvatar
-import com.otus.designsystem.shared.rows.components.RowSelection
-import com.otus.designsystem.mail.read.elements.HtmlView
-import com.otus.designsystem.theme.OtusTheme
-import com.otus.designsystem.theme.colors.OtusColors
-import com.otus.designsystem.theme.motion.Motion
-import com.otus.designsystem.theme.tokens.rows.InboxTokens
+import com.otusfoss.core.designsystem.shared.contacts.components.ContactRow
+import com.otusfoss.core.designsystem.shared.people.components.ChipAvatar
+import com.otusfoss.core.designsystem.shared.rows.components.RowSelection
+import com.otusfoss.core.designsystem.mail.read.elements.HtmlView
+import com.otusfoss.core.designsystem.theme.OtusTheme
+import com.otusfoss.core.designsystem.theme.colors.OtusColors
+import com.otusfoss.core.designsystem.theme.motion.Motion
+import com.otusfoss.core.designsystem.theme.tokens.rows.InboxTokens
 ```
 
 Keep existing public declaration names. The migration changes source organization, not visual
@@ -28,7 +28,7 @@ behavior or business policy. It retains screenshot baselines and the Android nam
 
 ## Placing files
 
-The package mirrors `designsystem/src/<sourceSet>/kotlin/com/otus/designsystem/`:
+The package mirrors `designsystem/src/<sourceSet>/kotlin/com/otusfoss/core/designsystem/`:
 
 ```text
 theme/OtusTheme.kt
@@ -72,7 +72,7 @@ Common tests and Android host tests mirror the code they cover. Test fixtures ke
 names and can support several groups.
 
 Leave Compose resources, Android resources, fonts, `designsystem/brand`, and generated
-`com.otus.designsystem.resources.Res` where they are. Screenshot files keep their explicit
+`com.otusfoss.core.designsystem.resources.Res` where they are. Screenshot files keep their explicit
 names under `designsystem/src/androidHostTest/screenshots`; verify them without recording.
 
 ## Coordinating the repositories

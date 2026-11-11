@@ -1,0 +1,113 @@
+package com.otusfoss.core.jmap.push
+
+import com.otusfoss.core.jmap.JmapClient
+import com.otusfoss.core.jmap.JmapConnections
+import com.otusfoss.core.jmap.PushKeys
+import com.otusfoss.core.jmap.PushMessage
+import com.otusfoss.core.jmap.login.InMemoryLoginStore
+import com.otusfoss.core.jmap.login.JmapLogin
+import com.otusfoss.core.jmap.login.LoginStore
+import com.otusfoss.core.storage.StringMapStore
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.respond
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.content.TextContent
+import io.ktor.http.headersOf
+import kotlin.time.Clock
+import kotlin.time.Instant
+
+/** A login, a fake JMAP server, and a store for the push tests. */
+internal val login = JmapLogin("ada", "https://mail.example.org/jmap/session", "ada@example.org", "Ada")
+internal val endpoint = PushEndpoint("https://ntfy.example.net/upA", PushKeys("BKey", "c2Vj"))
+internal val now = Instant.parse("2026-10-14T08:00:00Z")
+
+internal class Store : StringMapStore {
+    var records: Map<String, String> = emptyMap()
+
+    override fun read() = records
+
+    override fun write(values: Map<String, String>) {
+        records = values
+    }
+}
+
+internal class Server(
+    val reply: (String) -> String,
+) {
+    val sent = mutableListOf<String>()
+    val engine =
+        MockEngine { request ->
+            val json = headersOf(HttpHeaders.ContentType, "application/json")
+            if (request.url.encodedPath == "/jmap/session") {
+                respond(SESSION, HttpStatusCode.OK, json)
+            } else {
+                val body = (request.body as TextContent).text
+                sent += body
+                respond(reply(body), HttpStatusCode.OK, json)
+            }
+        }
+}
+
+internal fun subscriptions(
+    server: Server,
+    store: Store,
+    at: Instant = now,
+    logins: LoginStore = InMemoryLoginStore().apply { save(login, "secret") },
+    types: List<String> = listOf("EmailDelivery"),
+    beforeCreate: suspend (String) -> Unit = {},
+): PushSubscriptions {
+    val clock =
+        object : Clock {
+            override fun now() = at
+        }
+    return PushSubscriptions(
+        JmapConnections(JmapClient(server.engine), logins),
+        store,
+        deviceClientId = "otus-mail-device",
+        types = types,
+        clock = clock,
+        beforeCreate = beforeCreate,
+    )
+}
+
+internal fun created(expires: String = "2026-10-21T08:00:00Z") =
+    """{"methodResponses": [["PushSubscription/set",
+       {"created": {"push": {"id": "ps1", "expires": "$expires"}}}, "c0"]]}"""
+
+/** A server without subscriptions of its own, which creates `ps1` expiring at [expires]. */
+internal fun subscribingServer(expires: String = "2026-10-21T08:00:00Z") =
+    Server { if ("PushSubscription/get" in it) NO_SUBSCRIPTIONS else created(expires) }
+
+internal const val NO_SUBSCRIPTIONS =
+    """{"methodResponses": [["PushSubscription/get", {"list": [], "notFound": []}, "c0"]]}"""
+
+internal const val UPDATED = """{"methodResponses": [["PushSubscription/set", {"updated": {"ps1": null}}, "c0"]]}"""
+
+private const val SESSION = """
+        {"capabilities": {"urn:ietf:params:jmap:core": {}, "urn:ietf:params:jmap:mail": {}},
+         "accounts": {"d1": {"name": "Ada", "isPersonal": true,
+           "accountCapabilities": {"urn:ietf:params:jmap:mail": {}}}},
+         "primaryAccounts": {"urn:ietf:params:jmap:mail": "d1"},
+         "username": "ada@example.org", "apiUrl": "/jmap/", "state": "s1"}
+    """
+
+/** Leaves the store with a created and verified subscription `ps1`, made at [now]. */
+internal suspend fun subscribed(
+    store: Store,
+    expires: String = "2026-10-21T08:00:00Z",
+) {
+    createdSubscription(store, subscribingServer(expires)).receive("ada", PushMessage.Verification("ps1", "v1"))
+    subscriptions(Server { UPDATED }, store).sync()
+}
+
+internal suspend fun createdSubscription(
+    store: Store,
+    server: Server = subscribingServer(),
+): PushSubscriptions =
+    subscriptions(server, store).apply {
+        setEndpoint("ada", endpoint)
+        sync()
+    }
+
+internal const val DESTROYED = """{"methodResponses": [["PushSubscription/set", {"destroyed": ["ps1"]}, "c0"]]}"""

@@ -1,7 +1,7 @@
 # Using Meta from an app
 
 Mail and Calendar build Meta from source. Each app includes an otus-meta checkout as a Gradle
-composite build, so `com.otus:<module>` resolves to the matching Meta project, and each app's
+composite build, so `com.otusfoss.core:<module>` resolves to the matching Meta project, and each app's
 build takes its convention plugins, version catalog, tools, and detekt configuration from the
 same checkout. No app downloads Meta from GitHub Packages or pins a Meta version. See
 [decision 0005](decisions/0005-shared-library-repository.md) for the 2026-11-06 amendment.
@@ -79,7 +79,7 @@ library types directly.
 ## Compose resources
 
 The design system publishes its fonts and icons as Compose Multiplatform resources under
-`com.otus.designsystem.resources`, and the avatar module bundles the Public Suffix List under
-`com.otus.avatar.resources`. Apps keep resource packages only for their own assets. Check both
+`com.otusfoss.core.designsystem.resources`, and the avatar module bundles the Public Suffix List under
+`com.otusfoss.core.avatar.resources`. Apps keep resource packages only for their own assets. Check both
 Android and iOS app builds after moving resources, because resource packaging differs per
 platform.

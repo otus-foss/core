@@ -1,0 +1,39 @@
+package com.otusfoss.core.designsystem.shared.settings.elements
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
+import com.otusfoss.core.designsystem.theme.colors.OtusColors
+import com.otusfoss.core.designsystem.theme.tokens.core.Sizes
+import com.otusfoss.core.designsystem.theme.tokens.settings.ThemeTokens
+
+/**
+ * [colors] as overlapping circles, like an [com.otusfoss.core.designsystem.shared.people.components.AvatarStack], each
+ * outlined so a color that matches the page still shows. It only shows the colors; the enclosing
+ * row acts and supplies the accessible name.
+ */
+@Composable
+public fun SwatchStack(
+    colors: List<Color>,
+    modifier: Modifier = Modifier,
+    size: Dp = ThemeTokens.stackSwatch,
+) {
+    Row(modifier, horizontalArrangement = Arrangement.spacedBy(-ThemeTokens.stackOverlap)) {
+        colors.forEach {
+            Box(
+                Modifier
+                    .size(size)
+                    .background(it, CircleShape)
+                    .border(Sizes.borderWidth, OtusColors.bgLight, CircleShape),
+            )
+        }
+    }
+}

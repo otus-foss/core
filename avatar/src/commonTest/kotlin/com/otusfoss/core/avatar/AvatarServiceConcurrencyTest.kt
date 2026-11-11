@@ -1,0 +1,150 @@
+package com.otusfoss.core.avatar
+
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.yield
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertSame
+
+class AvatarServiceConcurrencyTest {
+    private val image = AvatarImage(byteArrayOf(1, 2, 3))
+
+    @Test
+    fun slowLookupNeverDelaysOtherSenders() =
+        runTest {
+            val release = CompletableDeferred<Unit>()
+            val service =
+                AvatarService(
+                    photoSource { subject, _ ->
+                        if (subject.email.startsWith("slow")) release.await()
+                        image
+                    },
+                )
+            val slow = async { service.resolve(AvatarRequest("work", "slow@company.com")) }
+            yield()
+            // Covers every former lock stripe: none of these may wait for the slow sender.
+            repeat(SENDERS) {
+                assertSame(image, service.resolve(AvatarRequest("work", "person$it@company.com")).image)
+            }
+            assertFalse(slow.isCompleted)
+            release.complete(Unit)
+            assertSame(image, slow.await().image)
+        }
+
+    @Test
+    fun waiterRetriesWhenTheSharedLookupIsCancelled() =
+        runTest {
+            val entered = CompletableDeferred<Unit>()
+            var calls = 0
+            val service =
+                AvatarService(
+                    photoSource { _, _ ->
+                        calls++
+                        if (calls == 1) {
+                            entered.complete(Unit)
+                            awaitCancellation()
+                        }
+                        image
+                    },
+                )
+            val request = AvatarRequest("work", "ada@company.com")
+            val owner = async { service.resolve(request) }
+            entered.await()
+            val waiter = async { service.resolve(request) }
+            yield()
+            owner.cancel()
+            assertSame(image, waiter.await().image)
+            assertEquals(2, calls)
+        }
+
+    @Test
+    fun clearingAlsoInvalidatesLookupsWaitingForAFetchPermit() =
+        runTest {
+            val release = CompletableDeferred<Unit>()
+            var queuedCalls = 0
+            val service =
+                AvatarService(
+                    photoSource { request, _ ->
+                        if (request.email.startsWith("busy")) release.await() else queuedCalls++
+                        image
+                    },
+                )
+            val busy =
+                List(FETCH_LIMIT) { index ->
+                    async { service.resolve(AvatarRequest("work", "busy$index@company.com")) }
+                }
+            yield()
+            val request = AvatarRequest("work", "queued@company.com")
+            val queued = async { service.resolve(request) }
+            yield()
+            assertEquals(0, queuedCalls)
+            service.clear()
+            release.complete(Unit)
+            busy.forEach { it.await() }
+            queued.await()
+            service.resolve(request)
+            assertEquals(2, queuedCalls)
+        }
+
+    @Test
+    fun unresponsiveWebsitesStopAtTheSharedLimit() =
+        runTest {
+            val service =
+                AvatarService(
+                    images = AvatarImageLoader { awaitCancellation() },
+                    domains = AvatarDomainResolver { "company.com" },
+                )
+            // Virtual time: three hanging icon requests must give up within the shared limit.
+            val result =
+                withTimeout(DOMAIN_ICON_LIMIT_MILLIS + 1) {
+                    service.resolve(
+                        AvatarRequest("work", "noreply@email.company.com"),
+                        AvatarOptions(domainIcons = true),
+                    )
+                }
+            assertNull(result.image)
+        }
+
+    @Test
+    fun clearingDuringContactLookupAlsoInvalidatesItsLaterDomainLookup() =
+        runTest {
+            val release = CompletableDeferred<Unit>()
+            val entered = CompletableDeferred<Unit>()
+            var calls = 0
+            val service =
+                AvatarService(
+                    contacts =
+                        photoSource { _, _ ->
+                            entered.complete(Unit)
+                            release.await()
+                            null
+                        },
+                    images =
+                        AvatarImageLoader {
+                            calls++
+                            image
+                        },
+                )
+            val request = AvatarRequest("work", "ada@company.com")
+            val options = AvatarOptions(domainIcons = true)
+            val pending = async { service.resolve(request, options) }
+            entered.await()
+            service.clear()
+            release.complete(Unit)
+            pending.await()
+            service.resolve(request, options)
+            assertEquals(2, calls)
+        }
+
+    private companion object {
+        const val SENDERS = 16
+        const val FETCH_LIMIT = 8
+        const val DOMAIN_ICON_LIMIT_MILLIS = 8_000L
+    }
+}

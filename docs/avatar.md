@@ -1,13 +1,13 @@
 # Avatars
 
-The `avatar` module (`com.otus.avatar`, artifact `com.otus:avatar`) resolves sender and attendee
+The `avatar` module (`com.otusfoss.core.avatar`, artifact `com.otusfoss.core:avatar`) resolves sender and attendee
 avatars: JMAP contact photos, optional website icons, and generated initials. It has no UI. The
 design system's `Avatar` element draws the result, and `rememberAvatarImage` decodes image bytes.
 It moved here from otus-mail in version 0.2.0.
 
 ## Implemented API
 
-`AvatarService` (`com.otus.avatar`) is common Kotlin, independent of mail, calendar, Compose, and platform
+`AvatarService` (`com.otusfoss.core.avatar`) is common Kotlin, independent of mail, calendar, Compose, and platform
 image types. It resolves an `AvatarRequest(accountKey, email, name, brandDomain)` in this order:
 
 1. A contact card's avatar through the injected `ContactAvatarSource`: an `AvatarStyle` the user
@@ -246,7 +246,7 @@ and small enough to upload.
 
 ## avatar-ui
 
-`com.otus:avatar-ui` draws avatars with the design system, so `avatar` stays free of UI types and
+`com.otusfoss.core:avatar-ui` draws avatars with the design system, so `avatar` stays free of UI types and
 `accounts` free of avatars:
 
 - `ResolvedAvatar.toChipAvatar()`, `AvatarStyle.toChipAvatar()`, and `toChipAvatarOr(name, email)`

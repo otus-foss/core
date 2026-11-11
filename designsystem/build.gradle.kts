@@ -38,7 +38,7 @@ kotlin {
 
 compose.resources {
     publicResClass = true
-    packageOfResClass = "com.otus.designsystem.resources"
+    packageOfResClass = "com.otusfoss.core.designsystem.resources"
 }
 
 // The iOS metadata compilation, which CI's ios metadata part runs on Linux, sees JetBrains' and

@@ -66,7 +66,9 @@ def violations(path: Path, text: str, base: str, layers: frozenset[str]) -> list
     errors += reference_violations(location, suffix, code, base)
     if "domain" in location and uses(code, (*PLATFORM_APIS, *DATA_APIS, *UI_APIS)):
         errors.append("domain contains UI/platform/network/database dependencies")
-    if ("domain" in location or "data" in location) and uses(code, ("com.otus.designsystem.",)):
+    if ("domain" in location or "data" in location) and uses(
+        code, ("com.otusfoss.core.designsystem.",)
+    ):
         errors.append("domain and data cannot depend on the design system")
     if "presentation" in location and uses(code, DATA_APIS):
         errors.append("UI must not access network or database APIs")

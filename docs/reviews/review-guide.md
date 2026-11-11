@@ -217,7 +217,7 @@ assumption. Low-confidence concerns belong in questions, not confirmed findings.
 - Inspect effective dependency resolution, not just the catalog. A source composite can hide a
   missing publication or incompatible pinned version. Check API consumers, public defaults,
   behavior contracts, changelog entries, version policy, and Kotlin/toolchain compatibility.
-- Verify `com.otus` repository exclusivity, consistent module versions, publication metadata,
+- Verify `com.otusfoss.core` repository exclusivity, consistent module versions, publication metadata,
   Android/iOS artifacts, resources, and consumer resolution when affected. Never publish or
   resume a paused workflow as part of a review. A source-only result must say so.
 - Inspect current hooks and workflow triggers, filters, permissions, checkout refs, pinned

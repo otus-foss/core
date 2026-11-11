@@ -13,9 +13,12 @@ LAYERS = frozenset({"app", "core", "feature"})
 
 
 def check(package, body, filename="Example.kt", app="mail"):
-    path = Path(f"shared/src/commonMain/kotlin/com/otus/{app}") / package.replace(".", "/")
+    path = Path(f"shared/src/commonMain/kotlin/com/otusfoss/{app}") / package.replace(".", "/")
     return violations(
-        path / filename, f"package com.otus.{app}.{package}\n{body}", f"com.otus.{app}", LAYERS
+        path / filename,
+        f"package com.otusfoss.{app}.{package}\n{body}",
+        f"com.otusfoss.{app}",
+        LAYERS,
     )
 
 
@@ -23,21 +26,24 @@ class AppRuleTests(unittest.TestCase):
     def test_component_cannot_import_screen_using_alias(self):
         errors = check(
             "feature.inbox.presentation.components",
-            "import com.otus.mail.feature.inbox.presentation.screens.InboxScreen as View",
+            "import com.otusfoss.mail.feature.inbox.presentation.screens.InboxScreen as View",
         )
         self.assertIn("components cannot depend on screens", errors)
 
     def test_domain_cannot_import_data(self):
-        errors = check("feature.inbox.domain", "import com.otus.mail.feature.inbox.data.Messages")
+        errors = check(
+            "feature.inbox.domain", "import com.otusfoss.mail.feature.inbox.data.Messages"
+        )
         self.assertIn("domain cannot depend on data or presentation", errors)
 
     def test_core_slices_keep_feature_layers(self):
         errors = check(
-            "core.messages.domain", "import com.otus.mail.core.messages.presentation.MailEdits"
+            "core.messages.domain", "import com.otusfoss.mail.core.messages.presentation.MailEdits"
         )
         self.assertIn("domain cannot depend on data or presentation", errors)
         errors = check(
-            "core.messages.presentation", "import com.otus.mail.core.messages.data.JmapEmailWriter"
+            "core.messages.presentation",
+            "import com.otusfoss.mail.core.messages.data.JmapEmailWriter",
         )
         self.assertIn("presentation cannot depend on data implementations", errors)
 
@@ -49,24 +55,25 @@ class AppRuleTests(unittest.TestCase):
         for layer in ("domain", "data"):
             with self.subTest(layer=layer):
                 errors = check(
-                    f"feature.inbox.{layer}", "import com.otus.designsystem.theme.OtusTheme"
+                    f"feature.inbox.{layer}",
+                    "import com.otusfoss.core.designsystem.theme.OtusTheme",
                 )
                 self.assertIn("domain and data cannot depend on the design system", errors)
 
     def test_presentation_cannot_import_data(self):
         errors = check(
-            "feature.inbox.presentation", "import com.otus.mail.feature.inbox.data.Messages"
+            "feature.inbox.presentation", "import com.otusfoss.mail.feature.inbox.data.Messages"
         )
         self.assertIn("presentation cannot depend on data implementations", errors)
 
     def test_feature_cannot_import_sibling(self):
         errors = check(
-            "feature.inbox.domain", "import com.otus.mail.feature.contacts.domain.Person"
+            "feature.inbox.domain", "import com.otusfoss.mail.feature.contacts.domain.Person"
         )
         self.assertIn("features cannot import other features directly", errors)
 
     def test_core_cannot_import_features(self):
-        errors = check("core.mail", "fun x() = com.otus.mail.feature.inbox.domain.Message()")
+        errors = check("core.mail", "fun x() = com.otusfoss.mail.feature.inbox.domain.Message()")
         self.assertIn("core cannot depend on app/features", errors)
 
     def test_component_cannot_hold_viewmodel(self):
@@ -91,7 +98,10 @@ class AppRuleTests(unittest.TestCase):
         self.assertTrue(check("feature.inbox.domain", body))
 
     def test_allowed_screen_and_domain_dependency(self):
-        body = "import com.otus.mail.feature.inbox.domain.Message\n@Composable fun InboxScreen() {}"
+        body = (
+            "import com.otusfoss.mail.feature.inbox.domain.Message\n"
+            "@Composable fun InboxScreen() {}"
+        )
         self.assertFalse(check("feature.inbox.presentation.screens", body, "InboxScreen.kt"))
 
     def test_screens_end_in_screen_and_composables_stay_in_ui_layers(self):
@@ -106,14 +116,14 @@ class AppRuleTests(unittest.TestCase):
 
     def test_comments_and_strings_do_not_create_dependencies(self):
         body = (
-            "// import com.otus.mail.feature.inbox.data.Messages\n"
-            'val example = "com.otus.mail.feature.inbox.data.Messages"'
+            "// import com.otusfoss.mail.feature.inbox.data.Messages\n"
+            'val example = "com.otusfoss.mail.feature.inbox.data.Messages"'
         )
         self.assertFalse(check("core.jmap", body))
 
     def test_package_must_match_path_and_layers(self):
-        path = Path("shared/src/commonMain/kotlin/com/otus/mail/core/Example.kt")
-        errors = violations(path, "package com.otus.mail.app", "com.otus.mail", LAYERS)
+        path = Path("shared/src/commonMain/kotlin/com/otusfoss/mail/core/Example.kt")
+        errors = violations(path, "package com.otusfoss.mail.app", "com.otusfoss.mail", LAYERS)
         self.assertIn("package must match source path and app namespace", errors)
         self.assertIn(
             "common production code belongs in app/core/feature", check("widgets", "val x = 1")
@@ -128,7 +138,7 @@ class AppRuleTests(unittest.TestCase):
                 )
 
     def test_feature_adapters_may_use_meta_components(self):
-        body = "import com.otus.designsystem.shared.rows.components.ContentRow"
+        body = "import com.otusfoss.core.designsystem.shared.rows.components.ContentRow"
         self.assertFalse(check("feature.inbox.presentation.components", body))
 
     def test_literal_colors_belong_in_meta(self):
@@ -228,13 +238,15 @@ class AppRuleTests(unittest.TestCase):
 
     def test_template_code_in_strings_is_checked(self):
         for body in (
-            'val x = "${com.otus.mail.feature.inbox.data.Messages()}"',
-            'val x = """a ${"b" + com.otus.mail.feature.inbox.data.Messages()} c"""',
+            'val x = "${com.otusfoss.mail.feature.inbox.data.Messages()}"',
+            'val x = """a ${"b" + com.otusfoss.mail.feature.inbox.data.Messages()} c"""',
         ):
             with self.subTest(body=body):
                 self.assertTrue(check("feature.inbox.domain", body))
         self.assertFalse(
-            check("feature.inbox.domain", 'val x = "${size} com.otus.mail.feature.inbox.data.X"')
+            check(
+                "feature.inbox.domain", 'val x = "${size} com.otusfoss.mail.feature.inbox.data.X"'
+            )
         )
 
     def test_domain_cannot_use_compose_resources(self):

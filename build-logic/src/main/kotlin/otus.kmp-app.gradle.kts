@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 // An app's shared module: its common code as the static Shared framework for the iOS app, and an
-// Android library for androidApp. The root project's name says which app: otus-mail is com.otus.mail.
+// Android library for androidApp. The root project's name says which app: otus-mail is com.otusfoss.mail.
 plugins {
     id("org.jetbrains.kotlin.multiplatform")
     id("com.android.kotlin.multiplatform.library")
@@ -10,7 +10,7 @@ plugins {
 }
 
 otusMultiplatform(
-    namespace = "com.otus.${rootProject.name.removePrefix("otus-")}.shared",
+    namespace = "com.otusfoss.${rootProject.name.removePrefix("otus-")}.shared",
     androidResources = true,
     hostTestResources = false,
 )

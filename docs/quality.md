@@ -25,7 +25,7 @@ During development, batch edits and run the linters plus the test classes affect
 
 ```sh
 ./gradlew spotlessCheck detekt ruffCheck ruffFormatCheck
-./gradlew :dateformat:testAndroidHostTest --tests 'com.otus.dateformat.DateFormatterTest'
+./gradlew :dateformat:testAndroidHostTest --tests 'com.otusfoss.core.dateformat.DateFormatterTest'
 ```
 
 Use `qualityCheck` when architecture and tooling checks are also needed. Run `formatAll` when
@@ -59,10 +59,10 @@ version they read comes from `gradle/libs.versions.toml`.
 | --- | --- | --- |
 | `otus.settings` | every settings file | the Google and Maven Central repositories |
 | `otus.quality` | every root project | Spotless, detekt with Meta's `config/detekt.yml`, the architecture check and tool tests, Ruff, `formatAll`, `qualityCheck`, Kover, test sharding |
-| `otus.kmp-library` | Meta's modules without UI | iOS and Android targets, SDKs, JVM 11, warnings as errors, explicit API, the package `com.otus.<module>` |
+| `otus.kmp-library` | Meta's modules without UI | iOS and Android targets, SDKs, JVM 11, warnings as errors, explicit API, the package `com.otusfoss.core.<module>` |
 | `otus.kmp-compose-library` | Meta's Compose modules | the same, with Compose and Android resources |
 | `otus.kmp-app` | an app's `shared` module | the same targets and SDKs, Compose, and the static `Shared` iOS framework |
-| `otus.android-app` | an app's `androidApp` module | namespace and application id `com.otus.<app>`, SDKs, JVM 11, lint, warnings as errors |
+| `otus.android-app` | an app's `androidApp` module | namespace and application id `com.otusfoss.core.<app>`, SDKs, JVM 11, lint, warnings as errors |
 | `otus.screenshots` | modules with Roborazzi tests | the baseline folder as a test input, and `-Proborazzi.record` |
 
 Each repository's root build file adds only its own `checkAll` parts, which CI runs as parallel
@@ -108,7 +108,7 @@ and the architecture check fails when a copy differs from Meta's.
 `tools/check_architecture.py` runs from a repository's root and reads its `config/checks.toml`:
 
 ```toml
-namespace = "com.otus.mail"
+namespace = "com.otusfoss.mail"
 kind = "app"
 layers = ["app", "core", "feature"]
 ```
