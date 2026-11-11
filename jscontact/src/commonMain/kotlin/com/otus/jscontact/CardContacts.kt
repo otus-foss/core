@@ -43,7 +43,7 @@ public data class OnlineService(
     val service: String? = null,
     /** The entity's identifier at the service, an RFC 3986 URI such as `xmpp:alice@example.com`. */
     val uri: String? = null,
-    /** The entity's free-text name at the service, such as `@alice@example2.com`. */
+    /** The entity's free-text name at the service, such as `@alice@example.net`. */
     val user: String? = null,
     val contexts: Map<ContactContext, Boolean>? = null,
     val pref: Int? = null,

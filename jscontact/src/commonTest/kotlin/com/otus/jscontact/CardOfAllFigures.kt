@@ -49,7 +49,7 @@ const val CARD_OF_ALL_FIGURES = """
   },
   "onlineServices": {
     "x1": { "uri": "xmpp:alice@example.com" },
-    "x2": { "service": "Mastodon", "user": "@alice@example2.com", "uri": "https://example2.com/@alice" }
+    "x2": { "service": "Mastodon", "user": "@alice@example.net", "uri": "https://example.net/@alice" }
   },
   "phones": {
     "tel0": {
