@@ -5,12 +5,20 @@ Summary: a few plain sentences on what changes for the apps that use it and why.
 change with "Breaking:" and say what each app must change. Add each public API or behavior change
 under "## Unreleased" in CHANGELOG.md.
 Add screenshots below it when the change is visual.
-Put each issue on its own line. GitHub links only the first issue in a comma list.
+Paired PRs: link each pull request in another repository that this one needs or that needs it,
+one per line. Keep the heading and write "No paired PR" when there is none.
+Closes: one issue per line, because GitHub links only the first issue in a comma list.
 Write "Part of #123" for a step that leaves the issue open.
 -->
 
 # Summary
 
 
+
+# Paired PRs
+
+No paired PR
+
+# Closes
 
 Closes #
