@@ -215,7 +215,7 @@ private fun ToastContent(
             }
         }
     Box {
-        Toast(entry.message.text, action, entry.remaining, lifted = lifted)
+        Toast(entry.message.text, action, entry.remaining.takeUnless { entry.message.sticky }, lifted = lifted)
         if (!reachable) {
             Box(
                 Modifier.matchParentSize().clickable(interactionSource = null, indication = null) {

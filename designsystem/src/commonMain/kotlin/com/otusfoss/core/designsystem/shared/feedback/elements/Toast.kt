@@ -42,14 +42,14 @@ import com.otusfoss.core.designsystem.theme.typography.panelTextStyle
 
 /**
  * A short message in a pill, with an optional [action] at its end. A ring beside the action's
- * label shows the [remaining] share of the toast's time. A [lifted] toast, one being dragged,
- * draws a shade lighter.
+ * label shows the [remaining] share of the toast's time; a toast without a timer passes null and
+ * shows no ring. A [lifted] toast, one being dragged, draws a shade lighter.
  */
 @Composable
 public fun Toast(
     text: String,
     action: UiAction?,
-    remaining: Float,
+    remaining: Float?,
     modifier: Modifier = Modifier,
     lifted: Boolean = false,
 ) {
@@ -86,7 +86,7 @@ public fun Toast(
 @Composable
 private fun ToastButton(
     action: UiAction,
-    remaining: Float,
+    remaining: Float?,
     fill: Color,
 ) {
     val interactions = remember { MutableInteractionSource() }
@@ -106,7 +106,7 @@ private fun ToastButton(
             horizontalArrangement = Arrangement.spacedBy(ToastTokens.actionGap),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            TimerRing(remaining)
+            remaining?.let { TimerRing(it) }
             Text(action.label, style = panelTextStyle(), maxLines = 1)
         }
     }
