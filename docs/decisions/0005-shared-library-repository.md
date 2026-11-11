@@ -19,7 +19,7 @@ no longer builds or uploads packages.
 
 ## Decision
 
-Shared code for Otus Mail and Otus Calendar lives in a third repository, `reazndev/otus-meta`.
+Shared code for Otus Mail and Otus Calendar lives in a third repository, `otus-foss/otus-meta`.
 It publishes versioned Kotlin Multiplatform artifacts `com.otus:<module>` to GitHub Packages. The
 apps pin a released version in their version catalogs. Developers can opt into a composite build
 against a local checkout. CI never uses it.

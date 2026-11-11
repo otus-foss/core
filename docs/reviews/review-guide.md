@@ -33,7 +33,7 @@ Meta and Mail as independent repositories. Never inspect or build Calendar for t
 
 1. Resolve the selected repository paths and verify their remotes. Defaults are sibling
    `otus-meta` and `otus-mail` checkouts under the Otus workspace. Their GitHub repositories are
-   `reazndev/otus-meta` and `reazndev/otus-mail`. Allow explicit path overrides. Run Git and
+   `otus-foss/otus-meta` and `otus-foss/otus-mail`. Allow explicit path overrides. Run Git and
    Gradle from the relevant repository, never the unversioned parent directory.
 2. Record the review start in UTC, branch or ref, full commit SHA, and worktree status for each
    selected repository. Fetch the required remote refs without changing the user's checkout.

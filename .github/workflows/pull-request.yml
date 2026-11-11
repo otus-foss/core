@@ -32,8 +32,9 @@ jobs:
   # The size label and the screenshot comment; see .github/actions/size-label and
   # screenshot-comment.
   facts:
+    # A fork's pull request gets a read-only token, so it skips this job, which writes to the pull request.
     needs: gate
-    if: needs.gate.outputs.ready == 'true'
+    if: needs.gate.outputs.ready == 'true' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-24.04
     permissions:
       contents: read

@@ -206,7 +206,7 @@ against a server yet. Bootstrap mode cannot query mail, so Mail's inbox was chec
 account. CI does not run it yet. Complete iOS builds and runtime checks, including the Keychain,
 require macOS/Xcode.
 
-Contact-photo lookup now uses RFC 9610 and the blob-download API. See [Mail's avatar guide](https://github.com/reazndev/otus-mail/blob/main/docs/avatars.md) for
+Contact-photo lookup now uses RFC 9610 and the blob-download API. See [Mail's avatar guide](https://github.com/otus-foss/otus-mail/blob/main/docs/avatars.md) for
 capability discovery, exact email matching, public-image options, and generated fallbacks.
 The full RFC 9610 client is the `jmap-contacts` module; see [Contacts](contacts.md).
 

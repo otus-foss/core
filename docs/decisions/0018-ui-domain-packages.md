@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted by the user on 2026-10-27 for [Mail issue #174](https://github.com/reazndev/otus-mail/issues/174).
+Accepted by the user on 2026-10-27 for [Mail issue #174](https://github.com/otus-foss/otus-mail/issues/174).
 Extended on 2026-10-28 to group theme code by responsibility.
 The packages ship in 0.10.0.
 

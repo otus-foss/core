@@ -72,8 +72,8 @@ jobs:
       - run: ./gradlew ${{ matrix.tasks }} --console=plain
 
   # Compiles each app against this Meta, at the app branch with this branch's name when there is one,
-  # else its main, so a Meta change that breaks an app shows here before it lands. Each app's
-  # deploy key is a secret here, as OTUS_META_DEPLOY_KEY is in the apps.
+  # else its main, so a Meta change that breaks an app shows here before it lands. The apps are
+  # public, so the checkout needs no key.
   apps:
     needs: changes
     if: needs.changes.outputs.build == 'true'
@@ -84,10 +84,8 @@ jobs:
       matrix:
         include:
           - app: otus-mail
-            key: OTUS_MAIL_DEPLOY_KEY
             tasks: :shared:compileAndroidMain :androidApp:compileDebugKotlin
           - app: otus-calendar
-            key: OTUS_CALENDAR_DEPLOY_KEY
             tasks: :androidApp:compileDebugKotlin
     defaults:
       run:
@@ -99,10 +97,9 @@ jobs:
           persist-credentials: false
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          repository: reazndev/${{ matrix.app }}
+          repository: ${{ github.repository_owner }}/${{ matrix.app }}
           path: ${{ matrix.app }}
           fetch-depth: 0
-          ssh-key: ${{ secrets[matrix.key] }}
           persist-credentials: false
       - name: Use the app partner branch
         env:

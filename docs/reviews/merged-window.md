@@ -27,8 +27,8 @@ LOCK_FILE: ~/.local/state/otus-reviews/daily/run.lock
 WORKTREE_DIR: ~/.local/state/otus-reviews/daily/worktrees
 ```
 
-No input values need editing between runs. The default repositories are `reazndev/otus-meta` and
-`reazndev/otus-mail`, with their sibling checkouts in this workspace. An explicit `SCOPE: meta` or
+No input values need editing between runs. The default repositories are `otus-foss/otus-meta` and
+`otus-foss/otus-mail`, with their sibling checkouts in this workspace. An explicit `SCOPE: meta` or
 `SCOPE: mail` limits a schedule to one repository. Explicit repository/state directory overrides
 are allowed for another machine; the rolling window remains 24 hours. `<SCOPE>` in `STATE_FILE` is
 the run's scope, so `both`, `meta`, and `mail` schedules each keep their own checkpoint, such as

@@ -1,14 +1,14 @@
 # Otus Meta
 
 Development, pull requests, and issues use
-[otus-meta on GitHub](https://github.com/reazndev/otus-meta). See [hosting and CI](docs/hosting.md).
+[otus-meta on GitHub](https://github.com/otus-foss/otus-meta). See [hosting and CI](docs/hosting.md).
 
 Shared Kotlin Multiplatform libraries, suite documentation, and engineering policy for the Otus
 JMAP suite. The two apps live in their own repositories and build these libraries from a Meta
 checkout:
 
-- [Otus Mail](https://github.com/reazndev/otus-mail)
-- [Otus Calendar](https://github.com/reazndev/otus-calendar)
+- [Otus Mail](https://github.com/otus-foss/otus-mail)
+- [Otus Calendar](https://github.com/otus-foss/otus-calendar)
 
 This repository holds code that both apps need: the JMAP client, the design system, and portable
 suite services such as date formatting and avatars. It also holds suite-wide product and design

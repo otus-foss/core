@@ -41,7 +41,7 @@ The callback must not call back into `PushSubscriptions`, whose sync lock is hel
 
 ## Validation and limits
 
-Mail's [Apple push guide](https://github.com/reazndev/otus-mail/blob/feat/apple-push/docs/apple-push.md)
+Mail's [Apple push guide](https://github.com/otus-foss/otus-mail/blob/feat/apple-push/docs/apple-push.md)
 records build configuration, bridge deployment, storage retention, lifecycle behavior and tests.
 iOS background refresh is best effort. A subscription may expire if the app stays closed and
 background refresh does not run. The user must reopen Mail to restore delivery in that case.
