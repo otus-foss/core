@@ -18,7 +18,7 @@ concurrency:
 jobs:
   # Decides whether this run checks anything; see .github/actions/ready-gate.
   gate:
-    runs-on: ubicloud-standard-2
+    runs-on: ubuntu-24.04
     outputs:
       ready: ${{ steps.gate.outputs.ready }}
     steps:
@@ -34,7 +34,7 @@ jobs:
   facts:
     needs: gate
     if: needs.gate.outputs.ready == 'true'
-    runs-on: ubicloud-standard-2
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       issues: write

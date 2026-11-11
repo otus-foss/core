@@ -22,3 +22,5 @@ describes, now to GitHub Packages.
   and are not copied. The first release published to GitHub after the switch is 0.6.0.
 - iOS linking and simulator tests do not run in CI until the macOS jobs are enabled again. They
   were enabled again on 2026-11-04, on GitHub's `macos-15` runners.
+- Linux jobs moved from Ubicloud to GitHub's `ubuntu-24.04` runners on 2026-11-11, ahead of the
+  repositories going public, where GitHub's runners are free.

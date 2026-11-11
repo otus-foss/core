@@ -25,10 +25,12 @@ git clone git@github.com:reazndev/otus-calendar.git
 
 ## Workflows
 
-`.github/workflows` holds each repository's workflows. Linux jobs run on Ubicloud's
-`ubicloud-standard-2` runners. The `ios` jobs run on GitHub's `macos-15` runners with Xcode 26.3,
-because Ubicloud has no macOS runners, and only while the repository variable `IOS_CI` is `on`
-(Settings › Secrets and variables › Actions › Variables). Leave it unset to save macOS minutes.
+`.github/workflows` holds each repository's workflows. Linux jobs run on GitHub's `ubuntu-24.04`
+runners, pinned so the image under the screenshot tests changes only on purpose. The shared
+`setup-build` action first deletes toolchains the builds don't use, because the image leaves about
+14 GB free. The `ios` jobs run on GitHub's `macos-15` runners with Xcode 26.3, and only while the
+repository variable `IOS_CI` is `on` (Settings › Secrets and variables › Actions › Variables).
+Leave it unset to save macOS minutes.
 
 - `quality` runs `checkAll` as parallel jobs, plus the `ios` job; see [quality](quality.md).
 - `coverage` runs the JVM tests with Kover and comments a coverage summary; see

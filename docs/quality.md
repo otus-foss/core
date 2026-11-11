@@ -171,7 +171,7 @@ working tree, so stash unrelated changes first. `commit-msg` checks the message.
 before pushing work that needs it, such as a direct push to `main` or a release tag. Do not skip
 the hooks with `--no-verify`.
 
-**CI runs once per pull request,** on Ubicloud runners, when a pull request that is not a draft
+**CI runs once per pull request,** on GitHub's `ubuntu-24.04` runners, when a pull request that is not a draft
 opens or a draft is marked ready; see [hosting and CI](hosting.md). The repositories cannot
 require checks on their GitHub plan, so CI reports results but cannot block a merge. See
 [decision 0013](decisions/0013-local-quality-gate.md).

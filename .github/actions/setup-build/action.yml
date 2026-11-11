@@ -19,6 +19,14 @@ outputs:
 runs:
   using: composite
   steps:
+    # GitHub's Ubuntu image leaves about 14 GB free, too little for the Android SDK, Gradle caches,
+    # and Robolectric. These preinstalled toolchains are unused here; the Android SDK stays.
+    - name: Free disk space
+      shell: bash
+      run: |
+        sudo rm -rf /usr/share/dotnet /usr/share/swift /usr/local/share/powershell \
+          /opt/ghc /usr/local/.ghcup /opt/hostedtoolcache/CodeQL
+        df -h /
     - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
       with:
         distribution: temurin
