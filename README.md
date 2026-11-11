@@ -1,4 +1,28 @@
-# Otus Core
+![Otus](.github/banner.png)
+
+Otus Core holds the Kotlin Multiplatform libraries that [Otus Mail](https://github.com/otus-foss/mail)
+and [Otus Calendar](https://github.com/otus-foss/calendar) share: the JMAP client, contacts, push,
+the design system, and suite services such as dates and avatars. It also holds the suite's product
+and design documents and the architecture decisions for every repository.
+
+> [!WARNING]
+> Otus Core is still in development. Expect missing features and APIs that change between
+> commits.
+
+## Install
+
+Core is not an app, and there is nothing to install. Each app builds Core from a checkout next to
+its own, so clone all three side by side:
+
+```sh
+git clone https://github.com/otus-foss/core
+git clone https://github.com/otus-foss/mail
+git clone https://github.com/otus-foss/calendar
+```
+
+See [Using Core from an app](docs/consuming.md) for other layouts.
+
+## Development
 
 Development, pull requests, and issues use
 [core on GitHub](https://github.com/otus-foss/core). See [hosting and CI](docs/hosting.md).
@@ -16,7 +40,7 @@ documents and the architecture decisions that apply to every repository. App-spe
 wiring, navigation, databases, and credentials stay in each app. Shared settings and account
 setup screens receive app-owned state and callbacks.
 
-## Status
+### Status
 
 | Module | Artifact | Contents |
 | --- | --- | --- |
@@ -36,18 +60,7 @@ setup screens receive app-owned state and callbacks.
 More modules follow as code moves out of the apps. See
 [the architecture guide](docs/architecture.md) for the planned modules and extraction order.
 
-## Contents
-
-| Path | Purpose |
-| --- | --- |
-| `<module>/` | One Kotlin Multiplatform library per directory, package `com.otusfoss.core.<module>` |
-| `docs/suite/` | Product goals and the mail design palette shared by both apps |
-| `docs/decisions/` | Architecture decision records for the suite and this repository |
-| `docs/consuming.md` | How the apps resolve these libraries in CI and during local development |
-| `docs/releasing.md` | Versioning and changelog rules |
-| `tools/` | Architecture, file-length, and commit-message checkers with regression tests |
-
-## Commands
+### Commands
 
 Requires JDK 21 and Python 3.11+. Android library modules also need the Android SDK.
 
