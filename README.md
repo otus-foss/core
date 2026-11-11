@@ -60,3 +60,8 @@ git config --local core.hooksPath .githooks
 ```
 
 Read [AGENTS.md](AGENTS.md) and [the quality guide](docs/quality.md) before changing code.
+
+## License
+
+GPL-3.0-or-later, with an [additional permission](LICENSE-EXCEPTION.md) that allows app-store
+distribution while the source stays public. See [LICENSE](LICENSE).
