@@ -31,8 +31,8 @@ class CardContactsTest {
                 "x2" to
                     OnlineService(
                         service = "Mastodon",
-                        uri = "https://example2.com/@alice",
-                        user = "@alice@example2.com",
+                        uri = "https://example.net/@alice",
+                        user = "@alice@example.net",
                     ),
             ),
             services,
@@ -121,8 +121,8 @@ private const val FIGURE_26 = """
      },
      "x2": {
        "service": "Mastodon",
-       "user": "@alice@example2.com",
-       "uri": "https://example2.com/@alice"
+       "user": "@alice@example.net",
+       "uri": "https://example.net/@alice"
      }
    }
 """
