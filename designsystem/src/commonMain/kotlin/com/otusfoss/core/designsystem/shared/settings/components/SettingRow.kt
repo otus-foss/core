@@ -14,6 +14,8 @@ import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -128,9 +130,16 @@ private fun Modifier.rowButton(onClick: () -> Unit): Modifier {
 }
 
 /**
+ * How tall a [SettingToggleRow] is, for a list that packs its rows, such as one inside a card. A
+ * local, because the row's own parameters are already as many as a function should take.
+ */
+public val LocalToggleRowDensity: ProvidableCompositionLocal<RowDensity> = compositionLocalOf { RowDensity.Regular }
+
+/**
  * A settings row that turns something on or off; the whole row is the switch. An [info] button
  * after the title explains the setting on request, so the [description] can stay one short line.
- * Inside [DependentSettings] that is not enabled, its switch keeps its position, dimmed.
+ * Inside [DependentSettings] that is not enabled, its switch keeps its position, dimmed. Its
+ * height follows [LocalToggleRowDensity].
  */
 @Composable
 public fun SettingToggleRow(
@@ -150,7 +159,7 @@ public fun SettingToggleRow(
         person = null,
         icon?.let { { LeadingSymbol(it, enabled = enabled) } },
         trailing = { ToggleSwitch(checked, enabled = enabled) },
-        density = RowDensity.Regular,
+        density = LocalToggleRowDensity.current,
         modifier =
             modifier
                 .toggleable(

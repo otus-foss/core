@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import com.otusfoss.core.designsystem.theme.colors.LocalOnSelectedFill
 import com.otusfoss.core.designsystem.theme.colors.OtusColors
 import com.otusfoss.core.designsystem.theme.motion.MotionSpeed
 import com.otusfoss.core.designsystem.theme.motion.motionTween
@@ -34,8 +35,11 @@ internal fun ToggleSwitch(
     val thumb by animateDpAsState(if (checked) travel else 0.dp, motionTween(MotionSpeed.Fast))
     val track by animateColorAsState(
         when {
-            !checked -> OtusColors.bgLight
+            // On `selectedFill` the usual track would be the surface's own color.
+            !checked -> if (LocalOnSelectedFill.current) OtusColors.bgDark else OtusColors.bgLight
+
             enabled -> OtusColors.accentLight
+
             else -> OtusColors.accentDark
         },
         motionTween(MotionSpeed.Fast),

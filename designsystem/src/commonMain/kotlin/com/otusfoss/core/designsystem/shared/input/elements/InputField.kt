@@ -15,7 +15,7 @@ import com.otusfoss.core.designsystem.theme.tokens.core.Spacing
 import com.otusfoss.core.designsystem.theme.tokens.overlays.SheetTokens
 import com.otusfoss.core.designsystem.theme.typography.panelTextStyle
 
-/** Labelled single-line form input, with its [note] below. */
+/** Labelled single-line form input, with its [note] below; a note without text shows only its mark. */
 @Composable
 public fun InputField(
     label: String,
@@ -29,7 +29,8 @@ public fun InputField(
     Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Spacing.iconGap)) {
         FieldLabel(label)
         InputBox(value, onValueChange, label, InputLook(placeholder, kind, valid = note?.valid))
-        if (note != null) {
+        // A note may carry only its mark, such as a server that answered.
+        if (note != null && note.text.isNotEmpty()) {
             Text(
                 note.text,
                 Modifier
