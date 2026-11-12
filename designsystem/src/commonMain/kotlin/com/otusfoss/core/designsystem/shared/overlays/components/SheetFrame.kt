@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,6 +25,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import com.otusfoss.core.designsystem.resources.Res
 import com.otusfoss.core.designsystem.resources.symbol_close
 import com.otusfoss.core.designsystem.shared.controls.elements.ActionButton
@@ -39,6 +41,7 @@ import com.otusfoss.core.designsystem.theme.tokens.core.Sizes
 import com.otusfoss.core.designsystem.theme.tokens.core.Spacing
 import com.otusfoss.core.designsystem.theme.tokens.overlays.ChoiceSheetTokens
 import com.otusfoss.core.designsystem.theme.tokens.overlays.SheetTokens
+import com.otusfoss.core.designsystem.theme.typography.panelTextStyle
 
 /**
  * A modal sheet that slides up from the bottom edge, titled [title]. Its [done] action, the scrim,
@@ -46,7 +49,7 @@ import com.otusfoss.core.designsystem.theme.tokens.overlays.SheetTokens
  * others run [onDismiss]. Without a [closeButton], the title is centered and [done] is a text button
  * at the header's end, with [leadingAction] opposite it on the same slide-away-then-done path. With
  * a [closeButton], the title starts the header after [titleLeading], such as the avatar of the
- * person the sheet is about, and a ✕ ends it, for choices that act at once, and [done] becomes a
+ * person the sheet is about, over an optional [subtitle], such as their address, and a ✕ ends it, for choices that act at once, and [done] becomes a
  * full-width primary button under [content]. The sheet is as tall as its content, up to most of
  * the screen; content with a weighted child fills that height. The keyboard lifts the content, and
  * the sheet never gets shorter than it has been, so its top stays put when the keyboard closes. A
@@ -60,11 +63,12 @@ public fun SheetFrame(
     closeButton: Boolean = false,
     leadingAction: (@Composable (done: () -> Unit) -> Unit)? = null,
     titleLeading: (@Composable () -> Unit)? = null,
+    subtitle: String? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     SheetSurface(title, onDismiss, onDone = { done?.onClick?.invoke() }) { close, finish, closing ->
         if (closeButton) {
-            ClosableHeader(title, titleLeading, close)
+            ClosableHeader(title, subtitle, titleLeading, close)
             content()
             if (done != null) ConfirmButton(done, finish, closing)
         } else {
@@ -152,6 +156,7 @@ public fun SheetHeaderAction(
 @Composable
 private fun ClosableHeader(
     title: String,
+    subtitle: String?,
     leading: (@Composable () -> Unit)?,
     onClose: () -> Unit,
 ) {
@@ -166,12 +171,24 @@ private fun ClosableHeader(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             if (leading != null) Box(Modifier.padding(end = SheetTokens.gap)) { leading() }
-            Text(
-                title,
-                Modifier.weight(1f).semantics { heading() },
-                fontSize = SheetTokens.titleSize,
-                fontWeight = FontWeight.SemiBold,
-            )
+            Column(Modifier.weight(1f)) {
+                Text(
+                    title,
+                    Modifier.semantics { heading() },
+                    fontSize = SheetTokens.titleSize,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                if (subtitle != null) {
+                    Text(
+                        subtitle,
+                        style = panelTextStyle(),
+                        color = OtusColors.text2,
+                        fontSize = SheetTokens.detailSize,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+            }
             IconButton("Close", onClose, look = IconButtonLook.Plain) { Symbol(Res.drawable.symbol_close) }
         }
     }
