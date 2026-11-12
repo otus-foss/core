@@ -45,11 +45,12 @@ import com.otusfoss.core.designsystem.theme.tokens.overlays.SheetTokens
  * Back, and swiping down anywhere on it all slide it away; then [done] runs its action and the
  * others run [onDismiss]. Without a [closeButton], the title is centered and [done] is a text button
  * at the header's end, with [leadingAction] opposite it on the same slide-away-then-done path. With
- * a [closeButton], the title starts the header and a ✕ ends it, for choices that act at once, and
- * [done] becomes a full-width primary button under [content]. The sheet is as tall as its content,
- * up to most of the screen; content with a weighted child fills that height. The keyboard lifts the
- * content, and the sheet never gets shorter than it has been, so its top stays put when the keyboard
- * closes. A sheet opened from this one's content starts at least as tall.
+ * a [closeButton], the title starts the header after [titleLeading], such as the avatar of the
+ * person the sheet is about, and a ✕ ends it, for choices that act at once, and [done] becomes a
+ * full-width primary button under [content]. The sheet is as tall as its content, up to most of
+ * the screen; content with a weighted child fills that height. The keyboard lifts the content, and
+ * the sheet never gets shorter than it has been, so its top stays put when the keyboard closes. A
+ * sheet opened from this one's content starts at least as tall.
  */
 @Composable
 public fun SheetFrame(
@@ -58,11 +59,12 @@ public fun SheetFrame(
     done: UiAction? = UiAction("Done", onClick = onDismiss),
     closeButton: Boolean = false,
     leadingAction: (@Composable (done: () -> Unit) -> Unit)? = null,
+    titleLeading: (@Composable () -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     SheetSurface(title, onDismiss, onDone = { done?.onClick?.invoke() }) { close, finish, closing ->
         if (closeButton) {
-            ClosableHeader(title, close)
+            ClosableHeader(title, titleLeading, close)
             content()
             if (done != null) ConfirmButton(done, finish, closing)
         } else {
@@ -150,6 +152,7 @@ public fun SheetHeaderAction(
 @Composable
 private fun ClosableHeader(
     title: String,
+    leading: (@Composable () -> Unit)?,
     onClose: () -> Unit,
 ) {
     Box(Modifier.fillMaxWidth()) {
@@ -162,6 +165,7 @@ private fun ClosableHeader(
             ),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            if (leading != null) Box(Modifier.padding(end = SheetTokens.gap)) { leading() }
             Text(
                 title,
                 Modifier.weight(1f).semantics { heading() },
