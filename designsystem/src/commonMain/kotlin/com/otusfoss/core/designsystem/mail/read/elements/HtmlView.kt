@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.LayoutDirection
 import com.otusfoss.core.designsystem.mail.read.html.HtmlQuote
@@ -48,6 +49,9 @@ public expect fun HtmlView(
     insets: PaddingValues = PaddingValues(),
 )
 
+/** How many frames [HtmlView]'s arguments hold still before its page is built. */
+private const val SETTLE_FRAMES = 2
+
 /** A [sandboxedHtml] [document] and whether it may load remote content, so its view can match it. */
 internal data class SandboxedPage(
     val document: String,
@@ -56,7 +60,9 @@ internal data class SandboxedPage(
 
 /**
  * [HtmlView]'s page, built off the main thread since a message can be large, or null until the
- * first one is ready. While a change of an argument rebuilds it, the last page stays.
+ * first one is ready. While a change of an argument rebuilds it, the last page stays. Arguments
+ * that change frame after frame, such as [insets] being measured, give one page, since each page
+ * is a new view that loads the document again.
  */
 @Composable
 internal fun rememberSandboxedPage(
@@ -69,6 +75,9 @@ internal fun rememberSandboxedPage(
 ): SandboxedPage? {
     val palette = OtusColors.palette
     val page by produceState<SandboxedPage?>(null, html, loadRemote, palette, placeholders, quote, insets, key) {
+        // The room around a page arrives over a few frames, as the parts over it are measured. Each
+        // new room restarts this, so the page is built once, for the room that stayed.
+        repeat(SETTLE_FRAMES) { withFrameNanos {} }
         value =
             withContext(Dispatchers.Default) {
                 val spacers = insets.spacers()
