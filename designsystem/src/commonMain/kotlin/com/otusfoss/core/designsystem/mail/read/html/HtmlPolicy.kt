@@ -3,9 +3,10 @@ package com.otusfoss.core.designsystem.mail.read.html
 /**
  * [html] sealed as the Read view seals a message whose remote content is off, for a view that
  * shows it outside the Read view, such as a print: it loads nothing from the network, DNS
- * prefetching is off, and its `<link>` elements are inert.
+ * prefetching is off, its `<link>` elements are inert, and its frames, plugins, and forms do
+ * nothing, as [inertFramesAndForms] describes.
  */
-public fun offlineHtml(html: String): String = policyHead(loadRemote = false) + inertLinks(html)
+public fun offlineHtml(html: String): String = policyHead(loadRemote = false) + inertLinks(inertFramesAndForms(html))
 
 /**
  * The Content Security Policy that blocks every outside resource except, with [loadRemote],

@@ -7,6 +7,9 @@
 - JMAP: a download sends its media type as `Accept` only when it is a plain `type/subtype`, and
   `application/octet-stream` otherwise, so an attachment with an unusual media type now downloads.
   A request the HTTP engine refuses to build fails as `JmapException.NotJmap`.
+- Design system: frames, plugins, and forms in a message no longer do anything. `HtmlView` and
+  `offlineHtml` rename their tags to inert ones and disable form controls, which still show. On
+  Android, autofill skips the message view.
 - Design system: first-run components in `shared/onboarding`. `OnboardingFrame` holds the back
   chevron's slot and `StepProgress`, whose fill animates and whose number rolls, for a whole run;
   `OnboardingStepBody` and `OnboardingHeroBody` are the steps inside it, and `PresetCard` with

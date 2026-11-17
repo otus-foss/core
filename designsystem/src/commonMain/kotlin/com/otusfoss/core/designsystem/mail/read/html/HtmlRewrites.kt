@@ -13,18 +13,12 @@ internal fun withImagePlaceholders(
     html: String,
     key: RenderKey,
 ): String {
-    val remote = scanHtml(html).tags.filter { it.name == "img" && !it.closing && isRemote(it) }
-    if (remote.isEmpty()) return html
-    return buildString {
-        // A plain loop: the markup between images is copied piece by piece, and each piece needs the last end.
-        var last = 0
-        remote.forEach { image ->
-            appendRange(html, last, image.start)
-            append(placeholder(image.text, key))
-            last = image.end
-        }
-        appendRange(html, last, html.length)
-    }
+    val placeholders =
+        scanHtml(html)
+            .tags
+            .filter { it.name == "img" && !it.closing && isRemote(it) }
+            .map { HtmlEdit(it.start, it.end, placeholder(it.text, key)) }
+    return html.withEdits(placeholders)
 }
 
 /** Whether the image [tag]'s `src` is a web address, which a placeholder stands in for. */
