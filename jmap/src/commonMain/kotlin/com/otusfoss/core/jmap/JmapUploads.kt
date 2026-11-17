@@ -8,7 +8,6 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
 import io.ktor.http.content.ByteArrayContent
-import kotlinx.io.IOException
 import kotlinx.serialization.Serializable
 
 /** A blob the server stored (RFC 8620, section 6.1). Reference it by [blobId] in later calls. */
@@ -34,7 +33,7 @@ internal class JmapUploads(
         checkUploadSize(session, bytes.size)
         val target = uploadTarget(session, accountId)
         val response =
-            try {
+            jmapSending {
                 http
                     .preparePost(target) {
                         header(HttpHeaders.Authorization, auth.header())
@@ -42,8 +41,6 @@ internal class JmapUploads(
                         setBody(ByteArrayContent(bytes, ContentType.parse(mediaType)))
                         blobTransfer()
                     }.execute { RawResponse(it.status.value, location = null, it.limitedText(policy.maxResponseBytes)) }
-            } catch (error: IOException) {
-                throw JmapException.Unreachable(error)
             }
         // Redirects are not followed, so a moved endpoint fails here without resending the blob.
         response.requireSuccess()

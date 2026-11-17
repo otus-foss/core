@@ -113,6 +113,24 @@ class JmapDownloadTest {
         }
 
     @Test
+    fun acceptCarriesOnlyAPlainMediaType() =
+        runTest {
+            val accepts = mutableListOf<String?>()
+            val client =
+                JmapClient(
+                    MockEngine { request ->
+                        accepts += request.headers[HttpHeaders.Accept]
+                        respond(byteArrayOf(1), headers = pngHeaders)
+                    },
+                )
+            val target = session("/download/{accountId}/{blobId}/{name}?type={type}")
+            listOf("image/png\u0001", "image/png; name=\"a.png\"").forEach { type ->
+                client.download(target, ADA, "contacts", "b1", type, 10)
+            }
+            assertEquals(listOf<String?>("application/octet-stream", "image/png"), accepts)
+        }
+
+    @Test
     fun dotSegmentIdsAreRefusedWithoutARequest() =
         runTest {
             val client = JmapClient(MockEngine { error("A dot segment must not reach the server") })
