@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- JMAP: a URL with a broken percent escape, whether typed, sent in a redirect, or named in the
+  session, now throws `JmapException.InsecureUrl` instead of an exception callers do not catch.
 - Design system: first-run components in `shared/onboarding`. `OnboardingFrame` holds the back
   chevron's slot and `StepProgress`, whose fill animates and whose number rolls, for a whole run;
   `OnboardingStepBody` and `OnboardingHeroBody` are the steps inside it, and `PresetCard` with

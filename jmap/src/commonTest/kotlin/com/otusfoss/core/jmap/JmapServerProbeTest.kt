@@ -6,6 +6,7 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -39,5 +40,12 @@ class JmapServerProbeTest {
             assertFalse(JmapClient(MockEngine { respond("", HttpStatusCode.NotFound) }).isJmapServer(wellKnown))
             assertFalse(JmapClient(MockEngine { json("""{"capabilities": {}}""") }).isJmapServer(wellKnown))
             assertFalse(JmapClient(MockEngine { respond("<html></html>") }).isJmapServer(wellKnown))
+        }
+
+    @Test
+    fun anAddressWithABrokenEscapeIsRefused() =
+        runTest {
+            val engine = MockEngine { json(session()) }
+            assertFailsWith<JmapException.InsecureUrl> { JmapClient(engine).isJmapServer("https://a.bc/?%") }
         }
 }
