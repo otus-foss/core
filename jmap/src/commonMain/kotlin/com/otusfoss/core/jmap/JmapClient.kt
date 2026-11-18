@@ -13,7 +13,6 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.Url
 import io.ktor.http.contentType
-import kotlinx.io.IOException
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonArray
@@ -162,7 +161,7 @@ public class JmapClient(
         auth: JmapAuth?,
         body: String?,
     ): RawResponse =
-        try {
+        jmapSending {
             http
                 .prepareRequest {
                     this.method = method
@@ -180,8 +179,6 @@ public class JmapClient(
                         response.limitedText(policy.maxResponseBytes),
                     )
                 }
-        } catch (error: IOException) {
-            throw JmapException.Unreachable(error)
         }
 
     private companion object {

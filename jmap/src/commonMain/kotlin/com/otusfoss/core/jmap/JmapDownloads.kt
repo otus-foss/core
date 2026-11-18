@@ -5,11 +5,11 @@ import io.ktor.client.request.header
 import io.ktor.client.request.prepareGet
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsChannel
+import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
 import io.ktor.utils.io.readAvailable
-import kotlinx.io.IOException
 
 public class JmapBlob(
     public val bytes: ByteArray,
@@ -67,19 +67,17 @@ internal class JmapDownloads(
     ): T {
         require(accountId in session.accounts)
         val target = downloadTarget(session, accountId, blobId, mediaType, name)
-        return try {
+        return jmapSending {
             http
                 .prepareGet(target) {
                     header(HttpHeaders.Authorization, auth.header())
-                    header(HttpHeaders.Accept, mediaType)
+                    header(HttpHeaders.Accept, acceptValue(mediaType))
                     blobTransfer()
                 }.execute { response ->
                     if (response.status == HttpStatusCode.NotFound) throw JmapException.BlobNotFound(blobId)
                     RawResponse(response.status.value, location = null, text = "").requireSuccess()
                     read(response)
                 }
-        } catch (error: IOException) {
-            throw JmapException.Unreachable(error)
         }
     }
 
@@ -97,6 +95,22 @@ internal class JmapDownloads(
         return urls.trustedTarget(session, expandUriTemplate(template, values))
     }
 }
+
+/**
+ * [mediaType] without parameters when it is a plain `type/subtype` (RFC 7230 tokens), else
+ * `application/octet-stream`. The type comes from the message's sender, and an HTTP engine refuses
+ * a header value with control or non-ASCII characters.
+ */
+private fun acceptValue(mediaType: String): String =
+    mediaType
+        .substringBefore(';')
+        .trim()
+        .takeIf(MEDIA_TYPE::matches)
+        ?: ContentType.Application.OctetStream.toString()
+
+private const val TOKEN = "[A-Za-z0-9!#\$%&'*+.^_`|~-]+"
+
+private val MEDIA_TYPE = Regex("$TOKEN/$TOKEN")
 
 /** The media type the server sent, without parameters; [requested] when it sent none. */
 private fun HttpResponse.mediaType(requested: String): String =
