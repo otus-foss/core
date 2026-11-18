@@ -20,14 +20,6 @@ import com.otusfoss.core.designsystem.theme.tokens.content.ReadTokens
 import com.otusfoss.core.designsystem.theme.tokens.rows.StripTokens
 import com.otusfoss.core.designsystem.theme.typography.panelTextStyle
 
-/** One mail in a [MoreMail] list: its [subject], the start of its text, its [date], and whether it is [unread]. */
-public class MailLine(
-    public val subject: String,
-    public val preview: String,
-    public val date: String,
-    public val unread: Boolean = false,
-)
-
 /**
  * Other mail that belongs with the open message, such as more from its sender, as a section that
  * sits straight on a panel: a header with the [title] that runs [onToggle], and, while [open], one
