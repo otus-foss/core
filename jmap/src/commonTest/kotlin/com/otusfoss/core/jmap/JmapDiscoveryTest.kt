@@ -193,6 +193,20 @@ class JmapDiscoveryTest {
             assertFailsWith<JmapException.TooManyRedirects> { JmapClient(loop).session(wellKnown, ADA) }
             assertFailsWith<JmapException.InsecureUrl> { JmapClient(loop).session("not a url", ADA) }
         }
+
+    @Test
+    fun aBrokenEscapeInTheApiUrlIsRefused() =
+        runTest {
+            val engine = MockEngine { json(session(apiUrl = "/jmap/?a=%zz")) }
+            assertFailsWith<JmapException.InsecureUrl> { JmapClient(engine).session(wellKnown, ADA) }
+        }
+
+    @Test
+    fun aBrokenEscapeInARedirectIsRefused() =
+        runTest {
+            val engine = MockEngine { redirect("/jmap/session?x=%zz") }
+            assertFailsWith<JmapException.InsecureUrl> { JmapClient(engine).session(wellKnown, ADA) }
+        }
 }
 
 /** The fixture session with the given blob template properties added. */

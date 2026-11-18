@@ -6,6 +6,7 @@ import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsChannel
 import io.ktor.http.URLBuilder
+import io.ktor.http.URLDecodeException
 import io.ktor.http.URLParserException
 import io.ktor.http.URLProtocol
 import io.ktor.http.Url
@@ -47,6 +48,7 @@ internal class JmapUrls(
             null
         }
 
+    /** Ktor reports a bad URL through several exception types; callers only expect a [JmapException]. */
     private fun build(
         text: String,
         block: URLBuilder.() -> Unit,
@@ -54,6 +56,10 @@ internal class JmapUrls(
         try {
             URLBuilder().apply(block).build()
         } catch (error: URLParserException) {
+            throw JmapException.InsecureUrl(text, error)
+        } catch (error: URLDecodeException) {
+            throw JmapException.InsecureUrl(text, error)
+        } catch (error: IllegalArgumentException) {
             throw JmapException.InsecureUrl(text, error)
         }
 
