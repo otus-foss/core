@@ -29,12 +29,15 @@ class HtmlInertTest {
     }
 
     @Test
-    fun aFrameDropsTheFallbackTextABrowserNeverShows() {
+    fun aFramesFallbackMarkupStaysForTheOtherChecksToRead() {
         assertEquals(
-            "<otus-inert-iframe></otus-inert-iframe><p>After</p>",
+            "<otus-inert-iframe><link rel=preconnect href=https://example.org/></otus-inert-iframe><p>After</p>",
             inertFramesAndForms("<iframe><link rel=preconnect href=https://example.org/></iframe><p>After</p>"),
         )
-        assertEquals("<p>Hi</p><otus-inert-iframe>", inertFramesAndForms("<p>Hi</p><iframe><img src=x>"))
+        assertEquals(
+            "<otus-inert-iframe><otus-inert-link rel=preconnect href=https://example.org/></otus-inert-iframe>",
+            inertLinks(inertFramesAndForms("<iframe><link rel=preconnect href=https://example.org/></iframe>")),
+        )
     }
 
     @Test
@@ -58,15 +61,37 @@ class HtmlInertTest {
     }
 
     @Test
-    fun tagsInTextCommentsAndStylesAreKept() {
+    fun escapedTextStyleSheetsAndLongerNamesAreKept() {
         val html =
-            "<!-- <iframe srcdoc=x><form> --><style>iframe, form > input { color: red }</style>" +
-                "<p title=\"<embed src=x>\">&lt;iframe&gt; and &lt;form&gt;</p><formula><frames>"
+            "<style>iframe, form > input { color: red }</style>" +
+                "<p>&lt;iframe&gt; and &lt;form&gt;</p><formula><frames><iframes>"
         assertEquals(html, inertFramesAndForms(html))
+    }
+
+    @Test
+    fun theSameLettersInACommentOrAnAttributeChangeToo() {
+        assertEquals(
+            "<!-- <otus-inert-iframe srcdoc=x> --><p title=\"<otus-inert-embed src=x>\">Hi</p>",
+            inertFramesAndForms("<!-- <iframe srcdoc=x> --><p title=\"<embed src=x>\">Hi</p>"),
+        )
+    }
+
+    @Test
+    fun aFrameOrFormIsInertHoweverTheMarkupBeforeItReads() {
+        listOf(
+            "<!-- --!><iframe srcdoc=\"$PRECONNECT\"></iframe> -->",
+            "</ a=\"><iframe srcdoc=\"$PRECONNECT\"></iframe>\">",
+            "<a x=y=\"><iframe srcdoc=\"$PRECONNECT\"></iframe>\">",
+            "<a =\"><form action=https://example.org/x><input></form>\">",
+            "<\u00e9 a=\"><iframe srcdoc=\"$PRECONNECT\"></iframe>\">",
+        ).forEach { html ->
+            assertFalse(LIVE_TAG.containsMatchIn(inertFramesAndForms(html)), html)
+        }
     }
 
     private companion object {
         const val PRECONNECT = "&lt;link rel=preconnect href=https://example.org/&gt;"
         val FRAME_TAG = Regex("<iframe(?=[\\s/>])", RegexOption.IGNORE_CASE)
+        val LIVE_TAG = Regex("<(?:iframe|form)(?=[\\s/>])", RegexOption.IGNORE_CASE)
     }
 }
