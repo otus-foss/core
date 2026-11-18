@@ -17,14 +17,22 @@ class HtmlScanTest {
 
     @Test
     fun tagsWithoutAnEndTakeLinearTime() {
-        listOf("<a ".repeat(70_000), "<style>".repeat(30_000), "<img ".repeat(40_000), "<a color=".repeat(20_000))
-            .forEach { html ->
-                withinBudget {
-                    hasOwnColors(html)
-                    hasOwnLayout(html)
-                    sandboxedHtml(html, loadRemote = false, OtusPalette.Otus, key, placeholders = true)
-                }
+        listOf(
+            "<a ".repeat(70_000),
+            "<style>".repeat(30_000),
+            "<img ".repeat(40_000),
+            "<a color=".repeat(20_000),
+            "<iframe ".repeat(70_000),
+            "<iframe>".repeat(40_000),
+            "<iframe src=x></iframe><input>".repeat(20_000),
+        ).forEach { html ->
+            withinBudget {
+                hasOwnColors(html)
+                hasOwnLayout(html)
+                sandboxedHtml(html, loadRemote = false, OtusPalette.Otus, key, placeholders = true)
+                offlineHtml(html)
             }
+        }
     }
 
     @Test

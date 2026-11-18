@@ -10,6 +10,7 @@ import com.otusfoss.core.designsystem.mail.read.html.HtmlQuote
 import com.otusfoss.core.designsystem.mail.read.html.HtmlScan
 import com.otusfoss.core.designsystem.mail.read.html.RenderKey
 import com.otusfoss.core.designsystem.mail.read.html.css
+import com.otusfoss.core.designsystem.mail.read.html.inertFramesAndForms
 import com.otusfoss.core.designsystem.mail.read.html.inertLinks
 import com.otusfoss.core.designsystem.mail.read.html.placeholderStyle
 import com.otusfoss.core.designsystem.mail.read.html.policyHead
@@ -89,6 +90,10 @@ internal fun rememberSandboxedPage(
  * keeps the white page and black text its author designed against, so it stays readable on every
  * platform and theme.
  *
+ * Frames, plugins, and forms in the body and the quote always become inert, as
+ * [inertFramesAndForms] describes: a frame would open a document this function never prepares, and
+ * a form would send what the user typed to the sender.
+ *
  * Without [loadRemote], DNS prefetching is off and the document's `<link>` elements become inert:
  * the policy does not cover `dns-prefetch` or `preconnect` hints, which would otherwise reach the
  * sender's server, and every other link it could load is blocked anyway. With [placeholders] it
@@ -104,7 +109,8 @@ internal fun sandboxedHtml(
     quote: HtmlQuote? = null,
     spacers: HtmlSpacers = HtmlSpacers(),
 ): String {
-    val document = if (quote == null) html else sealedHtml(html) + quoteFold(quote, palette, key)
+    val document =
+        inertFramesAndForms(if (quote == null) html else sealedHtml(html) + quoteFold(quote, palette, key))
     val blocked = !loadRemote && placeholders
     val inert = if (loadRemote) document else inertLinks(document)
     val body = if (blocked) withImagePlaceholders(inert, key) else inert
