@@ -88,11 +88,11 @@ with `{domain}` in place of the registrable website domain, such as
 `https://icons.duckduckgo.com/ip3/{domain}.ico`. While a proxy is set, the service asks only the
 proxy. A miss leaves initials and never falls back to the website. The proxy receives the website
 domain, never a complete email address, saved login ID, password, or account authorization header.
-Its requests go through the same public loader as website icons; `isPublicAvatarUrl` lets an app
-check an address against the loader's rules before saving it. An `IconProxy` with a null `iconUrl`
-stands for a service the user chose but cannot reach: it loads no icons, and the website is still
-never asked, even for a contact styled with `AvatarMark.Website`. Icon cache keys include the proxy
-URL, so changing proxies looks again.
+Its requests go through the same public loader as website icons; `isPublicHttpsUrl` lets an app
+check an address against the loader's rules before saving it or sending its own request there. An
+`IconProxy` with a null `iconUrl` stands for a service the user chose but cannot reach: it loads no
+icons, and the website is still never asked, even for a contact styled with `AvatarMark.Website`.
+Icon cache keys include the proxy URL, so changing proxies looks again.
 
 Icon services such as Bulwark answer a 1×1 PNG for a domain without an icon. The service treats any
 PNG one pixel wide or tall as no image. Contacts always take priority. No message-body images or
