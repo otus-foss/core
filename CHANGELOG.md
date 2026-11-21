@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Avatar: `isPublicHttpsUrl` is public. It is the loader's URL check, formerly the internal
+  `isPublicAvatarUrl`: HTTPS on port 443 at a public name, without a user or password. Mail checks
+  a list's one-click unsubscribe address with it.
 - JMAP: a URL with a broken percent escape, whether typed, sent in a redirect, or named in the
   session, now throws `JmapException.InsecureUrl` instead of an exception callers do not catch.
 - JMAP: a download sends its media type as `Accept` only when it is a plain `type/subtype`, and

@@ -13,8 +13,12 @@ internal fun avatarIconDomain(email: String): String? {
     return email.substringAfter('@').takeIf(::isPublicAvatarHost)?.lowercase()
 }
 
-/** Whether the public loader may request [url], so callers can check an address before saving it. */
-internal fun isPublicAvatarUrl(url: String): Boolean = runCatching { Url(url) }.getOrNull()?.isPublicImageUrl() == true
+/**
+ * Whether [url] is HTTPS on the default port at a public name, without a user or password. The
+ * public avatar loader requests only such addresses, and an app checks any other address a stranger
+ * wrote, such as a list's unsubscribe address, before it sends a request there.
+ */
+public fun isPublicHttpsUrl(url: String): Boolean = runCatching { Url(url) }.getOrNull()?.isPublicImageUrl() == true
 
 /** Only the default HTTPS port, so a public name whose DNS answer is private cannot probe other ports. */
 internal fun Url.isPublicImageUrl(): Boolean =
