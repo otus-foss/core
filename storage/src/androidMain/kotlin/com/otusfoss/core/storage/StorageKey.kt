@@ -6,6 +6,7 @@ import android.security.keystore.KeyPermanentlyInvalidatedException
 import android.security.keystore.KeyProperties
 import java.io.IOException
 import java.security.GeneralSecurityException
+import java.security.InvalidAlgorithmParameterException
 import java.security.KeyStore
 import java.security.ProviderException
 import java.security.SecureRandom
@@ -20,10 +21,22 @@ import kotlin.io.encoding.Base64
 /** Wraps the storage key for keeping in preferences. Production uses the Android Keystore. */
 internal interface KeyWrap {
     /** Throws [GeneralSecurityException] when the key cannot be wrapped. */
-    fun wrap(key: ByteArray): String
+    fun wrap(key: ByteArray): Wrapped
 
     fun unwrap(wrapped: String): Unwrapped
 }
+
+/** A wrapped key, and whether wrapping it made the Keystore key, as on the device's first start. */
+internal class Wrapped(
+    val text: String,
+    val madeWrappingKey: Boolean,
+)
+
+/** The storage key and how long it lasts. */
+internal class StorageKey(
+    val key: SecretKey,
+    val life: KeyLife,
+)
 
 internal sealed interface Unwrapped {
     class Key(
@@ -41,7 +54,7 @@ internal sealed interface Unwrapped {
 internal fun storageKey(
     preferences: SharedPreferences,
     wrap: KeyWrap,
-): SecretKey =
+): StorageKey =
     storageKey(
         WrappedKey(
             read = { preferences.getString(WRAPPED_KEY, null) },
@@ -53,40 +66,56 @@ internal fun storageKey(
 /** Where the wrapped storage key is kept. */
 internal class WrappedKey(
     val read: () -> String?,
-    val write: (String) -> Unit,
+    /** False when the key could not be saved. */
+    val write: (String) -> Boolean,
 )
 
 /**
  * The device's storage key, kept wrapped in [saved]. A first use, or a key that is lost for good,
- * makes a new one. While the Keystore fails, the key lasts for this process only and the saved
- * one is left alone, so what was sealed reads again once the Keystore answers.
+ * makes a new one. It is the device's [KeyLife.First] key only when the Keystore key is new too:
+ * the app's files cannot add or remove a Keystore key, so deleting the saved key does not make a
+ * start look like the first. While the Keystore fails, the key lasts for this process only and
+ * the saved one is left alone, so what was sealed reads again once the Keystore answers.
  */
 internal fun storageKey(
     saved: WrappedKey,
     wrap: KeyWrap,
-): SecretKey {
+): StorageKey {
     val unwrapped = saved.read()?.let(wrap::unwrap)
-    if (unwrapped is Unwrapped.Key) return SecretKeySpec(unwrapped.bytes, AES)
+    if (unwrapped is Unwrapped.Key) return StorageKey(SecretKeySpec(unwrapped.bytes, AES), KeyLife.Kept)
     val fresh = ByteArray(KEY_BYTES).also(SecureRandom()::nextBytes)
-    if (unwrapped !is Unwrapped.Failed) {
-        try {
-            saved.write(wrap.wrap(fresh))
-        } catch (_: GeneralSecurityException) {
-            // Without a Keystore the key cannot be kept, so it lasts for this process.
+    val life =
+        if (unwrapped is Unwrapped.Failed) {
+            KeyLife.ProcessOnly
+        } else {
+            try {
+                val wrapped = wrap.wrap(fresh)
+                when {
+                    // A key that was never saved opens nothing at the next start.
+                    !saved.write(wrapped.text) -> KeyLife.ProcessOnly
+
+                    wrapped.madeWrappingKey -> KeyLife.First
+
+                    else -> KeyLife.Kept
+                }
+            } catch (_: GeneralSecurityException) {
+                // Without a Keystore the key cannot be kept, so it lasts for this process.
+                KeyLife.ProcessOnly
+            }
         }
-    }
-    return SecretKeySpec(fresh, AES)
+    return StorageKey(SecretKeySpec(fresh, AES), life)
 }
 
 /** AES-256-GCM with a non-exportable Android Keystore key under [alias]. */
 internal class KeystoreKeyWrap(
     private val alias: String,
 ) : KeyWrap {
-    override fun wrap(key: ByteArray): String =
+    override fun wrap(key: ByteArray): Wrapped =
         try {
+            val kept = keystoreKey()
             val cipher = Cipher.getInstance(TRANSFORMATION)
-            cipher.init(Cipher.ENCRYPT_MODE, keystoreKey() ?: generateKey())
-            Base64.encode(cipher.iv) + SEPARATOR + Base64.encode(cipher.doFinal(key))
+            cipher.init(Cipher.ENCRYPT_MODE, kept ?: generateKey())
+            Wrapped(Base64.encode(cipher.iv) + SEPARATOR + Base64.encode(cipher.doFinal(key)), kept == null)
         } catch (error: ProviderException) {
             throw GeneralSecurityException(error)
         } catch (error: IOException) {
@@ -107,6 +136,9 @@ internal class KeystoreKeyWrap(
         } catch (_: KeyPermanentlyInvalidatedException) {
             Unwrapped.Lost
         } catch (_: AEADBadTagException) {
+            Unwrapped.Lost
+        } catch (_: InvalidAlgorithmParameterException) {
+            // The saved key's IV is broken, which no later start repairs.
             Unwrapped.Lost
         } catch (_: IllegalArgumentException) {
             Unwrapped.Lost

@@ -1,29 +1,44 @@
 package com.otusfoss.core.storage
 
+import kotlin.concurrent.Volatile
+
 /**
  * Keeps a string map in [store] as one value sealed by [cipher], so neither its keys nor its
  * values can be read from the device's files. [name] ties the sealed value to this store.
  *
- * A store written before it was sealed is read as it is and sealed at once. A sealed value that no
- * longer opens, as after the device's key was lost, reads as an empty map.
+ * A store saved before sealing began is taken in and sealed when it is built by the process that
+ * made the device's first key. Any other start reads an unsealed store as empty, so a store
+ * planted in the files is never used. A sealed value that no longer opens, as after the device's
+ * key was lost, reads as an empty map. While the key lasts for this process only, writes stay in
+ * memory, so they never replace what the kept key sealed.
  */
 public class SealedMapStore(
     private val store: StringMapStore,
     private val cipher: TextCipher,
     private val name: String,
 ) : StringMapStore {
-    override fun read(): Map<String, String> {
-        val saved = store.read()
-        val sealed = saved[SEALED_KEY]
-        return when {
-            sealed != null -> cipher.open(sealed, name)?.let(::decodeEntries).orEmpty()
-            saved.isEmpty() -> saved
-            else -> saved.also(::write)
+    @Volatile
+    private var unsaved: Map<String, String>? = null
+
+    init {
+        if (cipher.keyLife == KeyLife.First) {
+            store.read().takeUnless { SEALED_KEY in it || it.isEmpty() }?.let(::write)
         }
     }
 
+    override fun read(): Map<String, String> =
+        unsaved ?: store
+            .read()[SEALED_KEY]
+            ?.let { cipher.open(it, name) }
+            ?.let(::decodeEntries)
+            .orEmpty()
+
     override fun write(values: Map<String, String>) {
-        store.write(mapOf(SEALED_KEY to cipher.seal(encodeEntries(values), name)))
+        if (cipher.keyLife == KeyLife.ProcessOnly) {
+            unsaved = values
+        } else {
+            store.write(mapOf(SEALED_KEY to cipher.seal(encodeEntries(values), name)))
+        }
     }
 
     private companion object {

@@ -23,6 +23,7 @@ import platform.Foundation.NSData
 import platform.Foundation.create
 import platform.Security.SecItemAdd
 import platform.Security.SecItemCopyMatching
+import platform.Security.SecItemDelete
 import platform.Security.errSecItemNotFound
 import platform.Security.errSecSuccess
 import platform.Security.kSecAttrAccessible
@@ -41,17 +42,38 @@ private const val KEYS_BYTES = 64
 private const val ACCOUNT = "storage"
 
 /**
- * The device's storage keys, kept as the Keychain item of [service]. A first use makes them. While
- * the Keychain cannot be read or written, the keys last for this process only and a saved item is
- * left alone, so what was sealed reads again once the Keychain answers.
+ * The device's storage keys, kept as the Keychain item of [service]. A first use makes them; the
+ * Keychain is outside the app's files, so no planted file makes a start look like the first. While
+ * the Keychain cannot be read or written, as before the first unlock, the keys last for this
+ * process only and a saved item is left alone, so what was sealed reads again once it answers.
  */
 @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
-internal fun keychainStorageKeys(service: String): ByteArray {
+internal fun keychainStorageKeys(service: String): StorageKeys {
     val saved = readKeys(service)
-    if (saved is SavedKeys.Found) return saved.bytes
+    if (saved is SavedKeys.Found) return StorageKeys(saved.bytes, KeyLife.Kept)
     val fresh = randomBytes(KEYS_BYTES)
-    if (saved is SavedKeys.Missing) addKeys(service, fresh)
-    return fresh
+    val life =
+        when (saved) {
+            SavedKeys.Missing -> {
+                if (addKeys(service, fresh)) KeyLife.First else KeyLife.ProcessOnly
+            }
+
+            // An item of the wrong size never opens anything, so it is replaced for good.
+            SavedKeys.Broken -> {
+                if (deleteKeys(service) &&
+                    addKeys(service, fresh)
+                ) {
+                    KeyLife.Kept
+                } else {
+                    KeyLife.ProcessOnly
+                }
+            }
+
+            else -> {
+                KeyLife.ProcessOnly
+            }
+        }
+    return StorageKeys(fresh, life)
 }
 
 private sealed interface SavedKeys {
@@ -60,6 +82,8 @@ private sealed interface SavedKeys {
     ) : SavedKeys
 
     data object Missing : SavedKeys
+
+    data object Broken : SavedKeys
 
     data object Unreadable : SavedKeys
 }
@@ -79,7 +103,7 @@ private fun readKeys(service: String): SavedKeys =
 
 @OptIn(ExperimentalForeignApi::class)
 private fun keysOf(data: NSData): SavedKeys {
-    if (data.length.toInt() != KEYS_BYTES) return SavedKeys.Unreadable
+    if (data.length.toInt() != KEYS_BYTES) return SavedKeys.Broken
     val bytes = ByteArray(KEYS_BYTES)
     bytes.usePinned { memcpy(it.addressOf(0), data.bytes, data.length) }
     return SavedKeys.Found(bytes)
@@ -89,19 +113,22 @@ private fun keysOf(data: NSData): SavedKeys {
 private fun addKeys(
     service: String,
     keys: ByteArray,
-) {
+): Boolean {
     val data = keys.usePinned { NSData.create(bytes = it.addressOf(0), length = keys.size.toULong()) }
     val retained = CFBridgingRetain(data)
-    try {
+    return try {
         withItem(
             service,
             kSecValueData to retained,
             kSecAttrAccessible to kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,
-        ) { SecItemAdd(it, null) }
+        ) { SecItemAdd(it, null) } == errSecSuccess
     } finally {
         CFRelease(retained)
     }
 }
+
+@OptIn(ExperimentalForeignApi::class)
+private fun deleteKeys(service: String): Boolean = withItem(service) { SecItemDelete(it) } == errSecSuccess
 
 /** Runs [block] with the Keychain query of [service]'s item and [more] attributes. */
 @OptIn(ExperimentalForeignApi::class)

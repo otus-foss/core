@@ -5,7 +5,8 @@
 - Storage: `TextCipher` seals text kept on the device, with `KeystoreTextCipher` on Android
   (AES-256-GCM, key wrapped by the Android Keystore) and `KeychainTextCipher` on iOS (AES-256-CBC
   with HMAC-SHA-256, keys in the Keychain). `SealedMapStore` keeps a `StringMapStore` as one sealed
-  value and seals a store saved before it at its first read. `MarkingTextCipher` is for tests.
+  value. It takes in a store saved before sealing only on the device's first key, and keeps
+  writes in memory while the key lasts for one process. `MarkingTextCipher` is for tests.
 
 - Avatar: `isPublicHttpsUrl` is public. It is the loader's URL check, formerly the internal
   `isPublicAvatarUrl`: HTTPS on port 443 at a public name, without a user or password. Mail checks

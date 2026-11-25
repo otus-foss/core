@@ -38,5 +38,8 @@ class KeychainTextCipherTest {
         assertNull(cipher.open(SEALED_PREFIX + "AAAA", "login/Email/1"))
     }
 
-    private fun cipherWith(seed: Int) = KeychainTextCipher { ByteArray(64) { (it * seed).toByte() } }
+    private fun cipherWith(seed: Int) =
+        KeychainTextCipher {
+            StorageKeys(ByteArray(64) { (it * seed).toByte() }, KeyLife.Kept)
+        }
 }

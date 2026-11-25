@@ -29,13 +29,47 @@ class SealedMapStoreTest {
     }
 
     @Test
-    fun aStoreSavedBeforeSealingKeepsItsValuesAndIsSealedOnTheFirstRead() {
+    fun theFirstKeysProcessTakesInAStoreSavedBeforeSealing() {
         plain.write(mapOf("draft" to "hello"))
 
-        assertEquals(mapOf("draft" to "hello"), store.read())
+        val taken = SealedMapStore(plain, MarkingTextCipher(KeyLife.First), "outbox")
 
         assertEquals(setOf("sealed"), plain.read().keys)
+        assertEquals(mapOf("draft" to "hello"), taken.read())
         assertEquals(mapOf("draft" to "hello"), store.read())
+    }
+
+    @Test
+    fun anUnsealedStoreAfterTheFirstStartIsNeverUsed() {
+        plain.write(mapOf("planted" to "send this"))
+
+        assertEquals(emptyMap(), store.read())
+        store.write(mapOf("draft" to "mine"))
+
+        assertEquals(mapOf("draft" to "mine"), store.read())
+        assertEquals(setOf("sealed"), plain.read().keys)
+    }
+
+    @Test
+    fun aKeyForThisProcessOnlyNeverReplacesTheSealedStore() {
+        store.write(mapOf("outbox" to "waits"))
+        val meanwhile = SealedMapStore(plain, BrokenCipher(KeyLife.ProcessOnly), "outbox")
+
+        assertEquals(emptyMap(), meanwhile.read())
+        meanwhile.write(mapOf("mark" to "read"))
+
+        assertEquals(mapOf("mark" to "read"), meanwhile.read())
+        assertEquals(mapOf("outbox" to "waits"), store.read())
+    }
+
+    @Test
+    fun aKeyLostForGoodLetsTheStoreStartOver() {
+        store.write(mapOf("outbox" to "waits"))
+        val replaced = SealedMapStore(plain, BrokenCipher(KeyLife.Kept), "outbox")
+
+        replaced.write(mapOf("mark" to "read"))
+
+        assertEquals(emptyMap(), store.read())
     }
 
     @Test
@@ -59,6 +93,21 @@ class SealedMapStoreTest {
         assertNull(cipher.open(cipher.seal("text", "one"), "two"))
         assertNull(cipher.open("text", "one"))
         assertFalse(isSealedText("text"))
+    }
+
+    /** A cipher whose key cannot open what [MarkingTextCipher] sealed. */
+    private class BrokenCipher(
+        override val keyLife: KeyLife,
+    ) : TextCipher {
+        override fun seal(
+            text: String,
+            context: String,
+        ): String = "${SEALED_PREFIX}other:$text"
+
+        override fun open(
+            sealed: String,
+            context: String,
+        ): String? = null
     }
 
     private class MemoryMap : StringMapStore {

@@ -49,9 +49,10 @@ class KeystoreTextCipherTest {
         val first = storageKey(preferences.key, wrap)
         val second = storageKey(preferences.key, wrap)
 
-        assertEquals(first.encoded.toList(), second.encoded.toList())
-        assertEquals(32, first.encoded.size)
-        assertFalse(first.encoded.joinToString(",") in preferences.value.orEmpty())
+        assertEquals(first.key.encoded.toList(), second.key.encoded.toList())
+        assertEquals(32, first.key.encoded.size)
+        assertFalse(first.key.encoded.joinToString(",") in preferences.value.orEmpty())
+        assertEquals(KeyLife.First to KeyLife.Kept, first.life to second.life)
     }
 
     @Test
@@ -59,10 +60,20 @@ class KeystoreTextCipherTest {
         val preferences = Saved()
         val first = storageKey(preferences.key, XorWrap())
 
-        val replaced = storageKey(preferences.key, XorWrap(unwrapped = Unwrapped.Lost))
+        val replaced = storageKey(preferences.key, XorWrap(unwrapped = Unwrapped.Lost, makesKey = false))
 
-        assertNotEquals(first.encoded.toList(), replaced.encoded.toList())
-        assertEquals(replaced.encoded.toList(), storageKey(preferences.key, XorWrap()).encoded.toList())
+        assertNotEquals(first.key.encoded.toList(), replaced.key.encoded.toList())
+        assertEquals(replaced.key.encoded.toList(), storageKey(preferences.key, XorWrap()).key.encoded.toList())
+        assertEquals(KeyLife.Kept, replaced.life)
+    }
+
+    @Test
+    fun aDeletedSavedKeyIsNotTakenForTheFirstStart() {
+        val preferences = Saved()
+        storageKey(preferences.key, XorWrap())
+        preferences.value = null
+
+        assertEquals(KeyLife.Kept, storageKey(preferences.key, XorWrap(makesKey = false)).life)
     }
 
     @Test
@@ -72,8 +83,9 @@ class KeystoreTextCipherTest {
 
         val meanwhile = storageKey(preferences.key, XorWrap(unwrapped = Unwrapped.Failed))
 
-        assertNotEquals(first.encoded.toList(), meanwhile.encoded.toList())
-        assertEquals(first.encoded.toList(), storageKey(preferences.key, XorWrap()).encoded.toList())
+        assertNotEquals(first.key.encoded.toList(), meanwhile.key.encoded.toList())
+        assertEquals(first.key.encoded.toList(), storageKey(preferences.key, XorWrap()).key.encoded.toList())
+        assertEquals(KeyLife.ProcessOnly, meanwhile.life)
     }
 
     @Test
@@ -82,27 +94,41 @@ class KeystoreTextCipherTest {
 
         val key = storageKey(preferences.key, XorWrap(wraps = false))
 
-        assertEquals(32, key.encoded.size)
+        assertEquals(32, key.key.encoded.size)
+        assertEquals(KeyLife.ProcessOnly, key.life)
         assertNull(preferences.value)
     }
 
+    @Test
+    fun aKeyThatCouldNotBeSavedLastsForThisProcessOnly() {
+        val preferences = Saved().apply { saves = false }
+
+        assertEquals(KeyLife.ProcessOnly, storageKey(preferences.key, XorWrap()).life)
+    }
+
     private fun cipherWith(seed: Int) =
-        KeystoreTextCipher { SecretKeySpec(ByteArray(32) { (it * seed).toByte() }, "AES") }
+        KeystoreTextCipher { StorageKey(SecretKeySpec(ByteArray(32) { (it * seed).toByte() }, "AES"), KeyLife.Kept) }
 
     /** Stands in for the preferences that keep the wrapped key. */
     private class Saved {
         var value: String? = null
-        val key = WrappedKey({ value }, { value = it })
+        var saves = true
+        val key =
+            WrappedKey({ value }) {
+                if (saves) value = it
+                saves
+            }
     }
 
     /** Stands in for the Keystore: it hides the key's bytes, and fails the way the test asks. */
     private class XorWrap(
         private val unwrapped: Unwrapped? = null,
         private val wraps: Boolean = true,
+        private val makesKey: Boolean = true,
     ) : KeyWrap {
-        override fun wrap(key: ByteArray): String {
+        override fun wrap(key: ByteArray): Wrapped {
             if (!wraps) throw GeneralSecurityException("no keystore")
-            return key.joinToString(",") { (it.toInt() xor MASK).toString() }
+            return Wrapped(key.joinToString(",") { (it.toInt() xor MASK).toString() }, makesKey)
         }
 
         override fun unwrap(wrapped: String): Unwrapped =

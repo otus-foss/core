@@ -29,11 +29,14 @@ import kotlin.io.encoding.Base64
  */
 @OptIn(ExperimentalForeignApi::class)
 public class KeychainTextCipher internal constructor(
-    loadKeys: () -> ByteArray,
+    loadKeys: () -> StorageKeys,
 ) : TextCipher {
     public constructor(service: String = "otus.storage.key") : this({ keychainStorageKeys(service) })
 
-    private val keys by lazy(loadKeys)
+    private val loaded by lazy(loadKeys)
+    private val keys get() = loaded.bytes
+
+    override val keyLife: KeyLife get() = loaded.life
     private val cipherKey get() = keys.copyOfRange(0, KEY_BYTES)
     private val macKey get() = keys.copyOfRange(KEY_BYTES, KEY_BYTES * 2)
 
@@ -128,3 +131,9 @@ internal fun randomBytes(count: Int): ByteArray =
             "The device gave no random bytes."
         }
     }
+
+/** The storage keys and how long they last. */
+internal class StorageKeys(
+    val bytes: ByteArray,
+    val life: KeyLife,
+)

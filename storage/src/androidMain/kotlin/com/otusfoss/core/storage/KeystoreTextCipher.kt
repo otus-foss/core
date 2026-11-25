@@ -4,7 +4,6 @@ import android.content.Context
 import java.security.GeneralSecurityException
 import java.security.SecureRandom
 import javax.crypto.Cipher
-import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 import kotlin.io.encoding.Base64
 
@@ -14,7 +13,7 @@ import kotlin.io.encoding.Base64
  * in the process without a Keystore call. Each sealed text gets a fresh nonce.
  */
 public class KeystoreTextCipher internal constructor(
-    loadKey: () -> SecretKey,
+    loadKey: () -> StorageKey,
 ) : TextCipher {
     public constructor(
         context: Context,
@@ -27,7 +26,10 @@ public class KeystoreTextCipher internal constructor(
         )
     })
 
-    private val key by lazy(loadKey)
+    private val loaded by lazy(loadKey)
+    private val key get() = loaded.key
+
+    override val keyLife: KeyLife get() = loaded.life
     private val random = SecureRandom()
 
     override fun seal(

@@ -69,9 +69,18 @@ text the cipher did not seal or that changed. Sealed text starts with `SEALED_PR
   one Keychain item, on this device only and readable after the first unlock.
 - A key that is lost for good is replaced, and what it sealed no longer opens. While the Keystore
   or Keychain only fails to answer, the cipher uses a key for that process and leaves the saved
-  one alone.
-- `SealedMapStore` keeps a `StringMapStore` as one sealed value, so its keys are hidden too. A
-  store saved before it was sealed is read as it is once and sealed at that read.
+  one alone. `keyLife` tells which: `First`, `Kept`, or `ProcessOnly`.
+- `SealedMapStore` keeps a `StringMapStore` as one sealed value, so its keys are hidden too.
+  While the key is `ProcessOnly`, its writes stay in memory, so they never replace what the kept
+  key sealed.
+- A store saved before sealing began is taken in only when the `SealedMapStore` is built by the
+  process that made the device's first key, which is `First` only when the Keystore or Keychain
+  key is new as well. No later start can tell such a store from one planted in the app's files,
+  so it reads as empty. Build every sealed store when the app starts.
+- A saved key that is broken for good, such as one whose IV or Keychain item has the wrong size,
+  is replaced like a lost one. A key that could not be saved lasts for this process only.
+- Sealing ties a value to its context, not to a time, so an older sealed copy of a store put back
+  in the files still opens.
 - `MarkingTextCipher` is for previews and tests. It hides nothing.
 
 Create one cipher per process and share it. Mail seals its mail cache and device stores with it;
