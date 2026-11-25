@@ -52,6 +52,30 @@ a restart.
 
 `com.otusfoss.core:storage` also holds `StringMapStore`, a map read and replaced whole, with
 `PreferenceMap` and `UserDefaultsMap`, and `storedName`, the SHA-256 name of a value for a file.
+
+### Sealed storage
+
+`TextCipher` seals text an app keeps on the device, so that it cannot be read from the device's
+files. `seal` and `open` take a context, such as a store's name or a row's id; text opens only
+with the context it was sealed with, so sealed values cannot be swapped. `open` returns null for
+text the cipher did not seal or that changed. Sealed text starts with `SEALED_PREFIX`, which
+`isSealedText` checks.
+
+- Android: `KeystoreTextCipher` uses AES-256-GCM with a random storage key, kept in app-private
+  preferences wrapped by a non-exportable Android Keystore key. Sealing and opening run in the
+  process, without a Keystore call per text.
+- iOS: `KeychainTextCipher` uses AES-256-CBC with an HMAC-SHA-256 over the context, nonce, and
+  sealed bytes, which it checks before decrypting. CommonCrypto has no public AES-GCM. Its keys are
+  one Keychain item, on this device only and readable after the first unlock.
+- A key that is lost for good is replaced, and what it sealed no longer opens. While the Keystore
+  or Keychain only fails to answer, the cipher uses a key for that process and leaves the saved
+  one alone.
+- `SealedMapStore` keeps a `StringMapStore` as one sealed value, so its keys are hidden too. A
+  store saved before it was sealed is read as it is once and sealed at that read.
+- `MarkingTextCipher` is for previews and tests. It hides nothing.
+
+Create one cipher per process and share it. Mail seals its mail cache and device stores with it;
+see Mail's [storage](https://github.com/otus-foss/mail/blob/main/docs/storage.md#encryption).
 The appearance screen offers date formatting as a flat `SettingRow` with the pattern in a
 `ValueButton`; tapping it opens a `ChoiceSheet`. Its trailing `content` slot places app-owned
 sections below it, such as Mail's swipe actions. Its Look section starts with a Theme row that
