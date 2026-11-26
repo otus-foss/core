@@ -4,7 +4,7 @@
 
 - Design system: `symbol_key`, the Material Symbols key, which marks a one-time code.
 - Design system: `MailboxQuickUse`, a small pill that hands over what a message is for straight
-  from the mailbox, such as its one-time code to copy. `CompactContentRow` takes one as `quickUse`
+  from the mailbox, such as its one-time code to copy. `CompactRowText` takes one as `quickUse`
   and shows it at the end of line 2 in place of its marks and folders, keeping its height.
 - Storage: `TextCipher` seals text kept on the device, with `KeystoreTextCipher` on Android
   (AES-256-GCM, key wrapped by the Android Keystore) and `KeychainTextCipher` on iOS (AES-256-CBC
