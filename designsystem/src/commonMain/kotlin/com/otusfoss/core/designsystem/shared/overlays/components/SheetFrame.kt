@@ -1,26 +1,21 @@
 package com.otusfoss.core.designsystem.shared.overlays.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -30,12 +25,9 @@ import com.otusfoss.core.designsystem.shared.controls.elements.ActionButton
 import com.otusfoss.core.designsystem.shared.controls.elements.IconButton
 import com.otusfoss.core.designsystem.shared.controls.elements.IconButtonLook
 import com.otusfoss.core.designsystem.shared.controls.elements.Symbol
+import com.otusfoss.core.designsystem.shared.controls.elements.TextAction
 import com.otusfoss.core.designsystem.shared.controls.elements.UiAction
-import com.otusfoss.core.designsystem.shared.controls.elements.controlPressFeedback
-import com.otusfoss.core.designsystem.shared.overlays.elements.sheetInset
 import com.otusfoss.core.designsystem.theme.colors.OtusColors
-import com.otusfoss.core.designsystem.theme.shapes.SmoothCornerShape
-import com.otusfoss.core.designsystem.theme.tokens.core.Sizes
 import com.otusfoss.core.designsystem.theme.tokens.core.Spacing
 import com.otusfoss.core.designsystem.theme.tokens.overlays.ChoiceSheetTokens
 import com.otusfoss.core.designsystem.theme.tokens.overlays.SheetTokens
@@ -136,15 +128,7 @@ public fun SheetHeaderAction(
     color: Color = OtusColors.text1,
     enabled: Boolean = true,
 ) {
-    val interactions = remember { MutableInteractionSource() }
-    Box(
-        modifier
-            .heightIn(min = Sizes.touchTarget)
-            .clickable(interactions, indication = null, enabled = enabled, role = Role.Button, onClick = onClick)
-            .controlPressFeedback(interactions, SmoothCornerShape(SheetTokens.rowRadius))
-            .sheetInset(),
-        contentAlignment = Alignment.Center,
-    ) { Text(label, color = if (enabled) color else OtusColors.text3, fontWeight = FontWeight.SemiBold) }
+    TextAction(label, onClick, SheetTokens.inset, modifier, color, enabled)
 }
 
 @Composable
