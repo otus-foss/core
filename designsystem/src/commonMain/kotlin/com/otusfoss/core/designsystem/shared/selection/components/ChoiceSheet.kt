@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -37,6 +38,9 @@ import com.otusfoss.core.designsystem.theme.tokens.overlays.SheetTokens
 import com.otusfoss.core.designsystem.theme.tokens.people.SummaryTokens
 import com.otusfoss.core.designsystem.theme.tokens.selection.PickTokens
 import com.otusfoss.core.designsystem.theme.tokens.settings.SettingTokens
+import com.otusfoss.core.designsystem.theme.typography.AppFont
+import com.otusfoss.core.designsystem.theme.typography.LocalAppFont
+import com.otusfoss.core.designsystem.theme.typography.panelTextStyle
 import org.jetbrains.compose.resources.DrawableResource
 
 /**
@@ -126,7 +130,8 @@ private fun <T> saveAndClose(
  * [person] named in the label gets their avatar before the name, as in [PersonText]. With a
  * [keyword], the label is a [ValueToken] instead, such as "From" before an address. [iconTint]
  * colors the icon, such as a folder's color. A [swatch] shows a folder color before the label;
- * screen readers hear only the label.
+ * screen readers hear only the label. A [font] draws the row's text in that font, so a font
+ * picker shows each option as it looks.
  */
 public data class ChoiceRow(
     val label: String,
@@ -136,6 +141,7 @@ public data class ChoiceRow(
     val keyword: String? = null,
     val iconTint: Color? = null,
     val swatch: FolderColor? = null,
+    val font: AppFont? = null,
 )
 
 @Composable
@@ -156,7 +162,15 @@ private fun ChoiceOption(
                 null
             },
         verticalPadding = ChoiceSheetTokens.optionGap,
-    ) { ChoiceText(row) }
+    ) {
+        if (row.font == null) {
+            ChoiceText(row)
+        } else {
+            CompositionLocalProvider(
+                LocalAppFont provides row.font,
+            ) { ProvideTextStyle(panelTextStyle()) { ChoiceText(row) } }
+        }
+    }
 }
 
 @Composable

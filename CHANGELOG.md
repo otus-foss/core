@@ -12,6 +12,12 @@
   `Shaded`, and avatar symbols use `Solid`.
 - Design system: `PanelNavigation` lines up the ✕ with the chevron. `PanelTextAction` is a
   trailing panel text button.
+- Design system: text draws in an `AppFont` that `OtusTheme` takes, and the default is now the
+  system font instead of Figtree. Google Sans, Google Sans Rounded, Figtree, and Figtree Rounded
+  are bundled. `ChoiceRow` takes a `font` to draw an option in it, and there is a
+  `symbol_text_fields`.
+- Settings: `FontSettingsState` keeps the font, and `appearanceSections` takes it and shows a Font
+  row after Theme. The Font sheet shows each option in its own font.
 
 - Storage: `TextCipher` seals text kept on the device, with `KeystoreTextCipher` on Android
   (AES-256-GCM, key wrapped by the Android Keystore) and `KeychainTextCipher` on iOS (AES-256-CBC

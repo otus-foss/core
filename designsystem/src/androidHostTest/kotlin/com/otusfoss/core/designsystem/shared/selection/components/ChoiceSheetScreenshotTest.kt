@@ -10,6 +10,7 @@ import com.otusfoss.core.designsystem.resources.symbol_flag
 import com.otusfoss.core.designsystem.screenshot.screenScreenshot
 import com.otusfoss.core.designsystem.shared.people.components.DemoPeople
 import com.otusfoss.core.designsystem.shared.people.components.NamedAvatar
+import com.otusfoss.core.designsystem.theme.typography.AppFont
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -48,6 +49,18 @@ class ChoiceSheetScreenshotTest {
                 "Swipe left",
                 ChoiceOptions(listOf("Archive", "Delete", "Flag"), selected = "Delete"),
                 row = { ChoiceRow(it, icon = icons[it] ?: Res.drawable.symbol_flag) },
+                onSelect = {},
+                onDismiss = {},
+            )
+        }
+
+    @Test
+    fun withFonts() =
+        compose.screenScreenshot("choice_sheet_fonts") {
+            ChoiceSheet(
+                "Font",
+                ChoiceOptions(AppFont.entries, selected = AppFont.FigtreeRounded, default = AppFont.System),
+                row = { ChoiceRow(it.name, font = it) },
                 onSelect = {},
                 onDismiss = {},
             )
