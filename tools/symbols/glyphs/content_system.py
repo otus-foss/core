@@ -36,6 +36,17 @@ def visibility_off():
     return Icon().back(eye).front(stroke([(3.5, 5.6), (18.4, 20.5)], 3.2))
 
 
+def key():
+    """One piece: a round bow with a hole, a shaft, and two teeth."""
+    bow = circle(7.4, 12, 5.4) - circle(7.4, 12, 2)
+    blade = union(
+        stroke([(11, 12), (20.6, 12)], 3.6),
+        stroke([(16, 12), (16, 15.6)], 3.2),
+        stroke([(20, 12), (20, 15)], 3.2),
+    )
+    return Icon().front((bow | blade).round(0.8))
+
+
 def lock():
     shackle = stroke([(7.6, 12)] + arc(12, 8, 4.4, 180, 360) + [(16.4, 12)], 3.2)
     body = rbox(3.5, 10, 17, 12, 4.5) - circle(12, 15.8, 1.9)
@@ -273,6 +284,7 @@ def wb_twilight():
 
 
 ICONS = {
+    "key": key,
     "visibility_off": visibility_off,
     "lock": lock,
     "shield": shield,

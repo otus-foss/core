@@ -8,6 +8,8 @@ public data class ConnectedAccount(
     val server: String,
     /** Sending addresses reported by JMAP identities, which may include a wildcard domain. */
     val emailAddresses: List<String> = emptyList(),
+    /** The server could not be asked for [emailAddresses], so they may be missing until a later load. */
+    val addressesMissing: Boolean = false,
 )
 
 /** The account's own mail addresses: its sign-in when that is one, and its sending addresses without wildcards. */

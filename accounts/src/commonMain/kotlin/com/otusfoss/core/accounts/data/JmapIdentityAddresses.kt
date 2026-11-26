@@ -16,24 +16,26 @@ import kotlinx.serialization.json.JsonPrimitive
 /**
  * The sending addresses of [login]'s account for [service], from its identities (RFC 8621, section
  * 6), which describe sending addresses, not every alias that receives mail. None when that account
- * cannot submit mail.
+ * cannot submit mail, and null when the server could not be asked, so a later load tries again.
  */
 internal suspend fun identityAddresses(
     login: JmapLogin,
     service: AccountService,
     connections: JmapConnections,
-): List<String> =
+): List<String>? =
     try {
         val account = connections.account(login, service.capability)
         account
             .takeIf { account.session.canSubmitFrom(account.id) }
             ?.let { identityEmails(account.connection, account.id) }
             .orEmpty()
+    } catch (expected: JmapException.Unsupported) {
+        emptyList()
     } catch (expected: JmapException) {
         // Optional address discovery must not hide a saved account when its server is unavailable.
-        emptyList()
+        null
     } catch (expected: LoginStoreException) {
-        emptyList()
+        null
     }
 
 /** Submission may belong to a different account; only show identities for this account. */

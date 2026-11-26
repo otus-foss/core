@@ -47,8 +47,10 @@ public class JmapAccountRepository(
     override suspend fun accounts(): List<ConnectedAccount> =
         coroutineScope { storage { logins.logins() }.map { async { connected(it) } }.awaitAll() }
 
-    private suspend fun connected(login: JmapLogin): ConnectedAccount =
-        login.toConnected().copy(emailAddresses = identityAddresses(login, service, connections))
+    private suspend fun connected(login: JmapLogin): ConnectedAccount {
+        val addresses = identityAddresses(login, service, connections)
+        return login.toConnected().copy(emailAddresses = addresses.orEmpty(), addressesMissing = addresses == null)
+    }
 
     override suspend fun connect(draft: JmapAccountDraft): ConnectOutcome {
         if (!isValidUsername(draft.username)) return ConnectOutcome.Failed(ConnectFailure.InvalidUsername)

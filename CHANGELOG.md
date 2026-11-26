@@ -10,6 +10,12 @@
   paints both parts opaque in two shades of the content color, and `SymbolTone.Solid` paints both
   in the content color. Colored folder icons through `LocalIconTint` and `FolderGlyph` use
   `Shaded`, and avatar symbols use `Solid`.
+
+- Design system: `symbol_key`, a key, which marks a one-time code.
+- Design system: `MailboxQuickUse`, a small pill that hands over what a message is for straight
+  from the mailbox, such as its one-time code to copy. `CompactRowText` takes one as `quickUse`
+  and shows it at the end of line 2 in place of its marks and folders, keeping its height.
+
 - Design system: `PanelNavigation` lines up the ✕ with the chevron. `PanelTextAction` is a
   trailing panel text button.
 - Design system: text draws in an `AppFont` that `OtusTheme` takes, and the default is now the
@@ -18,6 +24,11 @@
   `symbol_text_fields`.
 - Settings: `FontSettingsState` keeps the font, and `appearanceSections` takes it and shows a Font
   row after Theme. The Font sheet shows each option in its own font.
+
+- Accounts: `ConnectedAccount.addressesMissing` is true when the server could not be asked for the
+  account's sending addresses. `AccountsState` then asks again after 5 s, 30 s, 2 min and 10 min,
+  so one failed request at start no longer leaves the account without its own addresses until the
+  app restarts. A server without sending still reports no addresses and is not asked again.
 
 - Storage: `TextCipher` seals text kept on the device, with `KeystoreTextCipher` on Android
   (AES-256-GCM, key wrapped by the Android Keystore) and `KeychainTextCipher` on iOS (AES-256-CBC
