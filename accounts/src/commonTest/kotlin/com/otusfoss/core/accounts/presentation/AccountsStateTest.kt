@@ -9,6 +9,7 @@ import com.otusfoss.core.accounts.domain.JmapAccountDraft
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
@@ -18,6 +19,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AccountsStateTest {
@@ -144,6 +146,21 @@ class AccountsStateTest {
             assertEquals(listOf(repository.account), state.accounts)
             assertNotNull(state.storageError)
         }
+
+    @Test
+    fun addressesAServerCouldNotTellLoadOnALaterTry() =
+        runTest {
+            val repository = AccountStateRepository()
+            repository.saved = listOf(repository.account.copy(addressesMissing = true))
+            val state = AccountsState(repository, this)
+            runCurrent()
+            assertEquals(emptyList(), state.accounts.single().emailAddresses)
+            val found = repository.account.copy(emailAddresses = listOf("ada@example.org"))
+            repository.saved = listOf(found)
+            advanceTimeBy(5.seconds)
+            runCurrent()
+            assertEquals(listOf(found), state.accounts)
+        }
 }
 
 private class AccountStateRepository : AccountRepository {
@@ -154,7 +171,7 @@ private class AccountStateRepository : AccountRepository {
     var pendingConnection: CompletableDeferred<ConnectOutcome>? = null
     var pendingSave: CompletableDeferred<ConnectOutcome>? = null
     var pendingRead: CompletableDeferred<Unit>? = null
-    private var saved = listOf(account)
+    var saved = listOf(account)
 
     override suspend fun accounts(): List<ConnectedAccount> {
         pendingRead?.await()
