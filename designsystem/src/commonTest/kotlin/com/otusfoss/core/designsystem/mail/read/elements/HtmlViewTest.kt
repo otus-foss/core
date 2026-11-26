@@ -84,6 +84,23 @@ class HtmlViewTest {
     }
 
     @Test
+    fun framesAndFormsStayInertInTheBodyAndQuoteWhateverTheSetting() {
+        val html =
+            "<iframe srcdoc=\"&lt;link rel=preconnect href=https://example.org/&gt;\"></iframe>" +
+                "<form><input>"
+        val quote = HtmlQuote("Ada", "AL", "10 Oct", html)
+        listOf(true, false).forEach { loadRemote ->
+            val sandboxed = renderHtml(html, loadRemote, quote = quote).lowercase()
+            listOf(
+                "<iframe",
+                "<form",
+                "<input>",
+            ).forEach { assertFalse(it in sandboxed, "$it, loadRemote $loadRemote") }
+            assertEquals(2, Regex("<input disabled>").findAll(sandboxed).count())
+        }
+    }
+
+    @Test
     fun opensOnlyWebMailAndPhoneLinks() {
         listOf("https://otus.example", "HTTP://otus.example", "mailto:a@otus.example", "tel:+41").forEach {
             assertTrue(isOpenableLink(it), it)
@@ -160,9 +177,9 @@ class HtmlViewTest {
     @Test
     fun anOpenNoscriptOrObjectIsClosedBeforeTheFold() {
         val quote = HtmlQuote("Ada", "AL", "10 Oct", "<p>Earlier</p>")
-        listOf("noscript", "object").forEach { name ->
+        mapOf("noscript" to "noscript", "object" to "otus-inert-object").forEach { (name, rendered) ->
             val sandboxed = renderHtml("<p>Hi<$name>", loadRemote = false, quote = quote)
-            assertTrue("<$name></$name>" in sandboxed, "The $name closes before the fold")
+            assertTrue("<$rendered></$rendered>" in sandboxed, "The $name closes before the fold")
         }
     }
 
@@ -210,7 +227,7 @@ class HtmlViewTest {
             "<p>Hi<style>p{}" to "<p>Hi<style>p{}</style>",
             "<p>Hi<a href=\"https://evil.example\">tap" to "tap</a>",
             "<p>Hi<!-- note" to "<!-- note-->",
-            "<textarea>Hi" to "<textarea>Hi</textarea>",
+            "<textarea>Hi" to "<textarea disabled>Hi</textarea>",
             "<p>Hi</p><p title=\"a>b" to "<p>Hi</p>",
         ).forEach { (html, sealed) ->
             val page = renderHtml(html, loadRemote = false, quote = quote)

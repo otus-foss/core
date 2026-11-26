@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Build
 import android.view.ContextThemeWrapper
+import android.view.View
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -73,6 +74,10 @@ private fun sandboxedWebView(
 ): WebView =
     FittingWebView(ContextThemeWrapper(context, if (darken) THEME_DARK else THEME_LIGHT)).apply {
         setBackgroundColor(Color.TRANSPARENT)
+        // A message can draw a sign-in form, which must not get the user's saved logins.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS
+        }
         with(settings) {
             javaScriptEnabled = false
             allowFileAccess = false

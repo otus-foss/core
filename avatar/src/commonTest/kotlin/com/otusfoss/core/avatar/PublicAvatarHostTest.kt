@@ -93,8 +93,8 @@ class PublicAvatarHostTest {
 
     @Test
     fun publicUrlsUseHttpsOnTheDefaultPortAtAPublicHostWithoutCredentials() {
-        assertTrue(isPublicAvatarUrl("https://mail.example.net/api/favicon?domain=shop.com"))
-        assertTrue(isPublicAvatarUrl("https://mail.example.net:443/"))
+        assertTrue(isPublicHttpsUrl("https://mail.example.net/api/favicon?domain=shop.com"))
+        assertTrue(isPublicHttpsUrl("https://mail.example.net:443/"))
         listOf(
             "http://mail.example.net/",
             "https://mail.example.net:8443/",
@@ -104,6 +104,6 @@ class PublicAvatarHostTest {
             "https://192.168.1.2/",
             "https://localhost/",
             "not a url",
-        ).forEach { assertFalse(isPublicAvatarUrl(it), it) }
+        ).forEach { assertFalse(isPublicHttpsUrl(it), it) }
     }
 }

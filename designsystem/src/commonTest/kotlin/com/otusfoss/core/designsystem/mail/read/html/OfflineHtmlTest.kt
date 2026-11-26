@@ -20,5 +20,14 @@ class OfflineHtmlTest {
     }
 
     @Test
+    fun anOfflineMessageHasNoFramesOrForms() {
+        val frame = "srcdoc=\"&lt;link rel=preconnect href=https://example.org/&gt;\">"
+        assertTrue(
+            offlineHtml("<IFRAME $frame</IFRAME><form><input>")
+                .endsWith("<otus-inert-iframe $frame</otus-inert-iframe><otus-inert-form><input disabled>"),
+        )
+    }
+
+    @Test
     fun otherTagsStartingWithLinkStay() = assertTrue(offlineHtml("<linker>").endsWith("<linker>"))
 }

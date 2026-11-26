@@ -27,7 +27,7 @@ public fun avatarOptions(
 public fun bulwarkBase(address: String): String? {
     val trimmed = address.trim().trimEnd('/')
     val url = if ("://" in trimmed) trimmed else "https://$trimmed"
-    return url.takeIf { trimmed.isNotEmpty() && it.none { char -> char in URL_PARTS } && isPublicAvatarUrl(it) }
+    return url.takeIf { trimmed.isNotEmpty() && it.none { char -> char in URL_PARTS } && isPublicHttpsUrl(it) }
 }
 
 /**

@@ -41,6 +41,28 @@ internal class HtmlTag(
     }
 }
 
+/** [text] in place of the markup from [start] to [end]. */
+internal class HtmlEdit(
+    val start: Int,
+    val end: Int,
+    val text: String,
+)
+
+/** This markup with [edits], which are in order and do not overlap. */
+internal fun String.withEdits(edits: List<HtmlEdit>): String {
+    if (edits.isEmpty()) return this
+    return buildString {
+        // A plain loop: the markup between edits is copied piece by piece, and each piece needs the last end.
+        var last = 0
+        edits.forEach { edit ->
+            appendRange(this@withEdits, last, edit.start)
+            append(edit.text)
+            last = edit.end
+        }
+        appendRange(this@withEdits, last, this@withEdits.length)
+    }
+}
+
 /** The text of a raw text element such as `<style>`, from [start] to [end]. */
 internal class HtmlRawText(
     private val html: String,

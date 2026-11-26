@@ -2,6 +2,23 @@
 
 ## Unreleased
 
+- Storage: `TextCipher` seals text kept on the device, with `KeystoreTextCipher` on Android
+  (AES-256-GCM, key wrapped by the Android Keystore) and `KeychainTextCipher` on iOS (AES-256-CBC
+  with HMAC-SHA-256, keys in the Keychain). `SealedMapStore` keeps a `StringMapStore` as one sealed
+  value. It takes in a store saved before sealing only on the device's first key, and keeps
+  writes in memory while the key lasts for one process. `MarkingTextCipher` is for tests.
+
+- Avatar: `isPublicHttpsUrl` is public. It is the loader's URL check, formerly the internal
+  `isPublicAvatarUrl`: HTTPS on port 443 at a public name, without a user or password. Mail checks
+  a list's one-click unsubscribe address with it.
+- JMAP: a URL with a broken percent escape, whether typed, sent in a redirect, or named in the
+  session, now throws `JmapException.InsecureUrl` instead of an exception callers do not catch.
+- JMAP: a download sends its media type as `Accept` only when it is a plain `type/subtype`, and
+  `application/octet-stream` otherwise, so an attachment with an unusual media type now downloads.
+  A request the HTTP engine refuses to build fails as `JmapException.NotJmap`.
+- Design system: frames, plugins, and forms in a message no longer do anything. `HtmlView` and
+  `offlineHtml` rename their tags to inert ones and disable form controls, which still show. On
+  Android, autofill skips the message view.
 - Design system: first-run components in `shared/onboarding`. `OnboardingFrame` holds the back
   chevron's slot and `StepProgress`, whose fill animates and whose number rolls, for a whole run;
   `OnboardingStepBody` and `OnboardingHeroBody` are the steps inside it, and `PresetCard` with

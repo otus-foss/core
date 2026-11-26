@@ -29,18 +29,6 @@ import com.otusfoss.core.designsystem.theme.tokens.rows.StripTokens
 import com.otusfoss.core.designsystem.theme.typography.panelTextStyle
 
 /**
- * One mail in a [MoreMail] or [RecentMail] list: its [subject], the start of its text, its [date],
- * whether it is [unread], and whether it is the [current] one, such as the thread the user reads.
- */
-public class MailLine(
-    public val subject: String,
-    public val preview: String,
-    public val date: String,
-    public val unread: Boolean = false,
-    public val current: Boolean = false,
-)
-
-/**
  * Other mail that belongs with the open message, such as more from its sender, as a section that
  * sits straight on a panel: a header with the [title] that runs [onToggle], and, while [open], one
  * row per mail. An unread mail's subject is semibold. Tapping a row runs [onOpen] with its index.

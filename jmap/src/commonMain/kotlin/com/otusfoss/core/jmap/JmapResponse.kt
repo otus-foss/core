@@ -1,5 +1,6 @@
 package com.otusfoss.core.jmap
 
+import kotlinx.io.IOException
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -80,6 +81,19 @@ public inline fun <T> jmapDecoding(read: () -> T): T =
         throw JmapException.NotJmap("unexpected data type", error)
     } catch (error: NoSuchElementException) {
         throw JmapException.NotJmap("missing value", error)
+    }
+
+/**
+ * Converts network failures to [JmapException.Unreachable], and a request the HTTP engine refuses
+ * to build, such as one with a header value it does not allow, to [JmapException.NotJmap].
+ */
+internal inline fun <T> jmapSending(send: () -> T): T =
+    try {
+        send()
+    } catch (error: IOException) {
+        throw JmapException.Unreachable(error)
+    } catch (error: IllegalArgumentException) {
+        throw JmapException.NotJmap("request refused by the HTTP client", error)
     }
 
 internal fun JsonObject.string(key: String): String? = get(key)?.stringContent()

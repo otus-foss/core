@@ -4,12 +4,14 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.LayoutDirection
 import com.otusfoss.core.designsystem.mail.read.html.HtmlQuote
 import com.otusfoss.core.designsystem.mail.read.html.HtmlScan
 import com.otusfoss.core.designsystem.mail.read.html.RenderKey
 import com.otusfoss.core.designsystem.mail.read.html.css
+import com.otusfoss.core.designsystem.mail.read.html.inertFramesAndForms
 import com.otusfoss.core.designsystem.mail.read.html.inertLinks
 import com.otusfoss.core.designsystem.mail.read.html.placeholderStyle
 import com.otusfoss.core.designsystem.mail.read.html.policyHead
@@ -48,6 +50,9 @@ public expect fun HtmlView(
     insets: PaddingValues = PaddingValues(),
 )
 
+/** How many frames [HtmlView]'s arguments hold still before its page is built. */
+private const val SETTLE_FRAMES = 2
+
 /** A [sandboxedHtml] [document] and whether it may load remote content, so its view can match it. */
 internal data class SandboxedPage(
     val document: String,
@@ -56,7 +61,9 @@ internal data class SandboxedPage(
 
 /**
  * [HtmlView]'s page, built off the main thread since a message can be large, or null until the
- * first one is ready. While a change of an argument rebuilds it, the last page stays.
+ * first one is ready. While a change of an argument rebuilds it, the last page stays. Arguments
+ * that change frame after frame, such as [insets] being measured, give one page, since each page
+ * is a new view that loads the document again.
  */
 @Composable
 internal fun rememberSandboxedPage(
@@ -69,6 +76,9 @@ internal fun rememberSandboxedPage(
 ): SandboxedPage? {
     val palette = OtusColors.palette
     val page by produceState<SandboxedPage?>(null, html, loadRemote, palette, placeholders, quote, insets, key) {
+        // The room around a page arrives over a few frames, as the parts over it are measured. Each
+        // new room restarts this, so the page is built once, for the room that stayed.
+        repeat(SETTLE_FRAMES) { withFrameNanos {} }
         value =
             withContext(Dispatchers.Default) {
                 val spacers = insets.spacers()
@@ -89,6 +99,10 @@ internal fun rememberSandboxedPage(
  * keeps the white page and black text its author designed against, so it stays readable on every
  * platform and theme.
  *
+ * Frames, plugins, and forms in the body and the quote always become inert, as
+ * [inertFramesAndForms] describes: a frame would open a document this function never prepares, and
+ * a form would send what the user typed to the sender.
+ *
  * Without [loadRemote], DNS prefetching is off and the document's `<link>` elements become inert:
  * the policy does not cover `dns-prefetch` or `preconnect` hints, which would otherwise reach the
  * sender's server, and every other link it could load is blocked anyway. With [placeholders] it
@@ -104,7 +118,8 @@ internal fun sandboxedHtml(
     quote: HtmlQuote? = null,
     spacers: HtmlSpacers = HtmlSpacers(),
 ): String {
-    val document = if (quote == null) html else sealedHtml(html) + quoteFold(quote, palette, key)
+    val document =
+        inertFramesAndForms(if (quote == null) html else sealedHtml(html) + quoteFold(quote, palette, key))
     val blocked = !loadRemote && placeholders
     val inert = if (loadRemote) document else inertLinks(document)
     val body = if (blocked) withImagePlaceholders(inert, key) else inert
