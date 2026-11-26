@@ -11,8 +11,11 @@ import com.otusfoss.core.accounts.domain.ConnectedAccount
 import com.otusfoss.core.accounts.domain.JmapAccountDraft
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 public sealed interface ConnectStatus {
     public data object Idle : ConnectStatus
@@ -112,13 +115,32 @@ public class AccountsState(
     private suspend fun loadAccounts(generation: Int) {
         loading = true
         try {
+            readAccounts()
+        } finally {
+            // A cancelled load finishes after its replacement started; only the latest load ends loading.
+            if (generation == loadGeneration) loading = false
+        }
+        retryMissingAddresses()
+    }
+
+    /**
+     * Asks again while a server could not tell an account's addresses, such as when the app starts
+     * offline. Without them, the account's own address shows up in Reply all and among the people.
+     */
+    private suspend fun retryMissingAddresses() {
+        for (wait in ADDRESS_RETRY_DELAYS) {
+            if (accounts.none { it.addressesMissing }) return
+            delay(wait)
+            readAccounts()
+        }
+    }
+
+    private suspend fun readAccounts() {
+        try {
             accounts = repository.accounts()
             storageError = null
         } catch (expected: AccountStorageException) {
             storageError = "Couldn't load saved accounts. Try again."
-        } finally {
-            // A cancelled load finishes after its replacement started; only the latest load ends loading.
-            if (generation == loadGeneration) loading = false
         }
     }
 
@@ -134,3 +156,6 @@ public class AccountsState(
         }
     }
 }
+
+/** Waits between asks for addresses a server could not tell, longer each time. */
+private val ADDRESS_RETRY_DELAYS = listOf(5.seconds, 30.seconds, 2.minutes, 10.minutes)
