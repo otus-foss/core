@@ -10,6 +10,8 @@
   paints both parts opaque in two shades of the content color, and `SymbolTone.Solid` paints both
   in the content color. Colored folder icons through `LocalIconTint` and `FolderGlyph` use
   `Shaded`, and avatar symbols use `Solid`.
+- Design system: `PanelNavigation` lines up the ✕ with the chevron. `PanelTextAction` is a
+  trailing panel text button.
 
 - Storage: `TextCipher` seals text kept on the device, with `KeystoreTextCipher` on Android
   (AES-256-GCM, key wrapped by the Android Keystore) and `KeychainTextCipher` on iOS (AES-256-CBC
