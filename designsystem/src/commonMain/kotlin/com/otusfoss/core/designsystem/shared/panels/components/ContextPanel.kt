@@ -39,6 +39,8 @@ import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.layout.MultiContentMeasurePolicy
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import com.otusfoss.core.designsystem.shared.pages.components.PageChrome
 import com.otusfoss.core.designsystem.shared.pages.components.pinnedChrome
@@ -72,6 +74,7 @@ public enum class ChipPlacement { Below, Overlapping, None }
  * content that collapses with it, such as a [PanelSearchPill] or an [AccountStack]. With a
  * [PanelExpansion], dragging the panel down grows it under its header row, which stays where it
  * is, and shows the motion's expanded content in the new room; the pills fade as it grows.
+ * Uncollapsed, it is at least [minHeight] tall, so rows below keep their place while pills are away.
  */
 @Composable
 public fun ContextPanel(
@@ -81,6 +84,7 @@ public fun ContextPanel(
     trailingAction: (@Composable () -> Unit)? = null,
     chips: @Composable ContextPanelScope.() -> Unit = {},
     motion: PanelMotion = PanelMotion(),
+    minHeight: Dp = 0.dp,
     content: @Composable () -> Unit,
 ) {
     val overlap =
@@ -108,7 +112,7 @@ public fun ContextPanel(
                 .onGloballyPositioned(geometry::trackPanel)
                 .expandable(motion.expansion)
                 .panelSurface(geometry),
-        measurePolicy = PanelMeasurePolicy(placement, overlap::value, motion, geometry),
+        measurePolicy = PanelMeasurePolicy(placement, overlap::value, motion, minHeight, geometry),
     )
 }
 
@@ -145,6 +149,7 @@ private class PanelMeasurePolicy(
     private val placement: ChipPlacement,
     private val overlap: () -> Float,
     private val motion: PanelMotion,
+    private val minHeight: Dp,
     private val geometry: PanelLayoutState,
 ) : MultiContentMeasurePolicy {
     override fun MeasureScope.measure(
@@ -174,7 +179,8 @@ private class PanelMeasurePolicy(
         // Below, the edge runs along the rail's top; across, through its middle.
         val below = if (placement != ChipPlacement.None) maxOf(closed, drop - railHeight / 2f) else closed
         // The room's grab handle ends the grown panel, so the rail's share of the edge goes with the pills.
-        val edge = header.height + grown + lerp(below, drop, overlap()) * (1f - growFade)
+        val ownEdge = header.height + grown + lerp(below, drop, overlap()) * (1f - growFade)
+        val edge = maxOf(ownEdge, lerp(minHeight.toPx(), ownEdge, progress))
         // Growing, the pills only fade where they are; rising and shrinking belong to the scroll collapse.
         val railTop = header.height + drop - railHeight / 2f - PanelTokens.pillRise.toPx() * collapseFade
         geometry.edge = edge
