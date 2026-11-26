@@ -48,9 +48,9 @@ import com.otusfoss.core.designsystem.theme.typography.panelTextStyle
  * Back, and swiping down anywhere on it all slide it away; then [done] runs its action and the
  * others run [onDismiss]. Without a [closeButton], the title is centered and [done] is a text button
  * at the header's end, with [leadingAction] opposite it on the same slide-away-then-done path. With
- * a [closeButton], the title starts the header after [titleLeading], such as the avatar of the
- * person the sheet is about, over an optional [subtitle], such as their address, and a ✕ ends it, for choices that act at once, and [done] becomes a
- * full-width primary button under [content]. The sheet is as tall as its content, up to most of
+ * a [closeButton], for choices that act at once, the title starts the header after [heading]'s
+ * leading slot and over its subtitle, and a ✕ ends it, and [done] becomes a full-width primary
+ * button under [content]. The sheet is as tall as its content, up to most of
  * the screen; content with a weighted child fills that height. The keyboard lifts the content, and
  * the sheet never gets shorter than it has been, so its top stays put when the keyboard closes. A
  * sheet opened from this one's content starts at least as tall.
@@ -62,13 +62,12 @@ public fun SheetFrame(
     done: UiAction? = UiAction("Done", onClick = onDismiss),
     closeButton: Boolean = false,
     leadingAction: (@Composable (done: () -> Unit) -> Unit)? = null,
-    titleLeading: (@Composable () -> Unit)? = null,
-    subtitle: String? = null,
+    heading: SheetHeading = SheetHeading(),
     content: @Composable ColumnScope.() -> Unit,
 ) {
     SheetSurface(title, onDismiss, onDone = { done?.onClick?.invoke() }) { close, finish, closing ->
         if (closeButton) {
-            ClosableHeader(title, subtitle, titleLeading, close)
+            ClosableHeader(title, heading, close)
             content()
             if (done != null) ConfirmButton(done, finish, closing)
         } else {
@@ -153,11 +152,19 @@ public fun SheetHeaderAction(
     ) { Text(label, color = if (enabled) color else OtusColors.text3, fontWeight = FontWeight.SemiBold) }
 }
 
+/**
+ * What a sheet with a close button shows beside its title: [leading] before it, such as the avatar
+ * of the person the sheet is about, and [subtitle] under it, such as their address.
+ */
+public class SheetHeading(
+    public val subtitle: String? = null,
+    public val leading: (@Composable () -> Unit)? = null,
+)
+
 @Composable
 private fun ClosableHeader(
     title: String,
-    subtitle: String?,
-    leading: (@Composable () -> Unit)?,
+    heading: SheetHeading,
     onClose: () -> Unit,
 ) {
     Box(Modifier.fillMaxWidth()) {
@@ -170,7 +177,7 @@ private fun ClosableHeader(
             ),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            if (leading != null) Box(Modifier.padding(end = SheetTokens.gap)) { leading() }
+            heading.leading?.let { Box(Modifier.padding(end = SheetTokens.gap)) { it() } }
             Column(Modifier.weight(1f)) {
                 Text(
                     title,
@@ -178,7 +185,7 @@ private fun ClosableHeader(
                     fontSize = SheetTokens.titleSize,
                     fontWeight = FontWeight.SemiBold,
                 )
-                if (subtitle != null) {
+                heading.subtitle?.let { subtitle ->
                     Text(
                         subtitle,
                         style = panelTextStyle(),
