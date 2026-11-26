@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Design system: `symbol_key`, the Material Symbols key, which marks a one-time code.
 - Storage: `TextCipher` seals text kept on the device, with `KeystoreTextCipher` on Android
   (AES-256-GCM, key wrapped by the Android Keystore) and `KeychainTextCipher` on iOS (AES-256-CBC
   with HMAC-SHA-256, keys in the Keychain). `SealedMapStore` keeps a `StringMapStore` as one sealed
