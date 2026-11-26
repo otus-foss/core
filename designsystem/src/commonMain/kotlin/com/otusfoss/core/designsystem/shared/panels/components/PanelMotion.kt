@@ -13,6 +13,6 @@ import androidx.compose.ui.unit.dp
 public class PanelMotion(
     public val collapse: () -> Float = { 0f },
     public val expansion: PanelExpansion? = null,
-    public val expanded: @Composable () -> Unit = {},
     public val minHeight: Dp = 0.dp,
+    public val expanded: @Composable () -> Unit = {},
 )
