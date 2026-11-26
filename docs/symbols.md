@@ -154,7 +154,7 @@ opening and leaves a dent in the back part.
 
 | Problem | Meaning |
 | --- | --- |
-| `layer N split into M parts by the layers above` | A knockout cut a part in two. Move the parts apart or change the shape. A slash is meant to split, so `cloud_off` and `visibility_off` keep this note. |
+| `layer N split into M parts by the layers above` | A knockout cut a part in two. Move the parts apart or change the shape. A slash is meant to split, so `cloud_off`, `hide_image`, and `visibility_off` keep this note. |
 | `too big` | The icon is wider or taller than 22 units. |
 | `back thinner than 2.4` or `front thinner than 2.4` | Some material is thinner than `MIN_WIDTH`. Rounded tips and cut ends often cause small areas; look at `zoom.svg` and accept them only when they read well. |
 

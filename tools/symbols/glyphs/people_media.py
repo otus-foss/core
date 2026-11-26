@@ -47,10 +47,9 @@ def small_lens(cx, cy):
     return ring | stroke([(cx + 2.7, cy + 2.7), (cx + 4.6, cy + 4.6)], 2.8)
 
 
-def slash(end=15.6, width=3.0):
-    """A slash from the top-left corner that stops inside the shape, so it notches the shape
-    instead of cutting it in two."""
-    return stroke([(3.2, 3.2), (end, end)], width)
+def slash(half=8.8, width=3.0):
+    """A slash through the icon's center, reaching past the corners like `visibility_off`."""
+    return stroke([(12 - half, 12 - half), (12 + half, 12 + half)], width)
 
 
 def calendar(marks, badge=None, size=(2.5, 4.5, 19, 17)):
