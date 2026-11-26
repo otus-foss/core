@@ -3,7 +3,7 @@
 ## Unreleased
 
 - Design system: `PanelNavigation` lines up the ✕ with the chevron. `PanelTextAction` is a
-  trailing panel text button. `PanelMotion` takes a `minHeight`.
+  trailing panel text button.
 
 - Storage: `TextCipher` seals text kept on the device, with `KeystoreTextCipher` on Android
   (AES-256-GCM, key wrapped by the Android Keystore) and `KeychainTextCipher` on iOS (AES-256-CBC

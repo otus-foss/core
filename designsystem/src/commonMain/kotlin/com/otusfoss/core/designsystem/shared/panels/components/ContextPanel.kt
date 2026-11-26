@@ -174,8 +174,7 @@ private class PanelMeasurePolicy(
         // Below, the edge runs along the rail's top; across, through its middle.
         val below = if (placement != ChipPlacement.None) maxOf(closed, drop - railHeight / 2f) else closed
         // The room's grab handle ends the grown panel, so the rail's share of the edge goes with the pills.
-        val ownEdge = header.height + grown + lerp(below, drop, overlap()) * (1f - growFade)
-        val edge = maxOf(ownEdge, lerp(motion.minHeight.toPx(), ownEdge, progress))
+        val edge = header.height + grown + lerp(below, drop, overlap()) * (1f - growFade)
         // Growing, the pills only fade where they are; rising and shrinking belong to the scroll collapse.
         val railTop = header.height + drop - railHeight / 2f - PanelTokens.pillRise.toPx() * collapseFade
         geometry.edge = edge
