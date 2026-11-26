@@ -12,7 +12,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import com.otusfoss.core.designsystem.mail.inbox.elements.MailboxQuickUse
 import com.otusfoss.core.designsystem.shared.controls.elements.CountPill
+import com.otusfoss.core.designsystem.shared.controls.elements.UiAction
 import com.otusfoss.core.designsystem.shared.rows.components.EntryCard
 import com.otusfoss.core.designsystem.shared.rows.components.EntryTaps
 import com.otusfoss.core.designsystem.shared.rows.components.RowSelection
@@ -21,7 +23,8 @@ import com.otusfoss.core.designsystem.theme.tokens.rows.InboxTokens
 
 /**
  * A two-line [EntryCard]: [CompactRowText.first] and the date, then [CompactRowText.second] with
- * its marks and folders, and an optional preview. Accessibility services read
+ * its marks and folders, or a [MailboxQuickUse] for [quickUse] in their place, and an optional
+ * preview. Accessibility services read
  * [CompactRowText.description] instead of the visible text, because the marks and pills are icons.
  */
 @Composable
@@ -32,6 +35,7 @@ public fun CompactContentRow(
     modifier: Modifier = Modifier,
     selection: RowSelection? = null,
     onLongClick: (() -> Unit)? = null,
+    quickUse: UiAction? = null,
     leading: @Composable () -> Unit,
 ) {
     EntryCard(
@@ -46,7 +50,7 @@ public fun CompactContentRow(
     ) {
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(InboxTokens.lineGap)) {
             FirstLine(text)
-            SecondLine(text)
+            SecondLine(text, quickUse)
             if (text.previewLines > 0 && text.preview.isNotEmpty()) {
                 Text(
                     text.preview,
@@ -77,10 +81,15 @@ private fun FirstLine(text: CompactRowText) {
     }
 }
 
-/** The second line with the count pill after it, then the marks, folder glyphs, and "+N". */
+/** The second line with the count pill after it, then the marks, folder glyphs, and "+N", or [quickUse]. */
 @Composable
-private fun SecondLine(text: CompactRowText) {
-    CountedLine(text.second, secondLineStyle(), text.countIn(CountPlacement.AfterSecond)) { RowEndIcons(text) }
+private fun SecondLine(
+    text: CompactRowText,
+    quickUse: UiAction?,
+) {
+    CountedLine(text.second, secondLineStyle(), text.countIn(CountPlacement.AfterSecond)) {
+        if (quickUse != null) MailboxQuickUse(quickUse) else RowEndIcons(text)
+    }
 }
 
 /** [line] with the [count] pill right after it, shrinking first, then [end], which never shrinks. */
