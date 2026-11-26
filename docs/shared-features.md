@@ -78,7 +78,9 @@ text the cipher did not seal or that changed. Sealed text starts with `SEALED_PR
   key is new as well. No later start can tell such a store from one planted in the app's files,
   so it reads as empty. Build every sealed store when the app starts.
 - A saved key that is broken for good, such as one whose IV or Keychain item has the wrong size,
-  is replaced like a lost one. A key that could not be saved lasts for this process only.
+  is replaced like a lost one. On Android a lost Keystore key is deleted and made again. A key
+  that could not be saved lasts for this process only, and a Keystore key that start made is
+  deleted, so the next start is still the device's first.
 - Sealing ties a value to its context, not to a time, so an older sealed copy of a store put back
   in the files still opens.
 - `MarkingTextCipher` is for previews and tests. It hides nothing.

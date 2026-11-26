@@ -24,6 +24,9 @@ internal interface KeyWrap {
     fun wrap(key: ByteArray): Wrapped
 
     fun unwrap(wrapped: String): Unwrapped
+
+    /** Deletes the wrapping key, so the next [wrap] makes a new one. */
+    fun forget()
 }
 
 /** A wrapped key, and whether wrapping it made the Keystore key, as on the device's first start. */
@@ -75,7 +78,9 @@ internal class WrappedKey(
  * makes a new one. It is the device's [KeyLife.First] key only when the Keystore key is new too:
  * the app's files cannot add or remove a Keystore key, so deleting the saved key does not make a
  * start look like the first. While the Keystore fails, the key lasts for this process only and
- * the saved one is left alone, so what was sealed reads again once the Keystore answers.
+ * the saved one is left alone, so what was sealed reads again once the Keystore answers. A lost
+ * wrapping key is deleted and made again, since it never wraps again, and a wrapping key this start
+ * made is deleted when the storage key cannot be saved, so the next start is the first again.
  */
 internal fun storageKey(
     saved: WrappedKey,
@@ -88,22 +93,47 @@ internal fun storageKey(
         if (unwrapped is Unwrapped.Failed) {
             KeyLife.ProcessOnly
         } else {
-            try {
-                val wrapped = wrap.wrap(fresh)
-                when {
-                    // A key that was never saved opens nothing at the next start.
-                    !saved.write(wrapped.text) -> KeyLife.ProcessOnly
-
-                    wrapped.madeWrappingKey -> KeyLife.First
-
-                    else -> KeyLife.Kept
-                }
-            } catch (_: GeneralSecurityException) {
-                // Without a Keystore the key cannot be kept, so it lasts for this process.
-                KeyLife.ProcessOnly
-            }
+            keep(
+                fresh,
+                saved,
+                wrap,
+                lost =
+                    unwrapped != null,
+            )
         }
     return StorageKey(SecretKeySpec(fresh, AES), life)
+}
+
+/** Saves [fresh] as the device's storage key, as the first or in place of a [lost] one, and says how long it lasts. */
+private fun keep(
+    fresh: ByteArray,
+    saved: WrappedKey,
+    wrap: KeyWrap,
+    lost: Boolean,
+): KeyLife {
+    if (lost) wrap.forget()
+    return try {
+        val wrapped = wrap.wrap(fresh)
+        when {
+            // A key that was never saved opens nothing at the next start.
+            !saved.write(wrapped.text) -> {
+                if (wrapped.madeWrappingKey) wrap.forget()
+                KeyLife.ProcessOnly
+            }
+
+            // A lost key's replacement is not the device's first key.
+            wrapped.madeWrappingKey && !lost -> {
+                KeyLife.First
+            }
+
+            else -> {
+                KeyLife.Kept
+            }
+        }
+    } catch (_: GeneralSecurityException) {
+        // Without a Keystore the key cannot be kept, so it lasts for this process.
+        KeyLife.ProcessOnly
+    }
 }
 
 /** AES-256-GCM with a non-exportable Android Keystore key under [alias]. */
@@ -150,6 +180,21 @@ internal class KeystoreKeyWrap(
         } catch (_: IOException) {
             Unwrapped.Failed
         }
+
+    override fun forget() {
+        try {
+            KeyStore
+                .getInstance(KEYSTORE)
+                .apply { load(null) }
+                .deleteEntry(alias)
+        } catch (_: GeneralSecurityException) {
+            // The next wrap meets the old key again and fails, so that start lasts for its process.
+        } catch (_: IOException) {
+            // As above.
+        } catch (_: ProviderException) {
+            // As above.
+        }
+    }
 
     private fun keystoreKey(): SecretKey? =
         KeyStore

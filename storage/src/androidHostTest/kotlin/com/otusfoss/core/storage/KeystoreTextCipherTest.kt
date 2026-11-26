@@ -58,33 +58,56 @@ class KeystoreTextCipherTest {
     @Test
     fun aLostKeyIsReplacedForGood() {
         val preferences = Saved()
-        val first = storageKey(preferences.key, XorWrap())
+        val wrap = XorWrap()
+        val first = storageKey(preferences.key, wrap)
+        wrap.unwrapped = Unwrapped.Lost
 
-        val replaced = storageKey(preferences.key, XorWrap(unwrapped = Unwrapped.Lost, makesKey = false))
+        val replaced = storageKey(preferences.key, wrap)
+        wrap.unwrapped = null
 
         assertNotEquals(first.key.encoded.toList(), replaced.key.encoded.toList())
-        assertEquals(replaced.key.encoded.toList(), storageKey(preferences.key, XorWrap()).key.encoded.toList())
+        assertEquals(replaced.key.encoded.toList(), storageKey(preferences.key, wrap).key.encoded.toList())
         assertEquals(KeyLife.Kept, replaced.life)
+    }
+
+    @Test
+    fun anInvalidatedKeystoreKeyIsDeletedAndReplacedWithoutFirstLife() {
+        val preferences = Saved()
+        val wrap = XorWrap()
+        val first = storageKey(preferences.key, wrap)
+        wrap.invalidated = true
+
+        val replaced = storageKey(preferences.key, wrap)
+
+        assertNotEquals(first.key.encoded.toList(), replaced.key.encoded.toList())
+        assertEquals(KeyLife.Kept, replaced.life)
+        val next = storageKey(preferences.key, wrap)
+        assertEquals(replaced.key.encoded.toList(), next.key.encoded.toList())
+        assertEquals(KeyLife.Kept, next.life)
     }
 
     @Test
     fun aDeletedSavedKeyIsNotTakenForTheFirstStart() {
         val preferences = Saved()
-        storageKey(preferences.key, XorWrap())
+        val wrap = XorWrap()
+        storageKey(preferences.key, wrap)
         preferences.value = null
 
-        assertEquals(KeyLife.Kept, storageKey(preferences.key, XorWrap(makesKey = false)).life)
+        assertEquals(KeyLife.Kept, storageKey(preferences.key, wrap).life)
     }
 
     @Test
     fun aKeystoreThatFailsOnceLeavesTheSavedKeyAlone() {
         val preferences = Saved()
-        val first = storageKey(preferences.key, XorWrap())
+        val wrap = XorWrap()
+        val first = storageKey(preferences.key, wrap)
+        wrap.unwrapped = Unwrapped.Failed
 
-        val meanwhile = storageKey(preferences.key, XorWrap(unwrapped = Unwrapped.Failed))
+        val meanwhile = storageKey(preferences.key, wrap)
+        wrap.unwrapped = null
 
         assertNotEquals(first.key.encoded.toList(), meanwhile.key.encoded.toList())
-        assertEquals(first.key.encoded.toList(), storageKey(preferences.key, XorWrap()).key.encoded.toList())
+        assertEquals(first.key.encoded.toList(), storageKey(preferences.key, wrap).key.encoded.toList())
         assertEquals(KeyLife.ProcessOnly, meanwhile.life)
     }
 
@@ -106,6 +129,37 @@ class KeystoreTextCipherTest {
         assertEquals(KeyLife.ProcessOnly, storageKey(preferences.key, XorWrap()).life)
     }
 
+    @Test
+    fun aFailedFirstSaveDeletesTheNewWrappingKeySoTheNextStartIsFirst() {
+        val preferences = Saved().apply { saves = false }
+        val wrap = XorWrap()
+
+        val failed = storageKey(preferences.key, wrap)
+        assertEquals(KeyLife.ProcessOnly, failed.life)
+        assertNull(preferences.value)
+
+        preferences.saves = true
+        val next = storageKey(preferences.key, wrap)
+
+        assertEquals(KeyLife.First, next.life)
+        assertEquals(next.key.encoded.toList(), storageKey(preferences.key, wrap).key.encoded.toList())
+    }
+
+    @Test
+    fun aFailedSaveAfterTheFirstStartKeepsTheExistingWrappingKey() {
+        val preferences = Saved()
+        val wrap = XorWrap()
+        storageKey(preferences.key, wrap)
+        preferences.value = null
+        preferences.saves = false
+
+        val failed = storageKey(preferences.key, wrap)
+        assertEquals(KeyLife.ProcessOnly, failed.life)
+
+        preferences.saves = true
+        assertEquals(KeyLife.Kept, storageKey(preferences.key, wrap).life)
+    }
+
     private fun cipherWith(seed: Int) =
         KeystoreTextCipher { StorageKey(SecretKeySpec(ByteArray(32) { (it * seed).toByte() }, "AES"), KeyLife.Kept) }
 
@@ -120,19 +174,42 @@ class KeystoreTextCipherTest {
             }
     }
 
-    /** Stands in for the Keystore: it hides the key's bytes, and fails the way the test asks. */
+    /** Stands in for the Keystore: it hides the key's bytes, keeps a wrapping key, and fails as asked. */
     private class XorWrap(
-        private val unwrapped: Unwrapped? = null,
-        private val wraps: Boolean = true,
-        private val makesKey: Boolean = true,
+        var unwrapped: Unwrapped? = null,
+        var wraps: Boolean = true,
+        var invalidated: Boolean = false,
     ) : KeyWrap {
+        private var hasKey = false
+        private var generation = 0
+
         override fun wrap(key: ByteArray): Wrapped {
             if (!wraps) throw GeneralSecurityException("no keystore")
-            return Wrapped(key.joinToString(",") { (it.toInt() xor MASK).toString() }, makesKey)
+            if (hasKey && invalidated) throw GeneralSecurityException("key invalidated")
+            val madeKey = !hasKey
+            if (madeKey) {
+                hasKey = true
+                invalidated = false
+                generation++
+            }
+            val mask = MASK xor generation
+            return Wrapped("$generation:" + key.joinToString(",") { (it.toInt() xor mask).toString() }, madeKey)
         }
 
-        override fun unwrap(wrapped: String): Unwrapped =
-            unwrapped ?: Unwrapped.Key(wrapped.split(",").map { (it.toInt() xor MASK).toByte() }.toByteArray())
+        override fun unwrap(wrapped: String): Unwrapped {
+            val forced = unwrapped
+            if (forced != null) return forced
+            if (!hasKey || invalidated) return Unwrapped.Lost
+            val parts = wrapped.split(":")
+            if (parts.size != 2 || parts[0].toIntOrNull() != generation) return Unwrapped.Lost
+            val mask = MASK xor generation
+            return Unwrapped.Key(parts[1].split(",").map { (it.toInt() xor mask).toByte() }.toByteArray())
+        }
+
+        override fun forget() {
+            hasKey = false
+            invalidated = false
+        }
 
         private companion object {
             const val MASK = 0x5a
