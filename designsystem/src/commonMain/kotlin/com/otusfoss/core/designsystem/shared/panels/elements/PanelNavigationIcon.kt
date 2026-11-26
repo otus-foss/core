@@ -17,8 +17,8 @@ public enum class PanelNavigationIcon(
     internal val size: Dp,
     private val inkStart: Float,
 ) {
-    Back(Res.drawable.symbol_chevron_left, PanelTokens.navigationIconSize, inkStart = 337f / 960f),
-    Close(Res.drawable.symbol_close, PanelTokens.closeIconSize, inkStart = 217f / 960f),
+    Back(Res.drawable.symbol_chevron_left, PanelTokens.navigationIconSize, inkStart = 6.769f / 24f),
+    Close(Res.drawable.symbol_close, PanelTokens.closeIconSize, inkStart = 2.383f / 24f),
     ;
 
     /** How far the glyph sits from the target's start, so its ink starts where the chevron's does. */

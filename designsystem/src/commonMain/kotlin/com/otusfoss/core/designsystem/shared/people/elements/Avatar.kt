@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import com.otusfoss.core.designsystem.shared.controls.elements.Symbol
+import com.otusfoss.core.designsystem.shared.controls.elements.SymbolTone
 import com.otusfoss.core.designsystem.theme.colors.OtusColors
 import com.otusfoss.core.designsystem.theme.tokens.people.AvatarTokens
 import com.otusfoss.core.designsystem.theme.typography.panelTextStyle
@@ -90,6 +91,6 @@ internal fun AvatarSymbol(
     color: Color,
 ) {
     CompositionLocalProvider(LocalContentColor provides color) {
-        Symbol(symbol, size = size * AvatarTokens.SYMBOL_SCALE)
+        Symbol(symbol, size = size * AvatarTokens.SYMBOL_SCALE, tone = SymbolTone.Solid)
     }
 }

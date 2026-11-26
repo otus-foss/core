@@ -205,8 +205,8 @@ Figtree project with their SIL Open Font License. `panelTextStyle()` registers a
 weight draws from its own file. Bold and Black cover Android's bold text setting, which adds 300 to
 every requested weight: Normal and SemiBold become Bold and Black, and unread text stays heavier. A single variable file cannot serve both
 weights on Android: Compose caches asset fonts by path, so every weight would draw from whichever
-variation loaded first. The variable file it replaces defaulted to Light 300. It also bundles all Material Symbols
-used by Mail, accounts, and settings with their Apache 2.0 license. The generated public `Res`
+variation loaded first. The variable file it replaces defaulted to Light 300. It also bundles every symbol used by Mail,
+accounts, and settings. `tools/symbols/` generates them; see [Symbols](symbols.md). The generated public `Res`
 class lives in `com.otusfoss.core.designsystem.resources`. Apps select icons from this bundle and pass
 them to `Symbol` as `DrawableResource` values.
 

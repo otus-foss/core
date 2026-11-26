@@ -2,7 +2,16 @@
 
 ## Unreleased
 
-- Design system: `symbol_key`, the Material Symbols key, which marks a one-time code.
+- Design system: every symbol is redrawn in the Otus style: solid, rounded, and two-tone, with
+  back parts at 45% and a 1.5-unit gap where parts overlap. `tools/symbols/` generates the
+  drawables; see `docs/symbols.md`. Symbol names are unchanged, and `symbol_account_circle` now
+  draws the same person as `symbol_person` on a circle.
+- Design system: `Symbol` takes a `tone`. `SymbolTone.Duo` is the default; `SymbolTone.Shaded`
+  paints both parts opaque in two shades of the content color, and `SymbolTone.Solid` paints both
+  in the content color. Colored folder icons through `LocalIconTint` and `FolderGlyph` use
+  `Shaded`, and avatar symbols use `Solid`.
+
+- Design system: `symbol_key`, a key, which marks a one-time code.
 - Design system: `MailboxQuickUse`, a small pill that hands over what a message is for straight
   from the mailbox, such as its one-time code to copy. `CompactRowText` takes one as `quickUse`
   and shows it at the end of line 2 in place of its marks and folders, keeping its height.

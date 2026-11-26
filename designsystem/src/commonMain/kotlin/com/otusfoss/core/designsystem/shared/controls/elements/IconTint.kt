@@ -22,8 +22,8 @@ import org.jetbrains.compose.resources.DrawableResource
 public val LocalIconTint: ProvidableCompositionLocal<Color?> = compositionLocalOf { null }
 
 /**
- * A row's leading [Symbol], in [LocalIconTint] while the row is [enabled]. A tinted plain folder
- * is filled, because a thin outline is too faint to read the color from.
+ * A row's leading [Symbol], in [LocalIconTint] while the row is [enabled]. A tinted symbol draws
+ * [SymbolTone.Shaded], so its color reads at full strength.
  */
 @Composable
 internal fun LeadingSymbol(
@@ -35,6 +35,6 @@ internal fun LeadingSymbol(
     val filled = tint != null && resource == Res.drawable.symbol_folder
     val shown = if (filled) Res.drawable.symbol_folder_fill else resource
     CompositionLocalProvider(LocalContentColor provides (tint ?: LocalContentColor.current)) {
-        Symbol(shown, size = size)
+        Symbol(shown, size = size, tone = if (tint != null) SymbolTone.Shaded else SymbolTone.Duo)
     }
 }

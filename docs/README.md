@@ -47,6 +47,7 @@ More modules follow as code moves out of the apps. See
 - [Removed APIs](removed-apis.md): public APIs removed for having no caller, and the commit to
   restore each from.
 - [Design system](designsystem.md): the `designsystem` module's contents, resources, and tests.
+- [Symbols](symbols.md): how to generate the symbol drawables, and the rules for drawing them.
 - [UI package migration](ui-package-migration.md): the domain layout and declaration moves in 0.10.0.
 - [Using Core from an app](consuming.md): how Mail and Calendar build Core from source.
 - [Releasing](releasing.md): versions and the changelog.

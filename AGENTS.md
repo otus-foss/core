@@ -27,6 +27,8 @@ compiling for iOS. Read [the suite product goals](docs/suite/product-goals.md) a
 - All branded visual elements, reusable components, tokens, and symbols belong here, including
   those currently used only by Mail. Feature adapters and app-specific screens stay in the apps.
   See decision 0008.
+- `tools/symbols/` generates every `symbol_*.xml` drawable except the owl. Change a symbol there
+  and export again; never edit the drawable by hand. Follow [Symbols](docs/symbols.md).
 - Move existing code here when both apps need it or the user explicitly requests a suite
   extraction. Do not add speculative modules or placeholder files.
 - Enable explicit API mode and warnings as errors in every module. Public declarations are a
