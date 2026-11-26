@@ -5,6 +5,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
 import com.otusfoss.core.designsystem.resources.Res
 import com.otusfoss.core.designsystem.resources.symbol_folder
+import com.otusfoss.core.designsystem.shared.controls.elements.UiAction
 import com.otusfoss.core.designsystem.theme.colors.FolderColor
 import org.jetbrains.compose.resources.DrawableResource
 
@@ -35,6 +36,8 @@ public data class CompactRowText(
     public val description: String = "",
     /** The row's state for screen readers, such as "Unread". */
     public val stateLabel: String = "",
+    /** A [MailboxQuickUse] that ends line 2 in place of the marks and folders, such as a code to copy. */
+    public val quickUse: UiAction? = null,
 )
 
 /** Where a [CompactRowText.count] pill sits. */

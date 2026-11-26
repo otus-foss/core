@@ -21,7 +21,9 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
 import kotlin.test.assertIs
+import kotlin.test.assertTrue
 
 class JmapIdentityAddressesTest {
     private val store = InMemoryLoginStore()
@@ -106,7 +108,9 @@ class JmapIdentityAddressesTest {
     fun aServiceWithoutItsAccountDiscoversNoIdentities() =
         runTest {
             val repository = repository(stalwartLike(session), AccountService("tasks", "urn:example:tasks", "TaskList"))
-            assertEquals(emptyList(), repository.accounts().single().emailAddresses)
+            val account = repository.accounts().single()
+            assertEquals(emptyList(), account.emailAddresses)
+            assertFalse(account.addressesMissing)
         }
 
     @Test
@@ -127,6 +131,7 @@ class JmapIdentityAddressesTest {
             val account = repository.accounts().single()
             assertEquals(login.id, account.id)
             assertEquals(emptyList(), account.emailAddresses)
+            assertTrue(account.addressesMissing)
         }
 
     @Test
