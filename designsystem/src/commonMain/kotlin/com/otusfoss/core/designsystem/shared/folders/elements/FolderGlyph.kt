@@ -10,6 +10,7 @@ import com.otusfoss.core.designsystem.resources.Res
 import com.otusfoss.core.designsystem.resources.symbol_folder
 import com.otusfoss.core.designsystem.resources.symbol_folder_fill
 import com.otusfoss.core.designsystem.shared.controls.elements.Symbol
+import com.otusfoss.core.designsystem.shared.controls.elements.SymbolTone
 import com.otusfoss.core.designsystem.theme.colors.FolderColor
 import com.otusfoss.core.designsystem.theme.colors.OtusColors
 import com.otusfoss.core.designsystem.theme.tokens.rows.FolderTokens
@@ -17,8 +18,8 @@ import org.jetbrains.compose.resources.DrawableResource
 
 /**
  * A folder's small decorative symbol, such as on a mail row or a filter chip. A [color] other than
- * null or [FolderColor.Default] shows the filled folder in its tint, because a thin outline is too
- * faint to read the color from. Otherwise it shows the outlined [icon] in text3, which also suits
+ * null or [FolderColor.Default] shows the folder in two opaque shades of its tint, so the color reads at full
+ * strength and nothing behind it shows through. Otherwise it shows the outlined [icon] in text3, which also suits
  * system folders such as Sent, or the inbox.
  */
 @Composable
@@ -32,7 +33,7 @@ public fun FolderGlyph(
     val symbol = if (tint != null) Res.drawable.symbol_folder_fill else icon
     Box(modifier) {
         CompositionLocalProvider(LocalContentColor provides (tint ?: OtusColors.text3)) {
-            Symbol(symbol, size = size)
+            Symbol(symbol, size = size, tone = if (tint != null) SymbolTone.Shaded else SymbolTone.Duo)
         }
     }
 }

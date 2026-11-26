@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Design system: every symbol is redrawn in the Otus style: solid, rounded, and two-tone, with
+  back parts at 45% and a 1.5-unit gap where parts overlap. `tools/symbols/` generates the
+  drawables; see `docs/symbols.md`. Symbol names are unchanged, and `symbol_account_circle` now
+  draws the same person as `symbol_person` on a circle.
+- Design system: `Symbol` takes a `tone`. `SymbolTone.Duo` is the default; `SymbolTone.Shaded`
+  paints both parts opaque in two shades of the content color, and `SymbolTone.Solid` paints both
+  in the content color. Colored folder icons through `LocalIconTint` and `FolderGlyph` use
+  `Shaded`, and avatar symbols use `Solid`.
+
 - Storage: `TextCipher` seals text kept on the device, with `KeystoreTextCipher` on Android
   (AES-256-GCM, key wrapped by the Android Keystore) and `KeychainTextCipher` on iOS (AES-256-CBC
   with HMAC-SHA-256, keys in the Keychain). `SealedMapStore` keeps a `StringMapStore` as one sealed
