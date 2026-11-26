@@ -53,6 +53,9 @@ public object PanelTokens {
     /** The header's inset from a screen edge that has no chevron. */
     public val headerInset: Dp = Spacing.gutter
 
+    /** Room at each side of a [trailing text action][com.otusfoss.core.designsystem.shared.panels.elements.PanelTextAction]'s label, so it ends [headerInset] from the screen edge. */
+    public val textActionInset: Dp = headerInset - panelInset
+
     /** The gap between header content and the account stack. */
     public val headerGap: Dp = 6.dp
 
