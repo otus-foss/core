@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Sheets: `SheetFrame` takes a `heading: SheetHeading` for a sheet with a close button, with a
+  `leading` slot before the title, such as a person's avatar, and a `subtitle` under it.
+- People: `PersonTiles` lays out `PersonTile.Action` and `PersonTile.Count` tiles in equal widths.
+  `SharedPeopleRow` shows the people someone shares threads with, and `RecentMail` lists their
+  latest mail. `MailLine.current` marks the thread the user reads.
+
 - Storage: `TextCipher` seals text kept on the device, with `KeystoreTextCipher` on Android
   (AES-256-GCM, key wrapped by the Android Keystore) and `KeychainTextCipher` on iOS (AES-256-CBC
   with HMAC-SHA-256, keys in the Keychain). `SealedMapStore` keeps a `StringMapStore` as one sealed
