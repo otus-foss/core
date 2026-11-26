@@ -12,6 +12,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import com.otusfoss.core.designsystem.mail.inbox.elements.MailboxQuickUse
 import com.otusfoss.core.designsystem.shared.controls.elements.CountPill
 import com.otusfoss.core.designsystem.shared.rows.components.EntryCard
 import com.otusfoss.core.designsystem.shared.rows.components.EntryTaps
@@ -21,7 +22,8 @@ import com.otusfoss.core.designsystem.theme.tokens.rows.InboxTokens
 
 /**
  * A two-line [EntryCard]: [CompactRowText.first] and the date, then [CompactRowText.second] with
- * its marks and folders, and an optional preview. Accessibility services read
+ * its marks and folders, or a [MailboxQuickUse] for [CompactRowText.quickUse] in their place, and
+ * an optional preview. Accessibility services read
  * [CompactRowText.description] instead of the visible text, because the marks and pills are icons.
  */
 @Composable
@@ -77,10 +79,13 @@ private fun FirstLine(text: CompactRowText) {
     }
 }
 
-/** The second line with the count pill after it, then the marks, folder glyphs, and "+N". */
+/** The second line with the count pill after it, then the marks, folder glyphs, and "+N", or the quick use. */
 @Composable
 private fun SecondLine(text: CompactRowText) {
-    CountedLine(text.second, secondLineStyle(), text.countIn(CountPlacement.AfterSecond)) { RowEndIcons(text) }
+    CountedLine(text.second, secondLineStyle(), text.countIn(CountPlacement.AfterSecond)) {
+        val quickUse = text.quickUse
+        if (quickUse != null) MailboxQuickUse(quickUse) else RowEndIcons(text)
+    }
 }
 
 /** [line] with the [count] pill right after it, shrinking first, then [end], which never shrinks. */
