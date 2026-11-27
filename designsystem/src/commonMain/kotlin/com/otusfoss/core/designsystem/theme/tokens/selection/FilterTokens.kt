@@ -21,6 +21,9 @@ public object FilterTokens {
     public val folderRowHeight: Dp = 48.dp
     public val folderIndent: Dp = Spacing.indent
 
+    /** The chevron after a folder's name, sized to its 16 sp text. */
+    internal val folderChevronSize: Dp = 16.dp
+
     /** How many levels a folder tree indents; deeper folders line up with the last level. */
     public const val FOLDER_MAX_DEPTH: Int = 5
 

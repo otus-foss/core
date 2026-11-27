@@ -8,6 +8,7 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.unit.dp
 import com.otusfoss.core.designsystem.mail.folders.components.FilterFolderRow
 import com.otusfoss.core.designsystem.mail.folders.components.FolderCheck
+import com.otusfoss.core.designsystem.mail.folders.components.FolderExpansion
 import com.otusfoss.core.designsystem.mail.folders.components.TreeFolder
 import com.otusfoss.core.designsystem.screenshot.screenScreenshot
 import com.otusfoss.core.designsystem.screenshot.screenshot
@@ -97,7 +98,8 @@ class FilterPanelScreenshotTest {
                     TreeFolder("Clients"),
                     FolderCheck.On,
                     {},
-                    expanded = true,
+                    expansion = FolderExpansion(expanded = true) {},
+                    subrow = { Chip("Only this folder", {}, style = ChipStyle(look = ChipLook.Raised)) },
                 ) { FolderGlyph(FolderColor.Blue, size = ControlTokens.chipIconSize) }
                 FilterFolderRow(
                     TreeFolder("Acme", depth = 1),
