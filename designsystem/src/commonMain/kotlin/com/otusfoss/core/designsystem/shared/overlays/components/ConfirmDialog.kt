@@ -8,20 +8,21 @@ import com.otusfoss.core.designsystem.theme.colors.OtusColors
 
 /**
  * Asks before a destructive change, such as removing an account or deleting a folder. [message]
- * says what will happen and what is kept. Cancel, or [dismissLabel], Back, and the scrim change nothing;
- * [confirmLabel] closes the popup and then runs [onConfirm].
+ * says what will happen and what is kept; leave it out when the title says it all. Cancel, or
+ * [dismissLabel], Back, and the scrim change nothing; [confirmLabel] closes the popup and then
+ * runs [onConfirm].
  */
 @Composable
 public fun ConfirmDialog(
     title: String,
-    message: String,
+    message: String?,
     confirmLabel: String,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
     dismissLabel: String = "Cancel",
 ) {
     DialogFrame(title, onDismiss, closeButton = false) {
-        Text(message, color = OtusColors.text2)
+        if (message != null) Text(message, color = OtusColors.text2)
         val confirm = {
             onDismiss()
             onConfirm()

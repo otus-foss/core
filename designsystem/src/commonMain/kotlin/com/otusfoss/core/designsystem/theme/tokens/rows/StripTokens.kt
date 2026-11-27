@@ -33,6 +33,9 @@ public object StripTokens {
     public val buttonIconSize: Dp = 18.dp
     public val buttonTextSize: TextUnit = 14.sp
 
+    /** The narrowest an info strip's button gets, so it keeps its size as its label changes. */
+    public val buttonMinWidth: Dp = 136.dp
+
     /** The widest a strip button's label gets before it ends in an ellipsis. */
     public val buttonLabelMaxWidth: Dp = 140.dp
 
