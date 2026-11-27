@@ -99,7 +99,10 @@ in one place. Their tests live in `tools/tests` here.
 | `launch_colors.py` | writes an app's launch-window colors from the theme |
 | `brand_drawables.py` | Core's brand drawables |
 
-One copy of `config/detekt.yml` serves all three repositories. `.editorconfig` and `ruff.toml`
+One copy of `config/detekt.yml` serves all three repositories. `LongParameterList` allows eight
+parameters but skips the ones with a default value. Compose functions grow through optional
+parameters such as `modifier` and slots, which callers can leave out, while a long list of
+required parameters still fails and calls for a state object instead. `.editorconfig` and `ruff.toml`
 must sit at each repository's root for editors and Ruff to find them, so the apps keep copies,
 and the architecture check fails when a copy differs from Core's.
 

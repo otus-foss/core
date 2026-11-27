@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Design system: `Dropdown` takes a `modifier` again, applied to the list's surface.
+
 - Design system: every symbol is redrawn in the Otus style: solid, rounded, and two-tone, with
   back parts at 45% and a 1.5-unit gap where parts overlap. `tools/symbols/` generates the
   drawables; see `docs/symbols.md`. Symbol names are unchanged, and `symbol_account_circle` now
