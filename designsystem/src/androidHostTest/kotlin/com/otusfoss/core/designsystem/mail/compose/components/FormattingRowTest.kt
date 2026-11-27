@@ -8,11 +8,14 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.performTextInputSelection
+import androidx.compose.ui.text.TextRange
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.captureScreenRoboImage
 import com.otusfoss.core.designsystem.mail.compose.components.CompactSendButton
@@ -46,6 +49,28 @@ class FormattingRowTest {
 
     @Test
     fun boldTurnsOnForWhatIsTypedNextAndShowsFilled() {
+        showBar()
+        val body = compose.onNodeWithContentDescription("Write your message")
+        body.performTextInput(" ")
+        compose.onNodeWithContentDescription("Bold").performClick()
+        body.performTextInput("updated numbers")
+        compose.onNodeWithContentDescription("Bold").assertIsSelected()
+        captureScreenRoboImage(shotPath("compose_formatting_row"))
+    }
+
+    @Test
+    fun aSelectionShowsOnlyTheFormatsThatChangeIt() {
+        showBar()
+        compose.onNodeWithContentDescription("Write your message").performTextInputSelection(TextRange(0, 8))
+        listOf("Attach", "Bulleted list", "Numbered list").forEach {
+            compose.onNodeWithContentDescription(it).assertDoesNotExist()
+        }
+        listOf("Bold", "Italic", "Link", "Clear formatting").forEach {
+            compose.onNodeWithContentDescription(it).assertIsDisplayed()
+        }
+    }
+
+    private fun showBar() {
         compose.setContent {
             OtusTheme {
                 val text =
@@ -72,11 +97,5 @@ class FormattingRowTest {
                 }
             }
         }
-        val body = compose.onNodeWithContentDescription("Write your message")
-        body.performTextInput(" ")
-        compose.onNodeWithContentDescription("Bold").performClick()
-        body.performTextInput("updated numbers")
-        compose.onNodeWithContentDescription("Bold").assertIsSelected()
-        captureScreenRoboImage(shotPath("compose_formatting_row"))
     }
 }

@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Design system: `FormattingBar` keeps its `leading` button, such as Attach, in place, and the
+  formats scroll and fade at the divider. While words are selected, it hides `leading` and the
+  list buttons. `RichText` clears bold, italic, and links across a whole selection, even where
+  they cover only part of it, and has `hasSelection`.
+
 - Design system: every symbol is redrawn in the Otus style: solid, rounded, and two-tone, with
   back parts at 45% and a 1.5-unit gap where parts overlap. `tools/symbols/` generates the
   drawables; see `docs/symbols.md`. Symbol names are unchanged, and `symbol_account_circle` now
