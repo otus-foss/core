@@ -200,12 +200,31 @@ val spec = TweenSpec<Float>((millis * remaining).roundToInt(), easing = MotionCu
 
 ## Resources
 
-The module bundles the static Figtree Regular, SemiBold, Bold, and Black files from the upstream
-Figtree project with their SIL Open Font License. `panelTextStyle()` registers all four, so each
-weight draws from its own file. Bold and Black cover Android's bold text setting, which adds 300 to
-every requested weight: Normal and SemiBold become Bold and Black, and unread text stays heavier. A single variable file cannot serve both
-weights on Android: Compose caches asset fonts by path, so every weight would draw from whichever
-variation loaded first. The variable file it replaces defaulted to Light 300. It also bundles every symbol used by Mail,
+Text draws in the font the user picks in Appearance › Font. `OtusTheme(palette, font)` takes an
+`AppFont`, and `panelTextStyle()` and Material's typography draw in it. `AppFont.System`, the
+default, is the platform font: Roboto on Android and San Francisco on iOS. The module bundles four
+more, each with its SIL Open Font License in `files/`:
+
+| `AppFont` | Files |
+| --- | --- |
+| `GoogleSans`, `GoogleSansRounded` | Static instances of Google Sans Flex with `ROND` at 0 and 100, `opsz` 18, `wdth` 100 |
+| `Figtree` | Figtree's static files from the upstream project |
+| `FigtreeRounded` | Figtree Round's static files |
+
+Each bundled font has Regular, SemiBold, Bold, and Black files, so each weight draws from its own
+file. Bold and Black cover Android's bold text setting, which adds 300 to every requested weight:
+Normal and SemiBold become Bold and Black, and unread text stays heavier. A single variable file
+cannot serve several weights on Android: Compose caches asset fonts by path, so every weight would
+draw from whichever variation loaded first. To cut the Google Sans files again, run fontTools on
+the upstream variable file:
+
+```sh
+fonttools varLib.instancer 'GoogleSansFlex[ROND,opsz,slnt,wdth,wght].ttf' \
+  wght=600 ROND=100 opsz=18 wdth=100 slnt=0 --static --update-name-table \
+  -o google_sans_rounded_semibold.ttf
+```
+
+It also bundles every symbol used by Mail,
 accounts, and settings. `tools/symbols/` generates them; see [Symbols](symbols.md). The generated public `Res`
 class lives in `com.otusfoss.core.designsystem.resources`. Apps select icons from this bundle and pass
 them to `Symbol` as `DrawableResource` values.

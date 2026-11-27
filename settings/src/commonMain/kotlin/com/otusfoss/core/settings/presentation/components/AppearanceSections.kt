@@ -8,12 +8,15 @@ import com.otusfoss.core.designsystem.resources.Res
 import com.otusfoss.core.designsystem.resources.symbol_calendar_month
 import com.otusfoss.core.designsystem.resources.symbol_palette
 import com.otusfoss.core.designsystem.resources.symbol_speed
+import com.otusfoss.core.designsystem.resources.symbol_text_fields
 import com.otusfoss.core.designsystem.shared.selection.components.ChoiceOptions
 import com.otusfoss.core.designsystem.shared.selection.components.ChoiceRow
 import com.otusfoss.core.designsystem.shared.selection.components.ChoiceSheet
 import com.otusfoss.core.designsystem.theme.motion.AnimationSpeed
+import com.otusfoss.core.designsystem.theme.typography.AppFont
 import com.otusfoss.core.settings.presentation.AnimationSettingsState
 import com.otusfoss.core.settings.presentation.DateFormatSettingsState
+import com.otusfoss.core.settings.presentation.FontSettingsState
 import com.otusfoss.core.settings.presentation.ThemeSettingsState
 import com.otusfoss.core.settings.presentation.dateFormatExample
 import com.otusfoss.core.settings.presentation.options
@@ -22,13 +25,14 @@ import kotlinx.datetime.LocalDate
 
 /**
  * The shared Appearance page: its Look section opens the Theme page with [openTheme] and holds the
- * date format and animation speed, with the app's own [look] rows, such as the mail list, after
+ * font, date format, and animation speed, with the app's own [look] rows, such as the mail list, after
  * Theme. The page shows these with [SettingSections] and search lists them with [sections].
  */
 public fun appearanceSections(
     dateFormat: DateFormatSettingsState,
     theme: ThemeSettingsState,
     animation: AnimationSettingsState,
+    font: FontSettingsState,
     openTheme: (setting: String?) -> Unit,
     look: List<SettingRowSpec> = emptyList(),
 ): List<SettingsSectionSpec> {
@@ -47,6 +51,16 @@ public fun appearanceSections(
                         keywords =
                             listOf("Dark mode", "Light mode", "Accent color", "Colors") +
                                 theme.choice.options.map { it.title },
+                    ),
+                )
+                add(
+                    ChoiceRowSpec(
+                        "Font",
+                        font.font.label,
+                        { FontSheet(font, it) },
+                        AppFont.entries.map { it.label },
+                        Res.drawable.symbol_text_fields,
+                        keywords = listOf("Typeface", "Text", "Rounded"),
                     ),
                 )
                 addAll(look)
@@ -110,6 +124,30 @@ private fun AnimationSpeedSheet(
         onDismiss = onDismiss,
     )
 }
+
+@Composable
+private fun FontSheet(
+    font: FontSettingsState,
+    onDismiss: () -> Unit,
+) {
+    ChoiceSheet(
+        title = "Font",
+        choices = ChoiceOptions(AppFont.entries, selected = font.font, default = AppFont.System),
+        row = { ChoiceRow(it.label, font = it) },
+        onSelect = font::select,
+        onDismiss = onDismiss,
+    )
+}
+
+private val AppFont.label: String
+    get() =
+        when (this) {
+            AppFont.System -> "System"
+            AppFont.GoogleSans -> "Google Sans"
+            AppFont.GoogleSansRounded -> "Google Sans Rounded"
+            AppFont.Figtree -> "Figtree"
+            AppFont.FigtreeRounded -> "Figtree Rounded"
+        }
 
 private val AnimationSpeed.label: String
     get() =

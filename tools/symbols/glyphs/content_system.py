@@ -242,6 +242,13 @@ def work():
     return Icon().back(handle).front(case)
 
 
+def text_fields():
+    """A large T in front of a small one, the two sizes of type."""
+    large = stroke([(3.5, 5), (14.5, 5)], 3.6) | stroke([(9, 5), (9, 19.5)], 3.8)
+    small = stroke([(13.5, 11), (20.5, 11)], 3.2) | stroke([(17, 11), (17, 19.5)], 3.4)
+    return Icon().back(small).front(large)
+
+
 def speed():
     dial = (circle(12, 14, 10) & above(20.5)).round(2)
     needle = stroke([(12, 15.5), (16.4, 9.2)], 3) | circle(12, 15.5, 2.7)
@@ -305,6 +312,7 @@ ICONS = {
     "home": home,
     "work": work,
     "speed": speed,
+    "text_fields": text_fields,
     "palette": palette,
     "brush": brush,
     "light_mode": light_mode,

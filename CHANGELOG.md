@@ -18,6 +18,12 @@
 
 - Design system: `PanelNavigation` lines up the ✕ with the chevron. `PanelTextAction` is a
   trailing panel text button.
+- Design system: text draws in an `AppFont` that `OtusTheme` takes, and the default is now the
+  system font instead of Figtree. Google Sans, Google Sans Rounded, Figtree, and Figtree Rounded
+  are bundled. `ChoiceRow` takes a `font` to draw an option in it, and there is a
+  `symbol_text_fields`.
+- Settings: `FontSettingsState` keeps the font, and `appearanceSections` takes it and shows a Font
+  row after Theme. The Font sheet shows each option in its own font.
 
 - Accounts: `ConnectedAccount.addressesMissing` is true when the server could not be asked for the
   account's sending addresses. `AccountsState` then asks again after 5 s, 30 s, 2 min and 10 min,
