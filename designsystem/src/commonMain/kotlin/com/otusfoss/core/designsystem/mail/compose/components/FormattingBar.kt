@@ -1,6 +1,11 @@
 package com.otusfoss.core.designsystem.mail.compose.components
 
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -9,6 +14,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,12 +41,6 @@ import androidx.compose.ui.unit.dp
 import com.otusfoss.core.designsystem.mail.compose.elements.RichText
 import com.otusfoss.core.designsystem.mail.compose.elements.TextFormat
 import com.otusfoss.core.designsystem.resources.Res
-import com.otusfoss.core.designsystem.resources.symbol_format_bold
-import com.otusfoss.core.designsystem.resources.symbol_format_clear
-import com.otusfoss.core.designsystem.resources.symbol_format_italic
-import com.otusfoss.core.designsystem.resources.symbol_format_list_bulleted
-import com.otusfoss.core.designsystem.resources.symbol_format_list_numbered
-import com.otusfoss.core.designsystem.resources.symbol_link
 import com.otusfoss.core.designsystem.resources.symbol_send
 import com.otusfoss.core.designsystem.shared.actionbar.components.LocalBarParts
 import com.otusfoss.core.designsystem.shared.controls.elements.Symbol
@@ -60,9 +60,11 @@ import org.jetbrains.compose.resources.DrawableResource
 /**
  * The row docked above the keyboard while formatted [text] is being written. [leading], such as
  * Attach, stays put at the start behind a divider. A button for each [TextFormat] follows; these
- * scroll sideways and fade at the divider and the end when they do not fit. Link runs [onLink] so the caller can ask
- * for an address, or removes the link at the cursor. [trailing], such as a [CompactSendButton],
- * stays pinned at the end, flush with the row's edge and drawn over its border. Inside a
+ * scroll sideways and fade at the divider and the end when they do not fit. While words are
+ * selected, [leading] and the formats that do not change the selection step aside. Link runs
+ * [onLink] so the caller can ask for an address, or removes the link at the cursor. [trailing],
+ * such as a [CompactSendButton], stays pinned at the end, flush with the row's edge and drawn over
+ * its border. Inside a
  * [BarMorph][com.otusfoss.core.designsystem.shared.actionbar.components.BarMorph], the row and [trailing]
  * move into the other bar's parts.
  */
@@ -105,29 +107,43 @@ private fun FormattingRow(
             ),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        val selecting = text.selectedText.isNotEmpty()
         if (leading != null) {
-            leading()
-            LeadingDivider()
+            Shown(!selecting) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    leading()
+                    LeadingDivider()
+                }
+            }
         }
+        val gap by animateDpAsState(
+            if (leading == null || selecting) 0.dp else Spacing.iconGap,
+            motionTween(MotionSpeed.Quick),
+            label = "Format gap",
+        )
         val scroll = rememberScrollState()
         Row(
             Modifier
                 .weight(1f)
                 .scrollFade(scroll)
                 .horizontalScroll(scroll)
-                .padding(start = if (leading == null) 0.dp else Spacing.iconGap),
+                .padding(start = gap),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            val active = TextFormat.entries.map(text::isActive)
-            TextFormat.entries.forEachIndexed { index, format ->
-                FormatCell(
-                    format.label,
-                    format.symbol,
-                    active[index],
-                    onClick = { text.applyFormat(format, onLink) },
-                    joinsStart = active[index] && active.getOrElse(index - 1) { false },
-                    joinsEnd = active[index] && active.getOrElse(index + 1) { false },
-                )
+            val shown = text.shownFormats()
+            val activeAt = { index: Int -> shown.getOrNull(index)?.let(text::isActive) == true }
+            TextFormat.entries.forEach { format ->
+                val index = shown.indexOf(format)
+                Shown(index >= 0) {
+                    FormatCell(
+                        format.label,
+                        format.symbol,
+                        activeAt(index),
+                        onClick = { text.applyFormat(format, onLink) },
+                        joinsStart = activeAt(index) && activeAt(index - 1),
+                        joinsEnd = activeAt(index) && activeAt(index + 1),
+                    )
+                }
             }
         }
         trailing?.invoke()
@@ -148,75 +164,37 @@ private fun LeadingDivider() {
     )
 }
 
+/**
+ * Every format at a caret. While words are selected, only the ones that change those words: Bold,
+ * Italic and Link, plus Clear when one of them is on. Lists work on whole lines either way.
+ */
+private fun RichText.shownFormats(): List<TextFormat> =
+    if (selectedText.isEmpty()) {
+        TextFormat.entries
+    } else {
+        listOf(TextFormat.Bold, TextFormat.Italic, TextFormat.Link)
+            .let { inline -> if (inline.any(::isActive)) inline + TextFormat.Clear else inline }
+    }
+
+/** [content] that grows in and fades in when [visible], and shrinks away when not. */
+@Composable
+private fun RowScope.Shown(
+    visible: Boolean,
+    content: @Composable () -> Unit,
+) {
+    AnimatedVisibility(
+        visible,
+        enter = fadeIn(motionTween(MotionSpeed.Quick)) + expandHorizontally(motionTween(MotionSpeed.Quick)),
+        exit = fadeOut(motionTween(MotionSpeed.Quick)) + shrinkHorizontally(motionTween(MotionSpeed.Quick)),
+    ) { content() }
+}
+
 /** Toggles [format], except that adding a link runs [onLink] so the caller can ask for an address. */
 private fun RichText.applyFormat(
     format: TextFormat,
     onLink: () -> Unit,
 ) {
     if (format == TextFormat.Link && !isActive(format)) onLink() else toggle(format)
-}
-
-/** One button of a [FormattingBar]; an [active] format is filled with `selectedFill`. */
-@Composable
-public fun FormatButton(
-    description: String,
-    icon: DrawableResource,
-    active: Boolean,
-    onClick: () -> Unit,
-    enabled: Boolean = true,
-) {
-    FormatCell(description, icon, active, onClick, enabled)
-}
-
-/**
- * A [FormatButton] whose fill bridges to the active button before it ([joinsStart]) or after it
- * ([joinsEnd]), so active neighbors read as one pill. Each bridge grows out of the round fill's
- * middle line, which keeps both ends round while the two fills meet.
- */
-@Composable
-private fun FormatCell(
-    description: String,
-    icon: DrawableResource,
-    active: Boolean,
-    onClick: () -> Unit,
-    enabled: Boolean = true,
-    joinsStart: Boolean = false,
-    joinsEnd: Boolean = false,
-) {
-    val interactions = remember { MutableInteractionSource() }
-    val shape = SmoothCornerShape(ComposeTokens.formatButtonRadius)
-    Box(
-        Modifier
-            .size(Sizes.touchTarget)
-            .semantics {
-                contentDescription = description
-                selected = active
-            }.clickable(interactions, indication = null, enabled = enabled, role = Role.Button, onClick = onClick),
-        contentAlignment = Alignment.Center,
-    ) {
-        Bridge(joinsStart, Modifier.align(Alignment.CenterStart))
-        Bridge(joinsEnd, Modifier.align(Alignment.CenterEnd))
-        Surface(
-            Modifier.size(ComposeTokens.formatButtonSize).controlPressFeedback(interactions, shape),
-            shape = shape,
-            color = if (active) OtusColors.selectedFill else OtusColors.bgDark,
-            contentColor = if (enabled) OtusColors.text1 else OtusColors.text3,
-        ) { Box(contentAlignment = Alignment.Center) { Symbol(icon, size = ComposeTokens.formatIconSize) } }
-    }
-}
-
-/** Half a cell of `selectedFill` from the cell's edge to its middle, as tall as the fill once [shown]. */
-@Composable
-private fun Bridge(
-    shown: Boolean,
-    modifier: Modifier,
-) {
-    val height by animateFloatAsState(if (shown) 1f else 0f, motionTween(MotionSpeed.Quick), label = "Format bridge")
-    Box(
-        modifier
-            .size(Sizes.touchTarget / 2, ComposeTokens.formatButtonSize * height)
-            .background(OtusColors.selectedFill),
-    )
 }
 
 /**
@@ -265,25 +243,3 @@ private fun Modifier.scrollFade(scroll: ScrollState): Modifier =
         drawEdgeFade((scroll.value / fade).coerceIn(0f, 1f), fade, atEnd = false)
         drawEdgeFade(((scroll.maxValue - scroll.value) / fade).coerceIn(0f, 1f), fade, atEnd = true)
     }
-
-private val TextFormat.label: String
-    get() =
-        when (this) {
-            TextFormat.Bold -> "Bold"
-            TextFormat.Italic -> "Italic"
-            TextFormat.Bullets -> "Bulleted list"
-            TextFormat.Numbers -> "Numbered list"
-            TextFormat.Link -> "Link"
-            TextFormat.Clear -> "Clear formatting"
-        }
-
-private val TextFormat.symbol: DrawableResource
-    get() =
-        when (this) {
-            TextFormat.Bold -> Res.drawable.symbol_format_bold
-            TextFormat.Italic -> Res.drawable.symbol_format_italic
-            TextFormat.Bullets -> Res.drawable.symbol_format_list_bulleted
-            TextFormat.Numbers -> Res.drawable.symbol_format_list_numbered
-            TextFormat.Link -> Res.drawable.symbol_link
-            TextFormat.Clear -> Res.drawable.symbol_format_clear
-        }
