@@ -59,8 +59,8 @@ import org.jetbrains.compose.resources.DrawableResource
 
 /**
  * The row docked above the keyboard while formatted [text] is being written. [leading], such as
- * Attach, comes first behind a divider, then a button for each [TextFormat]; the row scrolls
- * sideways and fades at its edges when it does not fit. Link runs [onLink] so the caller can ask
+ * Attach, stays put at the start behind a divider. A button for each [TextFormat] follows; these
+ * scroll sideways and fade at the divider and the end when they do not fit. Link runs [onLink] so the caller can ask
  * for an address, or removes the link at the cursor. [trailing], such as a [CompactSendButton],
  * stays pinned at the end, flush with the row's edge and drawn over its border. Inside a
  * [BarMorph][com.otusfoss.core.designsystem.shared.actionbar.components.BarMorph], the row and [trailing]
@@ -105,15 +105,19 @@ private fun FormattingRow(
             ),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        if (leading != null) {
+            leading()
+            LeadingDivider()
+        }
         val scroll = rememberScrollState()
         Row(
-            Modifier.weight(1f).scrollFade(scroll).horizontalScroll(scroll),
+            Modifier
+                .weight(1f)
+                .scrollFade(scroll)
+                .horizontalScroll(scroll)
+                .padding(start = if (leading == null) 0.dp else Spacing.iconGap),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            if (leading != null) {
-                leading()
-                LeadingDivider()
-            }
             val active = TextFormat.entries.map(text::isActive)
             TextFormat.entries.forEachIndexed { index, format ->
                 FormatCell(
@@ -130,12 +134,15 @@ private fun FormattingRow(
     }
 }
 
-/** The line between [FormattingBar]'s leading button and the formats. */
+/**
+ * The line between [FormattingBar]'s leading button and the formats. The formats scroll and fade
+ * out at this line, so it has no gap on its end side; the scrolling row pads its content instead.
+ */
 @Composable
 private fun LeadingDivider() {
     Box(
         Modifier
-            .padding(horizontal = Spacing.iconGap)
+            .padding(start = Spacing.iconGap)
             .size(Sizes.borderWidth, ComposeTokens.formatDividerHeight)
             .background(OtusColors.bgLight),
     )
