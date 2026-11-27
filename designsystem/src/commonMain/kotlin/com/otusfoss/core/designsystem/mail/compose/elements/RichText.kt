@@ -11,6 +11,8 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.mohamedrejeb.richeditor.annotation.ExperimentalRichTextApi
+import com.mohamedrejeb.richeditor.model.RichSpanStyle
 import com.mohamedrejeb.richeditor.model.RichTextState
 import kotlin.math.roundToInt
 
@@ -98,6 +100,10 @@ public class RichText(
         }
     }
 
+    /** Whether words are selected in the block being written, rather than a caret. */
+    public val hasSelection: Boolean
+        get() = !current.selection.collapsed
+
     /** The text selected in the block being written, empty while the cursor is a caret. */
     public val selectedText: String
         get() = current.run { annotatedString.text.substring(selection.min, selection.max) }
@@ -155,10 +161,21 @@ private fun RichTextState.keepingTypingStyle(change: RichTextState.() -> Unit) {
     addSpanStyle(style)
 }
 
-/** Removes every span style, link, and list at the cursor. */
+/**
+ * Removes the styles and link at the cursor, or every bold, italic and link across a selection,
+ * even where only some of the selected words have them, and the list on the line. Naming the link
+ * style to remove needs the library's experimental span API.
+ */
+@OptIn(ExperimentalRichTextApi::class)
 private fun RichTextState.clearFormatting() {
-    clearSpanStyles()
-    clearRichSpans()
+    if (selection.collapsed) {
+        clearSpanStyles()
+        clearRichSpans()
+    } else {
+        removeSpanStyle(SpanStyle(fontWeight = FontWeight.Bold), selection)
+        removeSpanStyle(SpanStyle(fontStyle = FontStyle.Italic), selection)
+        removeRichSpan(RichSpanStyle.Link(""), selection)
+    }
     if (isUnorderedList) removeUnorderedList()
     if (isOrderedList) removeOrderedList()
 }

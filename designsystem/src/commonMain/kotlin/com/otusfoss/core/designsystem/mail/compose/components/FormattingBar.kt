@@ -26,6 +26,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -35,7 +37,6 @@ import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.otusfoss.core.designsystem.mail.compose.elements.RichText
@@ -47,6 +48,7 @@ import com.otusfoss.core.designsystem.shared.controls.elements.Symbol
 import com.otusfoss.core.designsystem.shared.controls.elements.controlPressFeedback
 import com.otusfoss.core.designsystem.shared.panels.components.drawEdgeFade
 import com.otusfoss.core.designsystem.theme.colors.OtusColors
+import com.otusfoss.core.designsystem.theme.motion.MotionCurve
 import com.otusfoss.core.designsystem.theme.motion.MotionSpeed
 import com.otusfoss.core.designsystem.theme.motion.motionTween
 import com.otusfoss.core.designsystem.theme.shapes.SmoothCornerShape
@@ -61,7 +63,7 @@ import org.jetbrains.compose.resources.DrawableResource
  * The row docked above the keyboard while formatted [text] is being written. [leading], such as
  * Attach, stays put at the start behind a divider. A button for each [TextFormat] follows; these
  * scroll sideways and fade at the divider and the end when they do not fit. While words are
- * selected, [leading] and the formats that do not change the selection step aside. Link runs
+ * selected, [leading] and the list buttons step aside. Link runs
  * [onLink] so the caller can ask for an address, or removes the link at the cursor. [trailing],
  * such as a [CompactSendButton], stays pinned at the end, flush with the row's edge and drawn over
  * its border. Inside a
@@ -107,7 +109,7 @@ private fun FormattingRow(
             ),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        val selecting = text.selectedText.isNotEmpty()
+        val selecting by remember(text) { derivedStateOf { text.hasSelection } }
         if (leading != null) {
             Shown(!selecting) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -118,10 +120,11 @@ private fun FormattingRow(
         }
         val gap by animateDpAsState(
             if (leading == null || selecting) 0.dp else Spacing.iconGap,
-            motionTween(MotionSpeed.Quick),
+            motionTween(MotionSpeed.Fast),
             label = "Format gap",
         )
         val scroll = rememberScrollState()
+        LaunchedEffect(selecting) { if (selecting) scroll.animateScrollTo(0) }
         Row(
             Modifier
                 .weight(1f)
@@ -130,15 +133,16 @@ private fun FormattingRow(
                 .padding(start = gap),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            val shown = text.shownFormats()
-            val activeAt = { index: Int -> shown.getOrNull(index)?.let(text::isActive) == true }
+            val shown = TextFormat.entries.filter { !selecting || it in SELECTION_FORMATS }
+            val active = TextFormat.entries.associateWith(text::isActive)
+            val activeAt = { index: Int -> shown.getOrNull(index)?.let(active::getValue) == true }
             TextFormat.entries.forEach { format ->
                 val index = shown.indexOf(format)
                 Shown(index >= 0) {
                     FormatCell(
                         format.label,
                         format.symbol,
-                        activeAt(index),
+                        active.getValue(format),
                         onClick = { text.applyFormat(format, onLink) },
                         joinsStart = activeAt(index) && activeAt(index - 1),
                         joinsEnd = activeAt(index) && activeAt(index + 1),
@@ -164,17 +168,8 @@ private fun LeadingDivider() {
     )
 }
 
-/**
- * Every format at a caret. While words are selected, only the ones that change those words: Bold,
- * Italic and Link, plus Clear when one of them is on. Lists work on whole lines either way.
- */
-private fun RichText.shownFormats(): List<TextFormat> =
-    if (selectedText.isEmpty()) {
-        TextFormat.entries
-    } else {
-        listOf(TextFormat.Bold, TextFormat.Italic, TextFormat.Link)
-            .let { inline -> if (inline.any(::isActive)) inline + TextFormat.Clear else inline }
-    }
+/** The formats that change selected words; lists work on whole lines either way. */
+private val SELECTION_FORMATS = setOf(TextFormat.Bold, TextFormat.Italic, TextFormat.Link, TextFormat.Clear)
 
 /** [content] that grows in and fades in when [visible], and shrinks away when not. */
 @Composable
@@ -184,8 +179,12 @@ private fun RowScope.Shown(
 ) {
     AnimatedVisibility(
         visible,
-        enter = fadeIn(motionTween(MotionSpeed.Quick)) + expandHorizontally(motionTween(MotionSpeed.Quick)),
-        exit = fadeOut(motionTween(MotionSpeed.Quick)) + shrinkHorizontally(motionTween(MotionSpeed.Quick)),
+        enter =
+            fadeIn(motionTween(MotionSpeed.Fast, MotionCurve.Enter)) +
+                expandHorizontally(motionTween(MotionSpeed.Fast, MotionCurve.Enter)),
+        exit =
+            fadeOut(motionTween(MotionSpeed.Fast, MotionCurve.Exit)) +
+                shrinkHorizontally(motionTween(MotionSpeed.Fast, MotionCurve.Exit)),
     ) { content() }
 }
 

@@ -4,7 +4,8 @@
 
 - Design system: `FormattingBar` keeps its `leading` button, such as Attach, in place, and the
   formats scroll and fade at the divider. While words are selected, it hides `leading` and the
-  list buttons and shows Clear formatting only when the selection has formatting.
+  list buttons. `RichText` clears bold, italic, and links across a whole selection, even where
+  they cover only part of it, and has `hasSelection`.
 
 - Design system: every symbol is redrawn in the Otus style: solid, rounded, and two-tone, with
   back parts at 45% and a 1.5-unit gap where parts overlap. `tools/symbols/` generates the

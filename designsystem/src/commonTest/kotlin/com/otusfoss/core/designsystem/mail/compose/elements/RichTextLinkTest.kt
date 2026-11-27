@@ -74,14 +74,6 @@ class RichTextLinkTest {
         assertEquals(TextRange(3), TextRange(1, 3).withoutEdgeSpaces("a  b"))
     }
 
-    private fun richText(
-        html: String,
-        selection: TextRange,
-    ): RichText =
-        RichText(html).apply {
-            (blocks.first() as RichBlock.Text).state.selection = selection
-        }
-
     private companion object {
         const val URL = "https://example.com"
         const val LINK = "<a href=\"$URL\" target=\"_blank\">"
