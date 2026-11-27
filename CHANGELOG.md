@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Design system: `InfoStrip` takes `framed = false` to fade its card, symbol and text while its
+  button stays in place, and strip buttons keep `StripTokens.buttonMinWidth`, so a changing label
+  never moves them. `SettingsSection` takes a null `title` for rows that need no heading, and
+  `ConfirmDialog` a null `message` when the title says it all. Swiping a toast after its action ran
+  no longer runs its `onClose`.
+
 - Design system: every symbol is redrawn in the Otus style: solid, rounded, and two-tone, with
   back parts at 45% and a 1.5-unit gap where parts overlap. `tools/symbols/` generates the
   drawables; see `docs/symbols.md`. Symbol names are unchanged, and `symbol_account_circle` now
