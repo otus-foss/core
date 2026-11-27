@@ -48,6 +48,7 @@ import com.otusfoss.core.designsystem.theme.tokens.overlays.MenuTokens
 @Composable
 public fun Dropdown(
     onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
     alignEnd: Boolean = false,
     width: Dp? = null,
     focusable: Boolean = true,
@@ -65,7 +66,7 @@ public fun Dropdown(
     val window = with(density) { windowWidth.toDp() }
     MenuPopup(position, onDismiss, focusable, unrolls) {
         Column(
-            Modifier
+            modifier
                 .width(width ?: (window - MenuTokens.edge * 2))
                 .heightIn(max = minOf(MenuTokens.dropdownMaxHeight, room))
                 .animateContentSize(motionTween(MotionSpeed.Fast))
