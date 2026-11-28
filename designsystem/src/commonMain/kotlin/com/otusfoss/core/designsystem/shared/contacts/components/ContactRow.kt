@@ -59,7 +59,8 @@ public fun ContactRow(
  * the [title] over a `text2` [subtitle], then its [end]: a detail such as "+1" for more
  * addresses and a pill, such as the shared address book the card comes from. [taps] says what a
  * tap and a hold do. While [selection] is not null the list is selecting, and a selected entry
- * turns accent with a check in place of the avatar.
+ * turns accent with a check in place of the avatar. [neighbors] rounds the card less where other
+ * entries of its run touch it.
  */
 @Composable
 public fun ContactEntry(

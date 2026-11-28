@@ -29,8 +29,8 @@ import com.otusfoss.core.designsystem.theme.tokens.rows.InboxTokens
  * an optional preview. Accessibility services read
  * [CompactRowText.description] instead of the visible text, because the marks and pills are icons.
  *
- * A [read] row steps back through weight and color, all its text in text3, never opacity, so its
- * avatar stays as bright as an unread one. While selected it keeps its weight but takes the unread
+ * A [read] row steps back through weight and color, its text, icons, and count all in text3, never
+ * opacity, so its avatar stays as bright as an unread one. While selected it keeps its weight but takes the unread
  * colors, so the text reads on the accent fill. Give [leading] an avatar of [size]'s
  * [EntrySize.avatarSize]. [neighbors] rounds the card less where other rows touch it.
  */
@@ -57,10 +57,10 @@ public fun CompactContentRow(
         neighbors = neighbors,
         size = size,
     ) {
-        val quiet = read && selection?.selected != true
+        val tone = RowTone(read, quiet = read && selection?.selected != true)
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(InboxTokens.lineGap)) {
-            FirstLine(text, firstLineStyle(read, quiet), dateColor(quiet))
-            SecondLine(text, secondLineStyle(quiet))
+            FirstLine(text, tone)
+            SecondLine(text, tone)
             if (text.previewLines > 0 && text.preview.isNotEmpty()) {
                 Text(
                     text.preview,
@@ -79,15 +79,14 @@ public fun CompactContentRow(
 @Composable
 private fun FirstLine(
     text: CompactRowText,
-    style: LineStyle,
-    dateColor: Color,
+    tone: RowTone,
 ) {
-    CountedLine(text.first, style, text.countIn(CountPlacement.AfterFirst)) {
+    CountedLine(text.first, tone.first, tone, text.countIn(CountPlacement.AfterFirst)) {
         val count = text.countIn(CountPlacement.BeforeTrailing)
-        if (count != null) CountPill(count)
+        if (count != null) CountPill(count, color = tone.detail)
         Text(
             text.trailing,
-            color = dateColor,
+            color = tone.detail,
             fontSize = InboxTokens.compactDateSize,
             lineHeight = InboxTokens.compactLineHeight,
             maxLines = 1,
@@ -99,11 +98,11 @@ private fun FirstLine(
 @Composable
 private fun SecondLine(
     text: CompactRowText,
-    style: LineStyle,
+    tone: RowTone,
 ) {
-    CountedLine(text.second, style, text.countIn(CountPlacement.AfterSecond)) {
+    CountedLine(text.second, tone.second, tone, text.countIn(CountPlacement.AfterSecond)) {
         val quickUse = text.quickUse
-        if (quickUse != null) MailboxQuickUse(quickUse) else RowEndIcons(text)
+        if (quickUse != null) MailboxQuickUse(quickUse) else RowEndIcons(text, tone.detail)
     }
 }
 
@@ -112,6 +111,7 @@ private fun SecondLine(
 private fun CountedLine(
     line: RowLine,
     style: LineStyle,
+    tone: RowTone,
     count: String?,
     end: @Composable () -> Unit,
 ) {
@@ -124,8 +124,8 @@ private fun CountedLine(
             horizontalArrangement = Arrangement.spacedBy(InboxTokens.markGap),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            RowLineText(line, style, Modifier.weight(1f, fill = false))
-            if (count != null) CountPill(count)
+            RowLineText(line, style, tone.detail, Modifier.weight(1f, fill = false))
+            if (count != null) CountPill(count, color = tone.detail)
         }
         end()
     }
@@ -133,22 +133,26 @@ private fun CountedLine(
 
 private fun CompactRowText.countIn(placement: CountPlacement): String? = count?.takeIf { countPlacement == placement }
 
-private fun firstLineStyle(
+/**
+ * How a row's text and small parts draw. A [quiet] row, one read and not selected, draws in text3
+ * throughout; [detail] is the color of the date, the count pill, and the plain icons and marks.
+ */
+private class RowTone(
     read: Boolean,
     quiet: Boolean,
-): LineStyle =
-    LineStyle(
-        if (quiet) OtusColors.text3 else OtusColors.text1,
-        InboxTokens.compactTitleSize,
-        InboxTokens.compactTitleLineHeight,
-        if (read) FontWeight.Normal else FontWeight.SemiBold,
-    )
-
-private fun dateColor(quiet: Boolean): Color = if (quiet) OtusColors.text3 else OtusColors.text2
-
-private fun secondLineStyle(quiet: Boolean): LineStyle =
-    LineStyle(
-        if (quiet) OtusColors.text3 else OtusColors.text2,
-        InboxTokens.compactLineSize,
-        InboxTokens.compactLineHeight,
-    )
+) {
+    val first: LineStyle =
+        LineStyle(
+            if (quiet) OtusColors.text3 else OtusColors.text1,
+            InboxTokens.compactTitleSize,
+            InboxTokens.compactTitleLineHeight,
+            if (read) FontWeight.Normal else FontWeight.SemiBold,
+        )
+    val second: LineStyle =
+        LineStyle(
+            if (quiet) OtusColors.text3 else OtusColors.text2,
+            InboxTokens.compactLineSize,
+            InboxTokens.compactLineHeight,
+        )
+    val detail: Color = if (quiet) OtusColors.text3 else OtusColors.text2
+}

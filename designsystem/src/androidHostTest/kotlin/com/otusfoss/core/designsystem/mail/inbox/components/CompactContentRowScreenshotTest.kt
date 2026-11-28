@@ -16,7 +16,10 @@ import com.otusfoss.core.designsystem.shared.people.elements.Avatar
 import com.otusfoss.core.designsystem.shared.people.elements.AvatarBadge
 import com.otusfoss.core.designsystem.shared.people.elements.BadgedAvatar
 import com.otusfoss.core.designsystem.shared.people.elements.avatarFill
+import com.otusfoss.core.designsystem.shared.rows.components.EntryNeighbors
+import com.otusfoss.core.designsystem.shared.rows.components.EntrySize
 import com.otusfoss.core.designsystem.shared.rows.components.RowSelection
+import com.otusfoss.core.designsystem.shared.rows.components.entryNeighbors
 import com.otusfoss.core.designsystem.theme.colors.FolderColor
 import com.otusfoss.core.designsystem.theme.colors.OtusColors
 import com.otusfoss.core.designsystem.theme.colors.ThemeBase
@@ -53,6 +56,9 @@ class CompactContentRowScreenshotTest {
 
     @Test
     fun read() = compose.pageScreenshot("compact_row_read") { Row(invoice, read = true) }
+
+    @Test
+    fun comfortable() = compose.pageScreenshot("compact_row_comfortable") { Row(invoice, size = EntrySize.Comfortable) }
 
     @Test
     fun youReplied() =
@@ -138,9 +144,18 @@ class CompactContentRowScreenshotTest {
             Modifier.background(OtusColors.bgRegular).padding(InboxTokens.pageInset),
             verticalArrangement = Arrangement.spacedBy(EntryTokens.gap),
         ) {
-            Row(invoice)
-            Row(invoice.copy(first = line("Ada Lovelace"), count = null, marks = emptyList()), read = true)
-            Row(invoice.copy(first = line("Linus Torvalds")), selection = RowSelection(selected = true))
+            Row(invoice, neighbors = entryNeighbors(0, CARDS))
+            Row(
+                invoice.copy(first = line("Ada Lovelace"), count = null, marks = emptyList()),
+                read = true,
+                neighbors = entryNeighbors(1, CARDS),
+            )
+            Row(
+                invoice.copy(first = line("Linus Torvalds")),
+                read = true,
+                selection = RowSelection(selected = true),
+                neighbors = entryNeighbors(2, CARDS),
+            )
         }
     }
 
@@ -149,6 +164,8 @@ class CompactContentRowScreenshotTest {
         text: CompactRowText,
         read: Boolean = false,
         selection: RowSelection? = null,
+        neighbors: EntryNeighbors = EntryNeighbors(),
+        size: EntrySize = EntrySize.Compact,
         badge: Boolean = false,
     ) {
         val sender = DemoPeople.grace
@@ -160,12 +177,16 @@ class CompactContentRowScreenshotTest {
             read = read,
             onClick = {},
             selection = selection,
+            neighbors = neighbors,
+            size = size,
         ) {
             BadgedAvatar(if (badge) ({ AvatarBadge("AL", colorIndex = 0) }) else null) {
-                Avatar(sender.initials, fill = avatarFill(sender.colorIndex), size = InboxTokens.compactAvatarSize)
+                Avatar(sender.initials, fill = avatarFill(sender.colorIndex), size = size.avatarSize)
             }
         }
     }
 }
 
 private fun line(text: String) = RowLine(listOf(RowTextPart(text)))
+
+private const val CARDS = 3

@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
@@ -82,9 +83,9 @@ public class EntryTaps(
 
 /**
  * The card on the theme's raised color, filled with the accent while selected. It rounds less
- * toward its [neighbors], and not at all toward a joined selected one. On a
- * theme whose raised color is its page color, such as Black, an outline marks the card. Under
- * [LocalEntriesOnRaised] the two colors trade places, so the card stands out from a raised surface.
+ * toward its [neighbors], and not at all toward a joined selected one. On a theme whose raised
+ * color is its page color, such as Black, an outline marks the card. Under [LocalEntriesOnRaised]
+ * the two colors trade places, so the card stands out from a raised surface.
  */
 @Composable
 private fun Modifier.entryCard(
@@ -96,8 +97,10 @@ private fun Modifier.entryCard(
     val fill = animateColorAsState(if (selected) OtusColors.accentDark else raised, motionTween()).value
     val top = entryCorner(selection?.joinedAbove == true, neighbors.above)
     val bottom = entryCorner(selection?.joinedBelow == true, neighbors.below)
+    // spacedBy rounds the gap to whole pixels, so the reach does too and leaves no seam.
+    val gap = with(LocalDensity.current) { EntryTokens.gap.roundToPx().toDp() }
     // Only the lower entry of a joined pair reaches up, so the gap is covered once.
-    val reach = animateDpAsState(if (selection?.joinedAbove == true) EntryTokens.gap else 0.dp, motionTween()).value
+    val reach = animateDpAsState(if (selection?.joinedAbove == true) gap else 0.dp, motionTween()).value
     val shape = SmoothCornerShape(top, top, bottom, bottom)
     val outlined = !selected && OtusColors.bgDark == OtusColors.bgRegular
     // Drawn behind rather than inside the clip, so the fill can reach past the top edge.

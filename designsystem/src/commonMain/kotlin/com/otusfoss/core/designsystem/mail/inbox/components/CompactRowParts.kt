@@ -26,11 +26,12 @@ import com.otusfoss.core.designsystem.theme.tokens.rows.FolderTokens
 import com.otusfoss.core.designsystem.theme.tokens.rows.InboxTokens
 import org.jetbrains.compose.resources.DrawableResource
 
-/** [line]'s icon in text2, then its parts on one line, with quiet parts in text3. */
+/** [line]'s icon in [iconColor], then its parts on one line, with quiet parts in text3. */
 @Composable
 internal fun RowLineText(
     line: RowLine,
     style: LineStyle,
+    iconColor: Color,
     modifier: Modifier = Modifier,
 ) {
     val quiet = OtusColors.text3
@@ -39,7 +40,7 @@ internal fun RowLineText(
         horizontalArrangement = Arrangement.spacedBy(InboxTokens.markGap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        line.icon?.let { MarkSymbol(it, OtusColors.text2) }
+        line.icon?.let { MarkSymbol(it, iconColor) }
         Text(
             buildAnnotatedString {
                 line.parts.forEach { part ->
@@ -57,14 +58,20 @@ internal fun RowLineText(
     }
 }
 
-/** The marks, folder glyphs, and "+N" at the end of line 2, each [FolderTokens.markSize] wide. */
+/**
+ * The marks, folder glyphs, and "+N" at the end of line 2, each [FolderTokens.markSize] wide. Plain
+ * marks take [markColor]; Flagged and Read later stay text1, since they are what the user marked.
+ */
 @Composable
-internal fun RowEndIcons(text: CompactRowText) {
+internal fun RowEndIcons(
+    text: CompactRowText,
+    markColor: Color,
+) {
     text.marks.forEach { mark ->
         when (mark) {
-            RowMark.Answered -> MarkSymbol(Res.drawable.symbol_reply, OtusColors.text2)
-            RowMark.Attachment -> MarkSymbol(Res.drawable.symbol_attach_file, OtusColors.text2)
-            RowMark.Invite -> MarkSymbol(Res.drawable.symbol_event, OtusColors.text2)
+            RowMark.Answered -> MarkSymbol(Res.drawable.symbol_reply, markColor)
+            RowMark.Attachment -> MarkSymbol(Res.drawable.symbol_attach_file, markColor)
+            RowMark.Invite -> MarkSymbol(Res.drawable.symbol_event, markColor)
             RowMark.Flagged -> MarkSymbol(Res.drawable.symbol_flag, OtusColors.text1)
             RowMark.ReadLater -> MarkSymbol(Res.drawable.symbol_bookmark_fill, OtusColors.text1)
         }

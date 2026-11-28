@@ -98,7 +98,7 @@ down for that, and code that draws its own rounded rectangles caps the radius it
 
 | Step | Radius | For |
 | --- | --- | --- |
-| `tiny` | 4 dp | The ends of a date range |
+| `tiny` | 4 dp | The ends of a date range, and where grouped entry cards meet |
 | `small` | 8 dp | Compact chips and sketch bars |
 | `chip` | 10 dp | Chips, value buttons, and tokens |
 | `button` | 15 dp | Search fields and cards inside cards |
