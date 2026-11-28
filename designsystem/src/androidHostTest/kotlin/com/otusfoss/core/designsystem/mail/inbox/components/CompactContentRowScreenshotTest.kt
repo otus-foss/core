@@ -52,7 +52,7 @@ class CompactContentRowScreenshotTest {
     fun unread() = compose.pageScreenshot("compact_row_unread") { Row(invoice) }
 
     @Test
-    fun read() = compose.pageScreenshot("compact_row_read") { Row(invoice, dimmed = true) }
+    fun read() = compose.pageScreenshot("compact_row_read") { Row(invoice, read = true) }
 
     @Test
     fun youReplied() =
@@ -139,7 +139,7 @@ class CompactContentRowScreenshotTest {
             verticalArrangement = Arrangement.spacedBy(EntryTokens.gap),
         ) {
             Row(invoice)
-            Row(invoice.copy(first = line("Ada Lovelace"), count = null, marks = emptyList()), dimmed = true)
+            Row(invoice.copy(first = line("Ada Lovelace"), count = null, marks = emptyList()), read = true)
             Row(invoice.copy(first = line("Linus Torvalds")), selection = RowSelection(selected = true))
         }
     }
@@ -147,7 +147,7 @@ class CompactContentRowScreenshotTest {
     @Composable
     private fun Row(
         text: CompactRowText,
-        dimmed: Boolean = false,
+        read: Boolean = false,
         selection: RowSelection? = null,
         badge: Boolean = false,
     ) {
@@ -155,9 +155,9 @@ class CompactContentRowScreenshotTest {
         CompactContentRow(
             text.copy(
                 description = "Grace Hopper, Invoice for March, 3 mails",
-                stateLabel = if (dimmed) "Read" else "Unread",
+                stateLabel = if (read) "Read" else "Unread",
             ),
-            dimmed = dimmed,
+            read = read,
             onClick = {},
             selection = selection,
         ) {

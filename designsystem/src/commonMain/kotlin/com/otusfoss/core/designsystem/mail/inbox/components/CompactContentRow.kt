@@ -7,6 +7,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
@@ -25,11 +26,15 @@ import com.otusfoss.core.designsystem.theme.tokens.rows.InboxTokens
  * its marks and folders, or a [MailboxQuickUse] for [CompactRowText.quickUse] in their place, and
  * an optional preview. Accessibility services read
  * [CompactRowText.description] instead of the visible text, because the marks and pills are icons.
+ *
+ * A [read] row steps back through weight and color, never opacity, so its avatar stays as bright
+ * as an unread one. While selected it keeps its weight but takes the unread colors, so the text
+ * reads on the accent fill.
  */
 @Composable
 public fun CompactContentRow(
     text: CompactRowText,
-    dimmed: Boolean,
+    read: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     selection: RowSelection? = null,
@@ -44,11 +49,11 @@ public fun CompactContentRow(
             stateDescription = text.stateLabel
         },
         selection = selection,
-        dimmed = dimmed,
     ) {
+        val quiet = read && selection?.selected != true
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(InboxTokens.lineGap)) {
-            FirstLine(text)
-            SecondLine(text)
+            FirstLine(text, firstLineStyle(read, quiet), if (quiet) OtusColors.text3 else OtusColors.text2)
+            SecondLine(text, secondLineStyle(quiet))
             if (text.previewLines > 0 && text.preview.isNotEmpty()) {
                 Text(
                     text.preview,
@@ -65,13 +70,17 @@ public fun CompactContentRow(
 
 /** The first line, then the count pill right after it or before the date, then the date. */
 @Composable
-private fun FirstLine(text: CompactRowText) {
-    CountedLine(text.first, firstLineStyle(), text.countIn(CountPlacement.AfterFirst)) {
+private fun FirstLine(
+    text: CompactRowText,
+    style: LineStyle,
+    dateColor: Color,
+) {
+    CountedLine(text.first, style, text.countIn(CountPlacement.AfterFirst)) {
         val count = text.countIn(CountPlacement.BeforeTrailing)
         if (count != null) CountPill(count)
         Text(
             text.trailing,
-            color = OtusColors.text2,
+            color = dateColor,
             fontSize = InboxTokens.compactDateSize,
             lineHeight = InboxTokens.compactLineHeight,
             maxLines = 1,
@@ -81,8 +90,11 @@ private fun FirstLine(text: CompactRowText) {
 
 /** The second line with the count pill after it, then the marks, folder glyphs, and "+N", or the quick use. */
 @Composable
-private fun SecondLine(text: CompactRowText) {
-    CountedLine(text.second, secondLineStyle(), text.countIn(CountPlacement.AfterSecond)) {
+private fun SecondLine(
+    text: CompactRowText,
+    style: LineStyle,
+) {
+    CountedLine(text.second, style, text.countIn(CountPlacement.AfterSecond)) {
         val quickUse = text.quickUse
         if (quickUse != null) MailboxQuickUse(quickUse) else RowEndIcons(text)
     }
@@ -114,8 +126,20 @@ private fun CountedLine(
 
 private fun CompactRowText.countIn(placement: CountPlacement): String? = count?.takeIf { countPlacement == placement }
 
-private fun firstLineStyle(): LineStyle =
-    LineStyle(OtusColors.text1, InboxTokens.compactTitleSize, InboxTokens.compactTitleLineHeight, FontWeight.SemiBold)
+private fun firstLineStyle(
+    read: Boolean,
+    quiet: Boolean,
+): LineStyle =
+    LineStyle(
+        if (quiet) OtusColors.text2 else OtusColors.text1,
+        InboxTokens.compactTitleSize,
+        InboxTokens.compactTitleLineHeight,
+        if (read) FontWeight.Normal else FontWeight.SemiBold,
+    )
 
-private fun secondLineStyle(): LineStyle =
-    LineStyle(OtusColors.text2, InboxTokens.compactLineSize, InboxTokens.compactLineHeight)
+private fun secondLineStyle(quiet: Boolean): LineStyle =
+    LineStyle(
+        if (quiet) OtusColors.text3 else OtusColors.text2,
+        InboxTokens.compactLineSize,
+        InboxTokens.compactLineHeight,
+    )
