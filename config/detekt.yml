@@ -11,6 +11,7 @@ complexity:
   LongParameterList:
     functionThreshold: 8
     constructorThreshold: 8
+    ignoreDefaultParameters: true
   NestedBlockDepth:
     threshold: 4
 naming:

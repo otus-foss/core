@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Design system, breaking: `CompactContentRow` takes `read` instead of `dimmed`; `OtusAlpha.DIMMED` is removed.
+- Design system: `EntryNeighbors` and `entryNeighbors` group entry cards; `EntryTokens.gap` is 2 dp.
+- Design system: `EntrySize`, `Compact` or `Comfortable`, for entry cards.
+- Build: detekt's `LongParameterList` skips parameters with defaults.
 - Design system: `FilterFolderRow` drops the empty chevron column at its start, so folder icons
   line up with the sheet's body. The chevron of a folder with subfolders sits right after the name
   at 16 dp, and thin guide lines run under each parent's icon, as in `FolderSettingRow`. A

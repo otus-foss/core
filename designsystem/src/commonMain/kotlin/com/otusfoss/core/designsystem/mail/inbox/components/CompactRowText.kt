@@ -14,11 +14,11 @@ import org.jetbrains.compose.resources.DrawableResource
  * never shrink, so the line text truncates first.
  */
 public data class CompactRowText(
-    /** Line 1, 16sp SemiBold text1, one line, truncates first. */
+    /** Line 1, 16sp, one line, truncates first: SemiBold text1 while unread, regular text3 once read. */
     public val first: RowLine,
-    /** Line 2, 14sp text2, one line. */
+    /** Line 2, 14sp, one line: text2 while unread, text3 once read. */
     public val second: RowLine,
-    /** The trailing date, 13sp text2, never cut. */
+    /** The trailing date, 13sp, never cut: text2 while unread, text3 once read. */
     public val trailing: String,
     /** Count pill text, or null for none. Never cut. */
     public val count: String? = null,

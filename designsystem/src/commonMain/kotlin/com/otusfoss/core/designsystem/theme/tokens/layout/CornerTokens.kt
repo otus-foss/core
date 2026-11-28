@@ -18,7 +18,7 @@ internal object CornerTokens {
     /** How far each corner eases into its edges, as in Figma's corner smoothing; 0.6 matches iOS. */
     const val SMOOTHING: Float = 0.6f
 
-    /** The ends of a date range in the calendar. */
+    /** The ends of a date range in the calendar, and where grouped entry cards meet. */
     val tiny: Dp = 4.dp
 
     /** Compact rule chips and the bars of a theme sketch. */

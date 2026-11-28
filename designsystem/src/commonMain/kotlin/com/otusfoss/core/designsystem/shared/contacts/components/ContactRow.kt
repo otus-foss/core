@@ -18,6 +18,7 @@ import com.otusfoss.core.designsystem.shared.controls.elements.LabelPill
 import com.otusfoss.core.designsystem.shared.people.components.ChipAvatar
 import com.otusfoss.core.designsystem.shared.people.components.PersonAvatar
 import com.otusfoss.core.designsystem.shared.rows.components.EntryCard
+import com.otusfoss.core.designsystem.shared.rows.components.EntryNeighbors
 import com.otusfoss.core.designsystem.shared.rows.components.EntryTaps
 import com.otusfoss.core.designsystem.shared.rows.components.RowSelection
 import com.otusfoss.core.designsystem.theme.colors.OtusColors
@@ -58,7 +59,8 @@ public fun ContactRow(
  * the [title] over a `text2` [subtitle], then its [end]: a detail such as "+1" for more
  * addresses and a pill, such as the shared address book the card comes from. [taps] says what a
  * tap and a hold do. While [selection] is not null the list is selecting, and a selected entry
- * turns accent with a check in place of the avatar.
+ * turns accent with a check in place of the avatar. [neighbors] rounds the card less where other
+ * entries of its run touch it.
  */
 @Composable
 public fun ContactEntry(
@@ -68,6 +70,7 @@ public fun ContactEntry(
     taps: EntryTaps,
     modifier: Modifier = Modifier,
     selection: RowSelection? = null,
+    neighbors: EntryNeighbors = EntryNeighbors(),
     end: ContactEntryEnd = ContactEntryEnd(),
 ) {
     EntryCard(
@@ -75,6 +78,7 @@ public fun ContactEntry(
         { PersonAvatar(avatar, ContactTokens.avatarSize) },
         modifier,
         selection = selection,
+        neighbors = neighbors,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         ContactText(title, subtitle)
