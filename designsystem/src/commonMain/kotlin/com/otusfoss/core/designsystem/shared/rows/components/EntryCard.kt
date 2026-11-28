@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.otusfoss.core.designsystem.theme.colors.OtusColors
 import com.otusfoss.core.designsystem.theme.motion.motionTween
@@ -34,8 +35,8 @@ import com.otusfoss.core.designsystem.theme.tokens.rows.EntryTokens
 /**
  * One entry of a list, such as a mail or a person, on its own card: the [leading] avatar, which
  * turns into a check while the entry is selected, then the [content]. [taps] says what a tap and
- * a hold do. Space entries [EntryTokens.gap] apart; [rowSelection] works out each entry's
- * [selection].
+ * a hold do. Space entries [EntryTokens.gap] apart; [entryNeighbors] works out each entry's
+ * [neighbors], and [rowSelection] its [selection].
  *
  * A selected card fills with the accent. Where [RowSelection.joinedAbove] or
  * [RowSelection.joinedBelow] says a selected neighbor touches it, the corners square off and the
@@ -48,13 +49,14 @@ internal fun EntryCard(
     leading: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     selection: RowSelection? = null,
+    neighbors: EntryNeighbors = EntryNeighbors(),
     verticalAlignment: Alignment.Vertical = Alignment.Top,
     content: @Composable RowScope.() -> Unit,
 ) {
     Row(
         modifier
             .fillMaxWidth()
-            .entryCard(selection)
+            .entryCard(selection, neighbors)
             .semantics { if (selection != null) selected = selection.selected }
             .combinedClickable(role = Role.Button, onLongClick = taps.onLongClick, onClick = taps.onClick)
             .padding(
@@ -78,17 +80,21 @@ public class EntryTaps(
 )
 
 /**
- * The card on the theme's raised color, filled with the accent while selected. On a
+ * The card on the theme's raised color, filled with the accent while selected. It rounds less
+ * toward its [neighbors], and not at all toward a joined selected one. On a
  * theme whose raised color is its page color, such as Black, an outline marks the card. Under
  * [LocalEntriesOnRaised] the two colors trade places, so the card stands out from a raised surface.
  */
 @Composable
-private fun Modifier.entryCard(selection: RowSelection?): Modifier {
+private fun Modifier.entryCard(
+    selection: RowSelection?,
+    neighbors: EntryNeighbors,
+): Modifier {
     val selected = selection?.selected == true
     val raised = if (LocalEntriesOnRaised.current) OtusColors.bgRegular else OtusColors.bgDark
     val fill = animateColorAsState(if (selected) OtusColors.accentDark else raised, motionTween()).value
-    val top = joinedCorner(selection?.joinedAbove == true, EntryTokens.radius)
-    val bottom = joinedCorner(selection?.joinedBelow == true, EntryTokens.radius)
+    val top = entryCorner(selection?.joinedAbove == true, neighbors.above)
+    val bottom = entryCorner(selection?.joinedBelow == true, neighbors.below)
     // Only the lower entry of a joined pair reaches up, so the gap is covered once.
     val reach = animateDpAsState(if (selection?.joinedAbove == true) EntryTokens.gap else 0.dp, motionTween()).value
     val shape = SmoothCornerShape(top, top, bottom, bottom)
@@ -102,6 +108,20 @@ private fun Modifier.entryCard(selection: RowSelection?): Modifier {
     }.entryOutline(outlined, OtusColors.strokeBgDark, shape)
         .clip(shape)
 }
+
+@Composable
+private fun entryCorner(
+    joined: Boolean,
+    neighbor: Boolean,
+): Dp =
+    animateDpAsState(
+        when {
+            joined -> 0.dp
+            neighbor -> EntryTokens.innerRadius
+            else -> EntryTokens.radius
+        },
+        motionTween(),
+    ).value
 
 /** Whether entries sit on a raised surface, such as a grown control panel, rather than on the page. */
 public val LocalEntriesOnRaised: ProvidableCompositionLocal<Boolean> = staticCompositionLocalOf { false }

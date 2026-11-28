@@ -16,6 +16,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import com.otusfoss.core.designsystem.mail.inbox.elements.MailboxQuickUse
 import com.otusfoss.core.designsystem.shared.controls.elements.CountPill
 import com.otusfoss.core.designsystem.shared.rows.components.EntryCard
+import com.otusfoss.core.designsystem.shared.rows.components.EntryNeighbors
 import com.otusfoss.core.designsystem.shared.rows.components.EntryTaps
 import com.otusfoss.core.designsystem.shared.rows.components.RowSelection
 import com.otusfoss.core.designsystem.theme.colors.OtusColors
@@ -27,9 +28,10 @@ import com.otusfoss.core.designsystem.theme.tokens.rows.InboxTokens
  * an optional preview. Accessibility services read
  * [CompactRowText.description] instead of the visible text, because the marks and pills are icons.
  *
- * A [read] row steps back through weight and color, never opacity, so its avatar stays as bright
- * as an unread one. While selected it keeps its weight but takes the unread colors, so the text
- * reads on the accent fill.
+ * An unread row has an accent dot before the date. A [read] row steps back through weight and
+ * color, never opacity, so its avatar stays as bright as an unread one. While selected it keeps
+ * its weight but takes the unread colors, so the text reads on the accent fill, and the dot hides
+ * behind the check. [neighbors] rounds the card less where other rows touch it.
  */
 @Composable
 public fun CompactContentRow(
@@ -38,6 +40,7 @@ public fun CompactContentRow(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     selection: RowSelection? = null,
+    neighbors: EntryNeighbors = EntryNeighbors(),
     onLongClick: (() -> Unit)? = null,
     leading: @Composable () -> Unit,
 ) {
@@ -49,10 +52,12 @@ public fun CompactContentRow(
             stateDescription = text.stateLabel
         },
         selection = selection,
+        neighbors = neighbors,
     ) {
-        val quiet = read && selection?.selected != true
+        val selected = selection?.selected == true
+        val quiet = read && !selected
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(InboxTokens.lineGap)) {
-            FirstLine(text, firstLineStyle(read, quiet), if (quiet) OtusColors.text3 else OtusColors.text2)
+            FirstLine(text, firstLineStyle(read, quiet), dot = !read && !selected, dateColor(quiet))
             SecondLine(text, secondLineStyle(quiet))
             if (text.previewLines > 0 && text.preview.isNotEmpty()) {
                 Text(
@@ -68,16 +73,18 @@ public fun CompactContentRow(
     }
 }
 
-/** The first line, then the count pill right after it or before the date, then the date. */
+/** The first line, then the count pill right after it or before the date, the unread [dot], then the date. */
 @Composable
 private fun FirstLine(
     text: CompactRowText,
     style: LineStyle,
+    dot: Boolean,
     dateColor: Color,
 ) {
     CountedLine(text.first, style, text.countIn(CountPlacement.AfterFirst)) {
         val count = text.countIn(CountPlacement.BeforeTrailing)
         if (count != null) CountPill(count)
+        if (dot) UnreadDot()
         Text(
             text.trailing,
             color = dateColor,
@@ -136,6 +143,8 @@ private fun firstLineStyle(
         InboxTokens.compactTitleLineHeight,
         if (read) FontWeight.Normal else FontWeight.SemiBold,
     )
+
+private fun dateColor(quiet: Boolean): Color = if (quiet) OtusColors.text3 else OtusColors.text2
 
 private fun secondLineStyle(quiet: Boolean): LineStyle =
     LineStyle(

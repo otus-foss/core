@@ -18,6 +18,7 @@ import com.otusfoss.core.designsystem.shared.controls.elements.LabelPill
 import com.otusfoss.core.designsystem.shared.people.components.ChipAvatar
 import com.otusfoss.core.designsystem.shared.people.components.PersonAvatar
 import com.otusfoss.core.designsystem.shared.rows.components.EntryCard
+import com.otusfoss.core.designsystem.shared.rows.components.EntryNeighbors
 import com.otusfoss.core.designsystem.shared.rows.components.EntryTaps
 import com.otusfoss.core.designsystem.shared.rows.components.RowSelection
 import com.otusfoss.core.designsystem.theme.colors.OtusColors
@@ -68,6 +69,7 @@ public fun ContactEntry(
     taps: EntryTaps,
     modifier: Modifier = Modifier,
     selection: RowSelection? = null,
+    neighbors: EntryNeighbors = EntryNeighbors(),
     end: ContactEntryEnd = ContactEntryEnd(),
 ) {
     EntryCard(
@@ -75,6 +77,7 @@ public fun ContactEntry(
         { PersonAvatar(avatar, ContactTokens.avatarSize) },
         modifier,
         selection = selection,
+        neighbors = neighbors,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         ContactText(title, subtitle)

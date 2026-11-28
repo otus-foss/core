@@ -1,7 +1,11 @@
 package com.otusfoss.core.designsystem.mail.inbox.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -79,6 +83,12 @@ internal fun RowEndIcons(text: CompactRowText) {
             maxLines = 1,
         )
     }
+}
+
+/** The accent dot that marks an unread row. */
+@Composable
+internal fun UnreadDot() {
+    Box(Modifier.size(InboxTokens.unreadDotSize).background(OtusColors.accentRegular, CircleShape))
 }
 
 @Composable
