@@ -28,10 +28,9 @@ import com.otusfoss.core.designsystem.theme.tokens.rows.InboxTokens
  * an optional preview. Accessibility services read
  * [CompactRowText.description] instead of the visible text, because the marks and pills are icons.
  *
- * An unread row has an accent dot before the date. A [read] row steps back through weight and
- * color, never opacity, so its avatar stays as bright as an unread one. While selected it keeps
- * its weight but takes the unread colors, so the text reads on the accent fill, and the dot hides
- * behind the check. [neighbors] rounds the card less where other rows touch it.
+ * A [read] row steps back through weight and color, all its text in text3, never opacity, so its
+ * avatar stays as bright as an unread one. While selected it keeps its weight but takes the unread
+ * colors, so the text reads on the accent fill. [neighbors] rounds the card less where other rows touch it.
  */
 @Composable
 public fun CompactContentRow(
@@ -54,10 +53,9 @@ public fun CompactContentRow(
         selection = selection,
         neighbors = neighbors,
     ) {
-        val selected = selection?.selected == true
-        val quiet = read && !selected
+        val quiet = read && selection?.selected != true
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(InboxTokens.lineGap)) {
-            FirstLine(text, firstLineStyle(read, quiet), dot = !read && !selected, dateColor(quiet))
+            FirstLine(text, firstLineStyle(read, quiet), dateColor(quiet))
             SecondLine(text, secondLineStyle(quiet))
             if (text.previewLines > 0 && text.preview.isNotEmpty()) {
                 Text(
@@ -73,18 +71,16 @@ public fun CompactContentRow(
     }
 }
 
-/** The first line, then the count pill right after it or before the date, the unread [dot], then the date. */
+/** The first line, then the count pill right after it or before the date, then the date. */
 @Composable
 private fun FirstLine(
     text: CompactRowText,
     style: LineStyle,
-    dot: Boolean,
     dateColor: Color,
 ) {
     CountedLine(text.first, style, text.countIn(CountPlacement.AfterFirst)) {
         val count = text.countIn(CountPlacement.BeforeTrailing)
         if (count != null) CountPill(count)
-        if (dot) UnreadDot()
         Text(
             text.trailing,
             color = dateColor,
@@ -138,7 +134,7 @@ private fun firstLineStyle(
     quiet: Boolean,
 ): LineStyle =
     LineStyle(
-        if (quiet) OtusColors.text2 else OtusColors.text1,
+        if (quiet) OtusColors.text3 else OtusColors.text1,
         InboxTokens.compactTitleSize,
         InboxTokens.compactTitleLineHeight,
         if (read) FontWeight.Normal else FontWeight.SemiBold,

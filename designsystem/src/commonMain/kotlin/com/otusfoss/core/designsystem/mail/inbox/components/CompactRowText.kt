@@ -14,7 +14,7 @@ import org.jetbrains.compose.resources.DrawableResource
  * never shrink, so the line text truncates first.
  */
 public data class CompactRowText(
-    /** Line 1, 16sp, one line, truncates first: SemiBold text1 while unread, regular text2 once read. */
+    /** Line 1, 16sp, one line, truncates first: SemiBold text1 while unread, regular text3 once read. */
     public val first: RowLine,
     /** Line 2, 14sp, one line: text2 while unread, text3 once read. */
     public val second: RowLine,

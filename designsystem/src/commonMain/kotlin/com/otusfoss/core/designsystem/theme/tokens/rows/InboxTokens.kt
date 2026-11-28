@@ -21,7 +21,6 @@ public object InboxTokens {
     public val compactLineHeight: TextUnit = 20.sp
     public val compactDateSize: TextUnit = 13.sp
     public val moreFoldersSize: TextUnit = 11.sp
-    public val unreadDotSize: Dp = 8.dp
 
     // MailboxQuickUse, as tall as a row's second line so the row keeps its height.
     public val quickUseHeight: Dp = 20.dp
