@@ -48,7 +48,7 @@ returns an `Icon`.
 
 To add a symbol, write its function in the right module, add it to `ICONS`, preview it, and
 export. The export writes `symbol_<name>.xml`, and Compose generates `Res.drawable.symbol_<name>`
-from it. A new symbol is a public API change, so add it to `CHANGELOG.md`.
+from it. A new symbol is a public API change, so add it to a fragment in `changelog.d/`.
 
 ### Layers
 

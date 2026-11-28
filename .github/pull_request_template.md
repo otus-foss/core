@@ -3,7 +3,7 @@ Title: type(scope): short action, with the commit title rules in AGENTS.md.
 Open as a draft. Mark it ready once every commit is pushed, because CI runs once.
 Summary: a few plain sentences on what changes for the apps that use it and why. Start a breaking
 change with "Breaking:" and say what each app must change. Add each public API or behavior change
-under "## Unreleased" in CHANGELOG.md.
+to a fragment in changelog.d/, named after the branch; never edit CHANGELOG.md.
 Add screenshots below it when the change is visual.
 Paired PRs: link each pull request in another repository that this one needs or that needs it,
 one per line. Keep the heading and write "No paired PR" when there is none.
