@@ -36,7 +36,7 @@ import com.otusfoss.core.designsystem.theme.tokens.rows.EntryTokens
  * One entry of a list, such as a mail or a person, on its own card: the [leading] avatar, which
  * turns into a check while the entry is selected, then the [content]. [taps] says what a tap and
  * a hold do. Space entries [EntryTokens.gap] apart; [entryNeighbors] works out each entry's
- * [neighbors], and [rowSelection] its [selection].
+ * [neighbors], and [rowSelection] its [selection]. [size] sets the padding and the avatar's room.
  *
  * A selected card fills with the accent. Where [RowSelection.joinedAbove] or
  * [RowSelection.joinedBelow] says a selected neighbor touches it, the corners square off and the
@@ -50,6 +50,7 @@ internal fun EntryCard(
     modifier: Modifier = Modifier,
     selection: RowSelection? = null,
     neighbors: EntryNeighbors = EntryNeighbors(),
+    size: EntrySize = EntrySize.Compact,
     verticalAlignment: Alignment.Vertical = Alignment.Top,
     content: @Composable RowScope.() -> Unit,
 ) {
@@ -61,14 +62,14 @@ internal fun EntryCard(
             .combinedClickable(role = Role.Button, onLongClick = taps.onLongClick, onClick = taps.onClick)
             .padding(
                 start = EntryTokens.paddingStart,
-                top = EntryTokens.paddingVertical,
+                top = size.paddingVertical,
                 end = EntryTokens.paddingEnd,
-                bottom = EntryTokens.paddingVertical,
+                bottom = size.paddingVertical,
             ),
         horizontalArrangement = Arrangement.spacedBy(EntryTokens.contentGap),
         verticalAlignment = verticalAlignment,
     ) {
-        SelectableLeading(selection?.selected == true, EntryTokens.avatarSize, leading = leading)
+        SelectableLeading(selection?.selected == true, size.avatarSize, leading = leading)
         content()
     }
 }

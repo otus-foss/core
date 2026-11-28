@@ -17,6 +17,7 @@ import com.otusfoss.core.designsystem.mail.inbox.elements.MailboxQuickUse
 import com.otusfoss.core.designsystem.shared.controls.elements.CountPill
 import com.otusfoss.core.designsystem.shared.rows.components.EntryCard
 import com.otusfoss.core.designsystem.shared.rows.components.EntryNeighbors
+import com.otusfoss.core.designsystem.shared.rows.components.EntrySize
 import com.otusfoss.core.designsystem.shared.rows.components.EntryTaps
 import com.otusfoss.core.designsystem.shared.rows.components.RowSelection
 import com.otusfoss.core.designsystem.theme.colors.OtusColors
@@ -30,7 +31,8 @@ import com.otusfoss.core.designsystem.theme.tokens.rows.InboxTokens
  *
  * A [read] row steps back through weight and color, all its text in text3, never opacity, so its
  * avatar stays as bright as an unread one. While selected it keeps its weight but takes the unread
- * colors, so the text reads on the accent fill. [neighbors] rounds the card less where other rows touch it.
+ * colors, so the text reads on the accent fill. Give [leading] an avatar of [size]'s
+ * [EntrySize.avatarSize]. [neighbors] rounds the card less where other rows touch it.
  */
 @Composable
 public fun CompactContentRow(
@@ -40,6 +42,7 @@ public fun CompactContentRow(
     modifier: Modifier = Modifier,
     selection: RowSelection? = null,
     neighbors: EntryNeighbors = EntryNeighbors(),
+    size: EntrySize = EntrySize.Compact,
     onLongClick: (() -> Unit)? = null,
     leading: @Composable () -> Unit,
 ) {
@@ -52,6 +55,7 @@ public fun CompactContentRow(
         },
         selection = selection,
         neighbors = neighbors,
+        size = size,
     ) {
         val quiet = read && selection?.selected != true
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(InboxTokens.lineGap)) {

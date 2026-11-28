@@ -25,6 +25,10 @@ public object EntryTokens {
     public val paddingEnd: Dp = 12.dp
     public val paddingVertical: Dp = 10.dp
 
+    // The taller EntrySize.Comfortable.
+    public val comfortableAvatarSize: Dp = 48.dp
+    public val comfortablePaddingVertical: Dp = 16.dp
+
     /** Rounding of a selected flat row's tint, matching the panels. */
     public val selectionRadius: Dp = PanelTokens.panelRadius
 }
