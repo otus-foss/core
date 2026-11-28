@@ -1,4 +1,4 @@
-package com.otusfoss.core.designsystem.mail.attachments.elements
+package com.otusfoss.core.designsystem.mail.attachments.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,7 +17,6 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
-import com.otusfoss.core.designsystem.mail.attachments.components.AttachmentKind
 import com.otusfoss.core.designsystem.resources.Res
 import com.otusfoss.core.designsystem.resources.symbol_attach_file
 import com.otusfoss.core.designsystem.resources.symbol_file_other

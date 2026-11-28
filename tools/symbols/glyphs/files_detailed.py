@@ -8,12 +8,17 @@ from glyph import Icon, arc, circle, pill, poly, rbox, ring, stroke, union
 T = 1.5
 
 
+# The page's top end corner is cut along x - y = CUT, which meets its top edge at (15, 2.5) and
+# its side at (20, 7.5). The fold fills that corner, so its long edge is the cut itself.
+CUT = 12.5
+
+
 def page():
-    return (rbox(4, 2.5, 16, 19, 4.5) - poly([(12.5, 0), (24, 0), (24, 11.5)])).round(1)
+    return rbox(4, 2.5, 16, 19, 4.5) - poly([(CUT, 0), (24, 0), (24, 24 - CUT)])
 
 
 def fold():
-    return poly([(14.6, 2.5), (20, 7.9), (14.6, 7.9)]).round(1)
+    return poly([(2.5 + CUT, 2.5), (20, 20 - CUT), (2.5 + CUT, 20 - CUT)]).round(0.8)
 
 
 def ln(x, y, w, t=T):
@@ -186,7 +191,7 @@ FOLD_GAP = 0.8
 
 
 def body():
-    return page() - fold().grow(FOLD_GAP)
+    return (page() - fold().grow(FOLD_GAP)).round(0.6)
 
 
 def placed(kind):
