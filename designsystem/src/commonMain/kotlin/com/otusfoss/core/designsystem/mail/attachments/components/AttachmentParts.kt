@@ -111,13 +111,13 @@ internal fun SummaryText(
     )
 }
 
-/** [file] as a picture: its thumbnail, else a page in the fill of its kind with its type on it. */
+/** [file] as a picture: its thumbnail, else its kind's detailed page symbol with its type on it. */
 @Composable
 internal fun FileIcon(
     file: AttachmentFile,
     size: Dp,
 ) {
-    FileIcon(file.label, file.kind.tint, size, picture = file.thumbnail)
+    FileIcon(file.kind.detailedIcon, file.label, size, picture = file.thumbnail)
 }
 
 /**

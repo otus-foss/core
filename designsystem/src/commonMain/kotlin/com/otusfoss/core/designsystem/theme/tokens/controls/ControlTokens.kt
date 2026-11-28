@@ -10,6 +10,12 @@ public object ControlTokens {
     public val chipPadding: Dp = 10.dp
     public val chipDividerHeight: Dp = 14.dp
     public val chipAvatarOverlap: Dp = 6.dp
+
+    /** How far each file symbol in a files pill slides under the next, about half the page's width. */
+    public val chipFileOverlap: Dp = 9.dp
+
+    /** The gap cut around each overlapping file symbol, so the one below shows where it ends. */
+    public val chipFileRing: Dp = 1.5.dp
     public const val CHIP_AVATAR_LIMIT: Int = 4
 
     /** The primary pill's share of a button pair's width; the secondary label gets the rest. */
