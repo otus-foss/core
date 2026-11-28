@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import com.otusfoss.core.designsystem.shared.controls.elements.UiAction
 import com.otusfoss.core.designsystem.shared.controls.elements.controlPressFeedback
@@ -92,6 +93,7 @@ internal fun Modifier.primaryButton(
                 primary.action.label,
                 context?.description,
             ).joinToString(", ")
+        primary.on?.let { selected = it }
     }.clickable(
         interactions,
         indication = null,

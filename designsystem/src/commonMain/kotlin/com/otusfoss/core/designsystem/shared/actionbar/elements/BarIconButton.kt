@@ -1,6 +1,6 @@
 package com.otusfoss.core.designsystem.shared.actionbar.elements
 
-import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BasicTooltipBox
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -18,7 +18,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -59,9 +58,10 @@ public fun BarIconButton(
 ) {
     val interactions = remember { MutableInteractionSource() }
     val edge = with(LocalDensity.current) { MenuTokens.edge.roundToPx() }
-    val fill by animateColorAsState(
-        if (on == true) OtusColors.selectedFill else Color.Transparent,
-        motionTween(MotionSpeed.Quick),
+    // Fading the fill's own alpha keeps it from passing through black, as Color.Transparent would.
+    val fill by animateFloatAsState(
+        if (on == true) 1f else 0f,
+        motionTween(MotionSpeed.Fast),
         label = "Bar toggle fill",
     )
     BasicTooltipBox(
@@ -83,7 +83,10 @@ public fun BarIconButton(
             Box(
                 Modifier
                     .size(ActionBarTokens.onFillSize)
-                    .background(fill, SmoothCornerShape(ActionBarTokens.onFillSize / 2)),
+                    .background(
+                        OtusColors.selectedFill.copy(alpha = fill),
+                        SmoothCornerShape(ActionBarTokens.onFillSize / 2),
+                    ),
             )
             CompositionLocalProvider(LocalContentColor provides if (enabled) OtusColors.text1 else OtusColors.text3) {
                 Symbol(symbol, size = ActionBarTokens.symbolSize)
