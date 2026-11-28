@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Design system: `FilterFolderRow` drops the empty chevron column at its start, so folder icons
+  line up with the sheet's body. The chevron of a folder with subfolders sits right after the name
+  at 16 dp, and thin guide lines run under each parent's icon, as in `FolderSettingRow`. A
+  `subrow` slot shows content at the subfolders' indent, with the guide lines running past it.
+  `expansion: FolderExpansion?` replaces the `expanded` and `onExpandedChange` parameters.
+
 - Design system: every symbol is redrawn in the Otus style: solid, rounded, and two-tone, with
   back parts at 45% and a 1.5-unit gap where parts overlap. `tools/symbols/` generates the
   drawables; see `docs/symbols.md`. Symbol names are unchanged, and `symbol_account_circle` now

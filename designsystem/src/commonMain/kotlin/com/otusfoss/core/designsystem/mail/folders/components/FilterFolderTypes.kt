@@ -15,3 +15,9 @@ public data class TreeFolder(
     val depth: Int = 0,
     val path: String? = null,
 )
+
+/** Whether a folder with subfolders shows them in a [FilterFolderRow], and how to change that. */
+public class FolderExpansion(
+    public val expanded: Boolean,
+    public val onChange: (Boolean) -> Unit,
+)

@@ -18,11 +18,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.LayoutDirection
 import com.otusfoss.core.designsystem.resources.Res
 import com.otusfoss.core.designsystem.resources.symbol_folder
 import com.otusfoss.core.designsystem.resources.symbol_settings
@@ -123,8 +121,11 @@ private fun FolderRowLayout(
                 onLongClick = slots.onLongClick?.let { { it(pressedAt) } },
                 onClick = slots.onClick,
             ).controlPressFeedback(interactions, SmoothCornerShape(SheetTokens.rowRadius))
-            .treeGuides(folder.depth)
-            .nestIndent(FolderRowTokens.nestIndent, folder.depth)
+            .treeGuides(
+                levels = folder.depth.coerceAtMost(MAX_INDENT_STEPS),
+                indent = FolderRowTokens.nestIndent,
+                firstCenter = Sizes.touchTarget / 2,
+            ).nestIndent(FolderRowTokens.nestIndent, folder.depth)
             .padding(
                 end = FolderRowTokens.endPadding,
                 top = FolderRowTokens.verticalPadding,
@@ -194,17 +195,3 @@ public fun FolderOwnerLine(
 ) {
     AvatarStack(listOf(owner), label = text, ring = OtusColors.bgLight, size = RuleChipTokens.compactAvatar)
 }
-
-/**
- * A thin line down the row under each folder icon above it, one per level of [depth], so nested
- * rows read as a tree. Rows follow each other without gaps, so the lines join up.
- */
-private fun Modifier.treeGuides(depth: Int): Modifier =
-    drawBehind {
-        val width = Sizes.borderWidth.toPx()
-        repeat(depth.coerceAtMost(MAX_INDENT_STEPS)) { level ->
-            val center = (FolderRowTokens.nestIndent * level + Sizes.touchTarget / 2).toPx()
-            val x = if (layoutDirection == LayoutDirection.Rtl) size.width - center else center
-            drawLine(OtusColors.bgLight, Offset(x, 0f), Offset(x, size.height), width)
-        }
-    }
