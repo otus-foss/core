@@ -24,10 +24,12 @@ import com.otusfoss.core.designsystem.theme.tokens.rows.StripTokens
  * changes, so a strip at the bottom of a column grows upward in place. The caller adds the side
  * margin and the gaps between strips. A strip whose height follows a finger uses
  * [UnfoldingStripCard] instead, since a second animation would trail behind the finger.
+ * [frame] fades the fill and border, from 1 (shown) to 0, where only the content remains.
  */
 @Composable
 internal fun StripCard(
     modifier: Modifier = Modifier,
+    frame: Float = 1f,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     if (!LocalStripFramed.current) return Column(modifier.fillMaxWidth(), content = content)
@@ -35,18 +37,23 @@ internal fun StripCard(
         modifier
             .fillMaxWidth()
             .animateContentSize(motionTween(MotionSpeed.Normal, MotionCurve.Standard))
-            .stripCardFrame(),
+            .stripCardFrame(frame),
         content = content,
     )
 }
 
-/** A strip card's full width, rounded `bgDark` fill, and `strokeBgDark` border, without the size animation. */
-internal fun Modifier.stripCardFrame(): Modifier {
+/**
+ * A strip card's full width, rounded `bgDark` fill, and `strokeBgDark` border, without the size
+ * animation. [frame] is how much of the fill and border shows.
+ */
+internal fun Modifier.stripCardFrame(frame: Float = 1f): Modifier {
     val shape = SmoothCornerShape(StripTokens.radius)
+    val fill = OtusColors.bgDark
+    val border = OtusColors.strokeBgDark
     return fillMaxWidth()
         .clip(shape)
-        .background(OtusColors.bgDark)
-        .strokeBorder(Sizes.borderWidth, OtusColors.strokeBgDark, shape)
+        .background(fill.copy(alpha = fill.alpha * frame))
+        .strokeBorder(Sizes.borderWidth, border.copy(alpha = border.alpha * frame), shape)
 }
 
 /** False inside an [UnfoldingStripCard]'s folded form, whose card already frames the strip drawn there. */

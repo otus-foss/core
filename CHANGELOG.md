@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Design system: `InfoStrip` takes `framed`, a frameless strip that keeps only its button.
+- Design system: `StripTokens.buttonMinWidth`, the narrowest strip button.
+- Design system: `SettingsSection` takes a null `title`, and `ConfirmDialog` a null `message`.
+- Design system: a toast swiped after its action ran skips `onClose`.
+
 - Design system: every symbol is redrawn in the Otus style: solid, rounded, and two-tone, with
   back parts at 45% and a 1.5-unit gap where parts overlap. `tools/symbols/` generates the
   drawables; see `docs/symbols.md`. Symbol names are unchanged, and `symbol_account_circle` now

@@ -24,37 +24,47 @@ import com.otusfoss.core.designsystem.theme.tokens.settings.SettingTokens
 /**
  * A group of [SettingRow]s under a large [title]; rows follow each other without gaps. An
  * [avatar], such as the account the rows belong to, sits before the title, and an [info] button
- * after it explains the section on request.
+ * after it explains the section on request. Without a [title] the rows stand alone, such as the
+ * only account's rows where naming it would tell the user nothing.
  */
 @Composable
 public fun SettingsSection(
-    title: String,
+    title: String?,
     avatar: ChipAvatar? = null,
     info: InfoText? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Column(Modifier.padding(top = SettingTokens.sectionGap)) {
-        Row(
-            Modifier
-                .padding(horizontal = PageTokens.textInset)
-                .padding(bottom = SettingTokens.sectionTitleGap)
-                .semantics(mergeDescendants = true) { heading() },
-            horizontalArrangement = Arrangement.spacedBy(SettingTokens.sectionLeadingGap),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            if (avatar != null) PersonAvatar(avatar, SettingTokens.sectionAvatar)
-            Text(
-                title,
-                fontSize = SettingTokens.sectionTitleSize,
-                lineHeight = SettingTokens.sectionTitleLineHeight,
-                fontWeight = FontWeight.SemiBold,
-            )
-            // The button's touch target reaches past the title's line rather than making the header taller.
-            if (info != null) {
-                InfoTip(info, Modifier.offset(x = -InfoTipOverhang).overlapHeight(Sizes.iconSize))
-            }
-        }
+        if (title != null) SectionHeader(title, avatar, info)
         content()
+    }
+}
+
+@Composable
+private fun SectionHeader(
+    title: String,
+    avatar: ChipAvatar?,
+    info: InfoText?,
+) {
+    Row(
+        Modifier
+            .padding(horizontal = PageTokens.textInset)
+            .padding(bottom = SettingTokens.sectionTitleGap)
+            .semantics(mergeDescendants = true) { heading() },
+        horizontalArrangement = Arrangement.spacedBy(SettingTokens.sectionLeadingGap),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        if (avatar != null) PersonAvatar(avatar, SettingTokens.sectionAvatar)
+        Text(
+            title,
+            fontSize = SettingTokens.sectionTitleSize,
+            lineHeight = SettingTokens.sectionTitleLineHeight,
+            fontWeight = FontWeight.SemiBold,
+        )
+        // The button's touch target reaches past the title's line rather than making the header taller.
+        if (info != null) {
+            InfoTip(info, Modifier.offset(x = -InfoTipOverhang).overlapHeight(Sizes.iconSize))
+        }
     }
 }
 

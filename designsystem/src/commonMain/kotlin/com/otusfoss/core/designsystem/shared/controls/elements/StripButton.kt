@@ -21,6 +21,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.otusfoss.core.designsystem.theme.colors.OtusColors
 import com.otusfoss.core.designsystem.theme.tokens.core.Sizes
 import com.otusfoss.core.designsystem.theme.tokens.rows.StripTokens
@@ -31,6 +32,7 @@ import org.jetbrains.compose.resources.DrawableResource
  * The outlined button at the end of a strip or banner, such as Unsubscribe or Show: a `bgRegular`
  * pill [height] tall with a `bgLight` border, an optional [icon], and a semibold label. It keeps a
  * 48 dp touch target. A long label ends in an ellipsis, so the strip's own text keeps room.
+ * [minWidth] keeps the pill one size while its label changes, with the label centered.
  */
 @Composable
 internal fun StripButton(
@@ -39,6 +41,7 @@ internal fun StripButton(
     height: Dp,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    minWidth: Dp = 0.dp,
 ) {
     val interactions = remember { MutableInteractionSource() }
     Box(
@@ -55,8 +58,11 @@ internal fun StripButton(
             border = BorderStroke(Sizes.borderWidth, OtusColors.bgLight),
         ) {
             Row(
-                Modifier.height(height).padding(horizontal = StripTokens.buttonPadding),
-                horizontalArrangement = Arrangement.spacedBy(StripTokens.glyphGap),
+                Modifier
+                    .height(height)
+                    .widthIn(min = minWidth)
+                    .padding(horizontal = StripTokens.buttonPadding),
+                horizontalArrangement = Arrangement.spacedBy(StripTokens.glyphGap, Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 if (icon != null) Symbol(icon, size = StripTokens.buttonIconSize)
