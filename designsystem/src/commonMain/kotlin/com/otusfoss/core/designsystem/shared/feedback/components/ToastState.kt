@@ -95,7 +95,10 @@ public class ToastState {
 
     /** Removes a toast the user swiped away: its swipe action runs, or else its close callback. */
     internal fun swipe(entry: ToastEntry) =
-        drop(entry) { (entry.message.swipeAction?.onClick ?: entry.message.onClose)?.invoke() }
+        drop(entry) {
+            // A toast whose action already ran, such as Undo, is only fading out; swiping it skips the close.
+            if (!entry.acted) (entry.message.swipeAction?.onClick ?: entry.message.onClose)?.invoke()
+        }
 
     private fun drop(
         entry: ToastEntry,

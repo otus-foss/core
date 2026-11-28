@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Design system: `InfoStrip` takes `framed`, a frameless strip that keeps only its button.
+- Design system: `StripTokens.buttonMinWidth`, the narrowest strip button.
+- Design system: `SettingsSection` takes a null `title`, and `ConfirmDialog` a null `message`.
+- Design system: a toast swiped after its action ran skips `onClose`.
 - Design system: `symbol_file_<kind>` and `symbol_file_<kind>_detailed`, a symbol for each of
   the 26 `AttachmentKind`s. `tools/symbols/glyphs/files.py` and `files_detailed.py` draw them.
 - Design system: `AttachmentKind` adds Text, Data, Design, DiskImage, Email, Web, Key, Signature,

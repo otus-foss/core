@@ -105,11 +105,13 @@ class ReadStripScreenshotTest {
                     "Mailing list · about once a week",
                     UiAction("Unsubscribe", Res.drawable.symbol_unsubscribe) {},
                 )
+                // After the step only the button stays, where Unsubscribe was.
                 InfoStrip(
                     Res.drawable.symbol_newspaper,
-                    "Unsubscribed",
-                    "Takes up to 2 days · 23 older digests in your mail",
-                    UiAction("Archive all", Res.drawable.symbol_archive) {},
+                    "Sentry weekly digest",
+                    "Mailing list · about once a week",
+                    UiAction("Archive 23", Res.drawable.symbol_archive) {},
+                    framed = false,
                 )
             }
         }
