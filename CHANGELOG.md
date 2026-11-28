@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+- Design system: `InfoStrip` takes `framed`, a frameless strip that keeps only its button.
+- Design system: `StripTokens.buttonMinWidth`, the narrowest strip button.
+- Design system: `SettingsSection` takes a null `title`, and `ConfirmDialog` a null `message`.
+- Design system: a toast swiped after its action ran skips `onClose`.
+- Design system: `symbol_file_<kind>` and `symbol_file_<kind>_detailed`, a symbol for each of
+  the 26 `AttachmentKind`s. `tools/symbols/glyphs/files.py` and `files_detailed.py` draw them.
+- Design system: `AttachmentKind` adds Text, Data, Design, DiskImage, Email, Web, Key, Signature,
+  Encrypted, App, Font, Ebook, Location, and Database.
+- Design system: breaking: `FileIcon` takes an `icon: DrawableResource` and draws the kind's
+  detailed symbol with the extension label, or the picture. `FileKindTokens` loses its fills and
+  page shape constants and adds `LABEL_INSET`.
+- Design system: `ControlTokens.chipFileOverlap` and `chipFileRing`, which overlap the files pill's
+  symbols on bgDark page knockouts.
+
 - Design system: every symbol is redrawn in the Otus style: solid, rounded, and two-tone, with
   back parts at 45% and a 1.5-unit gap where parts overlap. `tools/symbols/` generates the
   drawables; see `docs/symbols.md`. Symbol names are unchanged, and `symbol_account_circle` now
