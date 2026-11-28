@@ -32,8 +32,8 @@ compiling for iOS. Read [the suite product goals](docs/suite/product-goals.md) a
 - Move existing code here when both apps need it or the user explicitly requests a suite
   extraction. Do not add speculative modules or placeholder files.
 - Enable explicit API mode and warnings as errors in every module. Public declarations are a
-  contract with both apps; change them with a changelog entry and, when an app's call sites
-  break, a partner app branch of the same name that lands with it.
+  contract with both apps; change them with a fragment in `changelog.d/` and, when an app's call
+  sites break, a partner app branch of the same name that lands with it.
 - `designsystem` modules follow **elements → components**, with tokens in `theme` and values
   and callbacks at their public boundary. Put UI in `shared/<group>/elements` or `components`,
   or in `mail/<feature>/elements` or `components` for mail-specific rendering. Add a `calendar`
@@ -172,6 +172,16 @@ feat(inbox): add avatars
 - Show contact photos beside inbox senders.
 - Fall back to initials when a photo is unavailable.
 ```
+
+Pull requests are squash-merged, so the title becomes the commit subject on `main`, and
+Mail's nightly notes and in-app Update sheet list the `feat`, `fix`, and `perf` subjects from Mail
+and Core. Write the title as that changelog line: a verb and the precise noun the app or code
+uses, in a few words. Never address the reader as "you", and don't explain the layout, the reason,
+or the mechanism.
+
+- Good: `fix(ui): remove redundant labels and toast text`, `feat(designsystem): add frameless info strips`.
+- Too explained: `fix(mail): stop repeating account names and what you just tapped`.
+- Too internal: `feat(panels): adopt full-bleed control panel`.
 
 Enable the versioned Git hooks once per checkout, including new clones. `pre-commit` checks
 formatting, and `commit-msg` checks the message. No hook runs
