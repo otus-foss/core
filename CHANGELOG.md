@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Design system: `BarAction.on` and `BarIconButton(on = ...)`, a bar toggle's state: a secondary
+  that is on shows a round `selectedFill`, and either slot reports selected semantics; null means
+  no toggle.
+- Design system: `ActionBarTokens.onFillSize`, the size of that fill.
 - Design system: `InfoStrip` takes `framed`, a frameless strip that keeps only its button.
 - Design system: `StripTokens.buttonMinWidth`, the narrowest strip button.
 - Design system: `SettingsSection` takes a null `title`, and `ConfirmDialog` a null `message`.

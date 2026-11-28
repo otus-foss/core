@@ -30,6 +30,9 @@ public object ActionBarTokens {
     public val slotGap: Dp = 2.dp
     public val symbolSize: Dp = 24.dp
 
+    /** The round `selectedFill` behind a toggle's icon while it is on, inside its 48 dp target. */
+    public val onFillSize: Dp = 40.dp
+
     /** The dashed circle of an empty slot, inside its 48 dp target, and the plus inside it. */
     public val addSlotSize: Dp = 36.dp
     public val addSymbolSize: Dp = 20.dp

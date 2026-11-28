@@ -80,7 +80,7 @@ private fun GroupIcons(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         actions.forEach {
-            BarIconButton(it.action.label, it.symbol, { onClick(it) }, enabled = it.action.enabled)
+            BarIconButton(it.action.label, it.symbol, { onClick(it) }, enabled = it.action.enabled, on = it.on)
         }
         if (onAdd != null) BarAddButton("Add action", onAdd)
     }

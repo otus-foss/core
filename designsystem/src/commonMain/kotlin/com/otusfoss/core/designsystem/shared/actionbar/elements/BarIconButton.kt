@@ -1,5 +1,6 @@
 package com.otusfoss.core.designsystem.shared.actionbar.elements
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BasicTooltipBox
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -13,18 +14,22 @@ import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import com.otusfoss.core.designsystem.shared.controls.elements.Symbol
 import com.otusfoss.core.designsystem.shared.controls.elements.controlPressFeedback
 import com.otusfoss.core.designsystem.shared.overlays.elements.AbovePopup
 import com.otusfoss.core.designsystem.shared.overlays.elements.PopupAlign
 import com.otusfoss.core.designsystem.theme.colors.OtusColors
+import com.otusfoss.core.designsystem.theme.motion.MotionSpeed
+import com.otusfoss.core.designsystem.theme.motion.motionTween
 import com.otusfoss.core.designsystem.theme.shapes.SmoothCornerShape
 import com.otusfoss.core.designsystem.theme.tokens.controls.ControlTokens
 import com.otusfoss.core.designsystem.theme.tokens.core.Sizes
@@ -37,7 +42,9 @@ import org.jetbrains.compose.resources.DrawableResource
 
 /**
  * An icon-only action in a 48 dp target. Long-pressing it shows [label] above it, because the
- * icon has no text of its own; disabled, its icon turns text3.
+ * icon has no text of its own; disabled, its icon turns text3. A toggle passes [on]: while it is
+ * true, a round `selectedFill` sits behind the icon and accessibility services read it as
+ * selected. Null means the action is no toggle.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -47,9 +54,16 @@ public fun BarIconButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    on: Boolean? = null,
 ) {
     val interactions = remember { MutableInteractionSource() }
     val edge = with(LocalDensity.current) { MenuTokens.edge.roundToPx() }
+    // Fading the fill's own alpha keeps it from passing through black, as Color.Transparent would.
+    val fill by animateFloatAsState(
+        if (on == true) 1f else 0f,
+        motionTween(MotionSpeed.Fast),
+        label = "Bar toggle fill",
+    )
     BasicTooltipBox(
         positionProvider = remember(edge) { AbovePopup(gap = 0, edge, PopupAlign.Center) },
         tooltip = { BarTooltip(label) },
@@ -59,11 +73,21 @@ public fun BarIconButton(
         Box(
             Modifier
                 .size(Sizes.touchTarget)
-                .semantics { contentDescription = label }
-                .clickable(interactions, indication = null, enabled = enabled, role = Role.Button, onClick = onClick)
+                .semantics {
+                    contentDescription = label
+                    if (on != null) selected = on
+                }.clickable(interactions, indication = null, enabled = enabled, role = Role.Button, onClick = onClick)
                 .controlPressFeedback(interactions),
             contentAlignment = Alignment.Center,
         ) {
+            Box(
+                Modifier
+                    .size(ActionBarTokens.onFillSize)
+                    .background(
+                        OtusColors.selectedFill.copy(alpha = fill),
+                        SmoothCornerShape(ActionBarTokens.onFillSize / 2),
+                    ),
+            )
             CompositionLocalProvider(LocalContentColor provides if (enabled) OtusColors.text1 else OtusColors.text3) {
                 Symbol(symbol, size = ActionBarTokens.symbolSize)
             }

@@ -8,11 +8,14 @@ import org.jetbrains.compose.resources.DrawableResource
  * and names itself with its label to accessibility services and in a long-press tooltip; the
  * primary shows its label when the bar has no context. A disabled action keeps its place. An action
  * with a [menu] opens it in a [ContextMenu][com.otusfoss.core.designsystem.shared.overlays.components.ContextMenu]
- * above the button instead of running its own click.
+ * above the button instead of running its own click. A toggle says whether it is [on], such as zen
+ * mode; null means the action is no toggle. A secondary shows it with a `selectedFill` behind its
+ * symbol, and accessibility services read either slot as selected.
  */
 public class BarAction(
     public val action: UiAction,
     public val menu: List<UiAction> = emptyList(),
+    public val on: Boolean? = null,
 ) {
     internal val symbol: DrawableResource = checkNotNull(action.symbol) { "A bar action needs a symbol" }
 }
